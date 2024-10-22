@@ -3,6 +3,7 @@ import { StatusBar, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import TabsNavigator from './navigation/TabsNavigator';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import './i18n';
 
 const Stack = createNativeStackNavigator();
 

@@ -2,8 +2,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import LibraryScreen from "../screens/LibraryScreen";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from "react-i18next";
+import CustomText from "../components/CustomText";
 
 export type TabsParamList = {
   Home: undefined;
@@ -25,9 +26,9 @@ const TabsNavigator = () => {
           return <MaterialCommunityIcons name={iconName} size={iconSize} color={color} />;
         },
         tabBarLabel: ({ focused, color }) => (
-          <Text style={{ fontWeight: focused ? 'bold' : 'normal', color }}>
+          <CustomText weight={focused ? 'Bold' : 'Regular'} style={{ color, fontSize: 12 }}>
             {t(route.name.toLowerCase())}
-          </Text>
+          </CustomText>
         ),
         tabBarStyle: styles.tabBarStyle,
       })}

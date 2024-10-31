@@ -6,11 +6,27 @@ interface CustomTextProps extends TextProps {
 }
 
 const CustomText: React.FC<CustomTextProps> = ({ weight = 'Regular', style, children, ...props }) => {
-  let fontFamily = `Montserrat-${weight}`;
+  const renderTextWithBold = (text: string) => {
+    const parts = text.split(/(\*[^*]+\*)/g);
+
+    return parts.map((part, index) => {
+      if (part.startsWith('*') && part.endsWith('*')) {
+        const boldText = part.slice(1, -1);
+        return (
+          <Text key={index} style={{ fontFamily: `Montserrat-Bold` }}>
+            {boldText}
+          </Text>
+        );
+      }
+      return part;
+    });
+  };
+
+  const textToDisplay = typeof children === 'string' ? children : '';
 
   return (
-    <Text style={[styles.text, { fontFamily }, style,]} {...props}>
-      {children}
+    <Text style={[styles.text, { fontFamily: `Montserrat-${weight}` }, style]} {...props}>
+      {renderTextWithBold(textToDisplay)}
     </Text>
   );
 };

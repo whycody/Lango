@@ -1,8 +1,9 @@
 import React, { FC, useState } from "react";
-import { StyleSheet, Vibration, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "./CustomText";
+import * as Haptics from 'expo-haptics';
 import ESFlag from '../assets/flags/es.svg';
 import PLFlag from '../assets/flags/pl.svg';
 import FlipCard from 'react-native-flip-card'
@@ -36,7 +37,7 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
   const handleFlip = () => {
     if(!flippable) return;
     setFlippable(false);
-    Vibration.vibrate(50);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     setTimeout(() => {
       setFlip((prevState) => !prevState);
       setFlippable(true);
@@ -97,6 +98,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     color: colors.primary300
   },
   successText: {
+    fontSize: 14,
     color: colors.primary300,
     textAlign: 'center'
   }

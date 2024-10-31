@@ -6,5 +6,8 @@
   "practiceNow": "Czas na powtórkę! Rozpocznij sesję przyciskiem poniżej \uD83D\uDC47",
   "startSession": "Rozpocznij sesję",
   "wordsSuggestion": "Czy znasz już te słówka?",
-  "wordSuggestionDesc": "Kliknij w kartę aby dodać słówko do słownika."
+  "wordSuggestionDesc": "Kliknij w kartę aby dodać słówko do słownika.",
+  "wordAdded1": "Mamy to! \uD83D\uDCAA",
+  "wordAdded2": "Dodano! \uD83C\uDF89",
+  "wordAdded3": "Świetny wybór! \uD83D\uDC4C"
 }

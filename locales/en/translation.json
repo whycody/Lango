@@ -6,5 +6,8 @@
   "practiceNow": "It is time for practice! Start session by clicking button below \uD83D\uDC47",
   "startSession": "Start session",
   "wordsSuggestion": "Do you already know these words?",
-  "wordSuggestionDesc": "Hit card to add word to your vocabulary."
+  "wordSuggestionDesc": "Hit card to add word to your vocabulary.",
+  "wordAdded1": "Got it! \uD83D\uDCAA",
+  "wordAdded2": "Added! \uD83C\uDF89",
+  "wordAdded3": "Perfect choice! \uD83D\uDC4C"
 }

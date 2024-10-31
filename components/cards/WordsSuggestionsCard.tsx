@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import Header from "../Header";
+import Flashcard from "../Flashcard";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();
@@ -12,6 +13,10 @@ const WordsSuggestionsCard = () => {
   return (
     <View style={styles.root}>
       <Header title={t('wordsSuggestion')} subtitle={t('wordSuggestionDesc')} />
+      <View style={styles.flashcardsContainer}>
+        <Flashcard word={'el camión'} translation={'ciężarówka'} style={{ flex: 1, marginRight: MARGIN_HORIZONTAL/2 }}/>
+        <Flashcard word={'la cafetera italiana'} translation={'kawiarka'} style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL/2 }}/>
+      </View>
     </View>
   );
 }
@@ -21,6 +26,10 @@ const getStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.card,
     paddingVertical: MARGIN_VERTICAL,
     paddingHorizontal: MARGIN_HORIZONTAL
+  },
+  flashcardsContainer: {
+    marginTop: 12,
+    flexDirection: 'row',
   },
 });
 

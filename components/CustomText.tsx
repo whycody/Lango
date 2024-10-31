@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
 
 interface CustomTextProps extends TextProps {
   weight?: 'Regular' | 'SemiBold' | 'Bold' | 'Black';
 }
 
-const CustomText: React.FC<CustomTextProps> = ({ weight = 'Regular', style, children, ...props }) => {
+const CustomText: FC<CustomTextProps> = ({ weight = 'Regular', style, children, ...props }) => {
   const renderTextWithBold = (text: string) => {
     const parts = text.split(/(\*[^*]+\*)/g);
 

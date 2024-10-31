@@ -1,52 +1,36 @@
-import React from "react";
-import { StyleSheet, Animated } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { expo } from '.././app.json'
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
+import { StyleSheet, View } from "react-native";
 import CustomText from "./CustomText";
-import { ProgressBar } from "react-native-paper";
-import { useTranslation } from "react-i18next";
-import ScrollView = Animated.ScrollView;
-import MainActionButton from "./MainActionButton";
+import { FC } from "react";
 
-const Header = () => {
-  const { t } = useTranslation();
+interface HeaderProps {
+  title: string;
+  subtitle?: string;
+}
+
+const Header: FC<HeaderProps> = ({ title, subtitle }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
   return (
-    <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
-      <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>
-      <ProgressBar progress={0.62} color={colors.primary300} style={styles.progressBar}/>
-      <CustomText style={styles.descText}>
-        {t('wordsPercentage', { percentage: 62 }) + ' ' + t('practiceNow')}
-      </CustomText>
-      <MainActionButton label={t('startSession')} icon={'play'} style={styles.actionButton}/>
-    </ScrollView>
+    <View>
+      <CustomText style={styles.title} weight={"SemiBold"}>{title}</CustomText>
+      {subtitle &&
+        <CustomText style={styles.subtitle}>{subtitle}</CustomText>
+      }
+    </View>
   );
 }
 
 const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    paddingHorizontal: MARGIN_HORIZONTAL,
-    paddingVertical: MARGIN_VERTICAL,
+  title: {
+    color: colors.primary300,
+    fontSize: 18,
   },
-  mainText: {
-    color: colors.primary,
-    fontSize: 26,
-  },
-   progressBar: {
-    backgroundColor: colors.card,
-    marginTop: 12,
-    height: 7
-  },
-  descText: {
-    fontSize: 15,
+  subtitle: {
     color: colors.primary600,
-    marginTop: 16,
-  },
-  actionButton: {
-    marginTop: 32,
+    fontSize: 14,
+    marginTop: 6,
   }
 });
 

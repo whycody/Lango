@@ -11,6 +11,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const { colors } = DarkTheme;
 
   useEffect(() => {
     async function loadFonts() {
@@ -32,8 +33,8 @@ export default function App() {
 
   return (
     <>
-      <StatusBar barStyle='light-content' backgroundColor='#0B0B27'/>
-      <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
         <NavigationContainer theme={DarkTheme}>
           <Stack.Navigator>
             <Stack.Screen name='Tabs' component={TabsNavigator} options={{ headerShown: false, }}/>

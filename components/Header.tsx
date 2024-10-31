@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import { StyleSheet, Animated } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { expo } from '.././app.json'
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
@@ -7,6 +7,7 @@ import CustomText from "./CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import ScrollView = Animated.ScrollView;
+import MainActionButton from "./MainActionButton";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -16,10 +17,11 @@ const Header = () => {
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>
-      <ProgressBar progress={0.62} color={colors.primary} style={styles.progressBar}/>
+      <ProgressBar progress={0.62} color={colors.primary300} style={styles.progressBar}/>
       <CustomText style={styles.descText}>
         {t('wordsPercentage', { percentage: 62 }) + ' ' + t('practiceNow')}
       </CustomText>
+      <MainActionButton label={t('startSession')} icon={'play'} style={styles.actionButton}/>
     </ScrollView>
   );
 }
@@ -33,15 +35,18 @@ const getStyles = (colors: any) => StyleSheet.create({
     color: colors.primary,
     fontSize: 26,
   },
-  descText: {
-    fontSize: 15,
-    color: colors.primary600,
-    marginTop: 12,
-  },
-  progressBar: {
+   progressBar: {
     backgroundColor: colors.card,
     marginTop: 12,
     height: 7
+  },
+  descText: {
+    fontSize: 15,
+    color: colors.primary600,
+    marginTop: 16,
+  },
+  actionButton: {
+    marginTop: 32,
   }
 });
 

@@ -3,5 +3,6 @@
   "library": "Library",
   "wordsPercentage": "*Attention, report!* You have mastered {{percentage}}% of the words you recently added to your vocabulary.",
   "newWordsTime": "Add new words now!",
-  "practiceNow": "It is time for practice! Start session by clicking button below \uD83D\uDC47"
+  "practiceNow": "It is time for practice! Start session by clicking button below \uD83D\uDC47",
+  "startSession": "Start session"
 }

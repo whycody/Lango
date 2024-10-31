@@ -3,5 +3,6 @@
   "library": "Biblioteka",
   "wordsPercentage": "*Uwaga, raport!* Na ten moment opanowałeś *{{percentage}}%* słówek, które ostatnio dodałeś do swojego słownika.",
   "newWordsTime": "Już teraz dodaj nowe słówka!",
-  "practiceNow": "Czas na powtórkę! Rozpocznij naukę przyciskiem poniżej \uD83D\uDC47"
+  "practiceNow": "Czas na powtórkę! Rozpocznij sesję przyciskiem poniżej \uD83D\uDC47",
+  "startSession": "Rozpocznij sesję"
 }

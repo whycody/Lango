@@ -1,10 +1,11 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import ProfileCard from "../cards/library/ProfileCard";
 
 const LibraryScreen = () => {
 
   return (
     <View>
-      <Text>Library Screen</Text>
+      <ProfileCard />
     </View>
   );
 }

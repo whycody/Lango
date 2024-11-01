@@ -3,10 +3,10 @@ import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { expo } from '../../app.json'
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
-import CustomText from "../CustomText";
+import CustomText from "../../components/CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import ActionButton from "../ActionButton";
+import ActionButton from "../../components/ActionButton";
 
 const HeaderCard = () => {
   const { t } = useTranslation();

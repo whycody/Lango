@@ -2,9 +2,9 @@ import { View, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
-import Header from "../Header";
-import Flashcard from "../Flashcard";
-import ActionButton from "../ActionButton";
+import Header from "../../components/Header";
+import Flashcard from "../../components/Flashcard";
+import ActionButton from "../../components/ActionButton";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();

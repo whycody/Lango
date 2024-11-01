@@ -2,9 +2,9 @@ import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import React from "react";
-import Header from "../Header";
+import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
-import StatisticItem from "../StatisticItem";
+import StatisticItem from "../../components/StatisticItem";
 
 const StatisticsCard = () => {
   const { colors } = useTheme();

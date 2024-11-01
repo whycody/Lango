@@ -1,7 +1,7 @@
 import { ScrollView } from "react-native";
-import HeaderCard from "../components/cards/HeaderCard";
-import WordsSuggestionsCard from "../components/cards/WordsSuggestionsCard";
-import StatisticsCard from "../components/cards/StatisticsCard";
+import HeaderCard from "../cards/home/HeaderCard";
+import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
+import StatisticsCard from "../cards/home/StatisticsCard";
 
 const HomeScreen = () => {
 

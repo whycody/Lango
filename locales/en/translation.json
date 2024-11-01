@@ -16,5 +16,10 @@
   "words": "Words",
   "sessions": "Sessions",
   "studyDays": "Study days",
-  "langoWords": "Words from Lango"
+  "langoWords": "Words from Lango",
+  "settings": "Settings",
+  "myWords": "My words",
+  "logout": "Logout",
+  "privacyPolicy": "Privacy policy",
+  "useConditions": "Use conditions"
 }

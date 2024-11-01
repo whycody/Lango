@@ -32,18 +32,8 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
   const styles = getStyles(colors);
   const { t } = useTranslation();
 
-  const firstLanguage = 'pl';
-  const secondLanguage = 'es';
-
-  const handleFlip = () => {
-    if (!flippable) return;
-    setFlippable(false);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-    setTimeout(() => {
-      setFlip((prevState) => !prevState);
-      setFlippable(true);
-    }, 1000);
-  }
+  const firstLanguage = 'es';
+  const secondLanguage = 'pl';
 
   const getRandomMessage = () => {
     const messages = [
@@ -55,6 +45,19 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
     const randomIndex = Math.floor(Math.random() * messages.length);
     return messages[randomIndex];
   };
+
+  const [backText, setBackText] = useState(getRandomMessage());
+
+  const handleFlip = () => {
+    if (!flippable) return;
+    setFlippable(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    setTimeout(() => {
+      setFlip((prevState) => !prevState);
+      setFlippable(true);
+      setTimeout(() => setBackText(getRandomMessage()), 100)
+    }, 1000);
+  }
 
   return (
     <View pointerEvents={flippable ? 'auto' : 'none'} style={{ flex: 1 }}>
@@ -71,7 +74,7 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
           </View>
         </View>
         <View style={[styles.root, style, { justifyContent: 'center' }]}>
-          <CustomText weight={"SemiBold"} style={styles.successText}>{getRandomMessage()}</CustomText>
+          <CustomText weight={"SemiBold"} style={styles.successText}>{backText}</CustomText>
         </View>
       </FlipCard>
     </View>

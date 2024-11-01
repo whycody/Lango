@@ -30,7 +30,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   subtitle: {
     color: colors.primary600,
     fontSize: 14,
-    marginTop: 6,
+    marginTop: 2,
   }
 });
 

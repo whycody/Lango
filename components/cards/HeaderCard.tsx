@@ -6,7 +6,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import CustomText from "../CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import MainActionButton from "../MainActionButton";
+import ActionButton from "../ActionButton";
 
 const HeaderCard = () => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ const HeaderCard = () => {
       <CustomText style={styles.descText}>
         {t('wordsPercentage', { percentage: 62 }) + ' ' + t('practiceNow')}
       </CustomText>
-      <MainActionButton label={t('startSession')} icon={'play'} style={styles.actionButton}/>
+      <ActionButton label={t('startSession')} primary={true} icon={'play'} style={styles.actionButton}/>
     </View>
   );
 }
@@ -34,7 +34,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     color: colors.primary,
     fontSize: 26,
   },
-   progressBar: {
+  progressBar: {
     backgroundColor: colors.card,
     marginTop: 12,
     height: 7

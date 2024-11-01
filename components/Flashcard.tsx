@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import ESFlag from '../assets/flags/es.svg';
 import PLFlag from '../assets/flags/pl.svg';
 import FlipCard from 'react-native-flip-card'
+import { Ionicons } from "@expo/vector-icons";
 
 interface FlashcardProps {
   word: string;
@@ -35,7 +36,7 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
   const secondLanguage = 'es';
 
   const handleFlip = () => {
-    if(!flippable) return;
+    if (!flippable) return;
     setFlippable(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     setTimeout(() => {
@@ -65,6 +66,9 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
           </View>
           <CustomText weight={"SemiBold"} style={styles.word}>{word}</CustomText>
           <CustomText style={styles.translation}>{translation}</CustomText>
+          <View style={styles.plusContainer}>
+            <Ionicons name={'add'} size={16} color={colors.primary}/>
+          </View>
         </View>
         <View style={[styles.root, style, { justifyContent: 'center' }]}>
           <CustomText weight={"SemiBold"} style={styles.successText}>{getRandomMessage()}</CustomText>
@@ -95,12 +99,23 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   translation: {
     fontSize: 12,
-    color: colors.primary300
+    color: colors.primary300,
+    opacity: 0.8,
   },
   successText: {
     fontSize: 14,
     color: colors.primary300,
     textAlign: 'center'
+  },
+  plusContainer: {
+    backgroundColor: colors.card,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 22,
+    height: 22,
+    right: 12,
+    top: 12
   }
 });
 

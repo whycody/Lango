@@ -9,5 +9,6 @@
   "wordSuggestionDesc": "Hit card to add word to your vocabulary.",
   "wordAdded1": "Got it! \uD83D\uDCAA",
   "wordAdded2": "Added! \uD83C\uDF89",
-  "wordAdded3": "Perfect choice! \uD83D\uDC4C"
+  "wordAdded3": "Perfect choice! \uD83D\uDC4C",
+  "addWord": "Add your own word +"
 }

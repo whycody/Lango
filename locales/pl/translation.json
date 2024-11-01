@@ -10,5 +10,11 @@
   "wordAdded1": "Mamy to! \uD83D\uDCAA",
   "wordAdded2": "Dodano! \uD83C\uDF89",
   "wordAdded3": "Świetny wybór! \uD83D\uDC4C",
-  "addWord": "Dodaj własne słówko +"
+  "addWord": "Dodaj własne słówko +",
+  "statistics": "Statystyki",
+  "statisticsDesc": "Przeanalizujmy Twoje osiągnięcia.",
+  "words": "Słówek",
+  "sessions": "Sesji",
+  "studyDays": "Dni nauki",
+  "langoWords": "Słówek od Lango"
 }

@@ -53,7 +53,8 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
   const handleFlip = () => {
     if (!flippable) return;
     setFlippable(false);
-    wordsContext.addWord(word, translation, LANGO);
+    const addWord = wordsContext.addWord(word, translation, LANGO)
+    if(!addWord) setBackText(t('wordNotAdded'));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     setTimeout(() => {
       setFlip((prevState) => !prevState);

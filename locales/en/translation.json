@@ -10,6 +10,7 @@
   "wordAdded1": "Got it! \uD83D\uDCAA",
   "wordAdded2": "Added! \uD83C\uDF89",
   "wordAdded3": "Perfect choice! \uD83D\uDC4C",
+  "wordNotAdded": "Couldn't add ❌",
   "addWord": "Add your own word +",
   "statistics": "Statistics",
   "statisticsDesc": "Let's review your progress",
@@ -21,5 +22,5 @@
   "myWords": "My words",
   "logout": "Logout",
   "privacyPolicy": "Privacy policy",
-  "useConditions": "Use conditions"
+  "useConditions": "Use conditions",
 }

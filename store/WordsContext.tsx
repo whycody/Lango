@@ -16,9 +16,10 @@ export interface Word {
 
 interface WordsContextProps {
   words: Word[];
-  addWord: (text: string, translation: string, source?: string) => void;
+  addWord: (text: string, translation: string, source?: string) => boolean;
   updateWord: (id: string, grade: number) => void;
   getWordSet: (size: number) => Word[];
+  deleteWords: () => void;
 }
 
 export const USER = 'user';
@@ -26,15 +27,16 @@ export const LANGO = 'lango';
 
 export const WordsContext = createContext<WordsContextProps>({
   words: [],
-  addWord: () => {},
+  addWord: () => true,
   updateWord: () => {},
-  getWordSet: () => []
+  getWordSet: () => [],
+  deleteWords: () => {},
 });
 
 export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [words, setWords] = useState<Word[]>([]);
 
-  const createWord = (text: string, translation: string, source: string = USER): Word => ({
+  const createWord = (text: string, translation: string, source: string): Word => ({
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
     text,
     translation,
@@ -47,12 +49,13 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     EF: 2.5,
   });
 
-  const addWord = (text: string, translation: string) => {
-    if(words.find((word) => word.text === text && word.translation === translation)) return;
-    const newWord = createWord(text, translation);
+  const addWord = (text: string, translation: string, source: string) => {
+    if(words.find((word) => word.text === text && word.translation === translation)) return false;
+    const newWord = createWord(text, translation, source);
     const updatedWords = [...words, newWord];
     setWords(updatedWords);
     saveWords(updatedWords);
+    return true;
   };
 
   const saveWords = async (wordsToSave: Word[] = words) => {
@@ -70,6 +73,16 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       setWords(parsedWords);
     } catch (error) {
       console.log('Error loading words from storage:', error);
+    }
+  };
+
+  const deleteWords = async () => {
+    try {
+      await AsyncStorage.removeItem('words');
+      setWords([]);
+      console.log('All words have been deleted from storage.');
+    } catch (error) {
+      console.log('Error deleting words from storage:', error);
     }
   };
 
@@ -125,7 +138,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <WordsContext.Provider value={{ words, addWord, updateWord, getWordSet }}>
+    <WordsContext.Provider value={{ words, addWord, updateWord, getWordSet, deleteWords }}>
       {children}
     </WordsContext.Provider>
   );

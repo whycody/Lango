@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import './i18n';
 import * as Font from 'expo-font';
 import { DarkTheme } from "./themes";
+import WordsProvider from "./store/WordsContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +33,7 @@ export default function App() {
   }
 
   return (
-    <>
+    <WordsProvider>
       <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
         <NavigationContainer theme={DarkTheme}>
@@ -41,6 +42,6 @@ export default function App() {
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>
-    </>
+    </WordsProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import ESFlag from '../assets/flags/es.svg';
 import PLFlag from '../assets/flags/pl.svg';
 import FlipCard from 'react-native-flip-card'
 import { Ionicons } from "@expo/vector-icons";
+import { LANGO, WordsContext } from "../store/WordsContext";
 
 interface FlashcardProps {
   word: string;
@@ -31,6 +32,7 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
+  const wordsContext = useContext(WordsContext);
 
   const firstLanguage = 'es';
   const secondLanguage = 'pl';
@@ -51,6 +53,7 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
   const handleFlip = () => {
     if (!flippable) return;
     setFlippable(false);
+    wordsContext.addWord(word, translation, LANGO);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     setTimeout(() => {
       setFlip((prevState) => !prevState);

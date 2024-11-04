@@ -5,14 +5,13 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
-import { useContext } from "react";
-import { WordsContext } from "../../store/WordsContext";
+import { useWords } from "../../store/WordsContext";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const wordsContext = useContext(WordsContext);
+  const wordsContext = useWords();
 
   return (
     <View style={styles.root}>

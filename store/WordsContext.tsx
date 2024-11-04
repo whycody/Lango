@@ -1,4 +1,4 @@
-import React, { createContext, FC, useEffect, useState } from 'react';
+import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Word {
@@ -28,9 +28,11 @@ export const LANGO = 'lango';
 export const WordsContext = createContext<WordsContextProps>({
   words: [],
   addWord: () => true,
-  updateWord: () => {},
+  updateWord: () => {
+  },
   getWordSet: () => [],
-  deleteWords: () => {},
+  deleteWords: () => {
+  },
 });
 
 export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -50,7 +52,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   });
 
   const addWord = (text: string, translation: string, source: string) => {
-    if(words.find((word) => word.text === text && word.translation === translation)) return false;
+    if (words.find((word) => word.text === text && word.translation === translation)) return false;
     const newWord = createWord(text, translation, source);
     const updatedWords = [...words, newWord];
     setWords(updatedWords);
@@ -142,6 +144,14 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       {children}
     </WordsContext.Provider>
   );
+};
+
+export const useWords = (): WordsContextProps => {
+  const context = useContext(WordsContext);
+  if (!context) {
+    throw new Error("useWords must be used within a WordsProvider");
+  }
+  return context;
 };
 
 export default WordsProvider;

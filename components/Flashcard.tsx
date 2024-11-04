@@ -8,7 +8,7 @@ import ESFlag from '../assets/flags/es.svg';
 import PLFlag from '../assets/flags/pl.svg';
 import FlipCard from 'react-native-flip-card'
 import { Ionicons } from "@expo/vector-icons";
-import { LANGO, WordsContext } from "../store/WordsContext";
+import { LANGO, useWords } from "../store/WordsContext";
 
 interface FlashcardProps {
   word: string;
@@ -32,7 +32,7 @@ const Flashcard: FC<FlashcardProps> = ({ word, translation, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
-  const wordsContext = useContext(WordsContext);
+  const wordsContext = useWords();
 
   const firstLanguage = 'es';
   const secondLanguage = 'pl';

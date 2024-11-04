@@ -1,14 +1,14 @@
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/StatisticItem";
-import { LANGO, WordsContext } from "../../store/WordsContext";
+import { LANGO, useWords } from "../../store/WordsContext";
 
 const StatisticsCard = () => {
   const { t } = useTranslation();
-  const wordsContext = useContext(WordsContext);
+  const wordsContext = useWords();
   const [studyStats, setStudyStats] = useState({
     numberOfWords: 0,
     numberOfSessions: 0,

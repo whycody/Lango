@@ -7,6 +7,8 @@ import './i18n';
 import * as Font from 'expo-font';
 import { DarkTheme } from "./themes";
 import WordsProvider from "./store/WordsContext";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,9 +39,13 @@ export default function App() {
       <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
         <NavigationContainer theme={DarkTheme}>
-          <Stack.Navigator>
-            <Stack.Screen name='Tabs' component={TabsNavigator} options={{ headerShown: false, }}/>
-          </Stack.Navigator>
+          <GestureHandlerRootView>
+            <BottomSheetModalProvider>
+              <Stack.Navigator>
+                <Stack.Screen name='Tabs' component={TabsNavigator} options={{ headerShown: false, }}/>
+              </Stack.Navigator>
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
         </NavigationContainer>
       </SafeAreaView>
     </WordsProvider>

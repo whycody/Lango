@@ -4,7 +4,7 @@
   "wordsPercentage": "*Uwaga, raport!* Na ten moment opanowałeś *{{percentage}}%* słówek, które ostatnio dodałeś do swojego słownika.",
   "newWordsTime": "Już teraz dodaj nowe słówka!",
   "practiceNow": "Czas na powtórkę! Rozpocznij sesję przyciskiem poniżej \uD83D\uDC47",
-  "startSession": "Rozpocznij sesję",
+  "startLearning": "Rozpocznij naukę",
   "wordsSuggestion": "Czy znasz już te słówka?",
   "wordSuggestionDesc": "Kliknij w kartę aby dodać słówko do słownika.",
   "wordAdded1": "Mamy to! \uD83D\uDCAA",
@@ -22,5 +22,11 @@
   "myWords": "Moje słówka",
   "logout": "Wyloguj się",
   "privacyPolicy": "Polityka prywatności",
-  "useConditions": "Warunki korzystania"
+  "useConditions": "Warunki korzystania",
+  "sessionLength": "Wybierz długość sesji",
+  "shortSession": "Krótka sesja",
+  "mediumSession": "Średnia sesja",
+  "longSession": "Długa sesja",
+  "startSession": "Rozpocznij sesję",
+  "repetitions": "Powtórek"
 }

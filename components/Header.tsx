@@ -6,14 +6,15 @@ import { FC } from "react";
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  style?: any;
 }
 
-const Header: FC<HeaderProps> = ({ title, subtitle }) => {
+const Header: FC<HeaderProps> = ({ title, subtitle, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
   return (
-    <View>
+    <View style={style}>
       <CustomText style={styles.title} weight={"SemiBold"}>{title}</CustomText>
       {subtitle &&
         <CustomText style={styles.subtitle}>{subtitle}</CustomText>

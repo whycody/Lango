@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { expo } from '../../app.json'
@@ -7,20 +7,39 @@ import CustomText from "../../components/CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../../components/ActionButton";
+import StartSessionBottomSheet from "../../sheets/StartSessionBottomSheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const HeaderCard = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  const handleActinButtonPress = () => {
+    console.log(bottomSheetRef);
+    bottomSheetRef.current.present();
+  }
+
+  const handleSessionStart = (length: 1|2|3) => {
+    bottomSheetRef.current.close();
+  }
 
   return (
     <View style={styles.root}>
+      <StartSessionBottomSheet ref={bottomSheetRef} onSessionStart={handleSessionStart}/>
       <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>
       <ProgressBar progress={0.62} color={colors.primary300} style={styles.progressBar}/>
       <CustomText style={styles.descText}>
         {t('wordsPercentage', { percentage: 62 }) + ' ' + t('practiceNow')}
       </CustomText>
-      <ActionButton label={t('startSession')} primary={true} icon={'play'} style={styles.actionButton}/>
+      <ActionButton
+        label={t('startLearning')}
+        primary={true}
+        icon={'play'}
+        style={styles.actionButton}
+        onPress={handleActinButtonPress}
+      />
     </View>
   );
 }

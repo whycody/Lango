@@ -9,6 +9,7 @@ import { DarkTheme } from "./themes";
 import WordsProvider from "./store/WordsContext";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { FlashcardProvider } from "./store/FlashcardsContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,13 +40,15 @@ export default function App() {
       <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
         <NavigationContainer theme={DarkTheme}>
-          <GestureHandlerRootView>
-            <BottomSheetModalProvider>
-              <Stack.Navigator>
-                <Stack.Screen name='Tabs' component={TabsNavigator} options={{ headerShown: false, }}/>
-              </Stack.Navigator>
-            </BottomSheetModalProvider>
-          </GestureHandlerRootView>
+          <FlashcardProvider>
+            <GestureHandlerRootView>
+              <BottomSheetModalProvider>
+                <Stack.Navigator>
+                  <Stack.Screen name='Tabs' component={TabsNavigator} options={{ headerShown: false, }}/>
+                </Stack.Navigator>
+              </BottomSheetModalProvider>
+            </GestureHandlerRootView>
+          </FlashcardProvider>
         </NavigationContainer>
       </SafeAreaView>
     </WordsProvider>

@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from "react";
+import React, { FC, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -11,8 +11,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { LANGO, useWords } from "../store/WordsContext";
 
 interface FlashcardProps {
-  word: string;
-  translation: string;
+  word?: string;
+  translation?: string;
   style?: any;
 }
 

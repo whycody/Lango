@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { StyleSheet, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { expo } from '../../app.json'
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import CustomText from "../../components/CustomText";
@@ -14,6 +14,7 @@ const HeaderCard = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
+  const navigation = useNavigation();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const handleActinButtonPress = () => {
@@ -23,6 +24,7 @@ const HeaderCard = () => {
 
   const handleSessionStart = (length: 1|2|3) => {
     bottomSheetRef.current.close();
+    navigation.navigate('Session');
   }
 
   return (

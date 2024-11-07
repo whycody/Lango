@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useWords, Word } from "./WordsContext";
+import flashcard from "../components/Flashcard";
 
 export interface FlashcardContent {
   word: string;
@@ -18,6 +20,13 @@ interface FlashcardProviderProps {
 
 export const FlashcardProvider: React.FC<FlashcardProviderProps> = ({ children }) => {
   const [flashcards, setFlashcards] = useState<FlashcardContent[]>([]);
+  const [words, setWords] = useState<Word[]>([]);
+
+  const wordsContext = useWords();
+
+  useEffect(() => {
+    setWords(words);
+  }, [wordsContext.words]);
 
   useEffect(() => {
     const loadFlashcards = () => {
@@ -38,8 +47,9 @@ export const FlashcardProvider: React.FC<FlashcardProviderProps> = ({ children }
 
   const getRandomFlashcard = () => {
     if (flashcards.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * flashcards.length);
-    return flashcards[randomIndex];
+    const filteredFlashcards = flashcards.filter((flashcard) => !words.some((word: Word) => word.text == flashcard.word));
+    const randomIndex = Math.floor(Math.random() * filteredFlashcards.length);
+    return filteredFlashcards[randomIndex];
   };
 
   return (

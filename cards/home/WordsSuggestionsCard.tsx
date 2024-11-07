@@ -30,13 +30,13 @@ const WordsSuggestionsCard = () => {
       <Header title={t('wordsSuggestion')} subtitle={t('wordSuggestionDesc')}/>
       <View style={styles.flashcardsContainer}>
         <Flashcard
-          word={firstFlashcard?.word}
-          translation={firstFlashcard?.translation}
+          onFlashcardPress={() => setFirstFlashcard(flashcardsContext.getRandomFlashcard())}
+          flashcardContent={firstFlashcard}
           style={{ flex: 1, marginRight: MARGIN_HORIZONTAL / 2 }}
         />
         <Flashcard
-          word={secondFlashcard?.word}
-          translation={secondFlashcard?.translation}
+          onFlashcardPress={() => setSecondFlashcard(flashcardsContext.getRandomFlashcard())}
+          flashcardContent={secondFlashcard}
           style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
         />
       </View>

@@ -24,7 +24,7 @@ const HeaderCard = () => {
 
   const handleSessionStart = (length: 1|2|3) => {
     bottomSheetRef.current.close();
-    navigation.navigate('Session');
+    navigation.navigate('Session', { length: length });
   }
 
   return (

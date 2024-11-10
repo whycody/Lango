@@ -28,5 +28,6 @@
   "mediumSession": "Medium session",
   "longSession": "Long session",
   "startSession": "Start session",
-  "repetitions": "Repetitions"
+  "repetitions": "Repetitions",
+  "howWell": "How well do you know this word?"
 }

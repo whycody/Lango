@@ -29,5 +29,8 @@
   "longSession": "Długa sesja",
   "startSession": "Rozpocznij sesję",
   "repetitions": "Powtórek",
-  "howWell": "Jak dobrze znasz to słówko?"
+  "howWell": "Jak dobrze znasz to słówko?",
+  "poorly": "Słabo",
+  "moderately": "Średnio",
+  "good": "Dobrze"
 }

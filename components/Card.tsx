@@ -6,9 +6,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { MARGIN_HORIZONTAL } from "../src/constants";
 
 interface CardProps {
+  text: string;
   wordIndex: number;
   currentIndex: number;
-  text: string;
   onBackPress: () => void;
   onEditPress: () => void;
 }
@@ -24,23 +24,25 @@ const Card: FC<CardProps> = ({ wordIndex, currentIndex, text, onBackPress, onEdi
         {wordIndex === currentIndex ? text : ``}
       </CustomText>
       <View style={{ flex: 1 }}/>
-      <View style={styles.cardIconsContainer}>
-        <Ionicons
-          name={'arrow-back-outline'}
-          size={24}
-          color={colors.primary600}
-          style={[styles.icon, { opacity: wordIndex != 0 ? 1 : 0.4}]}
-          onPress={() => wordIndex != 0 && onBackPress()}
-        />
-        <View style={{ flex: 1 }}/>
-        <Ionicons
-          name={'pencil-outline'}
-          size={24}
-          style={styles.icon}
-          color={colors.primary600}
-          onPress={onEditPress}
-        />
-      </View>
+      {wordIndex === currentIndex &&
+        <View style={styles.cardIconsContainer}>
+          <Ionicons
+            name={'arrow-back-outline'}
+            size={24}
+            color={colors.primary600}
+            style={[styles.icon, { opacity: wordIndex != 0 ? 1 : 0.4 }]}
+            onPress={() => wordIndex != 0 && onBackPress()}
+          />
+          <View style={{ flex: 1 }}/>
+          <Ionicons
+            name={'pencil-outline'}
+            size={24}
+            style={styles.icon}
+            color={colors.primary600}
+            onPress={onEditPress}
+          />
+        </View>
+      }
     </View>
   );
 }

@@ -29,5 +29,8 @@
   "longSession": "Long session",
   "startSession": "Start session",
   "repetitions": "Repetitions",
-  "howWell": "How well do you know this word?"
+  "howWell": "How well do you know this word?",
+  "poorly": "Poorly",
+  "moderately": "Moderately",
+  "good": "Good"
 }

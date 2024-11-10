@@ -4,11 +4,12 @@ import FlipCard from 'react-native-flip-card';
 import { StyleSheet, View } from 'react-native';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { useWords, Word } from "../store/WordsContext";
-import { MARGIN_VERTICAL } from "../src/constants";
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import CustomText from "../components/CustomText";
 import Card from "../components/Card";
+import WordLevelItem from "../components/WordLevelItem";
 
 const SessionScreen = () => {
   const { t } = useTranslation();
@@ -89,6 +90,11 @@ const SessionScreen = () => {
         <CustomText weight={"SemiBold"} style={styles.headerText}>
           {t('howWell')}
         </CustomText>
+        <View style={{ flexDirection: 'row', marginHorizontal: MARGIN_HORIZONTAL, marginBottom: MARGIN_VERTICAL}}>
+          <WordLevelItem level={1} selected={false} style={{ flex: 1, marginRight: 6 }}/>
+          <WordLevelItem level={2} selected={false} style={{ flex: 1, marginLeft: 3, marginRight: 3 }}/>
+          <WordLevelItem level={3} selected={false} style={{ flex: 1, marginLeft: 6 }}/>
+        </View>
       </View>
     </View>
   );
@@ -97,16 +103,12 @@ const SessionScreen = () => {
 
 const getStyles = (colors: any) => StyleSheet.create({
   container: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flex: 1,
     marginTop: MARGIN_VERTICAL,
-    zIndex: 3,
   },
   card: {
     marginTop: 0,
-    marginBottom: 230,
-    elevation: 10
+    marginBottom: 190,
   },
   title: {
     fontSize: 15,
@@ -120,13 +122,13 @@ const getStyles = (colors: any) => StyleSheet.create({
     height: 3
   },
   bottomBarContainer: {
-    flex: 0.5,
     backgroundColor: colors.card
   },
   headerText: {
     color: colors.primary300,
     textAlign: 'center',
-    marginTop: MARGIN_VERTICAL
+    marginTop: MARGIN_VERTICAL,
+    marginBottom: 20
   },
   tipContainer: {
     flexDirection: 'row',

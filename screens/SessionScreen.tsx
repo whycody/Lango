@@ -14,7 +14,8 @@ import WordLevelItem from "../components/WordLevelItem";
 const SessionScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const styles = getStyles(colors);
+  const [bottomBarHeight, setBottomBarHeight] = useState(0);
+  const styles = getStyles(colors, bottomBarHeight);
   const wordsContext = useWords();
 
   const route = useRoute();
@@ -42,7 +43,7 @@ const SessionScreen = () => {
   const renderCard = (word: Word, wordIndex: number) => {
     return (
       <FlipCard
-        key={word.id}
+        key={`${word.id}-${bottomBarHeight}`}
         style={styles.card}
         flip={flippedStates[wordIndex]}
         flipHorizontal={true}
@@ -56,14 +57,16 @@ const SessionScreen = () => {
           wordIndex={wordIndex}
           text={word?.translation}
           onBackPress={handleSwipeBack}
-          onEditPress={() => {}}
+          onEditPress={() => {
+          }}
         />
         <Card
           currentIndex={currentIndex}
           wordIndex={wordIndex}
           text={word?.text}
           onBackPress={handleSwipeBack}
-          onEditPress={() => {}}
+          onEditPress={() => {
+          }}
         />
       </FlipCard>
     );
@@ -73,6 +76,7 @@ const SessionScreen = () => {
     <View style={styles.container}>
       <Swiper
         ref={swiperRef}
+        key={`${bottomBarHeight}`}
         cards={cards}
         onSwiped={onSwiped}
         renderCard={renderCard}
@@ -85,12 +89,12 @@ const SessionScreen = () => {
         {cards.length == 10 ? t('shortSession') : cards.length == 20 ? t('mediumSession') : t('longSession')}
       </CustomText>
       <ProgressBar progress={(currentIndex) / cards.length} color={colors.primary} style={styles.progressBar}/>
-      <View style={{ flex: 1, zIndex: -1 }} />
-      <View style={styles.bottomBarContainer}>
+      <View style={{ flex: 1, zIndex: -1 }}/>
+      <View style={styles.bottomBarContainer} onLayout={(event) => setBottomBarHeight(event.nativeEvent.layout.height)}>
         <CustomText weight={"SemiBold"} style={styles.headerText}>
           {t('howWell')}
         </CustomText>
-        <View style={{ flexDirection: 'row', marginHorizontal: MARGIN_HORIZONTAL, marginBottom: MARGIN_VERTICAL}}>
+        <View style={{ flexDirection: 'row', marginHorizontal: MARGIN_HORIZONTAL, marginBottom: MARGIN_VERTICAL }}>
           <WordLevelItem level={1} selected={false} style={{ flex: 1, marginRight: 6 }}/>
           <WordLevelItem level={2} selected={false} style={{ flex: 1, marginLeft: 3, marginRight: 3 }}/>
           <WordLevelItem level={3} selected={false} style={{ flex: 1, marginLeft: 6 }}/>
@@ -101,14 +105,14 @@ const SessionScreen = () => {
 };
 
 
-const getStyles = (colors: any) => StyleSheet.create({
+const getStyles = (colors: any, bottomBarHeight: number) => StyleSheet.create({
   container: {
     flex: 1,
     marginTop: MARGIN_VERTICAL,
   },
   card: {
     marginTop: 0,
-    marginBottom: 190,
+    marginBottom: bottomBarHeight,
   },
   title: {
     fontSize: 15,

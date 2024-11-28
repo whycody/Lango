@@ -80,7 +80,6 @@ const SessionScreen = () => {
         ref={swiperRef}
         key={`${bottomBarHeight}`}
         cards={cards}
-        childrenOnTop={true}
         cardVerticalMargin={0}
         onSwiped={onSwiped}
         renderCard={renderCard}
@@ -130,7 +129,12 @@ const getStyles = (colors: any, bottomBarHeight: number, insets: Insets) => Styl
     height: 3
   },
   bottomBarContainer: {
-    backgroundColor: colors.card
+    backgroundColor: colors.card,
+    position: 'absolute',
+    zIndex: 10,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   headerText: {
     color: colors.primary300,

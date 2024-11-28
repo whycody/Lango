@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import Swiper from 'react-native-deck-swiper';
 import FlipCard from 'react-native-flip-card';
-import { StyleSheet, View } from 'react-native';
+import { Insets, SafeAreaView, StyleSheet, View } from 'react-native';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { useWords, Word } from "../store/WordsContext";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
@@ -10,12 +10,14 @@ import { useTranslation } from "react-i18next";
 import CustomText from "../components/CustomText";
 import Card from "../components/Card";
 import WordLevelItem from "../components/WordLevelItem";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SessionScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [bottomBarHeight, setBottomBarHeight] = useState(0);
-  const styles = getStyles(colors, bottomBarHeight);
+  const insets = useSafeAreaInsets();
+  const styles = getStyles(colors, bottomBarHeight, insets);
   const wordsContext = useWords();
 
   const route = useRoute();
@@ -73,11 +75,13 @@ const SessionScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Swiper
         ref={swiperRef}
         key={`${bottomBarHeight}`}
         cards={cards}
+        childrenOnTop={true}
+        cardVerticalMargin={0}
         onSwiped={onSwiped}
         renderCard={renderCard}
         disableTopSwipe={true}
@@ -100,21 +104,21 @@ const SessionScreen = () => {
           <WordLevelItem level={3} selected={false} style={{ flex: 1, marginLeft: 6 }}/>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 
-const getStyles = (colors: any, bottomBarHeight: number) => StyleSheet.create({
+const getStyles = (colors: any, bottomBarHeight: number, insets: Insets) => StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: MARGIN_VERTICAL,
   },
   card: {
-    marginTop: 0,
-    marginBottom: bottomBarHeight,
+    marginTop: 60 + MARGIN_VERTICAL,
+    marginBottom: bottomBarHeight + insets.bottom + insets.top + 30,
   },
   title: {
+    marginTop: MARGIN_VERTICAL,
     fontSize: 15,
     color: colors.primary300,
     textAlign: 'center',

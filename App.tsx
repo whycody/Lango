@@ -11,6 +11,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { FlashcardProvider } from "./store/FlashcardsContext";
 import SessionScreen from "./screens/SessionScreen";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,7 @@ export default function App() {
   return (
     <WordsProvider>
       <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
+      <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
         <NavigationContainer theme={DarkTheme}>
           <FlashcardProvider>
@@ -53,6 +55,7 @@ export default function App() {
           </FlashcardProvider>
         </NavigationContainer>
       </SafeAreaView>
+        </SafeAreaProvider>
     </WordsProvider>
   );
 }

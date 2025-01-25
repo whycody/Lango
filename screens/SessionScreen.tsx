@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Animated } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import { useRoute, useTheme } from '@react-navigation/native';
+import { useNavigation, useRoute, useTheme } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import CustomText from '../components/CustomText';
@@ -12,6 +12,8 @@ import FlipCard from "react-native-flip-card";
 import Card from "../components/Card";
 import * as Haptics from "expo-haptics";
 import LottieView from "lottie-react-native";
+import FinishSessionBottomSheet from "../sheets/FinishSessionBottomSheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 type RouteParams = {
   length?: number;
@@ -28,21 +30,22 @@ const SessionScreen = () => {
   const wordsContext = useWords();
 
   const pagerRef = useRef(null);
-  const [cards] = useState(wordsContext.getWordSet(length * 10));
+  const [cards, setCards] = useState(wordsContext.getWordSet(length * 10));
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
 
-  const handlePageSelected = (e: any) => {
-    setCurrentIndex(e.nativeEvent.position);
+  const navigation = useNavigation();
+
+  const decrementCurrentIndex = () => {
+    setCurrentIndex((prev) => prev == 0 ? prev : prev - 1)
   };
 
-  const decrementIndex = () => {
-    if (currentIndex == 0) return;
-    const nextIndex = currentIndex - 1;
-    setCurrentIndex(nextIndex);
-    pagerRef.current.setPage(nextIndex);
+  const incrementCurrentIndex = () => {
+    setCurrentIndex((prev) => prev + 1);
   };
 
   const renderCard = (word: any, wordIndex: number) => {
@@ -50,7 +53,7 @@ const SessionScreen = () => {
 
     Animated.spring(scaleValues[wordIndex], {
       toValue: isActive ? 1 : 0.8,
-      friction: 7,
+      friction: 6,
       useNativeDriver: true,
     }).start();
 
@@ -68,7 +71,7 @@ const SessionScreen = () => {
             currentIndex={currentIndex}
             wordIndex={wordIndex}
             text={word?.translation}
-            onBackPress={decrementIndex}
+            onBackPress={decrementCurrentIndex}
             onEditPress={() => {
             }}
           />
@@ -78,7 +81,7 @@ const SessionScreen = () => {
             currentIndex={currentIndex}
             wordIndex={wordIndex}
             text={word?.text}
-            onBackPress={decrementIndex}
+            onBackPress={decrementCurrentIndex}
             onEditPress={() => {
             }}
           />
@@ -104,22 +107,41 @@ const SessionScreen = () => {
       }
     });
 
-    (currentIndex === cards.length - 1) ? finishSession() : incrementIndex();
+    (currentIndex === cards.length - 1) ? finishSession() : incrementCurrentIndex();
   };
 
   const finishSession = () => {
-    confettiRef.current.play(0);
+    incrementCurrentIndex();
+    confettiRef.current?.play(0);
+    finishSessionBottomSheetRef.current.present();
     wordsContext.updateFlashcards(flashcardUpdates);
   }
 
-  const incrementIndex = () => {
-    const nextIndex = currentIndex + 1;
-    setCurrentIndex(nextIndex);
-    pagerRef.current.setPage(nextIndex);
-  };
+  useEffect(() => {
+    setProgress(currentIndex);
+    pagerRef.current.setPage(currentIndex);
+  }, [currentIndex]);
+
+  const endSession = () => {
+    finishSessionBottomSheetRef.current.dismiss();
+    navigation.navigate('Tabs' as never);
+  }
+
+  const startNewSession = () => {
+    setCards(wordsContext.getWordSet(length * 10));
+    finishSessionBottomSheetRef.current.dismiss();
+    setCurrentIndex(0);
+    setFlashcardUpdates([]);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
+      <FinishSessionBottomSheet
+        ref={finishSessionBottomSheetRef}
+        flashcardUpdates={flashcardUpdates}
+        endSession={endSession}
+        startNewSession={startNewSession}
+      />
       <CustomText weight="SemiBold" style={styles.title}>
         {cards.length === 10
           ? t('shortSession')
@@ -127,17 +149,18 @@ const SessionScreen = () => {
             ? t('mediumSession')
             : t('longSession')}
       </CustomText>
-      <ProgressBar
-        progress={currentIndex / cards.length}
-        color={colors.primary}
-        style={styles.progressBar}
-      />
+      <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
+        <ProgressBar
+          progress={progress / cards.length}
+          color={colors.primary}
+          style={styles.progressBar}
+        />
+      </View>
       <PagerView
         ref={pagerRef}
         style={styles.pagerView}
         initialPage={0}
         scrollEnabled={false}
-        onPageSelected={handlePageSelected}
         pageMargin={10}
         orientation="vertical"
       >
@@ -172,13 +195,15 @@ const SessionScreen = () => {
           />
         </View>
       </View>
-      <LottieView
-        ref={confettiRef}
-        source={require('../assets/confetti.json')}
-        autoPlay={false}
-        loop={false}
-        style={styles.lottie}
-      />
+      <View style={styles.lottieWrapper}>
+        <LottieView
+          ref={confettiRef}
+          source={require('../assets/confetti.json')}
+          autoPlay={false}
+          loop={false}
+          style={styles.lottie}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -214,9 +239,9 @@ const getStyles = (colors: any) => {
       textTransform: 'uppercase',
     },
     progressBar: {
-      backgroundColor: colors.card,
       marginTop: 12,
-      height: 3,
+      backgroundColor: colors.card,
+      height: 4,
     },
     bottomBarContainer: {
       backgroundColor: colors.card,
@@ -227,9 +252,19 @@ const getStyles = (colors: any) => {
       marginTop: MARGIN_VERTICAL,
       marginBottom: 20,
     },
+    lottieWrapper: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 2,
+      position: 'absolute',
+      pointerEvents: 'none',
+    },
     lottie: {
       width: '100%',
-      height: 520,
+      height: 600,
+      pointerEvents: 'none',
       position: 'absolute',
       zIndex: 2,
       top: 0,

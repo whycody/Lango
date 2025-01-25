@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, memo } from "react";
 import { View, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
@@ -21,28 +21,26 @@ const Card: FC<CardProps> = ({ wordIndex, currentIndex, text, onBackPress, onEdi
     <View style={styles.root}>
       <View style={{ flex: 1.5 }}/>
       <CustomText weight={"SemiBold"} style={styles.text}>
-        {wordIndex === currentIndex ? text : ``}
+        {text}
       </CustomText>
       <View style={{ flex: 1 }}/>
-      {wordIndex === currentIndex &&
-        <View style={styles.cardIconsContainer}>
-          <Ionicons
-            name={'arrow-back-outline'}
-            size={24}
-            color={colors.primary600}
-            style={[styles.icon, { opacity: wordIndex != 0 ? 1 : 0.4 }]}
-            onPress={() => wordIndex != 0 && onBackPress()}
-          />
-          <View style={{ flex: 1 }}/>
-          <Ionicons
-            name={'pencil-outline'}
-            size={24}
-            style={styles.icon}
-            color={colors.primary600}
-            onPress={onEditPress}
-          />
-        </View>
-      }
+      <View style={styles.cardIconsContainer}>
+        <Ionicons
+          name={'arrow-back-outline'}
+          size={24}
+          color={colors.primary600}
+          style={[styles.icon, { opacity: wordIndex != 0 ? 1 : 0.4 }]}
+          onPress={() => wordIndex != 0 && onBackPress()}
+        />
+        <View style={{ flex: 1 }}/>
+        <Ionicons
+          name={'pencil-outline'}
+          size={24}
+          style={styles.icon}
+          color={colors.primary600}
+          onPress={onEditPress}
+        />
+      </View>
     </View>
   );
 }
@@ -59,6 +57,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     paddingHorizontal: MARGIN_HORIZONTAL * 2
   },
   cardIconsContainer: {
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -67,4 +66,4 @@ const getStyles = (colors: any) => StyleSheet.create({
   }
 });
 
-export default Card;
+export default memo(Card);

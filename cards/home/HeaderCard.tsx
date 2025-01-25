@@ -18,7 +18,6 @@ const HeaderCard = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const handleActinButtonPress = () => {
-    console.log(bottomSheetRef);
     bottomSheetRef.current.present();
   }
 

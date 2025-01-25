@@ -18,6 +18,7 @@ interface WordsContextProps {
   words: Word[];
   addWord: (text: string, translation: string, source?: string) => boolean;
   updateWord: (id: string, grade: number) => void;
+  updateFlashcards: (updates: FlashcardUpdate[]) => void;
   getWordSet: (size: number) => Word[];
   deleteWords: () => void;
 }
@@ -25,14 +26,18 @@ interface WordsContextProps {
 export const USER = 'user';
 export const LANGO = 'lango';
 
+export type FlashcardUpdate = {
+  flashcardId: string;
+  grade: 1 | 2 | 3;
+};
+
 export const WordsContext = createContext<WordsContextProps>({
   words: [],
   addWord: () => true,
-  updateWord: () => {
-  },
+  updateWord: () => {},
+  updateFlashcards: () => {},
   getWordSet: () => [],
-  deleteWords: () => {
-  },
+  deleteWords: () => {},
 });
 
 export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -118,6 +123,46 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     saveWords(updatedWords);
   };
 
+  const updateFlashcards = (updates: FlashcardUpdate[]) => {
+    const now = new Date();
+    const updatedFlashcards = words.map(flashcard => {
+      const update = updates.find(u => u.flashcardId === flashcard.id);
+
+      if (update) {
+        let { interval, EF, repetitionCount } = flashcard;
+        const { grade } = update;
+
+        if (grade === 1) {
+          repetitionCount = 0;
+          interval = 1;
+        } else {
+          repetitionCount += 1;
+
+          if (repetitionCount === 1) {
+            interval = 1;
+          } else if (repetitionCount === 2) {
+            interval = 3;
+          } else if (repetitionCount === 3) {
+            interval = 6;
+          } else {
+            interval = Math.round(interval * EF);
+          }
+        }
+
+        EF = Math.max(1.3, EF - (3 - grade) * (0.08 + (3 - grade) * 0.02));
+        const nextReviewDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000).toISOString();
+
+        return { ...flashcard, interval, repetitionCount, EF, nextReviewDate };
+      }
+
+      return flashcard;
+    });
+
+    setWords(updatedFlashcards);
+    saveWords(updatedFlashcards);
+  };
+
+
   const getWordSet = (size: number): Word[] => {
     const now = new Date();
 
@@ -140,7 +185,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <WordsContext.Provider value={{ words, addWord, updateWord, getWordSet, deleteWords }}>
+    <WordsContext.Provider value={{ words, addWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
       {children}
     </WordsContext.Provider>
   );

@@ -7,10 +7,14 @@ import { useTranslation } from 'react-i18next';
 import CustomText from '../components/CustomText';
 import WordLevelItem from '../components/WordLevelItem';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../src/constants';
-import { useWords } from '../store/WordsContext';
+import { FlashcardUpdate, useWords } from '../store/WordsContext';
 import FlipCard from "react-native-flip-card";
 import Card from "../components/Card";
 import * as Haptics from "expo-haptics";
+
+type RouteParams = {
+  length?: number;
+};
 
 const SessionScreen = () => {
   const { t } = useTranslation();
@@ -18,15 +22,15 @@ const SessionScreen = () => {
   const styles = getStyles(colors);
 
   const route = useRoute();
-  const length = route.params?.length || 1;
+  const length = (route.params as RouteParams)?.length || 1;
   const wordsContext = useWords();
 
   const pagerRef = useRef(null);
   const [cards] = useState(wordsContext.getWordSet(length * 10));
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [flippedStates, setFlippedStates] = useState(cards.map(() => false));
 
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
+  const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
 
   const handlePageSelected = (e: any) => {
     setCurrentIndex(e.nativeEvent.position);
@@ -42,16 +46,15 @@ const SessionScreen = () => {
   const renderCard = (word: any, wordIndex: number) => {
     const isActive = currentIndex === wordIndex;
 
-    Animated.timing(scaleValues[wordIndex], {
+    Animated.spring(scaleValues[wordIndex], {
       toValue: isActive ? 1 : 0.8,
-      duration: 300,
+      friction: 7,
       useNativeDriver: true,
     }).start();
 
     return (
       <FlipCard
         style={styles.card}
-        flip={flippedStates[wordIndex]}
         flipHorizontal={true}
         flipVertical={false}
         alignHeight={true}
@@ -82,13 +85,29 @@ const SessionScreen = () => {
     );
   };
 
-  const handleLevelPress = (level: number) => {
+  const handleLevelPress = (level: 1 | 2 | 3) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+
+    const currentCardId: string = cards[currentIndex].id;
+
+    setFlashcardUpdates(prevUpdates => {
+      const existingUpdateIndex = prevUpdates.findIndex(update => update.flashcardId === currentCardId);
+
+      if (existingUpdateIndex >= 0) {
+        const updatedUpdates = [...prevUpdates];
+        updatedUpdates[existingUpdateIndex].grade = level;
+        return updatedUpdates;
+      } else {
+        return [...prevUpdates, { flashcardId: currentCardId, grade: level }];
+      }
+    });
+
     (currentIndex === cards.length - 1) ? finishSession() : incrementIndex();
-  }
+  };
 
   const finishSession = () => {
-
+    console.log(wordsContext.words)
+    wordsContext.updateFlashcards(flashcardUpdates);
   }
 
   const incrementIndex = () => {
@@ -106,7 +125,11 @@ const SessionScreen = () => {
             ? t('mediumSession')
             : t('longSession')}
       </CustomText>
-      <ProgressBar progress={(currentIndex + 1) / cards.length} color={colors.primary} style={styles.progressBar}/>
+      <ProgressBar
+        progress={currentIndex / cards.length}
+        color={colors.primary}
+        style={styles.progressBar}
+      />
       <PagerView
         ref={pagerRef}
         style={styles.pagerView}

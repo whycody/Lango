@@ -31,9 +31,6 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, selected, onPress, s
       <CustomText weight={"Bold"} style={styles.title}>
         {t(level === 1 ? 'poorly' : level === 2 ? 'moderately' : 'good')}
       </CustomText>
-      <CustomText style={styles.subtitle}>
-        {level == 1 ? t('left') : level == 2 ? t('down') : t('right')}
-      </CustomText>
     </Pressable>
   );
 }
@@ -50,7 +47,7 @@ const getStyles = (colors: any, selected: boolean) => StyleSheet.create({
   },
   rectangle: {
     width: 40,
-    height: 11,
+    height: 13,
     marginTop: 2,
     backgroundColor: colors.primary300,
   },

@@ -11,6 +11,7 @@ import { FlashcardUpdate, useWords } from '../store/WordsContext';
 import FlipCard from "react-native-flip-card";
 import Card from "../components/Card";
 import * as Haptics from "expo-haptics";
+import LottieView from "lottie-react-native";
 
 type RouteParams = {
   length?: number;
@@ -20,6 +21,7 @@ const SessionScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
+  const confettiRef = useRef<LottieView>();
 
   const route = useRoute();
   const length = (route.params as RouteParams)?.length || 1;
@@ -106,7 +108,7 @@ const SessionScreen = () => {
   };
 
   const finishSession = () => {
-    console.log(wordsContext.words)
+    confettiRef.current.play(0);
     wordsContext.updateFlashcards(flashcardUpdates);
   }
 
@@ -170,6 +172,13 @@ const SessionScreen = () => {
           />
         </View>
       </View>
+      <LottieView
+        ref={confettiRef}
+        source={require('../assets/confetti.json')}
+        autoPlay={false}
+        loop={false}
+        style={styles.lottie}
+      />
     </SafeAreaView>
   );
 };
@@ -218,6 +227,13 @@ const getStyles = (colors: any) => {
       marginTop: MARGIN_VERTICAL,
       marginBottom: 20,
     },
+    lottie: {
+      width: '100%',
+      height: 520,
+      position: 'absolute',
+      zIndex: 2,
+      top: 0,
+    }
   });
 };
 

@@ -4,12 +4,11 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "./CustomText";
 import * as Haptics from 'expo-haptics';
-import ESFlag from '../assets/flags/es.svg';
-import PLFlag from '../assets/flags/pl.svg';
 import FlipCard from 'react-native-flip-card'
 import { Ionicons } from "@expo/vector-icons";
 import { LANGO, useWords } from "../store/WordsContext";
 import { FlashcardContent } from "../store/FlashcardsContext";
+import SquareFlag from "./SquareFlag";
 
 interface FlashcardProps {
   onFlashcardPress?: () => void;
@@ -17,15 +16,8 @@ interface FlashcardProps {
   style?: any;
 }
 
-const flagMap: Record<string, any> = {
-  es: ESFlag,
-  pl: PLFlag,
-};
-
-const FlagComponent = ({ languageCode }) => {
-  const Flag = flagMap[languageCode];
-  return Flag ? <Flag width={22} height={22} style={{ marginRight: 6 }}/> : null;
-};
+export const firstLanguage = 'es';
+export const secondLanguage = 'pl';
 
 const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, style }) => {
   const [flippable, setFlippable] = useState(true);
@@ -36,9 +28,6 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
   const styles = getStyles(colors);
   const { t } = useTranslation();
   const wordsContext = useWords();
-
-  const firstLanguage = 'es';
-  const secondLanguage = 'pl';
 
   const getRandomMessage = () => {
     const messages = [
@@ -85,8 +74,8 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
       <FlipCard flip={flip} onFlipStart={handleFlip}>
         <View style={[styles.root, style]}>
           <View style={styles.flagsContainer}>
-            <FlagComponent languageCode={firstLanguage}/>
-            <FlagComponent languageCode={secondLanguage}/>
+            <SquareFlag languageCode={firstLanguage} style={{ marginRight: 6 }}/>
+            <SquareFlag languageCode={secondLanguage} />
           </View>
           <CustomText weight={"SemiBold"} style={styles.word} numberOfLines={1}>{flashcardContent?.word}</CustomText>
           <CustomText style={styles.translation} numberOfLines={1}>{flashcardContent?.translation}</CustomText>

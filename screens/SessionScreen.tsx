@@ -15,6 +15,7 @@ import LottieView from "lottie-react-native";
 import FinishSessionBottomSheet from "../sheets/FinishSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SessionHeader from "../components/session/SessionHeader";
+import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -35,7 +36,9 @@ const SessionScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
+  const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
+  const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
   const [flipped, setFlipped] = useState(false);
@@ -49,6 +52,11 @@ const SessionScreen = () => {
   const incrementCurrentIndex = () => {
     setCurrentIndex((prev) => prev + 1);
   };
+
+  const handleEditPress = (id: string) => {
+    setEditId(id);
+    handleFlashcardBottomSheetRef.current.present();
+  }
 
   const renderCard = (word: any, wordIndex: number) => {
     const isActive = currentIndex === wordIndex;
@@ -70,22 +78,18 @@ const SessionScreen = () => {
       >
         <Animated.View style={[styles.cardContent, { transform: [{ scale: scaleValues[wordIndex] }] }]}>
           <Card
-            currentIndex={currentIndex}
             wordIndex={wordIndex}
             text={flipped ? word?.text : word?.translation}
             onBackPress={decrementCurrentIndex}
-            onEditPress={() => {
-            }}
+            onEditPress={() => handleEditPress(word.id)}
           />
         </Animated.View>
         <Animated.View style={[styles.cardContent, { transform: [{ scale: scaleValues[wordIndex] }] }]}>
           <Card
-            currentIndex={currentIndex}
             wordIndex={wordIndex}
             text={flipped ? word?.translation : word?.text}
             onBackPress={decrementCurrentIndex}
-            onEditPress={() => {
-            }}
+            onEditPress={() => handleEditPress(word.id)}
           />
         </Animated.View>
       </FlipCard>
@@ -137,6 +141,7 @@ const SessionScreen = () => {
   }
 
   const handleSessionExit = () => {
+    wordsContext.updateFlashcards(flashcardUpdates);
     navigation.navigate('Tabs' as never);
   }
 
@@ -145,8 +150,22 @@ const SessionScreen = () => {
     setFlipped((prev) => !prev);
   }
 
+  const handleWordEdit = (id: string, word: string, translation: string) => {
+    setCards((prevCards) =>
+      prevCards.map((card) =>
+        card.id === id ? { ...card, text: word, translation: translation } : card
+      )
+    );
+    setEditId(null);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <HandleFlashcardBottomSheet
+        ref={handleFlashcardBottomSheetRef}
+        onWordEdit={handleWordEdit}
+        flashcardId={editId}
+      />
       <FinishSessionBottomSheet
         ref={finishSessionBottomSheetRef}
         flashcardUpdates={flashcardUpdates}
@@ -155,6 +174,7 @@ const SessionScreen = () => {
       />
       <SessionHeader
         length={length}
+        cardsSetLength={cards.length}
         progress={progress}
         onSessionExit={handleSessionExit}
         onFlipCards={handleFlipCards}

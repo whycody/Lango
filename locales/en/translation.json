@@ -38,5 +38,12 @@
   "goodProgress": "Congratulations! You know {{grade3Count}} words perfectly. Great job! There are still {{grade1Count}} words that need attention, but you're on the right track!",
   "balancedEffort": "Great effort! You’ve mastered {{grade3Count}} words perfectly. {{grade2Count}} need a bit more practice, and {{grade1Count}} need your attention. A productive session!",
   "needsImprovement": "Don't give up! In this session, {{grade1Count}} words were challenging, but that means there’s plenty to learn. Remember, repetition is the key to success!",
-  "steadyImprovement": "Your practice paid off! {{grade2Count}} words are at a decent level, but there’s still room for improvement. You also mastered {{grade3Count}} words perfectly!"
+  "steadyImprovement": "Your practice paid off! {{grade2Count}} words are at a decent level, but there’s still room for improvement. You also mastered {{grade3Count}} words perfectly!",
+  "addNewFlashcard": "Add new flashcard",
+  "editFlashcard": "Edit flashcard",
+  "save": "Save",
+  "add": "Add",
+  "edit": "Edit",
+  "wordAndTranslation": "Enter words and its translation",
+  "addAnother": "Add this and another one"
 }

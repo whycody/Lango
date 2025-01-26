@@ -6,8 +6,10 @@ import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
 import { useWords } from "../../store/WordsContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FlashcardContent, useFlashcards } from "../../store/FlashcardsContext";
+import HandleFlashcardBottomSheet from "../../sheets/HandleFlashcardBottomSheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();
@@ -16,6 +18,7 @@ const WordsSuggestionsCard = () => {
   const wordsContext = useWords();
 
   const flashcardsContext = useFlashcards();
+  const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const [firstFlashcard, setFirstFlashcard] = useState<FlashcardContent>();
   const [secondFlashcard, setSecondFlashcard] = useState<FlashcardContent>();
 
@@ -27,6 +30,9 @@ const WordsSuggestionsCard = () => {
 
   return (
     <View style={styles.root}>
+      <HandleFlashcardBottomSheet
+        ref={flashcardBottomSheetRef}
+      />
       <Header title={t('wordsSuggestion')} subtitle={t('wordSuggestionDesc')}/>
       <View style={styles.flashcardsContainer}>
         <Flashcard
@@ -40,7 +46,7 @@ const WordsSuggestionsCard = () => {
           style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
         />
       </View>
-      <ActionButton label={t('addWord')} style={styles.actionButton} onPress={() => wordsContext.deleteWords()}/>
+      <ActionButton label={t('addWord')} style={styles.actionButton} onPress={() => flashcardBottomSheetRef.current?.present()}/>
     </View>
   );
 }

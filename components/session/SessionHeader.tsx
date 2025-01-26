@@ -8,16 +8,16 @@ import { useTranslation } from "react-i18next";
 
 type SessionHeaderProps = {
   length: 1 | 2 | 3;
+  cardsSetLength: number;
   progress: number;
   onSessionExit: () => void;
   onFlipCards: () => void;
 }
 
-const SessionHeader: FC<SessionHeaderProps> = ({ length, progress, onSessionExit, onFlipCards }) => {
+const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progress, onSessionExit, onFlipCards }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
-  const cardsSetLength = length * 10;
 
   return (
     <View style={styles.headerContainer}>
@@ -32,9 +32,9 @@ const SessionHeader: FC<SessionHeaderProps> = ({ length, progress, onSessionExit
         {`${progress}`}
       </CustomText>
       <CustomText weight="SemiBold" style={styles.title}>
-        {cardsSetLength === 10
+        {length === 1
           ? t('shortSession')
-          : cardsSetLength === 20
+          : length === 2
             ? t('mediumSession')
             : t('longSession')}
       </CustomText>

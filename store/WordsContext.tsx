@@ -17,6 +17,8 @@ export interface Word {
 interface WordsContextProps {
   words: Word[];
   addWord: (text: string, translation: string, source?: string) => boolean;
+  getWord: (id: string) => Word | undefined;
+  editWord: (id: string, text: string, translation: string) => void;
   updateWord: (id: string, grade: number) => void;
   updateFlashcards: (updates: FlashcardUpdate[]) => void;
   getWordSet: (size: number) => Word[];
@@ -34,6 +36,8 @@ export type FlashcardUpdate = {
 export const WordsContext = createContext<WordsContextProps>({
   words: [],
   addWord: () => true,
+  getWord: () => undefined,
+  editWord: () => {},
   updateWord: () => {},
   updateFlashcards: () => {},
   getWordSet: () => [],
@@ -63,6 +67,22 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     setWords(updatedWords);
     saveWords(updatedWords);
     return true;
+  };
+
+  const getWord = (id: string): Word | undefined => {
+    return words.find(word => word.id === id);
+  };
+
+  const editWord = (id: string, text: string, translation: string) => {
+    const updatedWords = words.map(word => {
+      if (word.id === id) {
+        return { ...word, text, translation };
+      }
+      return word;
+    });
+
+    setWords(updatedWords);
+    saveWords(updatedWords);
   };
 
   const saveWords = async (wordsToSave: Word[] = words) => {
@@ -185,7 +205,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <WordsContext.Provider value={{ words, addWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
+    <WordsContext.Provider value={{ words, addWord, getWord, editWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
       {children}
     </WordsContext.Provider>
   );

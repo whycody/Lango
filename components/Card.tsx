@@ -8,12 +8,11 @@ import { MARGIN_HORIZONTAL } from "../src/constants";
 interface CardProps {
   text: string;
   wordIndex: number;
-  currentIndex: number;
   onBackPress: () => void;
   onEditPress: () => void;
 }
 
-const Card: FC<CardProps> = ({ wordIndex, currentIndex, text, onBackPress, onEditPress }) => {
+const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 

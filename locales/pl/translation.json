@@ -39,6 +39,12 @@
   "goodProgress": "Gratulacje! Znasz aż {{grade3Count}} słówek perfekcyjnie. Świetna robota! Jeszcze {{grade1Count}} słówek wymaga uwagi, ale idziesz w dobrym kierunku!",
   "balancedEffort": "Świetnie sobie poradziłeś z {{grade3Count}} słówkami, które opanowałeś idealnie. {{grade2Count}} wymaga jeszcze trochę powtórek, a {{grade1Count}} czeka na Twoją uwagę. Dobrze wykorzystana sesja!",
   "needsImprovement": "Nie poddawaj się! W tej sesji {{grade1Count}} słówek sprawiło trudność, ale to oznacza, że masz sporo do nauczenia się. Pamiętaj, że powtarzanie to klucz do sukcesu!",
-  "steadyImprovement": "Powtórka przyniosła efekty! {{grade2Count}} słówek już znasz na przyzwoitym poziomie, ale jest jeszcze miejsce na poprawę. Udało Ci się też perfekcyjnie opanować {{grade3Count}} słówek!"
-
+  "steadyImprovement": "Powtórka przyniosła efekty! {{grade2Count}} słówek już znasz na przyzwoitym poziomie, ale jest jeszcze miejsce na poprawę. Udało Ci się też perfekcyjnie opanować {{grade3Count}} słówek!",
+  "addNewFlashcard": "Dodaj nową fiszkę",
+  "editFlashcard": "Edytuj fiszkę",
+  "save": "Zapisz",
+  "add": "Dodaj",
+  "edit": "Edytuj",
+  "wordAndTranslation": "Wprowadź słówko oraz jego tłumaczenie",
+  "addAnother": "Dodaj tą i kolejną"
 }

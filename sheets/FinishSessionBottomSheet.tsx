@@ -42,6 +42,7 @@ const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBotto
     <BottomSheetModal
       ref={ref}
       index={0}
+      enablePanDownToClose={false}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}

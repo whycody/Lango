@@ -41,21 +41,21 @@ export default function App() {
     <WordsProvider>
       <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
       <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
-        <NavigationContainer theme={DarkTheme}>
-          <FlashcardProvider>
-            <GestureHandlerRootView>
-              <BottomSheetModalProvider>
-                <Stack.Navigator>
-                  <Stack.Screen name='Tabs' component={TabsNavigator} options={{ headerShown: false, }}/>
-                  <Stack.Screen name='Session' component={SessionScreen} options={{ headerShown: false, }}/>
-                </Stack.Navigator>
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-          </FlashcardProvider>
-        </NavigationContainer>
-      </SafeAreaView>
-        </SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
+          <NavigationContainer theme={DarkTheme}>
+            <FlashcardProvider>
+              <GestureHandlerRootView>
+                <BottomSheetModalProvider>
+                  <Stack.Navigator>
+                    <Stack.Screen name='Tabs' component={TabsNavigator} options={{ headerShown: false, }}/>
+                    <Stack.Screen name='Session' component={SessionScreen} options={{ headerShown: false, }}/>
+                  </Stack.Navigator>
+                </BottomSheetModalProvider>
+              </GestureHandlerRootView>
+            </FlashcardProvider>
+          </NavigationContainer>
+        </SafeAreaView>
+      </SafeAreaProvider>
     </WordsProvider>
   );
 }

@@ -14,9 +14,10 @@ import * as Haptics from "expo-haptics";
 import LottieView from "lottie-react-native";
 import FinishSessionBottomSheet from "../sheets/FinishSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import SessionHeader from "../components/session/SessionHeader";
 
 type RouteParams = {
-  length?: number;
+  length: 1 | 2 | 3;
 };
 
 const SessionScreen = () => {
@@ -37,6 +38,7 @@ const SessionScreen = () => {
 
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
+  const [flipped, setFlipped] = useState(false);
 
   const navigation = useNavigation();
 
@@ -70,7 +72,7 @@ const SessionScreen = () => {
           <Card
             currentIndex={currentIndex}
             wordIndex={wordIndex}
-            text={word?.translation}
+            text={flipped ? word?.text : word?.translation}
             onBackPress={decrementCurrentIndex}
             onEditPress={() => {
             }}
@@ -80,7 +82,7 @@ const SessionScreen = () => {
           <Card
             currentIndex={currentIndex}
             wordIndex={wordIndex}
-            text={word?.text}
+            text={flipped ? word?.translation : word?.text}
             onBackPress={decrementCurrentIndex}
             onEditPress={() => {
             }}
@@ -134,6 +136,15 @@ const SessionScreen = () => {
     setFlashcardUpdates([]);
   }
 
+  const handleSessionExit = () => {
+    navigation.navigate('Tabs' as never);
+  }
+
+  const handleFlipCards = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    setFlipped((prev) => !prev);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <FinishSessionBottomSheet
@@ -142,13 +153,12 @@ const SessionScreen = () => {
         endSession={endSession}
         startNewSession={startNewSession}
       />
-      <CustomText weight="SemiBold" style={styles.title}>
-        {cards.length === 10
-          ? t('shortSession')
-          : cards.length === 20
-            ? t('mediumSession')
-            : t('longSession')}
-      </CustomText>
+      <SessionHeader
+        length={length}
+        progress={progress}
+        onSessionExit={handleSessionExit}
+        onFlipCards={handleFlipCards}
+      />
       <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
         <ProgressBar
           progress={progress / cards.length}
@@ -231,13 +241,6 @@ const getStyles = (colors: any) => {
       flex: 1,
       width: '100%',
     },
-    title: {
-      marginTop: MARGIN_VERTICAL,
-      fontSize: 15,
-      color: colors.primary300,
-      textAlign: 'center',
-      textTransform: 'uppercase',
-    },
     progressBar: {
       marginTop: 12,
       backgroundColor: colors.card,
@@ -268,7 +271,7 @@ const getStyles = (colors: any) => {
       position: 'absolute',
       zIndex: 2,
       top: 0,
-    }
+    },
   });
 };
 

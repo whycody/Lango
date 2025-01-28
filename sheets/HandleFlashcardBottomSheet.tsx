@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, View } from "react-native";
+import { Keyboard, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { firstLanguage, secondLanguage } from "../components/Flashcard";
 import { USER, useWords, Word } from "../store/WordsContext";
 import WordInput from "../components/WordInput";
+import Alert from "../components/Alert";
+import * as Haptics from "expo-haptics";
 
 interface HandleFlashcardBottomSheetProps {
   flashcardId?: string;
@@ -28,12 +30,16 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const [word, setWord] = useState(flashcard?.text);
   const [translation, setTranslation] = useState(flashcard?.translation);
 
+  const [status, setStatus] = useState<'error' | 'success' | null>(null);
+  const [lastAddedWord, setLastAddedWord] = useState<string | null>(null);
+
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
   const clearInputs = () => {
     setWord('');
     setTranslation('');
+    setStatus(null);
     wordInputRef.current?.clearWord();
     translationInputRef.current?.clearWord();
   }
@@ -60,10 +66,15 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     const word = wordInputRef.current?.getWord();
     const translation = translationInputRef.current?.getWord();
     wordsContext.addWord(word, translation, USER);
+    setLastAddedWord(word);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     if (!multiple) {
-      ref.current?.dismiss();
+      Keyboard.dismiss()
+      setTimeout(() => setStatus('success'), 50);
+      setTimeout(() => ref.current?.dismiss(), 1500);
     } else {
       clearInputs();
+      setStatus('success')
       wordInputRef.current?.focus();
     }
   }
@@ -82,6 +93,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           {props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
         </CustomText>
         <CustomText style={styles.subtitle}>{t('wordAndTranslation')}</CustomText>
+        {status && <Alert title={'Powodzenie'} message={t('addNewWord', { word: lastAddedWord })} type={'success'}/>}
         <WordInput
           ref={wordInputRef}
           word={word}

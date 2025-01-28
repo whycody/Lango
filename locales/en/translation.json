@@ -45,5 +45,6 @@
   "add": "Add",
   "edit": "Edit",
   "wordAndTranslation": "Enter words and its translation",
-  "addAnother": "Add this and another one"
+  "addAnother": "Add this and another one",
+  "addNewWord": "New word has been added: *{{word}}*."
 }

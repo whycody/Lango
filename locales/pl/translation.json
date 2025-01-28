@@ -46,5 +46,6 @@
   "add": "Dodaj",
   "edit": "Edytuj",
   "wordAndTranslation": "Wprowadź słówko oraz jego tłumaczenie",
-  "addAnother": "Dodaj tą i kolejną"
+  "addAnother": "Dodaj tą i kolejną",
+  "addNewWord": "Dodano nowe słówko: *{{word}}*."
 }

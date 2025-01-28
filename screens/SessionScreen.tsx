@@ -156,7 +156,6 @@ const SessionScreen = () => {
         card.id === id ? { ...card, text: word, translation: translation } : card
       )
     );
-    setEditId(null);
   };
 
   return (

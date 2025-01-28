@@ -40,7 +40,8 @@ const getStyles = (colors: any, type: 'error' | 'success') => StyleSheet.create(
   },
   header: {
     color: colors.background,
-    marginLeft: 5
+    marginLeft: 5,
+    fontSize: 15,
   },
   message: {
     color: colors.card,

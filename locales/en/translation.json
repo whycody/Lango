@@ -46,5 +46,10 @@
   "edit": "Edit",
   "wordAndTranslation": "Enter words and its translation",
   "addAnother": "Add this and another one",
-  "addNewWord": "New word has been added: *{{word}}*."
+  "addNewWord": "New word has been added: *{{word}}*.",
+  "editWord": "The flashcard has been edited: *{{word}}*.",
+  "invalidData": "Invalid data",
+  "bothInputs": "You have to fill both inputs.",
+  "success": "Success",
+  "failure": "Failure"
 }

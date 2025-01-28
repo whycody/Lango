@@ -47,5 +47,10 @@
   "edit": "Edytuj",
   "wordAndTranslation": "Wprowadź słówko oraz jego tłumaczenie",
   "addAnother": "Dodaj tą i kolejną",
-  "addNewWord": "Dodano nowe słówko: *{{word}}*."
+  "addNewWord": "Dodano nowe słówko: *{{word}}*.",
+  "editWord": "Edytowano fiszkę: *{{word}}*.",
+  "invalidData": "Niewłaściwe dane",
+  "bothInputs": "Musisz wypełnić oba pola.",
+  "success": "Powodzenie",
+  "failure": "Niepowodzenie"
 }

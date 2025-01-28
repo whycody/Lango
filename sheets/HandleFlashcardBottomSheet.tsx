@@ -31,7 +31,8 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const [translation, setTranslation] = useState(flashcard?.translation);
 
   const [status, setStatus] = useState<'error' | 'success' | null>(null);
-  const [lastAddedWord, setLastAddedWord] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [buttonsActive, setButtonsActive] = useState(true);
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -39,9 +40,13 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const clearInputs = () => {
     setWord('');
     setTranslation('');
-    setStatus(null);
     wordInputRef.current?.clearWord();
     translationInputRef.current?.clearWord();
+  }
+
+  const clearStatus = () => {
+    setStatus(null);
+    setStatusMessage(null);
   }
 
   useEffect(() => {
@@ -54,29 +59,53 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     }
   }, [props.flashcardId]);
 
+  const validateInputs = () => {
+    const word = wordInputRef.current?.getWord().trim();
+    const translation = translationInputRef.current?.getWord().trim();
+    if (word && translation) return true;
+    setStatus('error');
+    setStatusMessage(t('bothInputs'));
+    return false;
+  }
+
   const editFlashcard = () => {
-    const word = wordInputRef.current?.getWord();
-    const translation = translationInputRef.current?.getWord();
+    if (!validateInputs()) return;
+    const word = wordInputRef.current?.getWord().trim();
+    const translation = translationInputRef.current?.getWord().trim();
     wordsContext.editWord(props.flashcardId, word, translation);
     props.onWordEdit?.(props.flashcardId, word, translation);
-    ref.current?.dismiss();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    setStatusMessage(t('editWord', { word: word }));
+    scheduleDismiss()
   }
 
   const addFlashcard = (multiple: boolean) => {
-    const word = wordInputRef.current?.getWord();
-    const translation = translationInputRef.current?.getWord();
+    if (!validateInputs()) return;
+    const word = wordInputRef.current?.getWord().trim();
+    const translation = translationInputRef.current?.getWord().trim();
     wordsContext.addWord(word, translation, USER);
-    setLastAddedWord(word);
+    setStatusMessage(t('addNewWord', { word: word }));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     if (!multiple) {
-      Keyboard.dismiss()
-      setTimeout(() => setStatus('success'), 50);
-      setTimeout(() => ref.current?.dismiss(), 1500);
+      scheduleDismiss();
     } else {
       clearInputs();
-      setStatus('success')
+      setStatus('success');
       wordInputRef.current?.focus();
     }
+  }
+
+  const scheduleDismiss = () => {
+    Keyboard.dismiss();
+    setTimeout(() => setStatus('success'), 50);
+    setTimeout(() => ref.current?.dismiss(), 1500);
+    setButtonsActive(false);
+  }
+
+  const handleSheetDismiss = () => {
+    clearStatus();
+    setButtonsActive(true);
+    if (!props.flashcardId) clearInputs();
   }
 
   return (
@@ -86,14 +115,20 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
-      onDismiss={!props.flashcardId && clearInputs}
+      onDismiss={handleSheetDismiss}
     >
       <BottomSheetView style={styles.root}>
         <CustomText weight={"Bold"} style={styles.title}>
           {props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
         </CustomText>
         <CustomText style={styles.subtitle}>{t('wordAndTranslation')}</CustomText>
-        {status && <Alert title={'Powodzenie'} message={t('addNewWord', { word: lastAddedWord })} type={'success'}/>}
+        {status && statusMessage &&
+          <Alert
+            title={status == 'success' ? t('success') : t('invalidData')}
+            message={statusMessage}
+            type={status}
+          />
+        }
         <WordInput
           ref={wordInputRef}
           word={word}
@@ -112,6 +147,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           onPress={() => props.flashcardId ? editFlashcard() : addFlashcard(false)}
           label={props.flashcardId ? t('edit') : t('add')}
           primary={true}
+          active={buttonsActive}
           style={styles.button}
           icon={'save-sharp'}
         />
@@ -119,7 +155,9 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           <CustomText
             style={styles.actionText}
             weight={'SemiBold'}
-            onPress={() => addFlashcard(true)}
+            onPress={() => {
+              if (buttonsActive) addFlashcard(true);
+            }}
           >
             {t('addAnother')}
           </CustomText>}

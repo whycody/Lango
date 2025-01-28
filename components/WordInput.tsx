@@ -73,7 +73,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontWeight: 'semibold',
+    fontFamily: `Montserrat`,
     color: colors.primary300,
     paddingLeft: MARGIN_HORIZONTAL,
     backgroundColor: colors.background,

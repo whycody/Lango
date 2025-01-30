@@ -11,6 +11,7 @@ import { USER, useWords, Word } from "../store/WordsContext";
 import WordInput from "../components/WordInput";
 import Alert from "../components/Alert";
 import * as Haptics from "expo-haptics";
+import Header from "../components/Header";
 
 interface HandleFlashcardBottomSheetProps {
   flashcardId?: string;
@@ -118,10 +119,11 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
       onDismiss={handleSheetDismiss}
     >
       <BottomSheetView style={styles.root}>
-        <CustomText weight={"Bold"} style={styles.title}>
-          {props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
-        </CustomText>
-        <CustomText style={styles.subtitle}>{t('wordAndTranslation')}</CustomText>
+        <Header
+          title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
+          subtitle={t('wordAndTranslation')}
+          style={{ marginVertical: 10 }}
+        />
         {status && statusMessage &&
           <Alert
             title={status == 'success' ? t('success') : t('invalidData')}
@@ -172,17 +174,6 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   header: {
     paddingTop: MARGIN_VERTICAL,
-  },
-  title: {
-    color: colors.primary300,
-    fontSize: 18,
-    marginTop: 12,
-  },
-  subtitle: {
-    color: colors.primary600,
-    fontSize: 14,
-    marginBottom: 8,
-    marginTop: 4,
   },
   sessionItemsContainer: {
     flexDirection: 'row',

@@ -52,5 +52,9 @@
   "invalidData": "Niewłaściwe dane",
   "bothInputs": "Musisz wypełnić oba pola.",
   "success": "Powodzenie",
-  "failure": "Niepowodzenie"
+  "failure": "Niepowodzenie",
+  "soFar": "Do tej pory w sumie zgromadziłeś *{{wordsCount}}* słówek.",
+  "brag": "Nie chcemy się chwalić, ale dołożyliśmy do tego grosza, bo *{{langoWords}}* z nich jest od *Lango*!",
+  "nextTime": "Przy następnej okazji koniecznie musisz spróbować dodać niektórych fiszek od *Lango*!",
+  "flashcards": "\uD83D\uDCCB Fiszki"
 }

@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { FlatList, ScrollView, StyleSheet, View } from "react-native";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
@@ -6,6 +6,10 @@ import StatisticItem from "../components/StatisticItem";
 import { LANGO, useWords } from "../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
+import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
+import { useCallback, useRef, useState } from "react";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import FlashcardListItem from "../components/FlashcardListItem";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -15,8 +19,38 @@ const FlashcardsScreen = () => {
   const numberOfWords = wordsContext.words.length;
   const langoWords = wordsContext.words.filter((word) => word.source == LANGO).length;
 
+  const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
+  const [editFlashcardId, setEditFlashcardId] = useState<string | null>(null);
+
+  const handleActionButtonPress = () => {
+    setEditFlashcardId(null);
+    handleFlashcardBottomSheetRef.current.present();
+  }
+
+  const handleEditPress = useCallback((id: string) => {
+    setEditFlashcardId(id);
+    handleFlashcardBottomSheetRef.current.present();
+  }, []);
+
+  const renderFlashcardListItem = ({ item, index }) => {
+    return (
+      <FlashcardListItem
+        id={item.id}
+        index={index}
+        text={item.text}
+        translation={item.translation}
+        onEditPress={handleEditPress}
+        onRemovePress={() => {}}
+      />
+    );
+  }
+
   return (
     <View style={styles.root}>
+      <HandleFlashcardBottomSheet
+        ref={handleFlashcardBottomSheetRef}
+        flashcardId={editFlashcardId}
+      />
       <ScrollView>
         <CustomText weight={"Bold"} style={styles.title}>{t('flashcards')}</CustomText>
         <CustomText style={styles.subtitle}>
@@ -26,8 +60,14 @@ const FlashcardsScreen = () => {
           <StatisticItem label={`${numberOfWords}`} description={t('words')} style={{ flex: 1, marginRight: 6 }}/>
           <StatisticItem label={`${langoWords}`} description={t('langoWords')} style={{ flex: 1, marginLeft: 6 }}/>
         </View>
+        <FlatList
+          data={wordsContext.words}
+          scrollEnabled={false}
+          style={{ marginTop: MARGIN_VERTICAL }}
+          renderItem={renderFlashcardListItem}
+        />
       </ScrollView>
-      <ActionButton label={t('addWord')} primary={true} style={styles.button} />
+      <ActionButton label={t('addWord')} primary={true} style={styles.button} onPress={handleActionButtonPress}/>
     </View>
   );
 }
@@ -40,7 +80,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: MARGIN_VERTICAL,
     marginHorizontal: MARGIN_HORIZONTAL,
     color: colors.primary,
-    fontSize: 26,
+    fontSize: 24,
   },
   subtitle: {
     color: colors.primary600,

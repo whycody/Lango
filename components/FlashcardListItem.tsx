@@ -1,0 +1,79 @@
+import { FC, memo } from "react";
+import { StyleSheet, View } from "react-native";
+import { MARGIN_HORIZONTAL } from "../src/constants";
+import CustomText from "./CustomText";
+import { useTheme } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+
+type FlashcardListItemProps = {
+  id: string;
+  index: number;
+  text: string;
+  translation: string;
+  onEditPress: (id: string) => void;
+  onRemovePress: (id: string) => void;
+}
+
+const FlashcardListItem: FC<FlashcardListItemProps> =
+  ({ id, index, text, translation, onEditPress, onRemovePress }) => {
+    const { colors } = useTheme();
+    const styles = getStyles(colors, index);
+
+    return (
+      <View key={id} style={styles.root}>
+        {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
+        <View style={styles.container}>
+          <Ionicons name={'reader-sharp'} color={colors.primary600} size={22}/>
+          <View style={styles.textContainer}>
+            <CustomText weight={'SemiBold'} style={styles.text}>{text}</CustomText>
+            <CustomText style={styles.translation}>{translation}</CustomText>
+          </View>
+          <Ionicons
+            name={'trash-sharp'}
+            color={colors.primary600}
+            size={22}
+            style={styles.icon}
+            onPress={() => onRemovePress(id)}
+          />
+          <Ionicons
+            name={'pencil-sharp'}
+            color={colors.primary600}
+            size={22}
+            style={styles.icon}
+            onPress={() => onEditPress(id)}
+          />
+        </View>
+      </View>
+    );
+  }
+
+const getStyles = (colors: any, index: number) => StyleSheet.create({
+  root: {
+    backgroundColor: colors.card
+  },
+  container: {
+    paddingVertical: 15,
+    paddingHorizontal: MARGIN_HORIZONTAL,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  textContainer: {
+    flex: 1,
+    marginLeft: 10
+  },
+  text: {
+    color: colors.primary,
+    fontSize: 14
+  },
+  translation: {
+    color: colors.primary300,
+    fontSize: 13
+  },
+  icon: {
+    marginLeft: 10,
+    padding: 5,
+    paddingRight: 0,
+  }
+})
+
+export default memo(FlashcardListItem);

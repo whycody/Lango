@@ -16,6 +16,7 @@ import FinishSessionBottomSheet from "../sheets/FinishSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
+import { useStatistics } from "../hooks/useStatistics";
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -38,6 +39,7 @@ const SessionScreen = () => {
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
+  const statsContext = useStatistics();
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
@@ -119,6 +121,8 @@ const SessionScreen = () => {
   const finishSession = () => {
     incrementCurrentIndex();
     confettiRef.current?.play(0);
+    statsContext.increaseNumberOfDays();
+    statsContext.increaseNumberOfSessions();
     finishSessionBottomSheetRef.current.present();
     wordsContext.updateFlashcards(flashcardUpdates);
   }

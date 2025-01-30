@@ -5,10 +5,12 @@ import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/StatisticItem";
 import { LANGO, useWords } from "../../store/WordsContext";
+import { useStatistics } from "../../hooks/useStatistics";
 
 const StatisticsCard = () => {
   const { t } = useTranslation();
   const wordsContext = useWords();
+  const statsContext = useStatistics();
   const [studyStats, setStudyStats] = useState({
     numberOfWords: 0,
     numberOfSessions: 0,
@@ -26,7 +28,9 @@ const StatisticsCard = () => {
   useEffect(() => {
     updateStat('numberOfWords', wordsContext.words.length);
     updateStat('numberOfLangoWords', wordsContext.words.filter((word) => word.source == LANGO).length);
-  }, [wordsContext.words]);
+    updateStat('numberOfStudyDays', statsContext.numberOfDays);
+    updateStat('numberOfSessions', statsContext.numberOfSessions);
+  }, [wordsContext.words, statsContext.numberOfDays, statsContext.numberOfSessions]);
 
   return (
     <View style={styles.root}>

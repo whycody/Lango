@@ -10,6 +10,7 @@ import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useCallback, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FlashcardListItem from "../components/FlashcardListItem";
+import AcceptationBottomSheet from "../sheets/AcceptationBottomSheet";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ const FlashcardsScreen = () => {
   const langoWords = wordsContext.words.filter((word) => word.source == LANGO).length;
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
+  const acceptationBottomSheetRef = useRef<BottomSheetModal>(null);
   const [editFlashcardId, setEditFlashcardId] = useState<string | null>(null);
 
   const handleActionButtonPress = () => {
@@ -32,6 +34,16 @@ const FlashcardsScreen = () => {
     handleFlashcardBottomSheetRef.current.present();
   }, []);
 
+  const removeFlashcard = () => {
+    acceptationBottomSheetRef.current.dismiss();
+    setTimeout(() => wordsContext.removeWord(editFlashcardId), 300);
+  }
+
+  const handleRemovePress = useCallback((id: string) => {
+    setEditFlashcardId(id);
+    acceptationBottomSheetRef.current.present();
+  }, []);
+
   const renderFlashcardListItem = ({ item, index }) => {
     return (
       <FlashcardListItem
@@ -40,13 +52,19 @@ const FlashcardsScreen = () => {
         text={item.text}
         translation={item.translation}
         onEditPress={handleEditPress}
-        onRemovePress={() => {}}
+        onRemovePress={handleRemovePress}
       />
     );
   }
 
   return (
     <View style={styles.root}>
+      <AcceptationBottomSheet
+        ref={acceptationBottomSheetRef}
+        title={t('removingFlashcard')}
+        description={t('removingFlashcardDesc', { text: wordsContext.getWord(editFlashcardId)?.text })}
+        onAccept={removeFlashcard}
+      />
       <HandleFlashcardBottomSheet
         ref={handleFlashcardBottomSheetRef}
         flashcardId={editFlashcardId}

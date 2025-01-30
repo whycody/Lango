@@ -68,7 +68,7 @@ const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBotto
           weight={'SemiBold'}
           onPress={props.startNewSession}
         >
-          Zacznij kolejną sesję
+          {t('startNextSession')}
         </CustomText>
       </BottomSheetScrollView>
     </BottomSheetModal>

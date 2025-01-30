@@ -56,5 +56,12 @@
   "soFar": "Do tej pory w sumie zgromadziłeś *{{wordsCount}}* słówek.",
   "brag": "Nie chcemy się chwalić, ale dołożyliśmy do tego grosza, bo *{{langoWords}}* z nich jest od *Lango*!",
   "nextTime": "Przy następnej okazji koniecznie musisz spróbować dodać niektórych fiszek od *Lango*!",
-  "flashcards": "\uD83D\uDCCB Fiszki"
+  "flashcards": "Fiszki \uD83D\uDCCB",
+  "continue": "Kontynuuj",
+  "cancel": "Anuluj",
+  "startNextSession": "Zacznij kolejną sesję",
+  "removingFlashcard": "Usuń fiszkę",
+  "removingFlashcardDesc": "Czy jesteś pewien, że chcesz usunąć fiszkę *{{text}}*?",
+  "finishingSession": "Zakończ sesję",
+  "finishingSessionDesc": "Czy jesteś pewien, że chcesz zakończyć sesję? Zapiszemy Twój progres."
 }

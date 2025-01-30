@@ -19,6 +19,7 @@ interface WordsContextProps {
   addWord: (text: string, translation: string, source?: string) => boolean;
   getWord: (id: string) => Word | undefined;
   editWord: (id: string, text: string, translation: string) => void;
+  removeWord: (id: string) => void;
   updateWord: (id: string, grade: number) => void;
   updateFlashcards: (updates: FlashcardUpdate[]) => void;
   getWordSet: (size: number) => Word[];
@@ -38,6 +39,7 @@ export const WordsContext = createContext<WordsContextProps>({
   addWord: () => true,
   getWord: () => undefined,
   editWord: () => {},
+  removeWord: () => {},
   updateWord: () => {},
   updateFlashcards: () => {},
   getWordSet: () => [],
@@ -80,6 +82,13 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       }
       return word;
     });
+
+    setWords(updatedWords);
+    saveWords(updatedWords);
+  };
+
+  const removeWord = (id: string) => {
+    const updatedWords = words.filter(word => word.id !== id);
 
     setWords(updatedWords);
     saveWords(updatedWords);
@@ -205,7 +214,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <WordsContext.Provider value={{ words, addWord, getWord, editWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
+    <WordsContext.Provider value={{ words, addWord, getWord, editWord, removeWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
       {children}
     </WordsContext.Provider>
   );

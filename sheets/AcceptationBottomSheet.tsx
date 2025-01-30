@@ -12,6 +12,7 @@ type AcceptationBottomSheetProps = {
   title: string;
   description: string;
   onAccept: () => void;
+  onCancel: () => void;
 }
 
 const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomSheetProps>((props, ref) => {
@@ -25,10 +26,11 @@ const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomShe
   return (
     <BottomSheetModal
       ref={ref}
-      index={0}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
+      enableDismissOnClose={true}
+      stackBehavior={'replace'}
     >
       <BottomSheetScrollView style={styles.root}>
         <Header title={props.title} subtitle={props.description} style={styles.header}/>
@@ -41,7 +43,7 @@ const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomShe
         <CustomText
           style={styles.actionText}
           weight={'SemiBold'}
-          onPress={() => ref.current?.dismiss()}
+          onPress={props.onCancel}
         >
           {t('cancel')}
         </CustomText>

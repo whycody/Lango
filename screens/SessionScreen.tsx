@@ -133,15 +133,16 @@ const SessionScreen = () => {
   }, [currentIndex]);
 
   const endSession = () => {
+    if(currentIndex !== cards.length) return;
     finishSessionBottomSheetRef.current.dismiss();
     navigation.navigate('Tabs' as never);
   }
 
   const startNewSession = () => {
     setCards(wordsContext.getWordSet(length * 10));
-    finishSessionBottomSheetRef.current.dismiss();
     setCurrentIndex(0);
     setFlashcardUpdates([]);
+    finishSessionBottomSheetRef.current.dismiss();
   }
 
   const handleSessionExit = () => {

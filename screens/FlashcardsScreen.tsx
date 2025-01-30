@@ -34,9 +34,15 @@ const FlashcardsScreen = () => {
     handleFlashcardBottomSheetRef.current.present();
   }, []);
 
-  const removeFlashcard = () => {
+  const handleCancel = () => {
     acceptationBottomSheetRef.current.dismiss();
-    setTimeout(() => wordsContext.removeWord(editFlashcardId), 300);
+    setEditFlashcardId(null);
+  }
+
+  const removeFlashcard = () => {
+    acceptationBottomSheetRef.current.close();
+    wordsContext.removeWord(editFlashcardId);
+    setEditFlashcardId(null);
   }
 
   const handleRemovePress = useCallback((id: string) => {
@@ -64,6 +70,7 @@ const FlashcardsScreen = () => {
         title={t('removingFlashcard')}
         description={t('removingFlashcardDesc', { text: wordsContext.getWord(editFlashcardId)?.text })}
         onAccept={removeFlashcard}
+        onCancel={handleCancel}
       />
       <HandleFlashcardBottomSheet
         ref={handleFlashcardBottomSheetRef}

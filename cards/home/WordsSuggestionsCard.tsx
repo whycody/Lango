@@ -5,7 +5,6 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
-import { useWords } from "../../store/WordsContext";
 import { useEffect, useRef, useState } from "react";
 import { FlashcardContent, useFlashcards } from "../../store/FlashcardsContext";
 import HandleFlashcardBottomSheet from "../../sheets/HandleFlashcardBottomSheet";
@@ -15,7 +14,6 @@ const WordsSuggestionsCard = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const wordsContext = useWords();
 
   const flashcardsContext = useFlashcards();
   const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);

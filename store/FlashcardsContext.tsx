@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useWords, Word } from "./WordsContext";
+import { useLanguage } from "../hooks/useLanguage";
+import { LanguageCode } from "./LanguageContext";
 
 export interface FlashcardContent {
   word: string;
@@ -20,6 +22,7 @@ interface FlashcardProviderProps {
 export const FlashcardProvider: React.FC<FlashcardProviderProps> = ({ children }) => {
   const [flashcards, setFlashcards] = useState<FlashcardContent[]>([]);
   const [words, setWords] = useState<Word[]>([]);
+  const languageContext = useLanguage();
 
   const wordsContext = useWords();
 
@@ -30,9 +33,12 @@ export const FlashcardProvider: React.FC<FlashcardProviderProps> = ({ children }
   useEffect(() => {
     const loadFlashcards = () => {
       try {
-        const data = require('./data.json');
-        const formattedData = data.map((item: { es: string; pl: string }) => ({
-          word: item.es,
+        const data =
+          languageContext.studyingLangCode == LanguageCode.ENGLISH ? require('./data/en.json') :
+          languageContext.studyingLangCode == LanguageCode.SPANISH ? require('./data/es.json') :
+            require('./data/it.json');
+        const formattedData = data.map((item: any) => ({
+          word: item[languageContext.studyingLangCode],
           translation: item.pl,
         }));
         setFlashcards(formattedData);
@@ -42,7 +48,7 @@ export const FlashcardProvider: React.FC<FlashcardProviderProps> = ({ children }
     };
 
     loadFlashcards();
-  }, []);
+  }, [languageContext.studyingLangCode]);
 
   const getRandomFlashcard = () => {
     if (flashcards.length === 0) return null;

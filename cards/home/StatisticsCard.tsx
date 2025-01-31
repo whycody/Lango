@@ -26,11 +26,11 @@ const StatisticsCard = () => {
   };
 
   useEffect(() => {
-    updateStat('numberOfWords', wordsContext.words.length);
-    updateStat('numberOfLangoWords', wordsContext.words.filter((word) => word.source == LANGO).length);
+    updateStat('numberOfWords', wordsContext.langWords.length);
+    updateStat('numberOfLangoWords', wordsContext.langWords.filter((word) => word.source == LANGO).length);
     updateStat('numberOfStudyDays', statsContext.numberOfDays);
     updateStat('numberOfSessions', statsContext.numberOfSessions);
-  }, [wordsContext.words, statsContext.numberOfDays, statsContext.numberOfSessions]);
+  }, [wordsContext.langWords, statsContext.numberOfDays, statsContext.numberOfSessions]);
 
   return (
     <View style={styles.root}>

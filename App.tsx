@@ -41,31 +41,33 @@ export default function App() {
   }
 
   return (
-    <WordsProvider>
+    <>
       <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
           <NavigationContainer theme={DarkTheme}>
             <StatisticsProvider>
               <LanguageProvider>
-                <FlashcardProvider>
-                  <GestureHandlerRootView>
-                    <BottomSheetModalProvider>
-                      <Stack.Navigator screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name='Tabs' component={TabsNavigator}/>
-                        <Stack.Screen name='Session' component={SessionScreen}/>
-                        <Stack.Group screenOptions={{ presentation: "modal", animationDuration: 100 }}>
-                          <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
-                        </Stack.Group>
-                      </Stack.Navigator>
-                    </BottomSheetModalProvider>
-                  </GestureHandlerRootView>
-                </FlashcardProvider>
+                <WordsProvider>
+                  <FlashcardProvider>
+                    <GestureHandlerRootView>
+                      <BottomSheetModalProvider>
+                        <Stack.Navigator screenOptions={{ headerShown: false }}>
+                          <Stack.Screen name='Tabs' component={TabsNavigator}/>
+                          <Stack.Screen name='Session' component={SessionScreen}/>
+                          <Stack.Group screenOptions={{ presentation: "modal", animationDuration: 100 }}>
+                            <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                          </Stack.Group>
+                        </Stack.Navigator>
+                      </BottomSheetModalProvider>
+                    </GestureHandlerRootView>
+                  </FlashcardProvider>
+                </WordsProvider>
               </LanguageProvider>
             </StatisticsProvider>
           </NavigationContainer>
         </SafeAreaView>
       </SafeAreaProvider>
-    </WordsProvider>
+    </>
   );
 }

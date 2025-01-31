@@ -1,5 +1,6 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLanguage } from "../hooks/useLanguage";
 
 export interface Word {
   id: string;
@@ -16,6 +17,7 @@ export interface Word {
 
 interface WordsContextProps {
   words: Word[];
+  langWords: Word[];
   addWord: (text: string, translation: string, source?: string) => boolean;
   getWord: (id: string) => Word | undefined;
   editWord: (id: string, text: string, translation: string) => void;
@@ -36,6 +38,7 @@ export type FlashcardUpdate = {
 
 export const WordsContext = createContext<WordsContextProps>({
   words: [],
+  langWords: [],
   addWord: () => true,
   getWord: () => undefined,
   editWord: () => {},
@@ -48,6 +51,9 @@ export const WordsContext = createContext<WordsContextProps>({
 
 export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [words, setWords] = useState<Word[]>([]);
+  const languageContext = useLanguage();
+  const langWords = words.filter((word) =>
+    word.firstLang == languageContext.studyingLangCode && word.secondLang == languageContext.mainLangCode);
 
   const createWord = (text: string, translation: string, source: string): Word => ({
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
@@ -211,10 +217,11 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
   useEffect(() => {
     loadWords();
-  }, []);
+  }, [languageContext.mainLangCode, languageContext.studyingLangCode]);
 
   return (
-    <WordsContext.Provider value={{ words, addWord, getWord, editWord, removeWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
+    <WordsContext.Provider
+      value={{ words, langWords, addWord, getWord, editWord, removeWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
       {children}
     </WordsContext.Provider>
   );

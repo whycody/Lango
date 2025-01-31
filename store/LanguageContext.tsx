@@ -9,7 +9,7 @@ export type Language = {
 }
 
 export enum LanguageCode {
-  ENGLISH = 'eng',
+  ENGLISH = 'en',
   POLISH = 'pl',
   SPANISH = 'es',
   ITALIAN = 'it',
@@ -33,8 +33,8 @@ export const LanguageContext = createContext<LanguageContextProps>({
 
 export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
-  const [mainLangCode, setMainLangCodeState] = useState(LanguageCode.POLISH);
-  const [studyingLangCode, setStudyingLangCodeState] = useState(LanguageCode.SPANISH);
+  const [mainLangCode, setMainLangCodeState] = useState<string>(LanguageCode.POLISH);
+  const [studyingLangCode, setStudyingLangCodeState] = useState<string>(LanguageCode.SPANISH);
 
   const languages: Language[] = [
     { languageCode: LanguageCode.ENGLISH, languageName: t('english'), languageInTargetLanguage: 'English' },

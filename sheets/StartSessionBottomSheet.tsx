@@ -3,14 +3,14 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@g
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
-import CustomText from "../components/CustomText";
 import SessionLengthItem from "../components/SessionLengthItem";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
+import Header from "../components/Header";
 
 interface StartSessionBottomSheetProps {
-  onSessionStart: (length: 1|2|3) => void,
+  onSessionStart: (length: 1 | 2 | 3) => void,
 }
 
 const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
@@ -22,7 +22,7 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
-  const handleSessionLengthItemPress = (length: 1|2|3) => {
+  const handleSessionLengthItemPress = (length: 1 | 2 | 3) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     setSessionLength(length);
   }
@@ -36,8 +36,7 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
     >
       <BottomSheetScrollView style={styles.root}>
-        <CustomText weight={"Bold"} style={styles.title}>{t('startSession')}</CustomText>
-        <CustomText style={styles.subtitle}>{t('sessionLength')}</CustomText>
+        <Header title={t('startSession')} subtitle={t('sessionLength')} style={styles.header}/>
         <View style={styles.sessionItemsContainer}>
           <SessionLengthItem
             length={1}
@@ -75,23 +74,12 @@ const getStyles = (colors: any) => StyleSheet.create({
     paddingHorizontal: MARGIN_HORIZONTAL,
   },
   header: {
-    paddingTop: MARGIN_VERTICAL,
-  },
-  title: {
-    color: colors.primary300,
-    fontSize: 18,
-    marginTop: 12,
-  },
-  subtitle: {
-    color: colors.primary600,
-    fontSize: 14,
-    marginBottom: 8,
-    marginTop: 4,
+    paddingVertical: MARGIN_VERTICAL / 2,
   },
   sessionItemsContainer: {
     flexDirection: 'row',
     flex: 1,
-    marginTop: 12,
+    marginTop: 5,
   },
   button: {
     marginVertical: MARGIN_VERTICAL

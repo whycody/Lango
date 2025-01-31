@@ -62,5 +62,12 @@
   "removingFlashcard": "Removing flashcard \uD83D\uDDD1\uFE0F",
   "removingFlashcardDesc": "Are you sure you want to remove this flashcard?",
   "finishingSession": "Finishing session",
-  "finishingSessionDesc": "Are you sure you want to finish the session? We will save your progress."
+  "finishingSessionDesc": "Are you sure you want to finish the session? We will save your progress.",
+  "language": "Learning language",
+  "chooseLanguage": "Choose language",
+  "chooseLanguageDesc": "You can click on the language you want to learn.",
+  "english": "English",
+  "polish": "Polish",
+  "spanish": "Spanish",
+  "italian": "Italian"
 }

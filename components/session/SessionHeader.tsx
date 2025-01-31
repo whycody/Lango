@@ -42,7 +42,7 @@ const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progres
         {`${cardsSetLength - progress}`}
       </CustomText>
       <MaterialCommunityIcons
-        name={'arrange-send-backward'}
+        name={'flip-horizontal'}
         size={21}
         color={colors.primary300}
         onPress={onFlipCards}
@@ -62,8 +62,9 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    paddingTop: MARGIN_VERTICAL,
-    justifyContent: 'space-between'
+    marginTop: 15,
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   progressText: {
     color: colors.primary600,
@@ -72,6 +73,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   icon: {
     paddingHorizontal: MARGIN_HORIZONTAL,
+    paddingVertical: 5,
     height: '100%'
   }
 });

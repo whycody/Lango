@@ -54,7 +54,7 @@
   "success": "Powodzenie",
   "failure": "Niepowodzenie",
   "soFar": "Do tej pory w sumie zgromadziłeś *{{wordsCount}}* słówek.",
-  "brag": "Nie chcemy się chwalić, ale dołożyliśmy do tego grosza, bo *{{langoWords}}* z nich jest od *Lango*!",
+  "brag": "Nie chcemy się przechwalać, ale dołożyliśmy do tego grosza, bo *{{langoWords}}* z nich jest od *Lango*!",
   "nextTime": "Przy następnej okazji koniecznie musisz spróbować dodać niektórych fiszek od *Lango*!",
   "flashcards": "Fiszki \uD83D\uDCCB",
   "continue": "Kontynuuj",

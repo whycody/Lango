@@ -123,7 +123,7 @@ const SessionScreen = () => {
     confettiRef.current?.play(0);
     statsContext.increaseNumberOfDays();
     statsContext.increaseNumberOfSessions();
-    finishSessionBottomSheetRef.current.present();
+    finishSessionBottomSheetRef.current?.present();
     wordsContext.updateFlashcards(flashcardUpdates);
   }
 
@@ -134,7 +134,7 @@ const SessionScreen = () => {
 
   const endSession = () => {
     if(currentIndex !== cards.length) return;
-    finishSessionBottomSheetRef.current.dismiss();
+    finishSessionBottomSheetRef.current?.dismiss();
     navigation.navigate('Tabs' as never);
   }
 
@@ -142,7 +142,7 @@ const SessionScreen = () => {
     setCards(wordsContext.getWordSet(length * 10));
     setCurrentIndex(0);
     setFlashcardUpdates([]);
-    finishSessionBottomSheetRef.current.dismiss();
+    finishSessionBottomSheetRef.current?.dismiss();
   }
 
   const handleSessionExit = () => {

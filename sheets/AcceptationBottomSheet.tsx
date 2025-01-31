@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../components/CustomText";
@@ -29,10 +29,8 @@ const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomShe
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
-      enableDismissOnClose={true}
-      stackBehavior={'replace'}
     >
-      <BottomSheetScrollView style={styles.root}>
+      <BottomSheetView style={styles.root}>
         <Header title={props.title} subtitle={props.description} style={styles.header}/>
         <ActionButton
           onPress={props.onAccept}
@@ -47,13 +45,14 @@ const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomShe
         >
           {t('cancel')}
         </CustomText>
-      </BottomSheetScrollView>
+      </BottomSheetView>
     </BottomSheetModal>
   );
 });
 
 const getStyles = (colors: any) => StyleSheet.create({
   root: {
+    flex: 1,
     paddingHorizontal: MARGIN_HORIZONTAL,
   },
   header: {

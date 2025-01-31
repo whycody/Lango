@@ -205,8 +205,8 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
     const reviewWords = sortedWords.filter(word => new Date(word.nextReviewDate) <= now);
     return reviewWords.length >= size
-      ? reviewWords.slice(0, size)
-      : [...reviewWords, ...sortedWords.slice(reviewWords.length, size)].slice(0, size);
+      ? reviewWords.slice(0, size).sort(() => Math.random() - 0.5)
+      : [...reviewWords, ...sortedWords.slice(reviewWords.length, size)].slice(0, size).sort(() => Math.random() - 0.5);
   };
 
   useEffect(() => {

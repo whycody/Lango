@@ -3,10 +3,11 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../components/CustomText";
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import ActionButton from "../components/ActionButton";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import Header from "../components/Header";
+import { FullWindowOverlay } from "react-native-screens";
 
 type AcceptationBottomSheetProps = {
   title: string;
@@ -23,10 +24,14 @@ const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomShe
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
+  const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
+    <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
+
   return (
     <BottomSheetModal
       ref={ref}
       backdropComponent={renderBackdrop}
+      containerComponent={renderContainerComponent}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
     >

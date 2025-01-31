@@ -52,7 +52,9 @@ export default function App() {
                     <Stack.Navigator screenOptions={{ headerShown: false }}>
                       <Stack.Screen name='Tabs' component={TabsNavigator}/>
                       <Stack.Screen name='Session' component={SessionScreen}/>
-                      <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                      <Stack.Group screenOptions={{ presentation: "modal", animationDuration: 100 }}>
+                        <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                      </Stack.Group>
                     </Stack.Navigator>
                   </BottomSheetModalProvider>
                 </GestureHandlerRootView>
@@ -62,5 +64,5 @@ export default function App() {
         </SafeAreaView>
       </SafeAreaProvider>
     </WordsProvider>
-  );
+);
 }

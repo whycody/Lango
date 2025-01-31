@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
-import { Keyboard, StyleSheet, View } from "react-native";
+import { Keyboard, Platform, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
@@ -12,6 +12,7 @@ import WordInput from "../components/WordInput";
 import Alert from "../components/Alert";
 import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
+import { FullWindowOverlay } from "react-native-screens";
 
 interface HandleFlashcardBottomSheetProps {
   flashcardId?: string;
@@ -109,11 +110,15 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     if (!props.flashcardId) clearInputs();
   }
 
+  const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
+    <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
+
   return (
     <BottomSheetModal
       ref={ref}
       index={0}
       backdropComponent={renderBackdrop}
+      containerComponent={renderContainerComponent}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
       onDismiss={handleSheetDismiss}

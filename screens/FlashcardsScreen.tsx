@@ -1,4 +1,4 @@
-import { FlatList, ScrollView, StyleSheet, View } from "react-native";
+import { FlatList, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
@@ -64,7 +64,7 @@ const FlashcardsScreen = () => {
   }
 
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={styles.root}>
       <AcceptationBottomSheet
         ref={acceptationBottomSheetRef}
         title={t('removingFlashcard')}
@@ -93,7 +93,7 @@ const FlashcardsScreen = () => {
         />
       </ScrollView>
       <ActionButton label={t('addWord')} primary={true} style={styles.button} onPress={handleActionButtonPress}/>
-    </View>
+    </SafeAreaView>
   );
 }
 

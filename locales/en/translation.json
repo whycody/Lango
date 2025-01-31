@@ -60,7 +60,7 @@
   "cancel": "Cancel",
   "startNextSession": "Start next session",
   "removingFlashcard": "Removing flashcard \uD83D\uDDD1\uFE0F",
-  "removingFlashcardDesc": "Are you sure you want to remove flashcard with *{{text}}*?",
+  "removingFlashcardDesc": "Are you sure you want to remove this flashcard?",
   "finishingSession": "Finishing session",
   "finishingSessionDesc": "Are you sure you want to finish the session? We will save your progress."
 }

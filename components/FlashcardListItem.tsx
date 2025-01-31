@@ -10,17 +10,18 @@ type FlashcardListItemProps = {
   index: number;
   text: string;
   translation: string;
-  onEditPress: (id: string) => void;
-  onRemovePress: (id: string) => void;
+  style?: any;
+  onEditPress?: (id: string) => void;
+  onRemovePress?: (id: string) => void;
 }
 
 const FlashcardListItem: FC<FlashcardListItemProps> =
-  ({ id, index, text, translation, onEditPress, onRemovePress }) => {
+  ({ id, index, text, translation, style, onEditPress, onRemovePress }) => {
     const { colors } = useTheme();
-    const styles = getStyles(colors, index);
+    const styles = getStyles(colors);
 
     return (
-      <View key={id} style={styles.root}>
+      <View key={id} style={[styles.root, style]}>
         {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
         <View style={styles.container}>
           <Ionicons name={'reader-sharp'} color={colors.primary600} size={22}/>
@@ -28,26 +29,30 @@ const FlashcardListItem: FC<FlashcardListItemProps> =
             <CustomText weight={'SemiBold'} style={styles.text}>{text}</CustomText>
             <CustomText style={styles.translation}>{translation}</CustomText>
           </View>
-          <Ionicons
-            name={'trash-sharp'}
-            color={colors.primary600}
-            size={22}
-            style={styles.icon}
-            onPress={() => onRemovePress(id)}
-          />
-          <Ionicons
-            name={'pencil-sharp'}
-            color={colors.primary600}
-            size={22}
-            style={styles.icon}
-            onPress={() => onEditPress(id)}
-          />
+          {onRemovePress &&
+            <Ionicons
+              name={'trash-sharp'}
+              color={colors.primary600}
+              size={22}
+              style={styles.icon}
+              onPress={() => onRemovePress(id)}
+            />
+          }
+          {onEditPress &&
+            <Ionicons
+              name={'pencil-sharp'}
+              color={colors.primary600}
+              size={22}
+              style={styles.icon}
+              onPress={() => onEditPress(id)}
+            />
+          }
         </View>
       </View>
     );
   }
 
-const getStyles = (colors: any, index: number) => StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   root: {
     backgroundColor: colors.card
   },

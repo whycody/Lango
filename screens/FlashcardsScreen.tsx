@@ -10,7 +10,7 @@ import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useCallback, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FlashcardListItem from "../components/FlashcardListItem";
-import AcceptationBottomSheet from "../sheets/AcceptationBottomSheet";
+import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -21,7 +21,7 @@ const FlashcardsScreen = () => {
   const langoWords = wordsContext.words.filter((word) => word.source == LANGO).length;
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
-  const acceptationBottomSheetRef = useRef<BottomSheetModal>(null);
+  const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const [editFlashcardId, setEditFlashcardId] = useState<string | null>(null);
 
   const handleActionButtonPress = () => {
@@ -35,19 +35,19 @@ const FlashcardsScreen = () => {
   }, []);
 
   const handleCancel = () => {
-    acceptationBottomSheetRef.current.dismiss();
+    removeFlashcardBottomSheetRef.current.dismiss();
     setEditFlashcardId(null);
   }
 
   const removeFlashcard = () => {
-    acceptationBottomSheetRef.current.close();
+    removeFlashcardBottomSheetRef.current.close();
     wordsContext.removeWord(editFlashcardId);
     setEditFlashcardId(null);
   }
 
   const handleRemovePress = useCallback((id: string) => {
     setEditFlashcardId(id);
-    acceptationBottomSheetRef.current.present();
+    removeFlashcardBottomSheetRef.current.present();
   }, []);
 
   const renderFlashcardListItem = ({ item, index }) => {
@@ -65,11 +65,10 @@ const FlashcardsScreen = () => {
 
   return (
     <SafeAreaView style={styles.root}>
-      <AcceptationBottomSheet
-        ref={acceptationBottomSheetRef}
-        title={t('removingFlashcard')}
-        description={t('removingFlashcardDesc', { text: wordsContext.getWord(editFlashcardId)?.text })}
-        onAccept={removeFlashcard}
+      <RemoveFlashcardBottomSheet
+        ref={removeFlashcardBottomSheetRef}
+        flashcardId={editFlashcardId}
+        onRemove={removeFlashcard}
         onCancel={handleCancel}
       />
       <HandleFlashcardBottomSheet

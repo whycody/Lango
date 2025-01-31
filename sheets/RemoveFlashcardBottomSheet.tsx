@@ -8,18 +8,21 @@ import ActionButton from "../components/ActionButton";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
+import FlashcardListItem from "../components/FlashcardListItem";
+import { useWords } from "../store/WordsContext";
 
 type AcceptationBottomSheetProps = {
-  title: string;
-  description: string;
-  onAccept: () => void;
+  flashcardId: string;
+  onRemove: () => void;
   onCancel: () => void;
 }
 
-const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomSheetProps>((props, ref) => {
+const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
+  const wordsContext = useWords();
+  const flashcard = wordsContext.getWord(props.flashcardId);
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -36,9 +39,16 @@ const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomShe
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
     >
       <BottomSheetView style={styles.root}>
-        <Header title={props.title} subtitle={props.description} style={styles.header}/>
+        <Header title={t('removingFlashcard')} subtitle={t('removingFlashcardDesc')} style={styles.header}/>
+        <FlashcardListItem
+          id={props.flashcardId}
+          index={0}
+          text={flashcard?.text}
+          translation={flashcard?.translation}
+          style={{ backgroundColor: colors.background }}
+        />
         <ActionButton
-          onPress={props.onAccept}
+          onPress={props.onRemove}
           label={t('continue')}
           primary={true}
           style={styles.button}
@@ -58,20 +68,22 @@ const AcceptationBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomShe
 const getStyles = (colors: any) => StyleSheet.create({
   root: {
     flex: 1,
-    paddingHorizontal: MARGIN_HORIZONTAL,
   },
   header: {
+    paddingHorizontal: MARGIN_HORIZONTAL,
     paddingVertical: MARGIN_VERTICAL / 2,
   },
   button: {
+    marginHorizontal: MARGIN_HORIZONTAL,
     marginTop: MARGIN_VERTICAL
   },
   actionText: {
     color: colors.primary,
     fontSize: 13,
     textAlign: 'center',
-    paddingVertical: MARGIN_VERTICAL
+    paddingVertical: MARGIN_VERTICAL,
+    paddingHorizontal: MARGIN_HORIZONTAL,
   },
 });
 
-export default AcceptationBottomSheet;
+export default RemoveFlashcardBottomSheet;

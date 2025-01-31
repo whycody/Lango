@@ -61,7 +61,7 @@
   "cancel": "Anuluj",
   "startNextSession": "Zacznij kolejną sesję",
   "removingFlashcard": "Usuń fiszkę",
-  "removingFlashcardDesc": "Czy jesteś pewien, że chcesz usunąć fiszkę *{{text}}*?",
+  "removingFlashcardDesc": "Czy jesteś pewien, że chcesz usunąć tę fiszkę?",
   "finishingSession": "Zakończ sesję",
   "finishingSessionDesc": "Czy jesteś pewien, że chcesz zakończyć sesję? Zapiszemy Twój progres."
 }

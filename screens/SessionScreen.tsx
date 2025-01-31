@@ -133,16 +133,18 @@ const SessionScreen = () => {
   }, [currentIndex]);
 
   const endSession = () => {
-    if(currentIndex !== cards.length) return;
+    if (currentIndex !== cards.length) return;
     finishSessionBottomSheetRef.current?.dismiss();
     navigation.navigate('Tabs' as never);
   }
 
   const startNewSession = () => {
     setCards(wordsContext.getWordSet(length * 10));
-    setCurrentIndex(0);
     setFlashcardUpdates([]);
-    finishSessionBottomSheetRef.current?.dismiss();
+    setTimeout(() => {
+      setCurrentIndex(0);
+      finishSessionBottomSheetRef.current?.dismiss();
+    }, 200);
   }
 
   const handleSessionExit = () => {
@@ -212,18 +214,21 @@ const SessionScreen = () => {
           <WordLevelItem
             level={1}
             selected={false}
+            active={currentIndex < cards.length}
             style={{ flex: 1, marginRight: 6 }}
             onPress={() => handleLevelPress(1)}
           />
           <WordLevelItem
             level={2}
             selected={false}
+            active={currentIndex < cards.length}
             style={{ flex: 1, marginLeft: 3, marginRight: 3 }}
             onPress={() => handleLevelPress(2)}
           />
           <WordLevelItem
             level={3}
             selected={false}
+            active={currentIndex < cards.length}
             style={{ flex: 1, marginLeft: 6 }}
             onPress={() => handleLevelPress(3)}
           />

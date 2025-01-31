@@ -8,11 +8,12 @@ import { MARGIN_HORIZONTAL } from "../src/constants";
 interface SessionLengthItemProps {
   level: 1 | 2 | 3;
   selected: boolean;
+  active: boolean;
   onPress?: () => void,
   style?: any;
 }
 
-const WordLevelItem: FC<SessionLengthItemProps> = ({ level, selected, onPress, style }) => {
+const WordLevelItem: FC<SessionLengthItemProps> = ({ level, selected, active, onPress, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, selected);
   const { t } = useTranslation();
@@ -21,7 +22,7 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, selected, onPress, s
     <Pressable
       style={[styles.root, style]}
       android_ripple={{ color: colors.card }}
-      onPress={onPress}
+      onPress={active ? onPress : undefined}
     >
       <View style={styles.rectanglesContainer}>
         <View style={[styles.rectangle, { opacity: level > 2 ? 1 : 0.3 }]}/>

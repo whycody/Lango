@@ -8,29 +8,15 @@ import { useTranslation } from "react-i18next";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import LanguageItem from "../components/LanguageItem";
-
-export type Language = {
-  languageCode: string;
-  languageName: string;
-  languageInTargetLanguage: string;
-}
-
-export enum LanguageCode {
-  ENGLISH = 'eng',
-  SPANISH = 'es',
-  ITALIAN = 'it',
-}
+import { useLanguage } from "../hooks/useLanguage";
+import { Language } from "../store/LanguageContext";
+import * as Haptics from "expo-haptics";
 
 const LanguageBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles();
   const { t } = useTranslation();
-
-  const languages: Language[] = [
-    { languageCode: LanguageCode.ENGLISH, languageName: t('english'), languageInTargetLanguage: 'English' },
-    { languageCode: LanguageCode.SPANISH, languageName: t('spanish'), languageInTargetLanguage: 'Español' },
-    { languageCode: LanguageCode.ITALIAN, languageName: t('italian'), languageInTargetLanguage: 'Italiano' },
-  ];
+  const languageContext = useLanguage();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -39,7 +25,13 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
 
   const renderLanguageItem = ({ item, index }: { item: Language, index: number }) =>
-    <LanguageItem language={item} index={index} onPress={() => ref.current?.close()}/>;
+    <LanguageItem language={item} index={index} onPress={() => handleLanguagePick(item)}/>;
+
+  const handleLanguagePick = (language: Language) => {
+    languageContext.setStudyingLangCode(language.languageCode);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    ref.current?.close();
+  }
 
   return (
     <BottomSheetModal
@@ -51,7 +43,7 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
     >
       <BottomSheetScrollView>
         <Header title={t('chooseLanguage')} subtitle={t('chooseLanguageDesc')} style={styles.header}/>
-        <FlatList data={languages} renderItem={renderLanguageItem} scrollEnabled={false}/>
+        <FlatList data={languageContext.languages} renderItem={renderLanguageItem} scrollEnabled={false}/>
         <ActionButton
           onPress={() => ref.current?.close()}
           label={t('cancel')}

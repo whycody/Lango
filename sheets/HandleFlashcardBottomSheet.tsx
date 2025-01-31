@@ -6,13 +6,13 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { firstLanguage, secondLanguage } from "../components/Flashcard";
 import { USER, useWords, Word } from "../store/WordsContext";
 import WordInput from "../components/WordInput";
 import Alert from "../components/Alert";
 import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
+import { useLanguage } from "../hooks/useLanguage";
 
 interface HandleFlashcardBottomSheetProps {
   flashcardId?: string;
@@ -35,6 +35,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const [status, setStatus] = useState<'error' | 'success' | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [buttonsActive, setButtonsActive] = useState(true);
+  const languageContext = useLanguage();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -140,14 +141,14 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           ref={wordInputRef}
           word={word}
           onWordChange={setWord}
-          languageCode={firstLanguage}
+          languageCode={languageContext.mainLangCode}
           style={{ marginTop: 15 }}
         />
         <WordInput
           ref={translationInputRef}
           word={translation}
           onWordChange={setTranslation}
-          languageCode={secondLanguage}
+          languageCode={languageContext.studyingLangCode}
           style={{ marginTop: 15 }}
         />
         <ActionButton

@@ -9,15 +9,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { LANGO, useWords } from "../store/WordsContext";
 import { FlashcardContent } from "../store/FlashcardsContext";
 import SquareFlag from "./SquareFlag";
+import { useLanguage } from "../hooks/useLanguage";
 
 interface FlashcardProps {
   onFlashcardPress?: () => void;
   flashcardContent?: FlashcardContent,
   style?: any;
 }
-
-export const firstLanguage = 'es';
-export const secondLanguage = 'pl';
 
 const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, style }) => {
   const [flippable, setFlippable] = useState(true);
@@ -28,6 +26,7 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
   const styles = getStyles(colors);
   const { t } = useTranslation();
   const wordsContext = useWords();
+  const languageContext = useLanguage();
 
   const getRandomMessage = () => {
     const messages = [
@@ -74,8 +73,8 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
       <FlipCard flip={flip} onFlipStart={handleFlip}>
         <View style={[styles.root, style]}>
           <View style={styles.flagsContainer}>
-            <SquareFlag languageCode={firstLanguage} style={{ marginRight: 6 }}/>
-            <SquareFlag languageCode={secondLanguage} />
+            <SquareFlag languageCode={languageContext.mainLangCode} style={{ marginRight: 6 }}/>
+            <SquareFlag languageCode={languageContext.studyingLangCode} />
           </View>
           <CustomText weight={"SemiBold"} style={styles.word} numberOfLines={1}>{flashcardContent?.word}</CustomText>
           <CustomText style={styles.translation} numberOfLines={1}>{flashcardContent?.translation}</CustomText>

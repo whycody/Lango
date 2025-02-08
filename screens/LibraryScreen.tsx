@@ -6,10 +6,14 @@ import { useNavigation } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useRef } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useLanguage } from "../hooks/useLanguage";
+import { useWords } from "../store/WordsContext";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const langContext = useLanguage();
+  const wordsContext = useWords();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
 
   enum LibraryItems {
@@ -21,10 +25,13 @@ const LibraryScreen = () => {
     USE_CONDITIONS
   }
 
+  const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.studyingLangCode)[0].languageName;
+  const numberOfWords = wordsContext.words.length;
+
   const libraryItems = [
     { id: LibraryItems.SETTINGS, label: t('settings'), icon: 'settings-sharp' },
-    { id: LibraryItems.LANGUAGE, label: t('language'), icon: 'language-sharp' },
-    { id: LibraryItems.MY_WORDS, label: t('myWords'), icon: 'albums-sharp' },
+    { id: LibraryItems.LANGUAGE, label: t('language'), description: currentLang, icon: 'language-sharp' },
+    { id: LibraryItems.MY_WORDS, label: t('myWords'), description: `${numberOfWords}`, icon: 'albums-sharp' },
     { id: LibraryItems.LOGOUT, label: t('logout'), icon: 'log-out-sharp' },
     { id: LibraryItems.PRIVACY_POLICY, label: t('privacyPolicy') },
     { id: LibraryItems.USE_CONDITIONS, label: t('useConditions') },
@@ -44,7 +51,7 @@ const LibraryScreen = () => {
   }
 
   const renderLibraryItem = ({ item, index }) => (
-    <LibraryItem key={item.id} label={item.label} icon={item.icon} index={index} onPress={() => handlePress(item.id)}/>
+    <LibraryItem key={item.id} label={item.label} icon={item.icon} description={item.description} index={index} onPress={() => handlePress(item.id)}/>
   );
 
   return (

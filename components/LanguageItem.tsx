@@ -10,12 +10,13 @@ import { Language } from "../sheets/LanguageBottomSheet";
 type LanguageItemProps = {
   index: number;
   language: Language,
+  checked: boolean,
   onPress: () => void;
   style?: any;
 }
 
 const LanguageItem: FC<LanguageItemProps> =
-  ({ index, language, onPress, style }) => {
+  ({ index, language, checked, onPress, style }) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
 
@@ -27,13 +28,13 @@ const LanguageItem: FC<LanguageItemProps> =
         android_ripple={{ color: colors.background }}
       >
         {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
-        <View style={styles.container}>
+        <View style={[styles.container, checked && { backgroundColor: colors.background }]}>
           <Ionicons name={'language-sharp'} color={colors.primary600} size={22}/>
           <View style={styles.textContainer}>
             <CustomText weight={'SemiBold'} style={styles.text}>{language.languageName}</CustomText>
             <CustomText style={styles.translation}>{language.languageInTargetLanguage}</CustomText>
           </View>
-          <SquareFlag languageCode={language.languageCode} />
+          <SquareFlag languageCode={language.languageCode}/>
         </View>
       </Pressable>
     );

@@ -25,7 +25,12 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
 
   const renderLanguageItem = ({ item, index }: { item: Language, index: number }) =>
-    <LanguageItem language={item} index={index} onPress={() => handleLanguagePick(item)}/>;
+    <LanguageItem
+      language={item}
+      index={index}
+      checked={item.languageCode == languageContext.studyingLangCode}
+      onPress={() => handleLanguagePick(item)}
+    />;
 
   const handleLanguagePick = (language: Language) => {
     languageContext.setStudyingLangCode(language.languageCode);

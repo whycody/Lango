@@ -141,14 +141,14 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           ref={wordInputRef}
           word={word}
           onWordChange={setWord}
-          languageCode={languageContext.mainLangCode}
+          languageCode={languageContext.studyingLangCode}
           style={{ marginTop: 15 }}
         />
         <WordInput
           ref={translationInputRef}
           word={translation}
           onWordChange={setTranslation}
-          languageCode={languageContext.studyingLangCode}
+          languageCode={languageContext.mainLangCode}
           style={{ marginTop: 15 }}
         />
         <ActionButton

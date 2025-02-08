@@ -9,24 +9,23 @@
     "newArchEnabled": true,
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "runtimeVersion": {
-        "policy": "appVersion"
-      }
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.whycody.lango",
-      "runtimeVersion": "1.0.0"
+      "package": "com.whycody.lango"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,6 +37,8 @@
     },
     "owner": "whycody",
     "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
       "url": "https://u.expo.dev/f03ad99f-a6b8-42b4-a859-a05091b51fbc"
     }
   }

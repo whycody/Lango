@@ -1,7 +1,9 @@
 {
   "expo": {
+    "sdkVersion": "52.0.0",
+    "jsEngine": "hermes",
     "name": "Lango",
-    "slug": "Lango",
+    "slug": "lango",
     "version": "1.0.0",
     "orientation": "portrait",
     "newArchEnabled": true,
@@ -13,16 +15,30 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.whycody.lango",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f03ad99f-a6b8-42b4-a859-a05091b51fbc"
+      }
+    },
+    "owner": "whycody",
+    "updates": {
+      "url": "https://u.expo.dev/f03ad99f-a6b8-42b4-a859-a05091b51fbc"
     }
   }
 }

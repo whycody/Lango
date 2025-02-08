@@ -157,7 +157,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           primary={true}
           active={buttonsActive}
           style={styles.button}
-          icon={'save-sharp'}
+          icon={props.flashcardId ? 'save-sharp' : undefined}
         />
         {props.flashcardId ? <View style={{ height: MARGIN_VERTICAL }}/> :
           <CustomText

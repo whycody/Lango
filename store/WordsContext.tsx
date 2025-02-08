@@ -59,8 +59,8 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
     text,
     translation,
-    firstLang: 'es',
-    secondLang: 'pl',
+    firstLang: languageContext.studyingLangCode,
+    secondLang: languageContext.mainLangCode,
     source: source,
     interval: 1,
     repetitionCount: 0,
@@ -201,7 +201,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const getWordSet = (size: number): Word[] => {
     const now = new Date();
 
-    const sortedWords = [...words].sort((a, b) => {
+    const sortedWords = [...langWords].sort((a, b) => {
       const dateA = new Date(a.nextReviewDate).getTime();
       const dateB = new Date(b.nextReviewDate).getTime();
 

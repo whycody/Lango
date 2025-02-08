@@ -17,8 +17,8 @@ const FlashcardsScreen = () => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const wordsContext = useWords();
-  const numberOfWords = wordsContext.words.length;
-  const langoWords = wordsContext.words.filter((word) => word.source == LANGO).length;
+  const numberOfWords = wordsContext.langWords.length;
+  const langoWords = wordsContext.langWords.filter((word) => word.source == LANGO).length;
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
@@ -85,7 +85,7 @@ const FlashcardsScreen = () => {
           <StatisticItem label={`${langoWords}`} description={t('langoWords')} style={{ flex: 1, marginLeft: 6 }}/>
         </View>
         <FlatList
-          data={wordsContext.words}
+          data={wordsContext.langWords}
           scrollEnabled={false}
           style={{ marginTop: MARGIN_VERTICAL }}
           renderItem={renderFlashcardListItem}

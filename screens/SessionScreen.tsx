@@ -43,6 +43,7 @@ const SessionScreen = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
+  const [numberOfSession, setNumberOfSession] = useState(0);
   const [flipped, setFlipped] = useState(false);
 
   const navigation = useNavigation();
@@ -139,8 +140,9 @@ const SessionScreen = () => {
   }
 
   const startNewSession = () => {
+    setNumberOfSession((prev) => prev + 1);
     setFlashcardUpdates([]);
-    setCards(wordsContext.getWordSet(length * 10));
+    setCards(wordsContext.getWordSet(length * 10).sort(() => Math.random() - 0.5));
     setTimeout(() => {
       setCurrentIndex(0);
       finishSessionBottomSheetRef.current?.dismiss();
@@ -201,7 +203,7 @@ const SessionScreen = () => {
         orientation="vertical"
       >
         {cards.map((word, index) => (
-          <View key={word.id} style={styles.pagerViewItem}>
+          <View key={word.id + numberOfSession} style={styles.pagerViewItem}>
             {renderCard(word, index)}
           </View>
         ))}

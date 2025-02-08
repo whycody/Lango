@@ -26,12 +26,11 @@ const LibraryScreen = () => {
   }
 
   const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.studyingLangCode)[0].languageName;
-  const numberOfWords = wordsContext.words.length;
 
   const libraryItems = [
     { id: LibraryItems.SETTINGS, label: t('settings'), icon: 'settings-sharp' },
     { id: LibraryItems.LANGUAGE, label: t('language'), description: currentLang, icon: 'language-sharp' },
-    { id: LibraryItems.MY_WORDS, label: t('myWords'), description: `${numberOfWords}`, icon: 'albums-sharp' },
+    { id: LibraryItems.MY_WORDS, label: t('myWords'), icon: 'albums-sharp' },
     { id: LibraryItems.LOGOUT, label: t('logout'), icon: 'log-out-sharp' },
     { id: LibraryItems.PRIVACY_POLICY, label: t('privacyPolicy') },
     { id: LibraryItems.USE_CONDITIONS, label: t('useConditions') },

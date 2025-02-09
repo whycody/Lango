@@ -45,6 +45,7 @@ const SessionScreen = () => {
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
   const [numberOfSession, setNumberOfSession] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [lastPressTime, setLastPressTime] = useState<number>(0);
 
   const navigation = useNavigation();
 
@@ -53,7 +54,7 @@ const SessionScreen = () => {
   };
 
   const incrementCurrentIndex = () => {
-    setCurrentIndex((prev) => prev + 1);
+    if (currentIndex < cards.length) setCurrentIndex((prev) => prev + 1);
   };
 
   const handleEditPress = (id: string) => {
@@ -100,6 +101,10 @@ const SessionScreen = () => {
   };
 
   const handleLevelPress = (level: 1 | 2 | 3) => {
+    const now = Date.now();
+    if (now - lastPressTime < 300) return;
+    setLastPressTime(now);
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
 
     const currentCardId: string = cards[currentIndex].id;
@@ -115,9 +120,12 @@ const SessionScreen = () => {
         return [...prevUpdates, { flashcardId: currentCardId, grade: level }];
       }
     });
-
-    (currentIndex === cards.length - 1) ? finishSession() : incrementCurrentIndex();
   };
+
+  useEffect(() => {
+    if (flashcardUpdates.length === 0) return;
+    (flashcardUpdates.length === cards.length) ? finishSession() : incrementCurrentIndex();
+  }, [flashcardUpdates]);
 
   const finishSession = () => {
     incrementCurrentIndex();

@@ -184,7 +184,10 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
           }
         }
 
-        EF = Math.max(1.3, EF - (3 - grade) * (0.08 + (3 - grade) * 0.02));
+        EF = grade === 3
+          ? Math.min(2.5, EF + 0.1)
+          : Math.max(1.3, EF - (3 - grade) * (0.08 + (3 - grade) * 0.02));
+
         const nextReviewDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000).toISOString();
 
         return { ...flashcard, interval, repetitionCount, EF, nextReviewDate };

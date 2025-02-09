@@ -12,6 +12,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SquareFlag from "../../components/SquareFlag";
 import { useLanguage } from "../../hooks/useLanguage";
 import LanguageBottomSheet from "../../sheets/LanguageBottomSheet";
+import { useWords } from "../../store/WordsContext";
 
 const HeaderCard = () => {
   const { t } = useTranslation();
@@ -19,8 +20,14 @@ const HeaderCard = () => {
   const styles = getStyles(colors);
   const navigation = useNavigation();
   const langContext = useLanguage();
+  const wordsContext = useWords();
   const languageSheetRef = useRef<BottomSheetModal>(null);
   const sessionSheetRef = useRef<BottomSheetModal>(null);
+
+  const availableWords = wordsContext.langWords.length <= 50 ? wordsContext.langWords.length : 50;
+  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((wordsContext.langWords.slice(-50).filter(
+    word => word.repetitionCount > 2 && new Date(word.nextReviewDate) > new Date()).length / availableWords) * 100) / 100;
+  const wellKnownWords = wordsContext.langWords.filter(word => word.repetitionCount > 2).length;
 
   const handleActinButtonPress = () => {
     sessionSheetRef.current.present();
@@ -31,20 +38,30 @@ const HeaderCard = () => {
     navigation.navigate('Session', { length: length });
   }
 
+  const getReportMessage = () => {
+    if (wordsContext.langWords.length < 5) return t('report1')
+    else if (wellKnownWords <= 10 && lastWellKnownWords < 0.1) return t('report2')
+    else if (wellKnownWords > 10 && lastWellKnownWords < 0.1) return t('report3', { wellKnownWords: wellKnownWords })
+    else if (lastWellKnownWords >= 0.1 && wellKnownWords <= 10) return t('report4', { percentage: lastWellKnownWords * 100 })
+    else if (lastWellKnownWords >= 0.9) return t('report5', {
+      percentage: lastWellKnownWords * 100,
+      wellKnownWords: wellKnownWords
+    })
+    else return t('report6', { percentage: lastWellKnownWords * 100, wellKnownWords: wellKnownWords })
+  }
+
   return (
     <View style={styles.root}>
       <StartSessionBottomSheet ref={sessionSheetRef} onSessionStart={handleSessionStart}/>
-      <LanguageBottomSheet ref={languageSheetRef} />
+      <LanguageBottomSheet ref={languageSheetRef}/>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>
         <Pressable onPress={() => languageSheetRef.current?.present()} style={{ paddingVertical: 5, paddingLeft: 5 }}>
           <SquareFlag languageCode={langContext.studyingLangCode} size={24}/>
         </Pressable>
       </View>
-      <ProgressBar progress={0.62} color={colors.primary300} style={styles.progressBar}/>
-      <CustomText style={styles.descText}>
-        {t('wordsPercentage', { percentage: 62 }) + ' ' + t('practiceNow')}
-      </CustomText>
+      <ProgressBar progress={lastWellKnownWords} color={colors.primary300} style={styles.progressBar}/>
+      <CustomText style={styles.descText}>{getReportMessage()}</CustomText>
       <ActionButton
         label={t('startLearning')}
         primary={true}

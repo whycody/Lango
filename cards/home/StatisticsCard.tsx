@@ -3,7 +3,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
-import StatisticItem from "../../components/StatisticItem";
+import StatisticItem from "../../components/items/StatisticItem";
 import { LANGO, useWords } from "../../store/WordsContext";
 import { useStatistics } from "../../hooks/useStatistics";
 

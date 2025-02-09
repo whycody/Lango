@@ -3,7 +3,7 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@g
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
-import SessionLengthItem from "../components/SessionLengthItem";
+import SessionLengthItem from "../components/items/SessionLengthItem";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";

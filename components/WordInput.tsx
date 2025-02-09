@@ -46,7 +46,7 @@ const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordChange, language
           style={styles.input}
           cursorColor={colors.primary}
           autoCapitalize={'none'}
-          autoCorrect={false}
+          autoCorrect={true}
           value={internalWord}
           onChangeText={handleTextChange}
           onBlur={handleBlur}
@@ -55,8 +55,9 @@ const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordChange, language
           ref={inputRef}
           style={styles.input}
           cursorColor={colors.primary}
+          autoCorrect={true}
           autoCapitalize={'none'}
-          autoCorrect={false}
+          textContentType={'none'}
           value={internalWord}
           onChangeText={handleTextChange}
           onBlur={handleBlur}
@@ -73,12 +74,12 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontFamily: `Montserrat`,
+    fontFamily: `Montserrat-Regular`,
     color: colors.primary300,
     paddingLeft: MARGIN_HORIZONTAL,
     backgroundColor: colors.background,
-    fontSize: 17,
-    height: 40
+    fontSize: 16,
+    height: 42,
   },
 });
 

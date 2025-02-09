@@ -5,7 +5,7 @@ import { useNavigation, useRoute, useTheme } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import CustomText from '../components/CustomText';
-import WordLevelItem from '../components/WordLevelItem';
+import WordLevelItem from '../components/items/WordLevelItem';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../src/constants';
 import { FlashcardUpdate, useWords } from '../store/WordsContext';
 import FlipCard from "react-native-flip-card";

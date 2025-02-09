@@ -8,7 +8,7 @@ import ActionButton from "../components/ActionButton";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
-import FlashcardListItem from "../components/FlashcardListItem";
+import FlashcardListItem from "../components/items/FlashcardListItem";
 import { useWords } from "../store/WordsContext";
 
 type AcceptationBottomSheetProps = {

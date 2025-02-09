@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import CustomText from "./CustomText";
-import { MARGIN_VERTICAL } from "../src/constants";
+import CustomText from "../CustomText";
+import { MARGIN_VERTICAL } from "../../src/constants";
 
 interface StatisticItemProps {
   label: string,

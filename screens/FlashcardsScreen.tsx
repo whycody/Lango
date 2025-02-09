@@ -2,14 +2,14 @@ import { FlatList, SafeAreaView, ScrollView, StyleSheet, View } from "react-nati
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
-import StatisticItem from "../components/StatisticItem";
+import StatisticItem from "../components/items/StatisticItem";
 import { LANGO, useWords } from "../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useCallback, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import FlashcardListItem from "../components/FlashcardListItem";
+import FlashcardListItem from "../components/items/FlashcardListItem";
 import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
 
 const FlashcardsScreen = () => {

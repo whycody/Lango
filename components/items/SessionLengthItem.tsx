@@ -2,8 +2,8 @@ import { FC } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import CustomText from "./CustomText";
-import { MARGIN_VERTICAL } from "../src/constants";
+import CustomText from "../CustomText";
+import { MARGIN_VERTICAL } from "../../src/constants";
 
 interface SessionLengthItemProps {
   length: 1 | 2 | 3;

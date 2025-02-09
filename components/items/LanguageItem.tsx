@@ -1,11 +1,11 @@
 import { FC, memo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { MARGIN_HORIZONTAL } from "../src/constants";
-import CustomText from "./CustomText";
+import { MARGIN_HORIZONTAL } from "../../src/constants";
+import CustomText from "../CustomText";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import SquareFlag from "./SquareFlag";
-import { Language } from "../sheets/LanguageBottomSheet";
+import SquareFlag from "../SquareFlag";
+import { Language } from "../../sheets/LanguageBottomSheet";
 
 type LanguageItemProps = {
   index: number;

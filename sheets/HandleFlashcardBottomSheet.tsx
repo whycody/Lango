@@ -17,6 +17,7 @@ import { useLanguage } from "../hooks/useLanguage";
 interface HandleFlashcardBottomSheetProps {
   flashcardId?: string;
   onWordEdit?: (id: string, word: string, translation: string) => void;
+  onChangeIndex?: (index: number) => void;
 }
 
 const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardBottomSheetProps>((props, ref) => {
@@ -119,6 +120,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
       ref={ref}
       index={0}
       backdropComponent={renderBackdrop}
+      onChange={(index: number) => props.onChangeIndex?.(index)}
       containerComponent={renderContainerComponent}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}

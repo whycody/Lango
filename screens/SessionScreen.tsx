@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, View, Animated } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Animated, BackHandler } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useNavigation, useRoute, useTheme } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
@@ -17,6 +17,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useStatistics } from "../hooks/useStatistics";
+import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -36,6 +37,9 @@ const SessionScreen = () => {
   const [cards, setCards] = useState(wordsContext.getWordSet(length * 10));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+
+  const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+  const leaveSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -48,6 +52,23 @@ const SessionScreen = () => {
   const [lastPressTime, setLastPressTime] = useState<number>(0);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (bottomSheetIsShown) hideBottomSheets();
+      else leaveSessionBottomSheetRef.current?.present();
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => subscription.remove();
+  }, [bottomSheetIsShown]);
+
+  const hideBottomSheets = () => {
+    handleFlashcardBottomSheetRef.current?.dismiss();
+    leaveSessionBottomSheetRef.current?.dismiss();
+    finishSessionBottomSheetRef.current?.dismiss();
+  }
 
   const decrementCurrentIndex = () => {
     setCurrentIndex((prev) => prev == 0 ? prev : prev - 1)
@@ -177,22 +198,29 @@ const SessionScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LeaveSessionBottomSheet
+        ref={leaveSessionBottomSheetRef}
+        leaveSession={handleSessionExit}
+        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+      />
       <HandleFlashcardBottomSheet
         ref={handleFlashcardBottomSheetRef}
         onWordEdit={handleWordEdit}
         flashcardId={editId}
+        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
       />
       <FinishSessionBottomSheet
         ref={finishSessionBottomSheetRef}
         flashcardUpdates={flashcardUpdates}
         endSession={endSession}
         startNewSession={startNewSession}
+        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
       />
       <SessionHeader
         length={length}
         cardsSetLength={cards.length}
         progress={progress}
-        onSessionExit={handleSessionExit}
+        onSessionExit={() => leaveSessionBottomSheetRef.current?.present()}
         onFlipCards={handleFlipCards}
       />
       <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>

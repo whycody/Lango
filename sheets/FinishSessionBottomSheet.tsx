@@ -12,6 +12,7 @@ type FinishSessionBottomSheetProps = {
   flashcardUpdates: FlashcardUpdate[];
   endSession: () => void;
   startNewSession: () => void;
+  onChangeIndex?: (index: number) => void;
 }
 
 const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottomSheetProps>((props, ref) => {
@@ -42,6 +43,7 @@ const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBotto
     <BottomSheetModal
       ref={ref}
       index={0}
+      onChange={(index: number) => props.onChangeIndex?.(index)}
       onDismiss={props.endSession}
       enablePanDownToClose={false}
       backdropComponent={renderBackdrop}

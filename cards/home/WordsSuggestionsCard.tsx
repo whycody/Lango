@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, BackHandler } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
@@ -19,9 +19,22 @@ const WordsSuggestionsCard = () => {
   const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const [firstFlashcard, setFirstFlashcard] = useState<FlashcardContent>();
   const [secondFlashcard, setSecondFlashcard] = useState<FlashcardContent>();
+  const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
   useEffect(() => {
-    if(!flashcardsContext.flashcards) return;
+    const handleBackPress = () => {
+      if (bottomSheetIsShown) {
+        flashcardBottomSheetRef.current?.dismiss();
+        return true;
+      }
+    };
+
+    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => subscription.remove();
+  }, [bottomSheetIsShown]);
+
+  useEffect(() => {
+    if (!flashcardsContext.flashcards) return;
     setFirstFlashcard(flashcardsContext.getRandomFlashcard);
     setSecondFlashcard(flashcardsContext.getRandomFlashcard);
   }, [flashcardsContext.flashcards]);
@@ -30,6 +43,7 @@ const WordsSuggestionsCard = () => {
     <View style={styles.root}>
       <HandleFlashcardBottomSheet
         ref={flashcardBottomSheetRef}
+        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
       />
       <Header title={t('wordsSuggestion')} subtitle={t('wordSuggestionDesc')}/>
       <View style={styles.flashcardsContainer}>
@@ -44,7 +58,8 @@ const WordsSuggestionsCard = () => {
           style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
         />
       </View>
-      <ActionButton label={t('addWord')} style={styles.actionButton} onPress={() => flashcardBottomSheetRef.current?.present()}/>
+      <ActionButton label={t('addWord')} style={styles.actionButton}
+                    onPress={() => flashcardBottomSheetRef.current?.present()}/>
     </View>
   );
 }

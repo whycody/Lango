@@ -1,20 +1,31 @@
-import { FlatList, ScrollView } from "react-native";
+import { BackHandler, FlatList, ScrollView } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
 import { useNavigation } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLanguage } from "../hooks/useLanguage";
-import { useWords } from "../store/WordsContext";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const langContext = useLanguage();
-  const wordsContext = useWords();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
+  const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (bottomSheetIsShown) {
+        languageBottomSheetRef.current?.dismiss();
+        return true;
+      }
+    };
+
+    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => subscription.remove();
+  }, [bottomSheetIsShown]);
 
   enum LibraryItems {
     SETTINGS,
@@ -50,12 +61,16 @@ const LibraryScreen = () => {
   }
 
   const renderLibraryItem = ({ item, index }) => (
-    <LibraryItem key={item.id} label={item.label} icon={item.icon} description={item.description} index={index} onPress={() => handlePress(item.id)}/>
+    <LibraryItem key={item.id} label={item.label} icon={item.icon} description={item.description} index={index}
+                 onPress={() => handlePress(item.id)}/>
   );
 
   return (
     <ScrollView showsHorizontalScrollIndicator={false}>
-      <LanguageBottomSheet ref={languageBottomSheetRef}/>
+      <LanguageBottomSheet
+        ref={languageBottomSheetRef}
+        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+      />
       <ProfileCard/>
       <FlatList
         scrollEnabled={false}

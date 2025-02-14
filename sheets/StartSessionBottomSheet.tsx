@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useState } from "react";
+import React, { forwardRef, useCallback, useEffect, useState } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
@@ -11,6 +11,7 @@ import Header from "../components/Header";
 
 interface StartSessionBottomSheetProps {
   onSessionStart: (length: 1 | 2 | 3) => void,
+  onChangeIndex?: (index: number) => void;
 }
 
 const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
@@ -31,6 +32,7 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
     <BottomSheetModal
       ref={ref}
       index={0}
+      onChange={(index: number) => props.onChangeIndex?.(index)}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}

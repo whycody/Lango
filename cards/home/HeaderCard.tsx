@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { BackHandler, Pressable, StyleSheet, View } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { expo } from '../../app.json'
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
@@ -23,6 +23,20 @@ const HeaderCard = () => {
   const wordsContext = useWords();
   const languageSheetRef = useRef<BottomSheetModal>(null);
   const sessionSheetRef = useRef<BottomSheetModal>(null);
+  const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (bottomSheetIsShown) {
+        languageSheetRef.current?.dismiss();
+        sessionSheetRef.current?.dismiss();
+        return true;
+      }
+    };
+
+    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => subscription.remove();
+  }, [bottomSheetIsShown]);
 
   const availableWords = wordsContext.langWords.length <= 50 ? wordsContext.langWords.length : 50;
   const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((wordsContext.langWords.slice(-50).filter(
@@ -52,8 +66,15 @@ const HeaderCard = () => {
 
   return (
     <View style={styles.root}>
-      <StartSessionBottomSheet ref={sessionSheetRef} onSessionStart={handleSessionStart}/>
-      <LanguageBottomSheet ref={languageSheetRef}/>
+      <StartSessionBottomSheet
+        ref={sessionSheetRef}
+        onSessionStart={handleSessionStart}
+        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+      />
+      <LanguageBottomSheet
+        ref={languageSheetRef}
+        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+      />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>
         <Pressable onPress={() => languageSheetRef.current?.present()} style={{ paddingVertical: 5, paddingLeft: 5 }}>

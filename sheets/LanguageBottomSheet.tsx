@@ -12,7 +12,11 @@ import { useLanguage } from "../hooks/useLanguage";
 import { Language } from "../store/LanguageContext";
 import * as Haptics from "expo-haptics";
 
-const LanguageBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
+type LanguageBottomSheetProps = {
+  onChangeIndex?: (index: number) => void;
+}
+
+const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles();
   const { t } = useTranslation();
@@ -41,6 +45,7 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
   return (
     <BottomSheetModal
       ref={ref}
+      onChange={(index: number) => props.onChangeIndex?.(index)}
       containerComponent={renderContainerComponent}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}

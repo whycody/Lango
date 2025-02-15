@@ -111,7 +111,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const loadWords = async () => {
     try {
       const storedWords = await AsyncStorage.getItem('words');
-      const parsedWords = storedWords ? JSON.parse(storedWords) : [];
+      const parsedWords = storedWords ? JSON.parse(storedWords).toReversed() : [];
       setWords(parsedWords);
     } catch (error) {
       console.log('Error loading words from storage:', error);

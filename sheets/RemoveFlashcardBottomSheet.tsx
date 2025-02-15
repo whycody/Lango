@@ -15,6 +15,7 @@ type AcceptationBottomSheetProps = {
   flashcardId: string;
   onRemove: () => void;
   onCancel: () => void;
+  onChangeIndex?: (index: number) => void;
 }
 
 const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomSheetProps>((props, ref) => {
@@ -36,6 +37,7 @@ const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBotto
       backdropComponent={renderBackdrop}
       containerComponent={renderContainerComponent}
       backgroundStyle={{ backgroundColor: colors.card }}
+      onChange={(index: number) => props.onChangeIndex?.(index)}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
     >
       <BottomSheetView style={styles.root}>

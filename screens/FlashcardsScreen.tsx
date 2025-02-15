@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { BackHandler, FlatList, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
@@ -7,7 +7,7 @@ import { LANGO, useWords } from "../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FlashcardListItem from "../components/items/FlashcardListItem";
 import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
@@ -23,6 +23,20 @@ const FlashcardsScreen = () => {
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const [editFlashcardId, setEditFlashcardId] = useState<string | null>(null);
+  const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (bottomSheetIsShown) {
+        handleFlashcardBottomSheetRef.current?.dismiss();
+        removeFlashcardBottomSheetRef.current?.dismiss();
+        return true;
+      }
+    };
+
+    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => subscription.remove();
+  }, [bottomSheetIsShown]);
 
   const handleActionButtonPress = () => {
     setEditFlashcardId(null);
@@ -70,10 +84,12 @@ const FlashcardsScreen = () => {
         flashcardId={editFlashcardId}
         onRemove={removeFlashcard}
         onCancel={handleCancel}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <HandleFlashcardBottomSheet
         ref={handleFlashcardBottomSheetRef}
         flashcardId={editFlashcardId}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <ScrollView>
         <CustomText weight={"Bold"} style={styles.title}>{t('flashcards')}</CustomText>

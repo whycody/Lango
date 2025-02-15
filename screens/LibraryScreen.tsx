@@ -69,7 +69,7 @@ const LibraryScreen = () => {
     <ScrollView showsHorizontalScrollIndicator={false}>
       <LanguageBottomSheet
         ref={languageBottomSheetRef}
-        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <ProfileCard/>
       <FlatList

@@ -69,11 +69,11 @@ const HeaderCard = () => {
       <StartSessionBottomSheet
         ref={sessionSheetRef}
         onSessionStart={handleSessionStart}
-        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <LanguageBottomSheet
         ref={languageSheetRef}
-        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>

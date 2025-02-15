@@ -201,20 +201,20 @@ const SessionScreen = () => {
       <LeaveSessionBottomSheet
         ref={leaveSessionBottomSheetRef}
         leaveSession={handleSessionExit}
-        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <HandleFlashcardBottomSheet
         ref={handleFlashcardBottomSheetRef}
         onWordEdit={handleWordEdit}
         flashcardId={editId}
-        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <FinishSessionBottomSheet
         ref={finishSessionBottomSheetRef}
         flashcardUpdates={flashcardUpdates}
         endSession={endSession}
         startNewSession={startNewSession}
-        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <SessionHeader
         length={length}

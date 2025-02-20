@@ -71,7 +71,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const addWord = (text: string, translation: string, source: string) => {
     if (words.find((word) => word.text === text && word.translation === translation)) return false;
     const newWord = createWord(text, translation, source);
-    const updatedWords = [...words, newWord];
+    const updatedWords = [newWord, ...words];
     setWords(updatedWords);
     saveWords(updatedWords);
     return true;
@@ -111,7 +111,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const loadWords = async () => {
     try {
       const storedWords = await AsyncStorage.getItem('words');
-      const parsedWords = storedWords ? JSON.parse(storedWords).toReversed() : [];
+      const parsedWords = storedWords ? JSON.parse(storedWords) : [];
       setWords(parsedWords);
     } catch (error) {
       console.log('Error loading words from storage:', error);

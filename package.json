@@ -16,7 +16,7 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "@types/react": "~18.3.12",
-    "expo": "~52.0.31",
+    "expo": "~52.0.36",
     "expo-haptics": "~14.0.1",
     "expo-status-bar": "~2.0.1",
     "i18next": "^23.16.2",
@@ -37,11 +37,21 @@
     "react-native-vector-icons": "^10.2.0",
     "square-flags": "github:kapowaz/square-flags",
     "typescript": "~5.3.3",
-    "expo-updates": "~0.26.17"
+    "expo-updates": "~0.26.19"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "react-native-svg-transformer": "^1.5.0"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "react-native-flip-card"
+        ],
+        "listUnknownPackages": false
+      }
+    }
   },
   "private": true
 }

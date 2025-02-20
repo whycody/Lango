@@ -52,7 +52,7 @@ export default function App() {
                   <FlashcardProvider>
                     <GestureHandlerRootView>
                       <BottomSheetModalProvider>
-                        <Stack.Navigator screenOptions={{ headerShown: false }}>
+                        <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
                           <Stack.Screen name='Tabs' component={TabsNavigator}/>
                           <Stack.Screen name='Session' component={SessionScreen}/>
                           <Stack.Group screenOptions={{ presentation: "modal", animationDuration: 100 }}>

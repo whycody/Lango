@@ -91,14 +91,14 @@ const FlashcardsScreen = () => {
         flashcardId={editFlashcardId}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
-      <ScrollView>
+      <ScrollView style={{backgroundColor: colors.card}}>
         <CustomText weight={"Bold"} style={styles.title}>{t('flashcards')}</CustomText>
         <CustomText style={styles.subtitle}>
           {t('soFar', { wordsCount: numberOfWords }) + ' ' + (langoWords > 0 ? t('brag', { langoWords: langoWords }) : t('nextTime'))}
         </CustomText>
         <View style={styles.statsContainer}>
-          <StatisticItem label={`${numberOfWords}`} description={t('words')} style={{ flex: 1, marginRight: 6 }}/>
-          <StatisticItem label={`${langoWords}`} description={t('langoWords')} style={{ flex: 1, marginLeft: 6 }}/>
+          <StatisticItem label={`${numberOfWords}`} description={t('words')} style={{ flex: 1, backgroundColor: colors.background, marginRight: 6 }}/>
+          <StatisticItem label={`${langoWords}`} description={t('langoWords')} style={{ flex: 1, backgroundColor: colors.background, marginLeft: 6 }}/>
         </View>
         <FlatList
           data={wordsContext.langWords}
@@ -107,7 +107,9 @@ const FlashcardsScreen = () => {
           renderItem={renderFlashcardListItem}
         />
       </ScrollView>
-      <ActionButton label={t('addWord')} primary={true} style={styles.button} onPress={handleActionButtonPress}/>
+      <View style={styles.buttonContainer}>
+        <ActionButton label={t('addWord')} primary={true} style={styles.button} onPress={handleActionButtonPress}/>
+      </View>
     </SafeAreaView>
   );
 }
@@ -133,9 +135,13 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginHorizontal: MARGIN_HORIZONTAL,
     marginTop: 15
   },
+  buttonContainer: {
+    paddingHorizontal: MARGIN_HORIZONTAL,
+    paddingVertical: MARGIN_VERTICAL / 2,
+    backgroundColor: colors.card,
+  },
   button: {
-    marginHorizontal: MARGIN_HORIZONTAL,
-    marginVertical: MARGIN_VERTICAL / 2
+
   }
 });
 

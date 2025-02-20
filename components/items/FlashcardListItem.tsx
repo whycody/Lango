@@ -26,7 +26,7 @@ const FlashcardListItem: FC<FlashcardListItemProps> =
         style={[styles.root, style]}
         android_ripple={{ color: colors.background }}
       >
-        {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
+        {index !== 0 && <View style={{ width: '100%', height: 4, backgroundColor: colors.card }}/>}
         <View style={styles.container}>
           <Ionicons name={'reader-sharp'} color={colors.primary600} size={22}/>
           <View style={styles.textContainer}>
@@ -58,7 +58,7 @@ const FlashcardListItem: FC<FlashcardListItemProps> =
 
 const getStyles = (colors: any) => StyleSheet.create({
   root: {
-    backgroundColor: colors.card
+    backgroundColor: colors.background
   },
   container: {
     paddingVertical: 15,

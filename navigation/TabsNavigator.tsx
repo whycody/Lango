@@ -22,11 +22,10 @@ const TabsNavigator = () => {
         tabBarIcon: ({ focused, color }) => {
           const iconSize = route.name === 'Home' ? 28 : 26;
           let iconName = route.name === 'Home' ? 'home' : 'view-grid';
-          if (!focused) iconName += '-outline';
-          return <MaterialCommunityIcons name={iconName} size={iconSize} color={color} />;
+          return <MaterialCommunityIcons name={iconName} size={iconSize} style={!focused && { opacity: 0.6 }} color={color} />;
         },
         tabBarLabel: ({ focused, color }) => (
-          <CustomText weight={focused ? 'Bold' : 'Regular'} style={{ color, fontSize: 12 }}>
+          <CustomText weight={focused ? 'Bold' : 'Regular'} style={[{ color, fontSize: 12 }, !focused && { opacity: 0.6 }]}>
             {t(route.name.toLowerCase())}
           </CustomText>
         ),

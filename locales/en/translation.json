@@ -1,7 +1,7 @@
 {
   "home": "Home",
   "library": "Library",
-  "report1": "Add a few words to your dictionary to get started with learning! 📝",
+  "report1": "Your dictionary is still quite empty.. *Add a few words* to start learning and track your progress \uD83D\uDCDA Every new word brings you closer to mastering the language!",
   "report2": "It's time to study ⏰ Click the button below to start your session 👇",
   "report3": "You already know *{{wellKnownWords}}* words well, but it's not time to rest. Click the button below to continue learning 👇",
   "report4": "Our estimates suggest you have mastered *{{percentage}}%* of the words you've recently added to your dictionary. Click the button below to continue learning 👇",

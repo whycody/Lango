@@ -16,6 +16,12 @@
       },
       "channel": "preview"
     },
+    "test": {
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "test"
+    },
     "production": {
       "channel": "production"
     }

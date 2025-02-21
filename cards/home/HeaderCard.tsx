@@ -40,7 +40,7 @@ const HeaderCard = () => {
   }, [bottomSheetIsShown]);
 
   const availableWords = langWords.length <= 50 ? langWords.length : 50;
-  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((langWords.slice(-50).filter(
+  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((langWords.slice(0, 50).filter(
     word => word.repetitionCount > 2 && new Date(word.nextReviewDate) > new Date()).length / availableWords) * 100) / 100;
   const wellKnownWords = langWords.filter(word => word.repetitionCount > 2).length;
 

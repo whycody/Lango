@@ -54,7 +54,7 @@ const HeaderCard = () => {
   }
 
   const getReportMessage = () => {
-    const percentage = lastWellKnownWords * 100;
+    const percentage = Math.floor(lastWellKnownWords * 100);
 
     if (langWords.length < 5) return t('report1');
     if (wellKnownWords <= 10 && lastWellKnownWords < 0.1) return t('report2');

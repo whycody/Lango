@@ -15,10 +15,12 @@
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
+    "@shopify/flash-list": "^1.7.3",
     "@types/react": "~18.3.12",
     "expo": "~52.0.36",
     "expo-haptics": "~14.0.1",
     "expo-status-bar": "~2.0.1",
+    "expo-updates": "~0.26.19",
     "i18next": "^23.16.2",
     "intl-pluralrules": "^2.0.1",
     "lottie-react-native": "7.1.0",
@@ -36,8 +38,7 @@
     "react-native-svg": "15.8.0",
     "react-native-vector-icons": "^10.2.0",
     "square-flags": "github:kapowaz/square-flags",
-    "typescript": "~5.3.3",
-    "expo-updates": "~0.26.19"
+    "typescript": "~5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

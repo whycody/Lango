@@ -1,4 +1,4 @@
-import { BackHandler, FlatList, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { BackHandler, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FlashcardListItem from "../components/items/FlashcardListItem";
 import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
+import { FlashList } from "@shopify/flash-list";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -64,7 +65,7 @@ const FlashcardsScreen = () => {
     removeFlashcardBottomSheetRef.current.present();
   }, []);
 
-  const renderFlashcardListItem = ({ item, index }) => {
+  const renderFlashcardListItem = useCallback(({ item, index }) => {
     return (
       <FlashcardListItem
         id={item.id}
@@ -75,7 +76,7 @@ const FlashcardsScreen = () => {
         onRemovePress={handleRemovePress}
       />
     );
-  }
+  }, [handleEditPress, handleRemovePress]);
 
   return (
     <SafeAreaView style={styles.root}>
@@ -91,24 +92,32 @@ const FlashcardsScreen = () => {
         flashcardId={editFlashcardId}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
-      <ScrollView style={{backgroundColor: colors.card}}>
+      <ScrollView style={{ backgroundColor: colors.card }}>
         <CustomText weight={"Bold"} style={styles.title}>{t('flashcards')}</CustomText>
         <CustomText style={styles.subtitle}>
           {t('soFar', { wordsCount: numberOfWords }) + ' ' + (langoWords > 0 ? t('brag', { langoWords: langoWords }) : t('nextTime'))}
         </CustomText>
         <View style={styles.statsContainer}>
-          <StatisticItem label={`${numberOfWords}`} description={t('words')} style={{ flex: 1, backgroundColor: colors.background, marginRight: 6 }}/>
-          <StatisticItem label={`${langoWords}`} description={t('langoWords')} style={{ flex: 1, backgroundColor: colors.background, marginLeft: 6 }}/>
+          <StatisticItem
+            label={`${numberOfWords}`}
+            description={t('words')}
+            style={[styles.statisticItem, { marginRight: 6 }]}
+          />
+          <StatisticItem
+            label={`${langoWords}`}
+            description={t('langoWords')}
+            style={[styles.statisticItem, { marginLeft: 6 }]}
+          />
         </View>
-        <FlatList
+        <FlashList
           data={wordsContext.langWords}
           scrollEnabled={false}
-          style={{ marginTop: MARGIN_VERTICAL }}
           renderItem={renderFlashcardListItem}
+          estimatedItemSize={70}
         />
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <ActionButton label={t('addWord')} primary={true} style={styles.button} onPress={handleActionButtonPress}/>
+        <ActionButton label={t('addWord')} primary={true} onPress={handleActionButtonPress}/>
       </View>
     </SafeAreaView>
   );
@@ -133,15 +142,16 @@ const getStyles = (colors: any) => StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     marginHorizontal: MARGIN_HORIZONTAL,
-    marginTop: 15
+    marginVertical: MARGIN_VERTICAL
   },
   buttonContainer: {
     paddingHorizontal: MARGIN_HORIZONTAL,
     paddingVertical: MARGIN_VERTICAL / 2,
     backgroundColor: colors.card,
   },
-  button: {
-
+  statisticItem: {
+    flex: 1,
+    backgroundColor: colors.background
   }
 });
 

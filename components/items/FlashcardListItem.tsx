@@ -7,7 +7,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 type FlashcardListItemProps = {
   id: string;
-  index: number;
   text: string;
   translation: string;
   style?: any;
@@ -16,17 +15,12 @@ type FlashcardListItemProps = {
 }
 
 const FlashcardListItem: FC<FlashcardListItemProps> =
-  ({ id, index, text, translation, style, onEditPress, onRemovePress }) => {
+  ({ id, text, translation, style, onEditPress, onRemovePress }) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
 
     return (
-      <Pressable
-        key={id}
-        style={[styles.root, style]}
-        android_ripple={{ color: colors.background }}
-      >
-        {index !== 0 && <View style={{ width: '100%', height: 4, backgroundColor: colors.card }}/>}
+      <Pressable style={[styles.root, style]} android_ripple={{ color: colors.card }}>
         <View style={styles.container}>
           <Ionicons name={'reader-sharp'} color={colors.primary600} size={22}/>
           <View style={styles.textContainer}>
@@ -52,6 +46,7 @@ const FlashcardListItem: FC<FlashcardListItemProps> =
             />
           }
         </View>
+        <View style={{ width: '100%', height: 4, backgroundColor: colors.card }}/>
       </Pressable>
     );
   }

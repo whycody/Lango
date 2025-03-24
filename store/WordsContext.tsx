@@ -10,6 +10,7 @@ export interface Word {
   secondLang: string;
   source: string;
   interval: number;
+  addDate: string;
   repetitionCount: number;
   nextReviewDate: string;
   EF: number;
@@ -69,6 +70,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     secondLang: languageContext.mainLangCode,
     source: source,
     interval: 1,
+    addDate: new Date().toISOString(),
     repetitionCount: 0,
     nextReviewDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     EF: 2.5,
@@ -206,6 +208,8 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     });
 
     updates.forEach((update: FlashcardUpdate) => {
+      const word = words.find((word) => word.id === update.flashcardId);
+      if(!word.addDate) return;
       addEvaluation(update.flashcardId, update.grade);
     })
 

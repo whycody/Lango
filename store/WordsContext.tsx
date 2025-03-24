@@ -15,6 +15,13 @@ export interface Word {
   EF: number;
 }
 
+export interface Evaluation {
+  id: string;
+  wordId: string;
+  grade: number;
+  date: Date;
+}
+
 interface WordsContextProps {
   words: Word[];
   langWords: Word[];
@@ -22,7 +29,6 @@ interface WordsContextProps {
   getWord: (id: string) => Word | undefined;
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
-  updateWord: (id: string, grade: number) => void;
   updateFlashcards: (updates: FlashcardUpdate[]) => void;
   getWordSet: (size: number) => Word[];
   deleteWords: () => void;
@@ -43,7 +49,6 @@ export const WordsContext = createContext<WordsContextProps>({
   getWord: () => undefined,
   editWord: () => {},
   removeWord: () => {},
-  updateWord: () => {},
   updateFlashcards: () => {},
   getWordSet: () => [],
   deleteWords: () => {},
@@ -51,6 +56,7 @@ export const WordsContext = createContext<WordsContextProps>({
 
 export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [words, setWords] = useState<Word[]>([]);
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const languageContext = useLanguage();
   const langWords = words.filter((word) =>
     word.firstLang == languageContext.studyingLangCode && word.secondLang == languageContext.mainLangCode);
@@ -68,12 +74,27 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     EF: 2.5,
   });
 
+  const createEvaluation = (wordId: string, grade: number): Evaluation => ({
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+    wordId,
+    grade,
+    date: new Date()
+  });
+
   const addWord = (text: string, translation: string, source: string) => {
     if (words.find((word) => word.text === text && word.translation === translation)) return false;
     const newWord = createWord(text, translation, source);
     const updatedWords = [newWord, ...words];
     setWords(updatedWords);
     saveWords(updatedWords);
+    return true;
+  };
+
+  const addEvaluation = (wordId: string, grade: number) => {
+    const newEvaluation = createEvaluation(wordId, grade);
+    const updatedEvaluations = [newEvaluation, ...evaluations];
+    setEvaluations(updatedEvaluations);
+    saveEvaluations(updatedEvaluations);
     return true;
   };
 
@@ -108,11 +129,29 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     }
   };
 
+  const saveEvaluations = async (evaluationsToSave: Evaluation[] = evaluations) => {
+    try {
+      await AsyncStorage.setItem('evaluations', JSON.stringify(evaluationsToSave));
+    } catch (error) {
+      console.log('Error saving evaluations to storage:', error);
+    }
+  };
+
   const loadWords = async () => {
     try {
       const storedWords = await AsyncStorage.getItem('words');
       const parsedWords = storedWords ? JSON.parse(storedWords) : [];
       setWords(parsedWords);
+    } catch (error) {
+      console.log('Error loading words from storage:', error);
+    }
+  };
+
+  const loadEvaluations = async () => {
+    try {
+      const storedEvaluations = await AsyncStorage.getItem('evaluations');
+      const parsedEvaluations = storedEvaluations ? JSON.parse(storedEvaluations) : [];
+      setEvaluations(parsedEvaluations);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
@@ -126,36 +165,6 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     } catch (error) {
       console.log('Error deleting words from storage:', error);
     }
-  };
-
-  const updateWord = (id: string, grade: number) => {
-    const now = new Date();
-    const updatedWords = words.map(word => {
-      if (word.id === id) {
-        let { interval, EF, repetitionCount } = word;
-        if (grade < 3) {
-          repetitionCount = 0;
-          interval = 1;
-        } else {
-          repetitionCount += 1;
-          if (repetitionCount === 1) {
-            interval = 1;
-          } else if (repetitionCount === 2) {
-            interval = 6;
-          } else {
-            interval = Math.round(interval * EF);
-          }
-        }
-
-        EF = Math.max(1.3, EF + 0.1 - (3 - grade) * (0.08 + (3 - grade) * 0.02));
-        const nextReviewDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000).toISOString();
-        return { ...word, interval, repetitionCount, EF, nextReviewDate };
-      }
-      return word;
-    });
-
-    setWords(updatedWords);
-    saveWords(updatedWords);
   };
 
   const updateFlashcards = (updates: FlashcardUpdate[]) => {
@@ -196,6 +205,10 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       return flashcard;
     });
 
+    updates.forEach((update: FlashcardUpdate) => {
+      addEvaluation(update.flashcardId, update.grade);
+    })
+
     setWords(updatedFlashcards);
     saveWords(updatedFlashcards);
   };
@@ -220,11 +233,13 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
   useEffect(() => {
     loadWords();
+    loadEvaluations();
   }, [languageContext.mainLangCode, languageContext.studyingLangCode]);
 
   return (
     <WordsContext.Provider
-      value={{ words, langWords, addWord, getWord, editWord, removeWord, updateWord, updateFlashcards, getWordSet, deleteWords }}>
+      value={{ words, langWords, addWord, getWord, editWord, removeWord, updateFlashcards, getWordSet, deleteWords }}
+    >
       {children}
     </WordsContext.Provider>
   );

@@ -33,6 +33,7 @@ interface WordsContextProps {
   updateFlashcards: (updates: FlashcardUpdate[]) => void;
   getWordSet: (size: number) => Word[];
   deleteWords: () => void;
+  evaluationsNumber: number;
 }
 
 export const USER = 'user';
@@ -53,6 +54,7 @@ export const WordsContext = createContext<WordsContextProps>({
   updateFlashcards: () => {},
   getWordSet: () => [],
   deleteWords: () => {},
+  evaluationsNumber: 0,
 });
 
 export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -92,9 +94,9 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     return true;
   };
 
-  const addEvaluation = (wordId: string, grade: number) => {
-    const newEvaluation = createEvaluation(wordId, grade);
-    const updatedEvaluations = [newEvaluation, ...evaluations];
+  const addEvaluations = (flashcardsUpdates: FlashcardUpdate[]) => {
+    const newEvaluations = flashcardsUpdates.map(update => createEvaluation(update.flashcardId, update.grade));
+    const updatedEvaluations = [...evaluations, ...newEvaluations];
     setEvaluations(updatedEvaluations);
     saveEvaluations(updatedEvaluations);
     return true;
@@ -207,11 +209,8 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       return flashcard;
     });
 
-    updates.forEach((update: FlashcardUpdate) => {
-      const word = words.find((word) => word.id === update.flashcardId);
-      if(!word.addDate) return;
-      addEvaluation(update.flashcardId, update.grade);
-    })
+    addEvaluations(updates.filter((update: FlashcardUpdate) =>
+      words.find((word) => word.id === update.flashcardId).addDate));
 
     setWords(updatedFlashcards);
     saveWords(updatedFlashcards);
@@ -242,7 +241,18 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
   return (
     <WordsContext.Provider
-      value={{ words, langWords, addWord, getWord, editWord, removeWord, updateFlashcards, getWordSet, deleteWords }}
+      value={{
+        words,
+        langWords,
+        addWord,
+        getWord,
+        editWord,
+        removeWord,
+        updateFlashcards,
+        getWordSet,
+        deleteWords,
+        evaluationsNumber: evaluations.length
+      }}
     >
       {children}
     </WordsContext.Provider>

@@ -1,15 +1,18 @@
-import { BackHandler, FlatList, ScrollView } from "react-native";
+import { BackHandler, FlatList, Text, ScrollView } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLanguage } from "../hooks/useLanguage";
+import { useWords } from "../store/WordsContext";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
+  const words = useWords();
+  const { colors } = useTheme();
   const navigation = useNavigation();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
@@ -76,6 +79,11 @@ const LibraryScreen = () => {
         scrollEnabled={false}
         data={libraryItems}
         renderItem={renderLibraryItem}
+        ListFooterComponent={
+          <Text style={{ color: colors.primary600, opacity: 1, textAlign: 'center', fontSize: 12, marginTop: 16 }}>
+            {words.evaluationsNumber}
+          </Text>
+        }
       />
     </ScrollView>
   );

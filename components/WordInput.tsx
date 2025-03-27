@@ -1,22 +1,28 @@
-import React, { FC, useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
+import React, { FC, useEffect, useState, forwardRef, useImperativeHandle, useRef, useCallback } from "react";
 import { useTheme } from "@react-navigation/native";
 import SquareFlag from "./SquareFlag";
-import { View, StyleSheet, Platform, TextInput } from "react-native";
+import { View, StyleSheet, Platform, TextInput, FlatList, Pressable } from "react-native";
 import { MARGIN_HORIZONTAL } from "../src/constants";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import CustomText from "./CustomText";
+import debounce from "lodash.debounce";
 
 type WordInputProps = {
   word: string;
   onWordChange: (word: string) => void;
+  onWordRefresh: (word: string) => void;
   languageCode: string;
+  suggestions?: string[];
   style?: any;
 };
 
-const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordChange, languageCode, style }, ref) => {
+const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordChange, onWordRefresh, languageCode, suggestions, style }, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
+  const [focused, setFocused] = useState(false);
 
   const [internalWord, setInternalWord] = useState(word);
+  const [currentSuggestions, setCurrentSuggestions] = useState<string[]>([]);
   const inputRef = useRef<any>(null);
 
   useEffect(() => {
@@ -29,40 +35,76 @@ const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordChange, language
     getWord: () => internalWord,
   }));
 
+  useEffect(() => {
+    const filteredSuggestions = suggestions ? suggestions.filter((suggestion) =>
+      suggestion.toLowerCase().startsWith(internalWord.toLowerCase()) && suggestion.toLowerCase() !== internalWord.toLowerCase()
+    ).slice(0, 2) : [];
+
+    setCurrentSuggestions(filteredSuggestions);
+  }, [internalWord, suggestions]);
+
+  const debouncedOnWordChange = useCallback(debounce(onWordRefresh, 300), []);
+
   const handleTextChange = (newWord: string) => {
     setInternalWord(newWord);
+    debouncedOnWordChange(newWord);
   };
 
   const handleBlur = () => {
     onWordChange(internalWord);
+    setFocused(false);
+  };
+
+  const handleSuggestionPress = (suggestion: string) => {
+    setInternalWord(suggestion);
+    setCurrentSuggestions([]);
+    onWordChange(suggestion);
   };
 
   return (
-    <View style={[styles.inputContainer, style]}>
-      <SquareFlag size={30} style={{ marginRight: 10 }} languageCode={languageCode}/>
-      {Platform.OS == 'ios' ?
-        <BottomSheetTextInput
-          ref={inputRef}
-          style={styles.input}
-          cursorColor={colors.primary}
-          autoCapitalize={'none'}
-          autoCorrect={true}
-          value={internalWord}
-          onChangeText={handleTextChange}
-          onBlur={handleBlur}
-        /> :
-        <TextInput
-          ref={inputRef}
-          style={styles.input}
-          cursorColor={colors.primary}
-          autoCorrect={true}
-          autoCapitalize={'none'}
-          textContentType={'none'}
-          value={internalWord}
-          onChangeText={handleTextChange}
-          onBlur={handleBlur}
+    <View>
+      <View style={[styles.inputContainer, style]}>
+        <SquareFlag size={30} style={{ marginRight: 10 }} languageCode={languageCode}/>
+        {Platform.OS == 'ios' ?
+          <BottomSheetTextInput
+            ref={inputRef}
+            style={styles.input}
+            cursorColor={colors.primary}
+            autoCapitalize={'none'}
+            autoCorrect={true}
+            value={internalWord}
+            onChangeText={handleTextChange}
+            onBlur={handleBlur}
+          /> :
+          <TextInput
+            ref={inputRef}
+            style={styles.input}
+            cursorColor={colors.primary}
+            autoCorrect={true}
+            autoCapitalize={'none'}
+            textContentType={'none'}
+            value={internalWord}
+            onFocus={setFocused}
+            onChangeText={handleTextChange}
+            onBlur={handleBlur}
+          />
+        }
+      </View>
+      {currentSuggestions.length > 0 && focused && (
+        <FlatList
+          data={currentSuggestions}
+          keyboardShouldPersistTaps={'always'}
+          keyExtractor={(index) => index.toString()}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => handleSuggestionPress(item)}>
+              <View style={styles.suggestionItem}>
+                <CustomText style={styles.suggestionText}>{item}</CustomText>
+              </View>
+            </Pressable>
+          )}
+          style={styles.suggestionsList}
         />
-      }
+      )}
     </View>
   );
 });
@@ -80,6 +122,20 @@ const getStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.background,
     fontSize: 16,
     height: 42,
+  },
+  suggestionsList: {
+    marginTop: 10,
+    borderColor: colors.border,
+  },
+  suggestionItem: {
+    marginTop: 5,
+    backgroundColor: colors.background,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  suggestionText: {
+    fontSize: 14,
+    color: colors.primary300,
   },
 });
 

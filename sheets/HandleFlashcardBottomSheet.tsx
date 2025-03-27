@@ -13,6 +13,8 @@ import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import { useLanguage } from "../hooks/useLanguage";
+import axios from "axios";
+import TranslationUtils from "../utils/TranslationUtils";
 
 interface HandleFlashcardBottomSheetProps {
   flashcardId?: string;
@@ -32,6 +34,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const flashcard: Word | null = props.flashcardId ? wordsContext.getWord(props.flashcardId) : null;
   const [word, setWord] = useState(flashcard?.text);
   const [translation, setTranslation] = useState(flashcard?.translation);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const [status, setStatus] = useState<'error' | 'success' | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -44,6 +47,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const clearInputs = () => {
     setWord('');
     setTranslation('');
+    setSuggestions([]);
     wordInputRef.current?.clearWord();
     translationInputRef.current?.clearWord();
   }
@@ -102,7 +106,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const scheduleDismiss = () => {
     Keyboard.dismiss();
     setTimeout(() => setStatus('success'), 50);
-    setTimeout(() => ref.current?.dismiss(), 1500);
+    setTimeout(() => ref.current?.dismiss(), 1000);
     setButtonsActive(false);
   }
 
@@ -111,6 +115,30 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     setButtonsActive(true);
     if (!props.flashcardId) clearInputs();
   }
+
+  const abortControllerRef = useRef(new AbortController());
+
+  const translateWord = async (text, from = languageContext.studyingLangCode, to = languageContext.mainLangCode) => {
+    abortControllerRef.current && abortControllerRef.current.abort();
+    abortControllerRef.current = new AbortController();
+
+    try {
+      setSuggestions([(await TranslationUtils.translateText(text, from, to, abortControllerRef.current)).toLowerCase()]);
+    } catch (error) {
+      if (!axios.isCancel(error)) {
+        console.error("Błąd:", error?.response?.status, error?.response?.data || error?.message);
+      }
+    }
+  };
+
+  const handleRefreshWord = (newWord: string) => {
+    if (newWord.trim().length > 0) {
+      translateWord(newWord);
+    } else {
+      abortControllerRef.current.abort();
+      setSuggestions([]);
+    }
+  };
 
   const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
@@ -142,6 +170,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
         <WordInput
           ref={wordInputRef}
           word={word}
+          onWordRefresh={handleRefreshWord}
           onWordChange={setWord}
           languageCode={languageContext.studyingLangCode}
           style={{ marginTop: 15 }}
@@ -149,6 +178,8 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
         <WordInput
           ref={translationInputRef}
           word={translation}
+          onWordRefresh={() => {}}
+          suggestions={suggestions}
           onWordChange={setTranslation}
           languageCode={languageContext.mainLangCode}
           style={{ marginTop: 15 }}

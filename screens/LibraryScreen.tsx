@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLanguage } from "../hooks/useLanguage";
 import { useWords } from "../store/WordsContext";
+import { exportData } from "../utils/saveData";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -80,7 +81,10 @@ const LibraryScreen = () => {
         data={libraryItems}
         renderItem={renderLibraryItem}
         ListFooterComponent={
-          <Text style={{ color: colors.primary600, opacity: 1, textAlign: 'center', fontSize: 12, marginTop: 16 }}>
+          <Text
+            style={{ color: colors.primary600, opacity: 1, textAlign: 'center', fontSize: 12, marginTop: 16 }}
+            onPress={exportData}
+          >
             {words.evaluationsNumber}
           </Text>
         }

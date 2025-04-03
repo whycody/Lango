@@ -16,6 +16,11 @@ import { useLanguage } from "../hooks/useLanguage";
 import axios from "axios";
 import TranslationUtils from "../utils/TranslationUtils";
 
+type WordTranslations = {
+  word: string;
+  translations: string[];
+}
+
 interface HandleFlashcardBottomSheetProps {
   flashcardId?: string;
   onWordEdit?: (id: string, word: string, translation: string) => void;
@@ -34,7 +39,9 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const flashcard: Word | null = props.flashcardId ? wordsContext.getWord(props.flashcardId) : null;
   const [word, setWord] = useState(flashcard?.text);
   const [translation, setTranslation] = useState(flashcard?.translation);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const [currentWord, setCurrentWord] = useState<string | null>('');
+  const [wordTranslations, setWordTranslations] = useState<WordTranslations | null>(null);
 
   const [status, setStatus] = useState<'error' | 'success' | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -47,7 +54,6 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const clearInputs = () => {
     setWord('');
     setTranslation('');
-    setSuggestions([]);
     wordInputRef.current?.clearWord();
     translationInputRef.current?.clearWord();
   }
@@ -123,7 +129,12 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     abortControllerRef.current = new AbortController();
 
     try {
-      setSuggestions([(await TranslationUtils.translateText(text, from, to, abortControllerRef.current)).toLowerCase()]);
+      setWordTranslations(
+        {
+          word: text,
+          translations: [(await TranslationUtils.translateText(text, from, to, abortControllerRef.current)).toLowerCase()]
+        }
+      );
     } catch (error) {
       if (!axios.isCancel(error)) {
         console.error("Błąd:", error?.response?.status, error?.response?.data || error?.message);
@@ -131,14 +142,12 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     }
   };
 
-  const handleRefreshWord = (newWord: string) => {
-    if (newWord.trim().length > 0) {
-      translateWord(newWord);
-    } else {
-      abortControllerRef.current.abort();
-      setSuggestions([]);
-    }
-  };
+  useEffect(() => {
+    if (!word || word.trim().length === 0) return;
+    translateWord(word);
+  }, [word]);
+
+  const suggestions = wordTranslations && currentWord == wordTranslations.word ? wordTranslations.translations : [];
 
   const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
@@ -170,17 +179,16 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
         <WordInput
           ref={wordInputRef}
           word={word}
-          onWordRefresh={handleRefreshWord}
-          onWordChange={setWord}
+          onWordCommit={setWord}
+          onWordChange={setCurrentWord}
           languageCode={languageContext.studyingLangCode}
           style={{ marginTop: 15 }}
         />
         <WordInput
           ref={translationInputRef}
           word={translation}
-          onWordRefresh={() => {}}
           suggestions={suggestions}
-          onWordChange={setTranslation}
+          onWordCommit={setTranslation}
           languageCode={languageContext.mainLangCode}
           style={{ marginTop: 15 }}
         />

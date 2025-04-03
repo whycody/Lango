@@ -5,18 +5,17 @@ import { View, StyleSheet, Platform, TextInput, FlatList, Pressable } from "reac
 import { MARGIN_HORIZONTAL } from "../src/constants";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import CustomText from "./CustomText";
-import debounce from "lodash.debounce";
 
 type WordInputProps = {
   word: string;
-  onWordChange: (word: string) => void;
-  onWordRefresh: (word: string) => void;
+  onWordCommit?: (word: string) => void;
+  onWordChange?: (word: string) => void;
   languageCode: string;
   suggestions?: string[];
   style?: any;
 };
 
-const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordChange, onWordRefresh, languageCode, suggestions, style }, ref) => {
+const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordCommit, onWordChange, languageCode, suggestions, style }, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const [focused, setFocused] = useState(false);
@@ -43,22 +42,20 @@ const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordChange, onWordRe
     setCurrentSuggestions(filteredSuggestions);
   }, [internalWord, suggestions]);
 
-  const debouncedOnWordChange = useCallback(debounce(onWordRefresh, 300), []);
-
   const handleTextChange = (newWord: string) => {
     setInternalWord(newWord);
-    debouncedOnWordChange(newWord);
+    onWordChange?.(newWord);
   };
 
   const handleBlur = () => {
-    onWordChange(internalWord);
+    onWordCommit?.(internalWord);
     setFocused(false);
   };
 
   const handleSuggestionPress = (suggestion: string) => {
-    setInternalWord(suggestion);
     setCurrentSuggestions([]);
-    onWordChange(suggestion);
+    setInternalWord(suggestion);
+    onWordCommit(suggestion);
   };
 
   return (

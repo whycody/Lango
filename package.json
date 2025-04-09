@@ -21,6 +21,8 @@
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "expo": "~52.0.36",
     "expo-haptics": "~14.0.1",
+    "expo-sharing": "~13.0.1",
+    "expo-speech": "~13.0.1",
     "expo-status-bar": "~2.0.1",
     "expo-updates": "~0.26.19",
     "i18next": "^23.16.2",
@@ -40,8 +42,7 @@
     "react-native-svg": "15.8.0",
     "react-native-vector-icons": "^10.2.0",
     "square-flags": "github:kapowaz/square-flags",
-    "typescript": "~5.3.3",
-    "expo-sharing": "~13.0.1"
+    "typescript": "~5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

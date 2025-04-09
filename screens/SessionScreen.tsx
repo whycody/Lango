@@ -18,6 +18,7 @@ import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useStatistics } from "../hooks/useStatistics";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
+import * as Speech from 'expo-speech';
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -99,6 +100,9 @@ const SessionScreen = () => {
         flipVertical={false}
         alignHeight={true}
         alignWidth={true}
+        onFlipStart={(isFlipped) => {
+          !isFlipped && Speech.speak(flipped ? word?.translation : word?.text, { language: word.firstLang });
+        }}
         friction={6}
       >
         <Animated.View style={[styles.cardContent, { transform: [{ scale: scaleValues[wordIndex] }] }]}>

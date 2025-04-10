@@ -1,4 +1,4 @@
-import { BackHandler, FlatList, Text, ScrollView } from "react-native";
+import { BackHandler, FlatList, Platform, ScrollView } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
@@ -9,15 +9,19 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLanguage } from "../hooks/useLanguage";
 import { useWords } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
+import CustomText from "../components/CustomText";
+import appBuildNumbers from "../app.json";
+import { runtimeVersion } from "expo-updates";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
-  const words = useWords();
   const { colors } = useTheme();
+  const words = useWords();
   const navigation = useNavigation();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+  const buildNumber = appBuildNumbers.expo.runtimeVersion;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -36,6 +40,7 @@ const LibraryScreen = () => {
     LANGUAGE,
     MY_WORDS,
     LOGOUT,
+    EXPORT,
     PRIVACY_POLICY,
     USE_CONDITIONS
   }
@@ -43,18 +48,52 @@ const LibraryScreen = () => {
   const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.studyingLangCode)[0].languageName;
 
   const libraryItems = [
-    { id: LibraryItems.SETTINGS, label: t('settings'), icon: 'settings-sharp' },
-    { id: LibraryItems.LANGUAGE, label: t('language'), description: currentLang, icon: 'language-sharp' },
-    { id: LibraryItems.MY_WORDS, label: t('myWords'), icon: 'albums-sharp' },
-    { id: LibraryItems.LOGOUT, label: t('logout'), icon: 'log-out-sharp' },
-    { id: LibraryItems.PRIVACY_POLICY, label: t('privacyPolicy') },
-    { id: LibraryItems.USE_CONDITIONS, label: t('useConditions') },
+    {
+      id: LibraryItems.SETTINGS,
+      label: t('settings'),
+      description: t('settings_desc'),
+      icon: 'settings-sharp'
+    },
+    {
+      id: LibraryItems.LANGUAGE,
+      label: t('language'),
+      description: currentLang,
+      icon: 'language-sharp'
+    },
+    {
+      id: LibraryItems.MY_WORDS,
+      label: t('myWords'),
+      description: t('words_desc', { words_number: words.words.length.toString() }),
+      icon: 'albums-sharp'
+    },
+    {
+      id: LibraryItems.EXPORT,
+      label: t('export'),
+      description: t('export_desc', { records_number: words.evaluationsNumber.toString() }),
+      icon: 'share-outline'
+    },
+    {
+      id: LibraryItems.LOGOUT,
+      label: t('logout'),
+      icon: 'log-out-sharp'
+    },
+    {
+      id: LibraryItems.PRIVACY_POLICY,
+      label: t('privacyPolicy')
+    },
+    {
+      id: LibraryItems.USE_CONDITIONS,
+      label: t('useConditions')
+    },
   ]
 
   const handlePress = (id: number) => {
     switch (id) {
       case LibraryItems.MY_WORDS:
         navigation.navigate('Flashcards' as never);
+        break;
+      case LibraryItems.EXPORT:
+        exportData();
         break;
       case LibraryItems.LANGUAGE:
         languageBottomSheetRef.current?.present();
@@ -65,8 +104,14 @@ const LibraryScreen = () => {
   }
 
   const renderLibraryItem = ({ item, index }) => (
-    <LibraryItem key={item.id} label={item.label} icon={item.icon} description={item.description} index={index}
-                 onPress={() => handlePress(item.id)}/>
+    <LibraryItem
+      key={item.id}
+      label={item.label}
+      icon={item.icon}
+      description={item.description}
+      index={index}
+      onPress={() => handlePress(item.id)}
+    />
   );
 
   return (
@@ -80,14 +125,11 @@ const LibraryScreen = () => {
         scrollEnabled={false}
         data={libraryItems}
         renderItem={renderLibraryItem}
-        ListFooterComponent={
-          <Text
-            style={{ color: colors.primary600, opacity: 1, textAlign: 'center', fontSize: 12, marginTop: 16 }}
-            onPress={exportData}
-          >
-            {words.evaluationsNumber}
-          </Text>
-        }
+        ListFooterComponent={() =>
+          <CustomText style={{ color: colors.text, marginTop: 30, marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
+            {buildNumber}
+          </CustomText>
+      }
       />
     </ScrollView>
   );

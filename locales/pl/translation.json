@@ -78,5 +78,9 @@
   "session_mode": "Wybierz tryb sesji",
   "study": "Nauka",
   "random": "Losowe",
-  "oldest": "Najstarsze"
+  "oldest": "Najstarsze",
+  "export": "Wyeksportuj dane",
+  "settings_desc": "Dopasuj aplikację do swoich potrzeb",
+  "export_desc": "Wyeksportuj {{records_number}} rekordów",
+  "words_desc": "Rzuć okiem na {{words_number}} słówek"
 }

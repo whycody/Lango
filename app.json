@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.0.2",
+    "runtimeVersion": "1.0.3",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

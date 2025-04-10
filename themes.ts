@@ -5,11 +5,11 @@ export const DarkTheme: CustomTheme = {
   colors: {
     primary: '#DCF2F1',
     primary300: '#A8DAE7',
-    primary600: '#4f75bd',
+    primary600: '#608ada',
 
-    background: '#0F1035',
+    background: '#11123a',
     card: '#0B0B27',
-    cardAccent: '#34507F',
+    cardAccent: '#3a598c',
 
     text: '#DCF2F1',
     border: '#333333',

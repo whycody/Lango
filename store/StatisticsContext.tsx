@@ -4,15 +4,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface StatisticsContextProps {
   numberOfSessions: number;
   increaseNumberOfSessions: () => void;
-  numberOfDays: number;
-  increaseNumberOfDays: () => void;
+  studyDaysList: string[];
+  addTodayDayToStudyDaysList: () => void;
 }
 
 export const StatisticsContext = createContext<StatisticsContextProps>({
   numberOfSessions: 0,
   increaseNumberOfSessions: () => {},
-  numberOfDays: 0,
-  increaseNumberOfDays: () => {},
+  studyDaysList: [],
+  addTodayDayToStudyDaysList: () => {},
 });
 
 export const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -49,7 +49,7 @@ export const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children
     await AsyncStorage.setItem('numberOfSessions', newSessionCount.toString());
   };
 
-  const increaseNumberOfDays = async () => {
+  const addTodayDayToStudyDaysList = async () => {
     const today = new Date().toISOString().split('T')[0];
     if (!daysList.includes(today)) {
       const updatedDaysList = [...daysList, today];
@@ -61,7 +61,13 @@ export const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <StatisticsContext.Provider
-      value={{ numberOfSessions, increaseNumberOfSessions, numberOfDays, increaseNumberOfDays }}>
+      value={{
+        numberOfSessions,
+        increaseNumberOfSessions,
+        studyDaysList: daysList,
+        addTodayDayToStudyDaysList: addTodayDayToStudyDaysList
+      }}
+    >
       {children}
     </StatisticsContext.Provider>
   );

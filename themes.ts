@@ -14,5 +14,7 @@ export const DarkTheme: CustomTheme = {
     text: '#DCF2F1',
     border: '#333333',
     notification: '#ffffff',
+
+    red: '#ff6060'
   },
 };

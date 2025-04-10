@@ -5,5 +5,6 @@ export type CustomTheme = Theme & {
     primary300: string;
     primary600: string;
     cardAccent: string;
+    red: string;
   };
 }

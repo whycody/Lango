@@ -28,9 +28,9 @@ const StatisticsCard = () => {
   useEffect(() => {
     updateStat('numberOfWords', wordsContext.langWords.length);
     updateStat('numberOfLangoWords', wordsContext.langWords.filter((word) => word.source == LANGO).length);
-    updateStat('numberOfStudyDays', statsContext.numberOfDays);
+    updateStat('numberOfStudyDays', statsContext.studyDaysList.length);
     updateStat('numberOfSessions', statsContext.numberOfSessions);
-  }, [wordsContext.langWords, statsContext.numberOfDays, statsContext.numberOfSessions]);
+  }, [wordsContext.langWords, statsContext.studyDaysList, statsContext.numberOfSessions]);
 
   return (
     <View style={styles.root}>

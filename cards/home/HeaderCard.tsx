@@ -13,6 +13,9 @@ import SquareFlag from "../../components/SquareFlag";
 import { useLanguage } from "../../hooks/useLanguage";
 import LanguageBottomSheet from "../../sheets/LanguageBottomSheet";
 import { useWords } from "../../store/WordsContext";
+import { useStatistics } from "../../hooks/useStatistics";
+import { getCurrentStreak, Streak } from "../../utils/streakUtils";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const HeaderCard = () => {
   const { t } = useTranslation();
@@ -22,9 +25,16 @@ const HeaderCard = () => {
   const langContext = useLanguage();
   const wordsContext = useWords();
   const { langWords } = wordsContext;
+  const statisticsContext = useStatistics();
+  const [streak, setStreak] = useState<Streak>({ numberOfDays: 0, active: false });
   const languageSheetRef = useRef<BottomSheetModal>(null);
   const sessionSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+
+  const availableWords = langWords.length <= 50 ? langWords.length : 50;
+  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((langWords.slice(0, 50).filter(
+    word => word.repetitionCount > 2 && new Date(word.nextReviewDate) > new Date()).length / availableWords) * 100) / 100;
+  const wellKnownWords = langWords.filter(word => word.repetitionCount > 2).length;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -39,10 +49,9 @@ const HeaderCard = () => {
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
 
-  const availableWords = langWords.length <= 50 ? langWords.length : 50;
-  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((langWords.slice(0, 50).filter(
-    word => word.repetitionCount > 2 && new Date(word.nextReviewDate) > new Date()).length / availableWords) * 100) / 100;
-  const wellKnownWords = langWords.filter(word => word.repetitionCount > 2).length;
+  useEffect(() => {
+    setStreak(getCurrentStreak(statisticsContext.studyDaysList));
+  }, [statisticsContext.studyDaysList]);
 
   const handleActinButtonPress = () => {
     sessionSheetRef.current.present();
@@ -77,6 +86,10 @@ const HeaderCard = () => {
       />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>
+        <MaterialCommunityIcons name={'fire'} size={30} color={streak.active ? colors.red : colors.primary600}/>
+        <CustomText weight={"Bold"} style={[styles.streakText, !streak.active && { color: colors.primary600 }]}>
+          {streak.numberOfDays.toString()}
+        </CustomText>
         <Pressable onPress={() => languageSheetRef.current?.present()} style={{ paddingVertical: 5, paddingLeft: 5 }}>
           <SquareFlag languageCode={langContext.studyingLangCode} size={24}/>
         </Pressable>
@@ -109,6 +122,11 @@ const getStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.card,
     marginTop: 12,
     height: 7
+  },
+  streakText: {
+    color: colors.primary,
+    fontSize: 18,
+    marginRight: 15,
   },
   descText: {
     fontSize: 15,

@@ -158,7 +158,7 @@ const SessionScreen = () => {
   const finishSession = () => {
     incrementCurrentIndex();
     confettiRef.current?.play(0);
-    statsContext.increaseNumberOfDays();
+    statsContext.addTodayDayToStudyDaysList();
     statsContext.increaseNumberOfSessions();
     finishSessionBottomSheetRef.current?.present();
     wordsContext.updateFlashcards(flashcardUpdates);

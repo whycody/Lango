@@ -14,7 +14,7 @@ import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import { useLanguage } from "../hooks/useLanguage";
 import axios from "axios";
-import TranslationUtils from "../utils/TranslationUtils";
+import TranslationUtils from "../utils/translationUtils";
 
 type WordTranslations = {
   word: string;

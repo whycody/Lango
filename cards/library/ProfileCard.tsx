@@ -11,7 +11,7 @@ const ProfileCard = () => {
   return (
     <View style={styles.root}>
       <View style={styles.profileIconContainer}>
-        <Ionicons name={'person-sharp'} size={80} color={colors.primary300} style={{ marginTop: 25 }}/>
+        <Ionicons name={'person-sharp'} size={80} color={colors.primary300} style={{ marginTop: 24 }}/>
       </View>
       <CustomText weight={'SemiBold'} style={styles.name}>Oktawian Kausz</CustomText>
     </View>

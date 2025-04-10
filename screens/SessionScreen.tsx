@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, View, Animated, BackHandler } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, BackHandler, SafeAreaView, StyleSheet, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useNavigation, useRoute, useTheme } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
@@ -19,9 +19,11 @@ import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useStatistics } from "../hooks/useStatistics";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
+import { SESSION_MODE } from "../sheets/StartSessionBottomSheet";
 
 type RouteParams = {
   length: 1 | 2 | 3;
+  mode: SESSION_MODE;
 };
 
 const SessionScreen = () => {
@@ -32,10 +34,11 @@ const SessionScreen = () => {
 
   const route = useRoute();
   const length = (route.params as RouteParams)?.length || 1;
+  const mode = (route.params as RouteParams)?.mode || SESSION_MODE.STUDY;
   const wordsContext = useWords();
 
   const pagerRef = useRef(null);
-  const [cards, setCards] = useState(wordsContext.getWordSet(length * 10));
+  const [cards, setCards] = useState(wordsContext.getWordSet(length * 10, mode));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -175,7 +178,7 @@ const SessionScreen = () => {
   const startNewSession = () => {
     setNumberOfSession((prev) => prev + 1);
     setFlashcardUpdates([]);
-    setCards(wordsContext.getWordSet(length * 10).sort(() => Math.random() - 0.5));
+    setCards(wordsContext.getWordSet(length * 10, mode).sort(() => Math.random() - 0.5));
     setTimeout(() => {
       setCurrentIndex(0);
       finishSessionBottomSheetRef.current?.dismiss();

@@ -7,7 +7,7 @@ import CustomText from "../../components/CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../../components/ActionButton";
-import StartSessionBottomSheet from "../../sheets/StartSessionBottomSheet";
+import StartSessionBottomSheet, { SESSION_MODE } from "../../sheets/StartSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SquareFlag from "../../components/SquareFlag";
 import { useLanguage } from "../../hooks/useLanguage";
@@ -48,9 +48,9 @@ const HeaderCard = () => {
     sessionSheetRef.current.present();
   }
 
-  const handleSessionStart = (length: 1 | 2 | 3) => {
+  const handleSessionStart = (length: 1 | 2 | 3, mode: SESSION_MODE) => {
     sessionSheetRef.current.close();
-    navigation.navigate('Session', { length: length });
+    navigation.navigate('Session', { length: length, mode: mode });
   }
 
   const getReportMessage = () => {

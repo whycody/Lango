@@ -1,6 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from "../hooks/useLanguage";
+import { SESSION_MODE } from "../sheets/StartSessionBottomSheet";
 
 export interface Word {
   id: string;
@@ -12,6 +13,7 @@ export interface Word {
   interval: number;
   addDate: string;
   repetitionCount: number;
+  lastReviewDate: string;
   nextReviewDate: string;
   EF: number;
 }
@@ -74,6 +76,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     interval: 1,
     addDate: new Date().toISOString(),
     repetitionCount: 0,
+    lastReviewDate: new Date(Date.now()).toISOString(),
     nextReviewDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     EF: 2.5,
   });
@@ -201,9 +204,10 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
           ? Math.min(2.5, EF + 0.1)
           : Math.max(1.3, EF - (3 - grade) * (0.08 + (3 - grade) * 0.02));
 
+        const lastReviewDate = new Date(Date.now()).toISOString();
         const nextReviewDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000).toISOString();
 
-        return { ...flashcard, interval, repetitionCount, EF, nextReviewDate };
+        return { ...flashcard, interval, repetitionCount, EF, lastReviewDate, nextReviewDate };
       }
 
       return flashcard;
@@ -217,12 +221,13 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   };
 
 
-  const getWordSet = (size: number): Word[] => {
+  const getWordSet = (size: number, mode: SESSION_MODE): Word[] => {
     const now = new Date();
 
     const sortedWords = [...langWords].sort((a, b) => {
-      const dateA = new Date(a.nextReviewDate).getTime();
-      const dateB = new Date(b.nextReviewDate).getTime();
+      if(mode == SESSION_MODE.RANDOM) return Math.random() - 0.5;
+      const dateA = new Date(mode == SESSION_MODE.STUDY ? a.nextReviewDate : a.lastReviewDate).getTime();
+      const dateB = new Date(mode == SESSION_MODE.STUDY ? b.nextReviewDate : a.lastReviewDate).getTime();
 
       if (dateA !== dateB) return dateA - dateB;
       return a.repetitionCount - b.repetitionCount;

@@ -15,7 +15,7 @@ const Header: FC<HeaderProps> = ({ title, subtitle, style }) => {
 
   return (
     <View style={style}>
-      <CustomText style={styles.title} weight={"SemiBold"}>{title}</CustomText>
+      <CustomText style={styles.title} weight={"Bold"}>{title}</CustomText>
       {subtitle &&
         <CustomText style={styles.subtitle}>{subtitle}</CustomText>
       }

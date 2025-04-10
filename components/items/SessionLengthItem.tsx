@@ -46,6 +46,7 @@ const SessionLengthItem: FC<SessionLengthItemProps> = ({ length, selected, onPre
 
 const getStyles = (colors: any, selected: boolean) => StyleSheet.create({
   root: {
+    flex: 1,
     backgroundColor: colors.background,
     opacity: selected ? 1 : 0.5,
     paddingTop: MARGIN_VERTICAL*1.2,

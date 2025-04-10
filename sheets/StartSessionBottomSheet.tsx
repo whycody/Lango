@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useState } from "react";
+import React, { forwardRef, useCallback, useState } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
@@ -8,20 +8,34 @@ import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
+import CustomText from "../components/CustomText";
+import SessionModeItem from "../components/items/SessionModeItem";
 
 interface StartSessionBottomSheetProps {
-  onSessionStart: (length: 1 | 2 | 3) => void,
+  onSessionStart: (length: 1 | 2 | 3, mode: SESSION_MODE) => void,
   onChangeIndex?: (index: number) => void;
+}
+
+export enum SESSION_MODE {
+  STUDY = 'STUDY',
+  RANDOM = 'RANDOM',
+  OLDEST = 'OLDEST'
 }
 
 const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
+  const [sessionMode, setSessionMode] = useState<SESSION_MODE>(SESSION_MODE.STUDY)
   const [sessionLength, setSessionLength] = useState<1 | 2 | 3>(2)
   const { t } = useTranslation();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+
+  const handleSessionModeItemPress = (mode: SESSION_MODE) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+    setSessionMode(mode);
+  }
 
   const handleSessionLengthItemPress = (length: 1 | 2 | 3) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
@@ -38,29 +52,45 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
     >
       <BottomSheetScrollView style={styles.root}>
-        <Header title={t('startSession')} subtitle={t('sessionLength')} style={styles.header}/>
+        <Header title={t('startSession')} style={styles.header}/>
+        <CustomText style={styles.subtitle}>Wybierz tryb sesji</CustomText>
+        <View style={styles.sessionItemsContainer}>
+          <SessionModeItem
+            mode={SESSION_MODE.STUDY}
+            selected={sessionMode === SESSION_MODE.STUDY}
+            onPress={() => handleSessionModeItemPress(SESSION_MODE.STUDY)}
+          />
+          <SessionModeItem
+            mode={SESSION_MODE.RANDOM}
+            selected={sessionMode === SESSION_MODE.RANDOM}
+            onPress={() => handleSessionModeItemPress(SESSION_MODE.RANDOM)}
+          />
+          <SessionModeItem
+            mode={SESSION_MODE.OLDEST}
+            selected={sessionMode === SESSION_MODE.OLDEST}
+            onPress={() => handleSessionModeItemPress(SESSION_MODE.OLDEST)}
+          />
+        </View>
+        <CustomText style={styles.subtitle}>{t('sessionLength')}</CustomText>
         <View style={styles.sessionItemsContainer}>
           <SessionLengthItem
             length={1}
             selected={sessionLength === 1}
-            style={{ flex: 1, marginRight: 6 }}
             onPress={() => handleSessionLengthItemPress(1)}
           />
           <SessionLengthItem
             length={2}
             selected={sessionLength === 2}
-            style={{ flex: 1, marginLeft: 3, marginRight: 3 }}
             onPress={() => handleSessionLengthItemPress(2)}
           />
           <SessionLengthItem
             length={3}
             selected={sessionLength === 3}
-            style={{ flex: 1, marginLeft: 6, }}
             onPress={() => handleSessionLengthItemPress(3)}
           />
         </View>
         <ActionButton
-          onPress={() => props.onSessionStart(sessionLength)}
+          onPress={() => props.onSessionStart(sessionLength, sessionMode)}
           label={t('startSession')}
           primary={true}
           style={styles.button}
@@ -76,11 +106,18 @@ const getStyles = (colors: any) => StyleSheet.create({
     paddingHorizontal: MARGIN_HORIZONTAL,
   },
   header: {
-    paddingVertical: MARGIN_VERTICAL / 2,
+    paddingTop: MARGIN_VERTICAL / 2,
+  },
+  subtitle: {
+    color: colors.primary600,
+    paddingTop: 15,
+    paddingBottom: 3,
+    fontSize: 14,
   },
   sessionItemsContainer: {
     flexDirection: 'row',
     flex: 1,
+    gap: 6,
     marginTop: 5,
   },
   button: {

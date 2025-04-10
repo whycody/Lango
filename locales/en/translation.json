@@ -73,5 +73,9 @@
   "english": "English",
   "polish": "Polish",
   "spanish": "Spanish",
-  "italian": "Italian"
+  "italian": "Italian",
+  "session_mode": "Choose session mode",
+  "study": "Study",
+  "random": "Random",
+  "oldest": "Oldest"
 }

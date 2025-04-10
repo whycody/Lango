@@ -11,7 +11,6 @@ import { useWords } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
-import { runtimeVersion } from "expo-updates";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -21,7 +20,8 @@ const LibraryScreen = () => {
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
-  const buildNumber = appBuildNumbers.expo.runtimeVersion;
+  const buildNumber = Platform.OS === 'ios' ? appBuildNumbers.expo.ios.buildNumber : appBuildNumbers.expo.android.versionCode;
+  const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -127,7 +127,7 @@ const LibraryScreen = () => {
         renderItem={renderLibraryItem}
         ListFooterComponent={() =>
           <CustomText style={{ color: colors.text, marginTop: 30, marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
-            {buildNumber}
+            {`${runtimeVersion}.${buildNumber}`}
           </CustomText>
       }
       />

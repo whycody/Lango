@@ -9,21 +9,23 @@
     "newArchEnabled": true,
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.0.3",
+    "runtimeVersion": "1.0.2",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.whycody.lango"
+      "package": "com.whycody.lango",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

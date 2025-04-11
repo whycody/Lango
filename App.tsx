@@ -15,6 +15,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatisticsProvider } from "./store/StatisticsContext";
 import FlashcardsScreen from "./screens/FlashcardsScreen";
 import { LanguageProvider } from "./store/LanguageContext";
+import AuthProvider from "./auth/AuthProvider";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,13 +53,15 @@ export default function App() {
                   <FlashcardProvider>
                     <GestureHandlerRootView>
                       <BottomSheetModalProvider>
-                        <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
-                          <Stack.Screen name='Tabs' component={TabsNavigator}/>
-                          <Stack.Screen name='Session' component={SessionScreen}/>
-                          <Stack.Group screenOptions={{ presentation: "modal", animationDuration: 100 }}>
-                            <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
-                          </Stack.Group>
-                        </Stack.Navigator>
+                        <AuthProvider>
+                          <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
+                            <Stack.Screen name='Tabs' component={TabsNavigator}/>
+                            <Stack.Screen name='Session' component={SessionScreen}/>
+                            <Stack.Group screenOptions={{ presentation: "modal", animationDuration: 100 }}>
+                              <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                            </Stack.Group>
+                          </Stack.Navigator>
+                        </AuthProvider>
                       </BottomSheetModalProvider>
                     </GestureHandlerRootView>
                   </FlashcardProvider>

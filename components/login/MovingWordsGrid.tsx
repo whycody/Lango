@@ -3,14 +3,14 @@ import { View, StyleSheet } from 'react-native';
 import { Marquee } from "@animatereactnative/marquee";
 import CustomText from "../CustomText";
 
-const MarqueeRow = ({ words, reverse }: { words: string[]; reverse?: boolean }) => {
+const MarqueeRow = ({ loading, words, reverse }: { loading: boolean, words: string[]; reverse?: boolean }) => {
 
   return (
     <Marquee
-      speed={0.2 + Math.random()}
+      speed={loading ? 0 : 0.2 + Math.random()}
       style={{ marginTop: 10 }}
       reverse={reverse}
-      frameRate={30}
+      frameRate={10}
     >
       <View style={{ flexDirection: 'row' }}>
         {[...Array(words.length).keys()].map((i) => {

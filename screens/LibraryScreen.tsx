@@ -4,13 +4,15 @@ import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLanguage } from "../hooks/useLanguage";
 import { useWords } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
+import { AuthContext } from "../auth/AuthProvider";
+import { useAuth } from "../hooks/useAuth";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -22,6 +24,7 @@ const LibraryScreen = () => {
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const buildNumber = Platform.OS === 'ios' ? appBuildNumbers.expo.ios.buildNumber : appBuildNumbers.expo.android.versionCode;
   const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
+  const authContext = useAuth();
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -97,6 +100,9 @@ const LibraryScreen = () => {
         break;
       case LibraryItems.LANGUAGE:
         languageBottomSheetRef.current?.present();
+        break;
+      case LibraryItems.LOGOUT:
+        authContext.logout();
         break;
       default:
         break;

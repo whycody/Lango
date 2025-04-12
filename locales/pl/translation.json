@@ -82,5 +82,11 @@
   "export": "Wyeksportuj dane",
   "settings_desc": "Dopasuj aplikację do swoich potrzeb",
   "export_desc": "Wyeksportuj {{records_number}} rekordów",
-  "words_desc": "Rzuć okiem na {{words_number}} słówek"
+  "words_desc": "Rzuć okiem na {{words_number}} słówek",
+  "login_with_google": "Zaloguj się z Google",
+  "login_with_facebook": "Zaloguj się z Facebook",
+  "welcome_to": "Witaj w",
+  "welcome_desc": "... aplikacji, która pomoże Ci już na dobre przyswoić nowe słówka i upewni się, że pamiętasz te, których nauczyłeś się kiedyś",
+  "loading_content": "Ładowanie zawartości",
+  "loading_content_desc": "Bądź cierpliwy! To zajmie tylko chwilę."
 }

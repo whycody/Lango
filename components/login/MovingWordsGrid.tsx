@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2F4878',
     flexDirection: 'row',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 17,
     marginRight: 12,
   },
   wordText: {

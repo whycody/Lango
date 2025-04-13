@@ -87,7 +87,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const loginWithGoogle = async () => {
     try {
       const response = await GoogleLogin();
-      if (response.data.idToken) {
+      if (response.data) {
         setIsAuthenticated(true);
         const currentUser = response.data.user;
         setUser({

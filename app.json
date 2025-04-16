@@ -15,6 +15,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "655424690643723",
+          "displayName": "Lango"
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true,
       "buildNumber": "1"

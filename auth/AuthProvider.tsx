@@ -6,6 +6,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { Settings, AccessToken, LoginManager } from "react-native-fbsdk-next";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -77,12 +78,26 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const login = async (method: 'Google' | 'Facebook') => {
     setLoading(method);
     if (method == 'Google') await loginWithGoogle();
-    else {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    }
+    else await loginWithFacebook();
   };
+
+  const loginWithFacebook = async () => {
+    try {
+      Settings.initializeSDK();
+      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+      if (result.isCancelled) {
+        console.log('Login cancelled');
+        return;
+      }
+
+      const data = await AccessToken.getCurrentAccessToken();
+      if (data) {
+        console.log('Access Token:', data.accessToken.toString());
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const loginWithGoogle = async () => {
     try {

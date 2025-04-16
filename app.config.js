@@ -1,4 +1,4 @@
-export default ({ config }) => {
+export default ({config}) => {
   const isTest = process.env.EAS_BUILD_PROFILE === "test";
   const isDev = process.env.EAS_BUILD_PROFILE === "development";
 

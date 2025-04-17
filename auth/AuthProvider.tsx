@@ -6,7 +6,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { Settings, AccessToken, LoginManager } from "react-native-fbsdk-next";
+import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -30,6 +30,7 @@ export type User = {
   name: string;
   email: string;
   photo: string;
+  method: 'google' | 'facebook';
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -46,18 +47,23 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const getHighResPhoto = (photo: string) => photo.replace(/=s\d+-c$/, '=s400-c');
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       try {
         const currentSession = GoogleSignin.getCurrentUser();
-        setIsAuthenticated(!!currentSession);
-        if (!currentSession) return;
-        const currentUser = currentSession?.user;
-        setUser({
-          id: currentUser.id,
-          name: currentUser.name,
-          email: currentUser.email,
-          photo: getHighResPhoto(currentUser.photo)
-        });
+
+        if (currentSession) {
+          setGoogleUser(currentSession);
+          return;
+        }
+
+        const data = await AccessToken.getCurrentAccessToken();
+
+        if (data) {
+          await setFacebookUser(data);
+          return;
+        }
+
+        setIsAuthenticated(false);
       } catch {
         setIsAuthenticated(false);
       }
@@ -66,9 +72,37 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     checkAuth();
   }, []);
 
+  const setGoogleUser = (currentSession) => {
+    const currentUser = currentSession?.user;
+    setUser({
+      id: currentUser.id,
+      name: currentUser.name,
+      email: currentUser.email,
+      photo: getHighResPhoto(currentUser.photo),
+      method: 'google'
+    });
+    setIsAuthenticated(true);
+  }
+
+  const setFacebookUser = async (data) => {
+    const response = await fetch(`https://graph.facebook.com/me?fields=id,name,picture.type(large)&access_token=${data.accessToken}`);
+    const userInfo = await response.json();
+
+    setUser({
+      id: userInfo.id,
+      name: userInfo.name,
+      email: '',
+      photo: userInfo.picture.data.url,
+      method: 'facebook'
+    });
+
+    setIsAuthenticated(true);
+  }
+
   async function logout() {
     try {
       await GoogleSignin.signOut();
+      LoginManager.logOut();
       setIsAuthenticated(false);
     } catch (error) {
       console.log('Google Sign-Out Error: ', error);
@@ -83,18 +117,19 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const loginWithFacebook = async () => {
     try {
-      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+      const result = await LoginManager.logInWithPermissions(['public_profile']);
+
       if (result.isCancelled) {
         console.log('Login cancelled');
         return;
       }
 
       const data = await AccessToken.getCurrentAccessToken();
-      if (data) {
-        console.log('Access Token:', data.accessToken.toString());
-      }
+      setFacebookUser(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -102,14 +137,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const response = await GoogleLogin();
       if (response.data) {
-        setIsAuthenticated(true);
-        const currentUser = response.data.user;
-        setUser({
-          id: currentUser.id,
-          name: currentUser.name,
-          email: currentUser.email,
-          photo: getHighResPhoto(currentUser.photo)
-        });
+        setGoogleUser(GoogleSignin.getCurrentUser());
       }
     } catch (apiError) {
       setAuthError(apiError?.response?.data?.error?.message || 'Something went wrong');

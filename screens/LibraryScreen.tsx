@@ -1,17 +1,16 @@
-import { BackHandler, FlatList, Platform, ScrollView } from "react-native";
+import { BackHandler, FlatList, Platform, Image, ScrollView } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLanguage } from "../hooks/useLanguage";
 import { useWords } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
-import { AuthContext } from "../auth/AuthProvider";
 import { useAuth } from "../hooks/useAuth";
 
 const LibraryScreen = () => {
@@ -131,11 +130,23 @@ const LibraryScreen = () => {
         scrollEnabled={false}
         data={libraryItems}
         renderItem={renderLibraryItem}
-        ListFooterComponent={() =>
-          <CustomText style={{ color: colors.text, marginTop: 30, marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
-            {`${runtimeVersion}.${buildNumber}`}
-          </CustomText>
-      }
+        ListFooterComponent={() => (
+          <>
+            <Image
+              source={require('../assets/app-icon.png')}
+              style={{
+                height: 50,
+                alignSelf: 'center',
+                marginTop: 30,
+              }}
+              resizeMode="contain"
+            />
+            <CustomText
+              style={{ color: colors.text, marginTop: 5, marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
+              {`${runtimeVersion}.${buildNumber}`}
+            </CustomText>
+          </>
+        )}
       />
     </ScrollView>
   );

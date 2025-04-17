@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Image, View } from 'react-native';
 import { setAccessToken, setRefreshToken } from './ApiHandler';
 import LoginScreen from "../screens/LoginScreen";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -83,7 +83,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const loginWithFacebook = async () => {
     try {
-      Settings.initializeSDK();
       const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
       if (result.isCancelled) {
         console.log('Login cancelled');
@@ -125,20 +124,31 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setIsAuthenticated(true);
   };
 
-  if (isAuthenticated === null)
+  if (isAuthenticated == null)
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={colors.primary}/>
-        <CustomText
-          weight={'Bold'}
-          style={{ color: colors.primary300, fontSize: 17, marginTop: 30 }}
-        >
-          {t('loading_content')}
-        </CustomText>
-        <CustomText style={{ color: colors.primary600, fontSize: 14, marginTop: 5 }}>
-          {t('loading_content_desc')}
-        </CustomText>
-      </View>
+      <>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 90 }}>
+          <ActivityIndicator size="large" color={colors.primary}/>
+          <CustomText
+            weight={'Bold'}
+            style={{ color: colors.primary300, fontSize: 17, marginTop: 30 }}
+          >
+            {t('loading_content')}
+          </CustomText>
+          <CustomText style={{ color: colors.primary600, fontSize: 14, marginTop: 5 }}>
+            {t('loading_content_desc')}
+          </CustomText>
+        </View>
+        <Image
+          source={require('../assets/lango-logo.png')}
+          style={{
+            height: 40,
+            alignSelf: 'center',
+            marginBottom: 50,
+          }}
+          resizeMode="contain"
+        />
+      </>
     );
 
   return (

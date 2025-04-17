@@ -7,13 +7,13 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "newArchEnabled": true,
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "runtimeVersion": "1.0.3",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/lango-logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0B0B27"
     },
     "plugins": [
       [

@@ -10,6 +10,11 @@
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "runtimeVersion": "1.0.4",
+    "facebookAppId": "655424690643723",
+    "facebookDisplayName": "Lango",
+    "facebookAutoInitEnabled": true,
+    "facebookAutoLogAppEventsEnabled": true,
+    "facebookClientToken": "15bfc376a10d6049dce9292d206c9bdc",
     "splash": {
       "image": "./assets/lango-logo.png",
       "resizeMode": "contain",

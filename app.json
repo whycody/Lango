@@ -35,8 +35,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/adaptive-logo.png",
+        "backgroundColor": "#11123a"
       },
       "package": "com.whycody.lango",
       "versionCode": 0

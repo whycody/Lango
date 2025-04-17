@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.0.3",
+    "runtimeVersion": "1.0.4",
     "splash": {
       "image": "./assets/lango-logo.png",
       "resizeMode": "contain",
@@ -26,7 +26,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "1"
+      "buildNumber": "0"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,7 +34,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.whycody.lango",
-      "versionCode": 1
+      "versionCode": 0
     },
     "web": {
       "favicon": "./assets/favicon.png"

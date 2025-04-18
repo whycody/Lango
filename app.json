@@ -25,6 +25,10 @@
         "react-native-fbsdk-next",
         {
           "appID": "655424690643723",
+          "clientToken": "15bfc376a10d6049dce9292d206c9bdc",
+          "scheme": "fb655424690643723",
+          "isAutoInitEnabled": true,
+          "autoLogAppEventsEnabled": true,
           "displayName": "Lango"
         }
       ]

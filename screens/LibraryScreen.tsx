@@ -133,16 +133,16 @@ const LibraryScreen = () => {
         ListFooterComponent={() => (
           <>
             <Image
-              source={require('../assets/adaptive-logo.png')}
+              source={require('../assets/logo.png')}
               style={{
-                height: 50,
+                height: 40,
                 alignSelf: 'center',
                 marginTop: 30,
               }}
               resizeMode="contain"
             />
             <CustomText
-              style={{ color: colors.text, marginTop: 5, marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
+              style={{ color: colors.text, marginTop: 5, fontWeight: 'bold', marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
               {`${runtimeVersion}.${buildNumber}`}
             </CustomText>
           </>

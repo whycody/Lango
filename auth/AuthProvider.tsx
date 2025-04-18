@@ -38,6 +38,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 type AuthMethod = 'google' | 'facebook' | null;
 const AUTH_METHOD_KEY = '@auth_method';
+const USER_PROFILE_INFO = "@user_info";
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { colors } = useTheme();
@@ -54,7 +55,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const checkAuth = async () => {
       try {
         const savedMethod = await AsyncStorage.getItem(AUTH_METHOD_KEY) as AuthMethod;
-      
+
         if (savedMethod === 'google') {
           const currentSession = GoogleSignin.getCurrentUser();
           if (currentSession) {
@@ -62,7 +63,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
             return;
           }
         }
-      
+
         if (savedMethod === 'facebook') {
           const data = await AccessToken.getCurrentAccessToken();
           if (data) {
@@ -94,26 +95,36 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }
 
   const setFacebookUser = async (data) => {
-    const response = await fetch(`https://graph.facebook.com/me?fields=id,name,picture.type(large)&access_token=${data.accessToken}`);
-    const userInfo = await response.json();
+    try {
+      const response = await fetch(`https://graph.facebook.com/me?fields=id,name,picture.type(large)&access_token=${data.accessToken}`);
+      const userInfo = await response.json();
 
-    setUser({
-      id: userInfo.id,
-      name: userInfo.name,
-      email: '',
-      photo: userInfo.picture.data.url,
-      method: 'facebook'
-    });
+      const user: User = {
+        id: userInfo.id,
+        name: userInfo.name,
+        email: '',
+        photo: userInfo.picture.data.url,
+        method: 'facebook'
+      }
 
-    await AsyncStorage.setItem(AUTH_METHOD_KEY, 'facebook');
-    setIsAuthenticated(true);
-  }
+      setUser(user);
+      await AsyncStorage.setItem(USER_PROFILE_INFO, JSON.stringify(user));
+      await AsyncStorage.setItem(AUTH_METHOD_KEY, 'facebook');
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Error fetching Facebook user:', error);
+      const savedUser = await AsyncStorage.getItem(USER_PROFILE_INFO);
+      if(savedUser) setUser(JSON.parse(savedUser));
+      setIsAuthenticated(!!savedUser);
+    }
+  };
 
   async function logout() {
     try {
       const savedMethod = await AsyncStorage.getItem(AUTH_METHOD_KEY) as AuthMethod;
       savedMethod == 'google' ? await GoogleSignin.signOut() : LoginManager.logOut();
       await AsyncStorage.removeItem(AUTH_METHOD_KEY);
+      await AsyncStorage.removeItem(USER_PROFILE_INFO);
       setIsAuthenticated(false);
     } catch (error) {
       console.log('Sign-Out Error: ', error);

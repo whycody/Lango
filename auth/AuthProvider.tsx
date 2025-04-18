@@ -7,6 +7,7 @@ import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -35,6 +36,9 @@ export type User = {
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
+type AuthMethod = 'google' | 'facebook' | null;
+const AUTH_METHOD_KEY = '@auth_method';
+
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -49,22 +53,26 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const currentSession = GoogleSignin.getCurrentUser();
-
-        if (currentSession) {
-          setGoogleUser(currentSession);
-          return;
+        const savedMethod = await AsyncStorage.getItem(AUTH_METHOD_KEY) as AuthMethod;
+      
+        if (savedMethod === 'google') {
+          const currentSession = GoogleSignin.getCurrentUser();
+          if (currentSession) {
+            await setGoogleUser(currentSession);
+            return;
+          }
         }
-
-        const data = await AccessToken.getCurrentAccessToken();
-
-        if (data) {
-          await setFacebookUser(data);
-          return;
+      
+        if (savedMethod === 'facebook') {
+          const data = await AccessToken.getCurrentAccessToken();
+          if (data) {
+            await setFacebookUser(data);
+            return;
+          }
         }
-
         setIsAuthenticated(false);
-      } catch {
+      } catch (error) {
+        console.error('Auth check error:', error);
         setIsAuthenticated(false);
       }
     };
@@ -72,7 +80,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     checkAuth();
   }, []);
 
-  const setGoogleUser = (currentSession) => {
+  const setGoogleUser = async (currentSession) => {
     const currentUser = currentSession?.user;
     setUser({
       id: currentUser.id,
@@ -81,6 +89,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       photo: getHighResPhoto(currentUser.photo),
       method: 'google'
     });
+    await AsyncStorage.setItem(AUTH_METHOD_KEY, 'google');
     setIsAuthenticated(true);
   }
 
@@ -96,16 +105,18 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       method: 'facebook'
     });
 
+    await AsyncStorage.setItem(AUTH_METHOD_KEY, 'facebook');
     setIsAuthenticated(true);
   }
 
   async function logout() {
     try {
-      await GoogleSignin.signOut();
-      LoginManager.logOut();
+      const savedMethod = await AsyncStorage.getItem(AUTH_METHOD_KEY) as AuthMethod;
+      savedMethod == 'google' ? await GoogleSignin.signOut() : LoginManager.logOut();
+      await AsyncStorage.removeItem(AUTH_METHOD_KEY);
       setIsAuthenticated(false);
     } catch (error) {
-      console.log('Google Sign-Out Error: ', error);
+      console.log('Sign-Out Error: ', error);
     }
   }
 
@@ -125,7 +136,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       }
 
       const data = await AccessToken.getCurrentAccessToken();
-      setFacebookUser(data);
+      await setFacebookUser(data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -137,7 +148,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const response = await GoogleLogin();
       if (response.data) {
-        setGoogleUser(GoogleSignin.getCurrentUser());
+        await setGoogleUser(GoogleSignin.getCurrentUser());
       }
     } catch (apiError) {
       setAuthError(apiError?.response?.data?.error?.message || 'Something went wrong');

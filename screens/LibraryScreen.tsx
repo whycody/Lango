@@ -133,7 +133,7 @@ const LibraryScreen = () => {
         ListFooterComponent={() => (
           <>
             <Image
-              source={require('../assets/app-icon.png')}
+              source={require('../assets/adaptive-logo.png')}
               style={{
                 height: 50,
                 alignSelf: 'center',

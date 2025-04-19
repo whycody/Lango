@@ -30,7 +30,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "0"
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,7 +38,7 @@
         "backgroundColor": "#11123a"
       },
       "package": "com.whycody.lango",
-      "versionCode": 0
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"

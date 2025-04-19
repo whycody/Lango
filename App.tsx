@@ -38,14 +38,14 @@ export default function App() {
   }, []);
 
   if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: colors.card }}/>;
+    return <View style={{ flex: 1, backgroundColor: colors.background }}/>;
   }
 
   return (
     <>
-      <StatusBar barStyle='light-content' backgroundColor={colors.card}/>
-      <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
+      <StatusBar barStyle='light-content' backgroundColor={colors.background}/>
+      <SafeAreaProvider style={{ backgroundColor: colors.background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
           <NavigationContainer theme={DarkTheme}>
             <StatisticsProvider>
               <LanguageProvider>

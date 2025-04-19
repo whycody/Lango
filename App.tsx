@@ -16,14 +16,12 @@ import { StatisticsProvider } from "./store/StatisticsContext";
 import FlashcardsScreen from "./screens/FlashcardsScreen";
 import { LanguageProvider } from "./store/LanguageContext";
 import AuthProvider from "./auth/AuthProvider";
-import { Settings } from "react-native-fbsdk-next";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const { colors } = DarkTheme;
-      Settings.initializeSDK();
 
   useEffect(() => {
     async function loadFonts() {
@@ -40,7 +38,7 @@ export default function App() {
   }, []);
 
   if (!fontsLoaded) {
-    return <View/>;
+    return <View style={{ flex: 1, backgroundColor: colors.card }}/>;
   }
 
   return (

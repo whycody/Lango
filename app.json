@@ -7,25 +7,41 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "newArchEnabled": true,
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.0.2",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
+    "runtimeVersion": "1.0.4",
+    "plugins": [
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "655424690643723",
+          "clientToken": "15bfc376a10d6049dce9292d206c9bdc",
+          "scheme": "fb655424690643723",
+          "isAutoInitEnabled": true,
+          "autoLogAppEventsEnabled": true,
+          "displayName": "Lango"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0B0B27",
+          "image": "./assets/lango-logo.png",
+          "imageWidth": 200
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "3"
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/adaptive-logo.png",
+        "backgroundColor": "#11123a"
       },
       "package": "com.whycody.lango",
-      "versionCode": 3
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"

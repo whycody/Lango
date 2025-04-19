@@ -1,4 +1,4 @@
-import { BackHandler, FlatList, Platform, ScrollView } from "react-native";
+import { BackHandler, FlatList, Platform, Image, ScrollView } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
@@ -11,6 +11,7 @@ import { useWords } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
+import { useAuth } from "../hooks/useAuth";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ const LibraryScreen = () => {
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const buildNumber = Platform.OS === 'ios' ? appBuildNumbers.expo.ios.buildNumber : appBuildNumbers.expo.android.versionCode;
   const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
+  const authContext = useAuth();
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -98,6 +100,9 @@ const LibraryScreen = () => {
       case LibraryItems.LANGUAGE:
         languageBottomSheetRef.current?.present();
         break;
+      case LibraryItems.LOGOUT:
+        authContext.logout();
+        break;
       default:
         break;
     }
@@ -125,11 +130,23 @@ const LibraryScreen = () => {
         scrollEnabled={false}
         data={libraryItems}
         renderItem={renderLibraryItem}
-        ListFooterComponent={() =>
-          <CustomText style={{ color: colors.text, marginTop: 30, marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
-            {`${runtimeVersion}.${buildNumber}`}
-          </CustomText>
-      }
+        ListFooterComponent={() => (
+          <>
+            <Image
+              source={require('../assets/logo.png')}
+              style={{
+                height: 40,
+                alignSelf: 'center',
+                marginTop: 30,
+              }}
+              resizeMode="contain"
+            />
+            <CustomText
+              style={{ color: colors.text, marginTop: 5, fontWeight: 'bold', marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
+              {`${runtimeVersion}.${buildNumber}`}
+            </CustomText>
+          </>
+        )}
       />
     </ScrollView>
   );

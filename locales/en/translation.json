@@ -81,5 +81,11 @@
   "export": "Export data",
   "settings_desc": "Adjust application to your needs",
   "export_desc": "Export your {{records_number}} records",
-  "words_desc": "Take a look on your {{words_number}} words"
+  "words_desc": "Take a look on your {{words_number}} words",
+  "login_with_google": "Login with Google",
+  "login_with_facebook": "Login with Facebook",
+  "welcome_to": "Welcome to",
+  "loading_content": "Loading content",
+  "loading_content_desc": "Be patient! It will take a while to load your data.",
+  "welcome_desc": "... an app that will help you finally master new words and make sure you remember the ones you learned in the past"
 }

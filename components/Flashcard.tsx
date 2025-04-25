@@ -1,11 +1,11 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "./CustomText";
 import * as Haptics from 'expo-haptics';
 import FlipCard from 'react-native-flip-card'
-import { Ionicons } from "@expo/vector-icons";
+import { Foundation } from "@expo/vector-icons";
 import { LANGO, useWords } from "../store/WordsContext";
 import { FlashcardContent } from "../store/FlashcardsContext";
 import SquareFlag from "./SquareFlag";
@@ -17,7 +17,7 @@ interface FlashcardProps {
   style?: any;
 }
 
-const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, style }) => {
+const Flashcard = forwardRef(({ onFlashcardPress, flashcardContent, style }: FlashcardProps, ref) => {
   const [flippable, setFlippable] = useState(true);
   const [newFlashcardIsReady, setNewFlashcardIsReady] = useState(false);
   const [readyToFlip, setReadyToFlip] = useState(false);
@@ -27,6 +27,10 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
   const { t } = useTranslation();
   const wordsContext = useWords();
   const languageContext = useLanguage();
+
+  useImperativeHandle(ref, () => ({
+    flipWithoutAdd: () => handleFlip(false),
+  }));
 
   const getRandomMessage = () => {
     const messages = [
@@ -57,12 +61,15 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
     }, 100);
   }, [setNewFlashcardIsReady, newFlashcardIsReady, readyToFlip]);
 
-  const handleFlip = () => {
+  const handleFlip = (add: boolean = true) => {
     if (!flippable) return;
+    if(!add) setFlip((prev) => !prev);
     setFlippable(false);
     setNewFlashcardIsReady(false);
-    const addWord = wordsContext.addWord(flashcardContent.word, flashcardContent.translation, LANGO);
-    if (!addWord) setBackText(t('wordNotAdded'));
+    if (add) {
+      const addWord = wordsContext.addWord(flashcardContent.word, flashcardContent.translation, LANGO);
+      if (!addWord) setBackText(t('wordNotAdded'));
+    } else setBackText(t('change_flashcard'));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     setTimeout(() => onFlashcardPress(), 150);
     setTimeout(() => setReadyToFlip(true), 1000);
@@ -70,16 +77,16 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
 
   return (
     <View pointerEvents={flippable ? 'auto' : 'none'} style={{ flex: 1 }}>
-      <FlipCard flip={flip} onFlipStart={handleFlip}>
+      <FlipCard flip={flip} onFlipStart={() => handleFlip(true)}>
         <View style={[styles.root, style]}>
           <View style={styles.flagsContainer}>
             <SquareFlag languageCode={languageContext.mainLangCode} style={{ marginRight: 6 }}/>
-            <SquareFlag languageCode={languageContext.studyingLangCode} />
+            <SquareFlag languageCode={languageContext.studyingLangCode}/>
           </View>
           <CustomText weight={"SemiBold"} style={styles.word} numberOfLines={1}>{flashcardContent?.word}</CustomText>
           <CustomText style={styles.translation} numberOfLines={1}>{flashcardContent?.translation}</CustomText>
           <View style={styles.plusContainer}>
-            <Ionicons name={'add'} size={16} color={colors.primary}/>
+            <Foundation name={'plus'} size={12} color={colors.primary}/>
           </View>
         </View>
         <View style={[styles.root, style, { justifyContent: 'center' }]}>
@@ -88,7 +95,7 @@ const Flashcard: FC<FlashcardProps> = ({ onFlashcardPress, flashcardContent, sty
       </FlipCard>
     </View>
   );
-};
+});
 
 const getStyles = (colors: any) => StyleSheet.create({
   root: {

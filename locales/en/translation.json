@@ -87,5 +87,7 @@
   "welcome_to": "Welcome to",
   "loading_content": "Loading content",
   "loading_content_desc": "Be patient! It will take a while to load your data.",
-  "welcome_desc": "... an app that will help you finally master new words and make sure you remember the ones you learned in the past"
+  "welcome_desc": "... an app that will help you finally master new words and make sure you remember the ones you learned in the past",
+  "change_flashcard": "Switching \uD83D\uDD04",
+  "switch_suggestions": "Switch suggestions ↺"
 }

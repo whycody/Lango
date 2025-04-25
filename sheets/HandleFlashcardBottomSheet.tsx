@@ -194,7 +194,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
         />
         <ActionButton
           onPress={() => props.flashcardId ? editFlashcard() : addFlashcard(false)}
-          label={props.flashcardId ? t('edit') : t('add')}
+          label={props.flashcardId ? t('edit') : t('add_1')}
           primary={true}
           active={buttonsActive}
           style={styles.button}

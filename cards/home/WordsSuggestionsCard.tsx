@@ -7,8 +7,6 @@ import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
 import { useEffect, useRef, useState } from "react";
 import { FlashcardContent, useFlashcards } from "../../store/FlashcardsContext";
-import HandleFlashcardBottomSheet from "../../sheets/HandleFlashcardBottomSheet";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();
@@ -16,22 +14,10 @@ const WordsSuggestionsCard = () => {
   const styles = getStyles(colors);
 
   const flashcardsContext = useFlashcards();
-  const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const [firstFlashcard, setFirstFlashcard] = useState<FlashcardContent>();
   const [secondFlashcard, setSecondFlashcard] = useState<FlashcardContent>();
-  const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
-
-  useEffect(() => {
-    const handleBackPress = () => {
-      if (bottomSheetIsShown) {
-        flashcardBottomSheetRef.current?.dismiss();
-        return true;
-      }
-    };
-
-    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-    return () => subscription.remove();
-  }, [bottomSheetIsShown]);
+  const firstFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
+  const secondFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
 
   useEffect(() => {
     if (!flashcardsContext.flashcards) return;
@@ -39,27 +25,33 @@ const WordsSuggestionsCard = () => {
     setSecondFlashcard(flashcardsContext.getRandomFlashcard);
   }, [flashcardsContext.flashcards]);
 
+  const flipFlashcards = () => {
+    firstFlashcardRef.current?.flipWithoutAdd();
+    secondFlashcardRef.current?.flipWithoutAdd();
+  }
+
   return (
     <View style={styles.root}>
-      <HandleFlashcardBottomSheet
-        ref={flashcardBottomSheetRef}
-        onChangeIndex={(index) => setBottomSheetIsShown(index == 0)}
-      />
       <Header title={t('wordsSuggestion')} subtitle={t('wordSuggestionDesc')}/>
       <View style={styles.flashcardsContainer}>
         <Flashcard
+          ref={firstFlashcardRef}
           onFlashcardPress={() => setFirstFlashcard(flashcardsContext.getRandomFlashcard())}
           flashcardContent={firstFlashcard}
           style={{ flex: 1, marginRight: MARGIN_HORIZONTAL / 2 }}
         />
         <Flashcard
+          ref={secondFlashcardRef}
           onFlashcardPress={() => setSecondFlashcard(flashcardsContext.getRandomFlashcard())}
           flashcardContent={secondFlashcard}
           style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
         />
       </View>
-      <ActionButton label={t('addWord')} style={styles.actionButton}
-                    onPress={() => flashcardBottomSheetRef.current?.present()}/>
+      <ActionButton
+        label={t('switch_suggestions')}
+        style={styles.actionButton}
+        onPress={flipFlashcards}
+      />
     </View>
   );
 }

@@ -46,7 +46,8 @@
   "addNewFlashcard": "Dodaj nową fiszkę",
   "editFlashcard": "Edytuj fiszkę",
   "save": "Zapisz",
-  "add": "Dodaj +",
+  "add": "Dodaj",
+  "add_1": "Dodaj +",
   "edit": "Edytuj",
   "wordAndTranslation": "Wprowadź słówko oraz jego tłumaczenie",
   "addAnother": "Dodaj tą i kolejną",
@@ -88,5 +89,7 @@
   "welcome_to": "Witaj w",
   "welcome_desc": "... aplikacji, która pomoże Ci już na dobre przyswoić nowe słówka i upewni się, że pamiętasz te, których nauczyłeś się kiedyś",
   "loading_content": "Ładowanie zawartości",
-  "loading_content_desc": "Bądź cierpliwy! To zajmie tylko chwilę."
+  "loading_content_desc": "Bądź cierpliwy! To zajmie tylko chwilę.",
+  "change_flashcard": "Wymienianie \uD83D\uDD04",
+  "switch_suggestions": "Wymień sugestie ↺"
 }

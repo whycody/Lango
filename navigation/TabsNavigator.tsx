@@ -1,13 +1,14 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import LibraryScreen from "../screens/LibraryScreen";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { BackHandler, StyleSheet } from 'react-native';
+import { Foundation, MaterialCommunityIcons } from "@expo/vector-icons";
+import { BackHandler, StyleSheet, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 import CustomText from "../components/CustomText";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useTheme } from "@react-navigation/native";
 
 export type TabsParamList = {
   Home: undefined;
@@ -19,6 +20,7 @@ const Tab = createBottomTabNavigator<TabsParamList>();
 
 const TabsNavigator = () => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
@@ -43,18 +45,28 @@ const TabsNavigator = () => {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color }) => {
-            const iconSize = (route.name === 'Home' || route.name == 'Add') ? 28 : 26;
-            let iconName = route.name === 'Home' ? 'home' : route.name == 'Add' ? 'plus-box' : 'view-grid';
-            return <MaterialCommunityIcons
-              name={iconName}
-              size={iconSize}
-              style={!focused && { opacity: 0.6 }}
-              color={color}
-            />;
+            const iconSize = route.name === 'Home' ? 28 : route.name == 'Add' ? 17 : 26;
+            let iconName = route.name === 'Home' ? 'home' : route.name == 'Add' ? 'plus' : 'view-grid';
+            return route.name !== 'Add' ?
+              <MaterialCommunityIcons
+                name={iconName}
+                size={iconSize}
+                style={[!focused && { opacity: 0.6 }]}
+                color={color}
+              /> :
+              <View style={styles.addIconContainer}>
+                <Foundation
+                  name={iconName}
+                  size={iconSize}
+                  color={colors.background}
+                />
+              </View>;
           },
           tabBarLabel: ({ focused, color }) => (
-            <CustomText weight={focused ? 'Bold' : 'Regular'}
-                        style={[{ color, fontSize: 12 }, !focused && { opacity: 0.6 }]}>
+            <CustomText
+              weight={focused ? 'Bold' : 'Regular'}
+              style={[{ color, fontSize: 12 }, !focused && { opacity: 0.6 }]}
+            >
               {t(route.name.toLowerCase())}
             </CustomText>
           ),
@@ -84,6 +96,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderTopWidth: 0,
   },
+  addIconContainer: {
+    backgroundColor: 'rgba(116,127,140,0.8)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 21,
+    height: 21
+  }
 });
 
 export default TabsNavigator;

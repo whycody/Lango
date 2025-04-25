@@ -65,7 +65,7 @@ const TabsNavigator = () => {
           tabBarLabel: ({ focused, color }) => (
             <CustomText
               weight={focused ? 'Bold' : 'Regular'}
-              style={[{ color, fontSize: 12 }, !focused && { opacity: 0.6 }]}
+              style={[{ color, fontSize: 12 }, !focused && { opacity: 0.6, fontSize: 12, marginBottom: 1 }]}
             >
               {t(route.name.toLowerCase())}
             </CustomText>

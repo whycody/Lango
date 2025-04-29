@@ -20,7 +20,7 @@ const SessionLengthItem: FC<SessionLengthItemProps> = ({ length, selected, onPre
   return (
     <Pressable
       style={[styles.root, style]}
-      android_ripple={{ color: colors.card }}
+      android_ripple={{ color: colors.cardAccent }}
       onPress={onPress}
     >
       <View style={styles.squaresContainer}>
@@ -47,7 +47,7 @@ const SessionLengthItem: FC<SessionLengthItemProps> = ({ length, selected, onPre
 const getStyles = (colors: any, selected: boolean) => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.cardAccent300,
     opacity: selected ? 1 : 0.5,
     paddingTop: MARGIN_VERTICAL*1.2,
     paddingBottom: MARGIN_VERTICAL/2,

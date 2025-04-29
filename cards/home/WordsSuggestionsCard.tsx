@@ -51,6 +51,7 @@ const WordsSuggestionsCard = () => {
         label={t('switch_suggestions')}
         style={styles.actionButton}
         onPress={flipFlashcards}
+        icon={'sync'}
       />
     </View>
   );

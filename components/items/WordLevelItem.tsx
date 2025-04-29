@@ -36,8 +36,10 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
 
 const getStyles = (colors: any, selected: boolean = false) => StyleSheet.create({
   root: {
-    backgroundColor: colors.background,
-    opacity: selected ? 1 : 0.7,
+    borderWidth: 3,
+    backgroundColor: selected ? colors.background : undefined,
+    borderColor: colors.background,
+    opacity: selected ? 1 : 0.75,
     paddingTop: MARGIN_HORIZONTAL,
     paddingBottom: MARGIN_HORIZONTAL - 3,
   },

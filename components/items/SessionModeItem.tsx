@@ -21,7 +21,7 @@ const SessionModeItem: FC<SessionModeItemProps> = ({ mode, selected, onPress, st
   return (
     <Pressable
       style={[styles.root, style]}
-      android_ripple={{ color: colors.card }}
+      android_ripple={{ color: colors.cardAccent }}
       onPress={onPress}
     >
       <Ionicons
@@ -42,7 +42,7 @@ const getStyles = (colors: any, selected: boolean) => StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: colors.cardAccent300,
     opacity: selected ? 1 : 0.5,
     paddingVertical: 10,
     paddingHorizontal: 15,

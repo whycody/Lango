@@ -7,9 +7,10 @@ export const DarkTheme: CustomTheme = {
     primary300: '#A8DAE7',
     primary600: '#608ada',
 
-    background: '#11123a',
-    card: '#0B0B27',
-    cardAccent: '#3a598c',
+    background: '#0f0f30',
+    card: '#07071b',
+    cardAccent: '#334c88',
+    cardAccent300: '#24355e',
 
     text: '#DCF2F1',
     border: '#333333',

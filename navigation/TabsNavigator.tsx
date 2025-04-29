@@ -45,22 +45,15 @@ const TabsNavigator = () => {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color }) => {
-            const iconSize = route.name === 'Home' ? 28 : route.name == 'Add' ? 17 : 26;
+            const iconSize = route.name === 'Home' ? 28 : 26;
             let iconName = route.name === 'Home' ? 'home' : route.name == 'Add' ? 'plus' : 'view-grid';
-            return route.name !== 'Add' ?
-              <MaterialCommunityIcons
-                name={iconName}
-                size={iconSize}
-                style={[!focused && { opacity: 0.6 }]}
-                color={color}
-              /> :
-              <View style={styles.addIconContainer}>
-                <Foundation
-                  name={iconName}
-                  size={iconSize}
-                  color={colors.background}
-                />
-              </View>;
+            const IconFamily = route.name === 'Add' ? Foundation : MaterialCommunityIcons;
+            return <IconFamily
+              name={iconName}
+              size={iconSize}
+              style={[!focused && { opacity: 0.6 }]}
+              color={!focused ? color : colors.primary300}
+            />
           },
           tabBarLabel: ({ focused, color }) => (
             <CustomText
@@ -96,13 +89,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderTopWidth: 0,
   },
-  addIconContainer: {
-    backgroundColor: 'rgba(116,127,140,0.8)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 21,
-    height: 21
-  }
 });
 
 export default TabsNavigator;

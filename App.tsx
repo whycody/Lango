@@ -55,9 +55,20 @@ export default function App() {
                       <BottomSheetModalProvider>
                         <AuthProvider>
                           <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
-                            <Stack.Screen name='Tabs' component={TabsNavigator}/>
-                            <Stack.Screen name='Session' component={SessionScreen}/>
-                            <Stack.Group screenOptions={{ presentation: "modal", animationDuration: 100 }}>
+                            <Stack.Screen
+                              name='Tabs'
+                              component={TabsNavigator}
+                            />
+                            <Stack.Screen
+                              name='Session'
+                              component={SessionScreen}
+                              options={{ statusBarColor: colors.card }}
+                            />
+                            <Stack.Group screenOptions={{
+                              presentation: "modal",
+                              animationDuration: 100,
+                              statusBarColor: colors.card
+                            }}>
                               <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
                             </Stack.Group>
                           </Stack.Navigator>

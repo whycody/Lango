@@ -18,7 +18,7 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
 
   return (
     <View style={styles.root}>
-      <View style={{ flex: 1.5 }}/>
+      <View style={{ flex: 1.45 }}/>
       <CustomText weight={"SemiBold"} style={styles.text}>
         {text}
       </CustomText>
@@ -27,7 +27,7 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
         <Ionicons
           name={'arrow-back-outline'}
           size={24}
-          color={colors.primary600}
+          color={colors.primary300}
           style={[styles.icon, { opacity: wordIndex != 0 ? 1 : 0.4 }]}
           onPress={() => wordIndex != 0 && onBackPress()}
         />
@@ -36,7 +36,7 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
           name={'pencil-outline'}
           size={24}
           style={styles.icon}
-          color={colors.primary600}
+          color={colors.primary300}
           onPress={onEditPress}
         />
       </View>
@@ -47,7 +47,7 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
 const getStyles = (colors: any) => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardAccent300,
   },
   text: {
     color: colors.primary,

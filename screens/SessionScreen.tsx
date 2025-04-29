@@ -223,6 +223,7 @@ const SessionScreen = () => {
         startNewSession={startNewSession}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
+      <View style={{ backgroundColor: colors.card, paddingBottom: 20 }}>
       <SessionHeader
         length={length}
         cardsSetLength={cards.length}
@@ -236,6 +237,7 @@ const SessionScreen = () => {
           color={colors.primary}
           style={styles.progressBar}
         />
+      </View>
       </View>
       <PagerView
         ref={pagerRef}
@@ -314,8 +316,8 @@ const getStyles = (colors: any) => {
     },
     progressBar: {
       marginTop: 12,
-      backgroundColor: colors.card,
-      height: 4,
+      backgroundColor: colors.cardAccent,
+      height: 5,
     },
     bottomBarContainer: {
       backgroundColor: colors.card,

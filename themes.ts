@@ -11,6 +11,7 @@ export const DarkTheme: CustomTheme = {
     card: '#07071b',
     cardAccent: '#334c88',
     cardAccent300: '#24355e',
+    cardAccent600: '#1f2f53',
 
     text: '#DCF2F1',
     border: '#333333',

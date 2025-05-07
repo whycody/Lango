@@ -116,14 +116,16 @@ const FlashcardsScreen = () => {
         </CustomText>
         <View style={styles.statsContainer}>
           <StatisticItem
+            icon={'layers-outline'}
             label={`${numberOfWords}`}
             description={t('words')}
-            style={[styles.statisticItem, { marginRight: 6 }]}
+            style={{ flex: 1 }}
           />
           <StatisticItem
+            icon={'layers-outline'}
             label={`${langoWords}`}
             description={t('langoWords')}
-            style={[styles.statisticItem, { marginLeft: 6 }]}
+            style={{ flex: 1 }}
           />
         </View>
       </View>
@@ -233,6 +235,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginHorizontal: MARGIN_HORIZONTAL,
     marginTop: MARGIN_VERTICAL,
     marginBottom: 5,
+    gap: 12,
   },
   buttonContainer: {
     paddingHorizontal: MARGIN_HORIZONTAL,

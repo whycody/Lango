@@ -119,7 +119,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     flex: 1,
   },
   progressBar: {
-    backgroundColor: colors.cardAccent,
+    backgroundColor: colors.cardAccent300,
     marginTop: 12,
     height: 7
   },

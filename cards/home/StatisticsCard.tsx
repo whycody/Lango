@@ -37,11 +37,13 @@ const StatisticsCard = () => {
       <Header title={t('statistics')} subtitle={t('statisticsDesc')}/>
       <View style={styles.statisticsRow}>
         <StatisticItem
+          icon={'layers-outline'}
           label={studyStats.numberOfWords.toString()}
           description={t('words')}
           style={[styles.statisticsItem, { marginRight: 6 }]}
         />
         <StatisticItem
+          icon={'repeat-outline'}
           label={studyStats.numberOfSessions.toString()}
           description={t('sessions')}
           style={[styles.statisticsItem, { marginLeft: 6 }]}
@@ -49,11 +51,13 @@ const StatisticsCard = () => {
       </View>
       <View style={styles.statisticsRow}>
         <StatisticItem
+          icon={'calendar-outline'}
           label={studyStats.numberOfStudyDays.toString()}
           description={t('studyDays')}
           style={[styles.statisticsItem, { marginRight: 6 }]}
         />
         <StatisticItem
+          icon={'layers-outline'}
           label={studyStats.numberOfLangoWords.toString()}
           description={t('langoWords')}
           style={[styles.statisticsItem, { marginLeft: 6 }]}

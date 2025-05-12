@@ -49,14 +49,14 @@ const getStyles = (colors: any) => StyleSheet.create({
   header: {
     backgroundColor: colors.cardAccent,
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 4,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
   },
   description: {
     color: colors.primary300,
-    fontSize: 14,
+    fontSize: 12,
   }
 });
 

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { SESSION_MODE } from "../../sheets/StartSessionBottomSheet";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface SessionModeItemProps {
   mode: SESSION_MODE,
@@ -20,10 +21,15 @@ const SessionModeItem: FC<SessionModeItemProps> = ({ mode, selected, onPress, st
 
   return (
     <Pressable
-      style={[styles.root, style]}
-      android_ripple={{ color: colors.cardAccent }}
+      style={{ flex: 1 }}
       onPress={onPress}
     >
+      <LinearGradient
+        colors={[colors.cardAccent600, colors.background]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.root, style]}
+      >
       <Ionicons
         name={mode == SESSION_MODE.STUDY ? 'school-outline' : mode == SESSION_MODE.RANDOM ? 'dice-outline' : 'time-outline'}
         color={colors.primary300}
@@ -33,6 +39,7 @@ const SessionModeItem: FC<SessionModeItemProps> = ({ mode, selected, onPress, st
       <CustomText weight={"Bold"} style={styles.title}>
         {t(mode.toLowerCase())}
       </CustomText>
+      </LinearGradient>
     </Pressable>
   );
 }
@@ -42,8 +49,7 @@ const getStyles = (colors: any, selected: boolean) => StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.cardAccent300,
-    opacity: selected ? 1 : 0.5,
+    opacity: selected ? 1 : 0.4,
     paddingVertical: 10,
     paddingHorizontal: 15,
   },

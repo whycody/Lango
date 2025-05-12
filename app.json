@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.0.4",
+    "runtimeVersion": "1.0.5",
     "plugins": [
       [
         "react-native-fbsdk-next",
@@ -33,7 +33,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "7"
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -41,7 +41,7 @@
         "backgroundColor": "#07071b"
       },
       "package": "com.whycody.lango",
-      "versionCode": 7
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

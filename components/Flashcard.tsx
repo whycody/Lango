@@ -10,6 +10,7 @@ import { LANGO, useWords } from "../store/WordsContext";
 import { FlashcardContent } from "../store/FlashcardsContext";
 import SquareFlag from "./SquareFlag";
 import { useLanguage } from "../hooks/useLanguage";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface FlashcardProps {
   onFlashcardPress?: () => void;
@@ -63,7 +64,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, flashcardContent, style }: Fla
 
   const handleFlip = (add: boolean = true) => {
     if (!flippable) return;
-    if(!add) setFlip((prev) => !prev);
+    if (!add) setFlip((prev) => !prev);
     setFlippable(false);
     setNewFlashcardIsReady(false);
     if (add) {
@@ -78,7 +79,12 @@ const Flashcard = forwardRef(({ onFlashcardPress, flashcardContent, style }: Fla
   return (
     <View pointerEvents={flippable ? 'auto' : 'none'} style={{ flex: 1 }}>
       <FlipCard flip={flip} onFlipStart={() => handleFlip(true)}>
-        <View style={[styles.root, style]}>
+        <LinearGradient
+          colors={[colors.cardAccent, colors.cardAccent600]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.root, style]}
+        >
           <View style={styles.flagsContainer}>
             <SquareFlag languageCode={languageContext.mainLangCode} style={{ marginRight: 6 }}/>
             <SquareFlag languageCode={languageContext.studyingLangCode}/>
@@ -88,10 +94,15 @@ const Flashcard = forwardRef(({ onFlashcardPress, flashcardContent, style }: Fla
           <View style={styles.plusContainer}>
             <Foundation name={'plus'} size={12} color={colors.primary}/>
           </View>
-        </View>
-        <View style={[styles.root, style, { justifyContent: 'center' }]}>
+        </LinearGradient>
+        <LinearGradient
+          colors={[colors.cardAccent, colors.cardAccent600]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.root, style, { justifyContent: 'center' }]}
+        >
           <CustomText weight={"SemiBold"} style={styles.successText}>{backText}</CustomText>
-        </View>
+        </LinearGradient>
       </FlipCard>
     </View>
   );

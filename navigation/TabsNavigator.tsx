@@ -67,7 +67,7 @@ const TabsNavigator = () => {
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
-        <Tab.Screen name="Add" component={() => null} listeners={() => ({
+        <Tab.Screen name="Add" component={View} listeners={() => ({
           tabPress: (e) => {
             e.preventDefault();
             flashcardBottomSheetRef.current?.present();

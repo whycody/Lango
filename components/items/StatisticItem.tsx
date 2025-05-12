@@ -1,9 +1,10 @@
 import React, { FC } from "react";
 import { StyleSheet, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
 import CustomText from "../CustomText";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
 import { Ionicons } from "@expo/vector-icons";
+import { MARGIN_VERTICAL } from "../../src/constants";
 
 interface StatisticItemProps {
   label: string,
@@ -17,7 +18,12 @@ const StatisticItem: FC<StatisticItemProps> = ({ label, description, icon, style
   const styles = getStyles(colors);
 
   return (
-    <View style={[styles.root, style]}>
+    <LinearGradient
+      colors={[colors.cardAccent600, colors.background]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={[styles.root, style]}
+    >
       <View style={styles.header}>
         <Ionicons name={icon} size={10} color={colors.primary300} />
         <CustomText weight={"SemiBold"} style={styles.description}>
@@ -25,9 +31,9 @@ const StatisticItem: FC<StatisticItemProps> = ({ label, description, icon, style
         </CustomText>
       </View>
       <CustomText weight={"Black"} style={styles.title}>{label}</CustomText>
-    </View>
+    </LinearGradient>
   );
-}
+};
 
 const getStyles = (colors: any) => StyleSheet.create({
   root: {
@@ -50,7 +56,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   description: {
     color: colors.primary300,
-    fontSize: 10,
+    fontSize: 14,
   }
 });
 

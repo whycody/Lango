@@ -4,6 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { MARGIN_HORIZONTAL } from "../src/constants";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface CardProps {
   text: string;
@@ -17,7 +18,12 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
   const styles = getStyles(colors);
 
   return (
-    <View style={styles.root}>
+    <LinearGradient
+      colors={[colors.cardAccent, colors.cardAccent600]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.root}
+    >
       <View style={{ flex: 1.45 }}/>
       <CustomText weight={"SemiBold"} style={styles.text}>
         {text}
@@ -40,7 +46,7 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
           onPress={onEditPress}
         />
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 

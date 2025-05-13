@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.0.5",
+    "runtimeVersion": "1.0.6",
     "plugins": [
       [
         "react-native-fbsdk-next",

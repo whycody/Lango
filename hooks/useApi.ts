@@ -1,8 +1,8 @@
 import { apiCall } from "../auth/ApiHandler";
 import { User } from "../auth/AuthProvider";
-// import DeviceInfo from 'react-native-device-info';
+import DeviceInfo from 'react-native-device-info';
 
-const deviceId = 'Telefon';
+const deviceId = DeviceInfo.getUniqueId();
 
 export const getUserInfo: () => Promise<User | null> = async () => {
   try {

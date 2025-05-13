@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { ActivityIndicator, Image, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './ApiHandler';
 import LoginScreen from "../screens/LoginScreen";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -21,11 +22,6 @@ GoogleSignin.configure({
   scopes: ['profile', 'email'],
 });
 
-const GoogleLogin = async () => {
-  await GoogleSignin.hasPlayServices();
-  return await GoogleSignin.signIn();
-};
-
 export type User = {
   userId: string;
   name: string;
@@ -35,8 +31,6 @@ export type User = {
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
-
-const AUTH_METHOD_KEY = '@auth_method';
 const USER_PROFILE_INFO = "@user_info";
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -53,22 +47,39 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   const getSession = async () => {
-    const loggedUser = await getUserInfo();
-    if (loggedUser) {
-      setUser(loggedUser);
-      setIsAuthenticated(true);
-    } else {
+    try {
+      const loggedUser = await getUserInfo();
+      if (loggedUser) {
+        await saveUserToStorage(loggedUser);
+        setUser(loggedUser);
+        setIsAuthenticated(true);
+        return;
+      }
+
+      const storedUser = await getUserFromStorage();
+      if (storedUser) {
+        setUser(storedUser);
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.log("Error loading session: ", error);
       setIsAuthenticated(false);
     }
   }
 
-  async function logout() {
+  const saveUserToStorage = async (user: User) => {
+    await AsyncStorage.setItem(USER_PROFILE_INFO, JSON.stringify(user));
+  }
+
+  const getUserFromStorage = async (): Promise<User | null> => {
     try {
-      const res = await signOut();
-      if (!res) return;
-      await removeData();
+      const userJson = await AsyncStorage.getItem(USER_PROFILE_INFO);
+      return userJson ? JSON.parse(userJson) : null;
     } catch (error) {
-      console.log('Sign-Out Error: ', error);
+      console.log("Error loading user from storage: ", error);
+      return null;
     }
   }
 
@@ -76,6 +87,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setIsAuthenticated(false);
     await removeAccessToken();
     await removeRefreshToken();
+    await AsyncStorage.removeItem(USER_PROFILE_INFO);
     setUser(null);
   }
 
@@ -106,7 +118,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const loginWithGoogle = async () => {
     try {
-      const response = await GoogleLogin();
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
       const res = await signInWithGoogle(response.data.idToken);
       if (res) await handleReceivedTokens(res);
     } catch (apiError) {
@@ -120,6 +133,16 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     await setAccessToken(res.accessToken);
     await setRefreshToken(res.refreshToken);
     await getSession();
+  }
+
+  async function logout() {
+    try {
+      const res = await signOut();
+      if (!res) return;
+      await removeData();
+    } catch (error) {
+      console.log('Sign-Out Error: ', error);
+    }
   }
 
   if (isAuthenticated == null)

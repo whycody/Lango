@@ -233,7 +233,7 @@ const SessionScreen = () => {
       />
       <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
         <ProgressBar
-          progress={progress / cards.length}
+          animatedValue={progress / cards.length}
           color={colors.primary}
           style={styles.progressBar}
         />

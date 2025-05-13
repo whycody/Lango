@@ -22,11 +22,11 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
   return (
     <View style={styles.root}>
       <View style={{ flex: 3 }}>
-        <MarqueeRow loading={!!loading} words={['taal', 'ቋንቋ', 'jezik', 'lingua', 'sprooch', 'lingwa']} reverse={false}/>
-        <MarqueeRow loading={!!loading} words={['keel', 'jazyk', 'nyelv', 'язык', 'језик', 'ژبه']} reverse={true}/>
-        <MarqueeRow loading={!!loading} words={['sprache', 'tungumál', 'linguaggio', 'cànan', 'gjuhe', 'لغة']} reverse={false}/>
-        <MarqueeRow loading={!!loading} words={['ulimi', 'lokota', 'olulimi', 'polelo', 'język', 'puo']} reverse={true}/>
-        <MarqueeRow loading={!!loading} words={['luqadda', 'mutauro', 'chilankhulo', 'fiteny', 'asụsụ', 'harshe']} reverse={false}/>
+        {/*<MarqueeRow loading={!!loading} words={['taal', 'ቋንቋ', 'jezik', 'lingua', 'sprooch', 'lingwa']} reverse={false}/>*/}
+        {/*<MarqueeRow loading={!!loading} words={['keel', 'jazyk', 'nyelv', 'язык', 'језик', 'ژبه']} reverse={true}/>*/}
+        {/*<MarqueeRow loading={!!loading} words={['sprache', 'tungumál', 'linguaggio', 'cànan', 'gjuhe', 'لغة']} reverse={false}/>*/}
+        {/*<MarqueeRow loading={!!loading} words={['ulimi', 'lokota', 'olulimi', 'polelo', 'język', 'puo']} reverse={true}/>*/}
+        {/*<MarqueeRow loading={!!loading} words={['luqadda', 'mutauro', 'chilankhulo', 'fiteny', 'asụsụ', 'harshe']} reverse={false}/>*/}
       </View>
       <View style={styles.contentContainer}>
         <CustomText weight={'Bold'} style={styles.subheaderText}>{t('welcome_to').toUpperCase()}</CustomText>

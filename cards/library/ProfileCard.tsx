@@ -10,11 +10,13 @@ const ProfileCard = () => {
   const styles = getStyles(colors);
   const auth = useAuth();
 
+  if (!auth.user) return null;
+
   return (
     <View style={styles.root}>
-      {auth.user.photo ? (
+      {auth.user.picture ? (
         <View style={styles.profileIconContainer}>
-          <Image source={{ uri: auth.user.photo }} style={{ width: 90, height: 90, marginTop: 5, }} resizeMode="cover"/>
+          <Image source={{ uri: auth.user.picture }} style={{ width: 90, height: 90, marginTop: 5, }} resizeMode="cover"/>
         </View>
       ) : (
         <View style={styles.profileIconContainer}>

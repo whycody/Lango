@@ -1,13 +1,13 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { ActivityIndicator, Image, View } from 'react-native';
-import { setAccessToken, setRefreshToken } from './ApiHandler';
+import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './ApiHandler';
 import LoginScreen from "../screens/LoginScreen";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../hooks/useApi";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -27,16 +27,15 @@ const GoogleLogin = async () => {
 };
 
 export type User = {
-  id: string;
+  userId: string;
   name: string;
   email: string;
-  photo: string;
-  method: 'google' | 'facebook';
+  picture: string;
+  provider: 'google' | 'facebook';
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-type AuthMethod = 'google' | 'facebook' | null;
 const AUTH_METHOD_KEY = '@auth_method';
 const USER_PROFILE_INFO = "@user_info";
 
@@ -49,86 +48,35 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [authError, setAuthError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  const getHighResPhoto = (photo: string) => photo.replace(/=s\d+-c$/, '=s400-c');
-
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const savedMethod = await AsyncStorage.getItem(AUTH_METHOD_KEY) as AuthMethod;
-
-        if (savedMethod === 'google') {
-          const currentSession = GoogleSignin.getCurrentUser();
-          if (currentSession) {
-            await setGoogleUser(currentSession);
-            return;
-          }
-        }
-
-        if (savedMethod === 'facebook') {
-          const data = await AccessToken.getCurrentAccessToken();
-          if (data) {
-            await setFacebookUser(data);
-            return;
-          }
-        }
-        setIsAuthenticated(false);
-      } catch (error) {
-        console.error('Auth check error:', error);
-        setIsAuthenticated(false);
-      }
-    };
-
-    checkAuth();
+    getSession();
   }, []);
 
-  const setGoogleUser = async (currentSession) => {
-    const currentUser = currentSession?.user;
-    setUser({
-      id: currentUser.id,
-      name: currentUser.name,
-      email: currentUser.email,
-      photo: getHighResPhoto(currentUser.photo),
-      method: 'google'
-    });
-    await AsyncStorage.setItem(AUTH_METHOD_KEY, 'google');
-    setIsAuthenticated(true);
-  }
-
-  const setFacebookUser = async (data) => {
-    try {
-      const response = await fetch(`https://graph.facebook.com/me?fields=id,name,picture.type(large)&access_token=${data.accessToken}`);
-      const userInfo = await response.json();
-
-      const user: User = {
-        id: userInfo.id,
-        name: userInfo.name,
-        email: '',
-        photo: userInfo.picture.data.url,
-        method: 'facebook'
-      }
-
-      setUser(user);
-      await AsyncStorage.setItem(USER_PROFILE_INFO, JSON.stringify(user));
-      await AsyncStorage.setItem(AUTH_METHOD_KEY, 'facebook');
+  const getSession = async () => {
+    const loggedUser = await getUserInfo();
+    if (loggedUser) {
+      setUser(loggedUser);
       setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Error fetching Facebook user:', error);
-      const savedUser = await AsyncStorage.getItem(USER_PROFILE_INFO);
-      if(savedUser) setUser(JSON.parse(savedUser));
-      setIsAuthenticated(!!savedUser);
+    } else {
+      setIsAuthenticated(false);
     }
-  };
+  }
 
   async function logout() {
     try {
-      const savedMethod = await AsyncStorage.getItem(AUTH_METHOD_KEY) as AuthMethod;
-      savedMethod == 'google' ? await GoogleSignin.signOut() : LoginManager.logOut();
-      await AsyncStorage.removeItem(AUTH_METHOD_KEY);
-      await AsyncStorage.removeItem(USER_PROFILE_INFO);
-      setIsAuthenticated(false);
+      const res = await signOut();
+      if (!res) return;
+      await removeData();
     } catch (error) {
       console.log('Sign-Out Error: ', error);
     }
+  }
+
+  const removeData = async () => {
+    setIsAuthenticated(false);
+    await removeAccessToken();
+    await removeRefreshToken();
+    setUser(null);
   }
 
   const login = async (method: 'Google' | 'Facebook') => {
@@ -147,9 +95,10 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       }
 
       const data = await AccessToken.getCurrentAccessToken();
-      await setFacebookUser(data);
-    } catch (error) {
-      console.error(error);
+      const res = await signInWithFacebook(data.accessToken);
+      if (res) await handleReceivedTokens(res);
+    } catch (apiError) {
+      setAuthError(apiError?.response?.data?.error?.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -158,9 +107,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const loginWithGoogle = async () => {
     try {
       const response = await GoogleLogin();
-      if (response.data) {
-        await setGoogleUser(GoogleSignin.getCurrentUser());
-      }
+      const res = await signInWithGoogle(response.data.idToken);
+      if (res) await handleReceivedTokens(res);
     } catch (apiError) {
       setAuthError(apiError?.response?.data?.error?.message || 'Something went wrong');
     } finally {
@@ -168,11 +116,11 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }
 
-  const setTokens = (accessToken: string, refreshToken: string) => {
-    setAccessToken(accessToken);
-    setRefreshToken(refreshToken);
-    setIsAuthenticated(true);
-  };
+  const handleReceivedTokens = async (res) => {
+    await setAccessToken(res.accessToken);
+    await setRefreshToken(res.refreshToken);
+    await getSession();
+  }
 
   if (isAuthenticated == null)
     return (

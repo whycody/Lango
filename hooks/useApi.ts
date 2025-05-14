@@ -2,23 +2,26 @@ import { apiCall } from "../auth/ApiHandler";
 import { User } from "../auth/AuthProvider";
 import DeviceInfo from 'react-native-device-info';
 
-const deviceId = DeviceInfo.getUniqueId();
+const getDeviceId = async () => {
+  try {
+    return await DeviceInfo.getUniqueId();
+  } catch (e) {
+    console.error('Error getting device ID:', e);
+    return '';
+  }
+}
 
 export const getUserInfo: () => Promise<User | null> = async () => {
-  try {
-    return await apiCall({
-      method: 'GET',
-      url: '/users/users',
-      data: {}
-    });
-  } catch (e) {
-    console.error('GET /users/users', e);
-    return null;
-  }
+  return await apiCall({
+    method: 'GET',
+    url: '/users/users',
+    data: {}
+  });
 }
 
 export const signInWithGoogle = async (idToken: string) => {
   try {
+    const deviceId = await getDeviceId();
     return await apiCall({
       method: 'POST',
       url: '/auth/login/google',
@@ -32,6 +35,7 @@ export const signInWithGoogle = async (idToken: string) => {
 
 export const signInWithFacebook = async (accessToken: string) => {
   try {
+    const deviceId = await getDeviceId();
     return await apiCall({
       method: 'POST',
       url: '/auth/login/facebook',
@@ -43,8 +47,9 @@ export const signInWithFacebook = async (accessToken: string) => {
   }
 }
 
-export const refreshToken = async (refreshToken: string) => {
+export const refreshTokens = async (refreshToken: string) => {
   try {
+    const deviceId = await getDeviceId();
     return await apiCall({
       method: 'POST',
       url: '/auth/auth/refresh',
@@ -58,6 +63,7 @@ export const refreshToken = async (refreshToken: string) => {
 
 export const signOut = async () => {
   try {
+    const deviceId = await getDeviceId();
     return await apiCall({
       method: 'POST',
       url: '/auth/auth/logout',

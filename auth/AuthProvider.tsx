@@ -65,7 +65,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       }
     } catch (error) {
       console.log("Error loading session: ", error);
-      setIsAuthenticated(false);
+      await removeData();
     }
   }
 

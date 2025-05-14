@@ -3,6 +3,7 @@ import { Platform, Pressable, StyleSheet, ActivityIndicator } from "react-native
 import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 
 interface ActionButtonProps {
   label: string,
@@ -18,11 +19,16 @@ const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, ic
   const { colors } = useTheme();
   const styles = getStyles(colors, primary, active);
 
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    onPress();
+  }
+
   return (
     <Pressable
       style={({ pressed }) => [styles.root, style, pressed && Platform.OS === 'ios' && { opacity: 0.8 }]}
       android_ripple={{ color: primary ? 'white' : colors.card }}
-      onPress={active && !loading ? onPress : undefined}
+      onPress={active && !loading ? handlePress : undefined}
     >
       {loading ? (
         <ActivityIndicator size="small" color={primary ? colors.card : colors.primary} />

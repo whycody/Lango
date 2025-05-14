@@ -33,7 +33,7 @@ interface WordsContextProps {
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
   updateFlashcards: (updates: FlashcardUpdate[]) => void;
-  getWordSet: (size: number) => Word[];
+  getWordSet: (size: number, mode: string) => Word[];
   deleteWords: () => void;
   evaluationsNumber: number;
 }

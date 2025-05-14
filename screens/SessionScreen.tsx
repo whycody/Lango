@@ -53,6 +53,7 @@ const SessionScreen = () => {
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
   const [numberOfSession, setNumberOfSession] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [flippedCards, setFlippedCards] = useState(Array(length * 10).fill(false));
   const [lastPressTime, setLastPressTime] = useState<number>(0);
 
   const navigation = useNavigation();
@@ -87,6 +88,14 @@ const SessionScreen = () => {
     handleFlashcardBottomSheetRef.current.present();
   }
 
+  const handleFlipPress = (index: number, isFlipped: boolean) => {
+    setFlippedCards(prev => {
+      const updated = [...prev];
+      updated[index] = isFlipped;
+      return updated;
+    });
+  }
+
   const renderCard = (word: any, wordIndex: number) => {
     const isActive = currentIndex === wordIndex;
 
@@ -103,9 +112,7 @@ const SessionScreen = () => {
         flipVertical={false}
         alignHeight={true}
         alignWidth={true}
-        onFlipStart={(isFlipped) => {
-          !isFlipped && Speech.speak(flipped ? word?.translation : word?.text, { language: word.firstLang });
-        }}
+        onFlipStart={(isFlipped: boolean) => handleFlipPress(wordIndex, !isFlipped)}
         friction={6}
       >
         <Animated.View style={[styles.cardContent, { transform: [{ scale: scaleValues[wordIndex] }] }]}>
@@ -127,6 +134,16 @@ const SessionScreen = () => {
       </FlipCard>
     );
   };
+
+  useEffect(() => {
+    const word = cards[currentIndex];
+    if (!word) return;
+    if ((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) {
+      Speech.stop().then(() => {
+        Speech.speak(word?.text, { language: word.firstLang });
+      });
+    }
+  }, [flipped, currentIndex, flippedCards]);
 
   const handleLevelPress = (level: 1 | 2 | 3) => {
     const now = Date.now();
@@ -224,20 +241,20 @@ const SessionScreen = () => {
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <View style={{ backgroundColor: colors.card, paddingBottom: 20 }}>
-      <SessionHeader
-        length={length}
-        cardsSetLength={cards.length}
-        progress={progress}
-        onSessionExit={() => leaveSessionBottomSheetRef.current?.present()}
-        onFlipCards={handleFlipCards}
-      />
-      <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
-        <ProgressBar
-          animatedValue={progress / cards.length}
-          color={colors.primary}
-          style={styles.progressBar}
+        <SessionHeader
+          length={length}
+          cardsSetLength={cards.length}
+          progress={progress}
+          onSessionExit={() => leaveSessionBottomSheetRef.current?.present()}
+          onFlipCards={handleFlipCards}
         />
-      </View>
+        <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
+          <ProgressBar
+            animatedValue={progress / cards.length}
+            color={colors.primary}
+            style={styles.progressBar}
+          />
+        </View>
       </View>
       <PagerView
         ref={pagerRef}

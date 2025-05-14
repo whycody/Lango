@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 import { USER, useWords, Word } from "../store/WordsContext";
 import WordInput from "../components/WordInput";
 import Alert from "../components/Alert";
-import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import { useLanguage } from "../hooks/useLanguage";
@@ -88,7 +87,6 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     const translation = translationInputRef.current?.getWord().trim();
     wordsContext.editWord(props.flashcardId, word, translation);
     props.onWordEdit?.(props.flashcardId, word, translation);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     setStatusMessage(t('editWord', { word: word }));
     scheduleDismiss()
   }
@@ -99,7 +97,6 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     const translation = translationInputRef.current?.getWord().trim();
     wordsContext.addWord(word, translation, USER);
     setStatusMessage(t('addNewWord', { word: word }));
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     if (!multiple) {
       scheduleDismiss();
     } else {

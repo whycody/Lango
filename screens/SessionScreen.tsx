@@ -19,7 +19,7 @@ import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useStatistics } from "../hooks/useStatistics";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
-import { FLASHCARD_SIDE, SESSION_MODE } from "../sheets/StartSessionBottomSheet";
+import { FLASHCARD_SIDE, SESSION_MODE } from "../store/UserPreferencesContext";
 
 type RouteParams = {
   length: 1 | 2 | 3;

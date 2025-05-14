@@ -1,7 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from "../hooks/useLanguage";
-import { SESSION_MODE } from "../sheets/StartSessionBottomSheet";
+import { SESSION_MODE } from "./UserPreferencesContext";
 
 export interface Word {
   id: string;

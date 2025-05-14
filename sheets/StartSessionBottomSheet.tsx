@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useState } from "react";
+import React, { forwardRef, useCallback, useEffect, useState } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
@@ -10,33 +10,30 @@ import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
+import { FLASHCARD_SIDE, SESSION_MODE, useUserPreferences } from "../store/UserPreferencesContext";
 
 interface StartSessionBottomSheetProps {
   onSessionStart: (length: 1 | 2 | 3, mode: SESSION_MODE, flashcardSide: FLASHCARD_SIDE) => void,
   onChangeIndex?: (index: number) => void;
 }
 
-export enum SESSION_MODE {
-  STUDY = 'STUDY',
-  RANDOM = 'RANDOM',
-  OLDEST = 'OLDEST'
-}
-
-export enum FLASHCARD_SIDE {
-  WORD = 'WORD',
-  TRANSLATION = 'TRANSLATION',
-}
-
 const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const [flashcardSide, setFlashcardSide] = useState<FLASHCARD_SIDE>(FLASHCARD_SIDE.WORD);
-  const [sessionMode, setSessionMode] = useState<SESSION_MODE>(SESSION_MODE.STUDY)
-  const [sessionLength, setSessionLength] = useState<1 | 2 | 3>(2)
+  const userPreferences = useUserPreferences();
+  const [flashcardSide, setFlashcardSide] = useState<FLASHCARD_SIDE>(userPreferences.flashcardSide);
+  const [sessionMode, setSessionMode] = useState<SESSION_MODE>(userPreferences.sessionMode);
+  const [sessionLength, setSessionLength] = useState<1 | 2 | 3>(userPreferences.sessionLength);
   const { t } = useTranslation();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+
+  useEffect(() => {
+    setFlashcardSide(userPreferences.flashcardSide);
+    setSessionMode(userPreferences.sessionMode);
+    setSessionLength(userPreferences.sessionLength);
+  }, [userPreferences.flashcardSide, userPreferences.sessionMode, userPreferences.sessionLength]);
 
   const handleFlashcardSideItemPress = (flashcardSide: FLASHCARD_SIDE) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
@@ -51,6 +48,15 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
   const handleSessionLengthItemPress = (length: 1 | 2 | 3) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     setSessionLength(length);
+  }
+  
+  const handleActionButtonPress = async () => {
+    await Promise.all([
+      userPreferences.setFlashcardSide(flashcardSide),
+      userPreferences.setSessionMode(sessionMode),
+      userPreferences.setSessionLength(sessionLength),
+    ]);
+    props.onSessionStart(sessionLength, sessionMode, flashcardSide);
   }
 
   return (
@@ -114,7 +120,7 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
           />
         </View>
         <ActionButton
-          onPress={() => props.onSessionStart(sessionLength, sessionMode, flashcardSide)}
+          onPress={handleActionButtonPress}
           label={t('startSession')}
           primary={true}
           style={styles.button}

@@ -4,8 +4,8 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import { FLASHCARD_SIDE, SESSION_MODE } from "../../sheets/StartSessionBottomSheet";
 import { LinearGradient } from "expo-linear-gradient";
+import { FLASHCARD_SIDE, SESSION_MODE } from "../../store/UserPreferencesContext";
 
 interface SessionModeItemProps {
   mode: SESSION_MODE | FLASHCARD_SIDE,

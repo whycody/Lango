@@ -16,6 +16,7 @@ import { StatisticsProvider } from "./store/StatisticsContext";
 import FlashcardsScreen from "./screens/FlashcardsScreen";
 import { LanguageProvider } from "./store/LanguageContext";
 import AuthProvider from "./auth/AuthProvider";
+import { UserPreferencesProvider } from "./store/UserPreferencesContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,38 +48,40 @@ export default function App() {
       <SafeAreaProvider style={{ backgroundColor: colors.background }}>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
           <NavigationContainer theme={DarkTheme}>
-            <StatisticsProvider>
-              <LanguageProvider>
-                <WordsProvider>
-                  <FlashcardProvider>
-                    <GestureHandlerRootView>
-                      <BottomSheetModalProvider>
-                        <AuthProvider>
-                          <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
-                            <Stack.Screen
-                              name='Tabs'
-                              component={TabsNavigator}
-                            />
-                            <Stack.Screen
-                              name='Session'
-                              component={SessionScreen}
-                              options={{ statusBarColor: colors.card }}
-                            />
-                            <Stack.Group screenOptions={{
-                              presentation: "modal",
-                              animationDuration: 100,
-                              statusBarColor: colors.card
-                            }}>
-                              <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
-                            </Stack.Group>
-                          </Stack.Navigator>
-                        </AuthProvider>
-                      </BottomSheetModalProvider>
-                    </GestureHandlerRootView>
-                  </FlashcardProvider>
-                </WordsProvider>
-              </LanguageProvider>
-            </StatisticsProvider>
+            <UserPreferencesProvider>
+              <StatisticsProvider>
+                <LanguageProvider>
+                  <WordsProvider>
+                    <FlashcardProvider>
+                      <GestureHandlerRootView>
+                        <BottomSheetModalProvider>
+                          <AuthProvider>
+                            <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
+                              <Stack.Screen
+                                name='Tabs'
+                                component={TabsNavigator}
+                              />
+                              <Stack.Screen
+                                name='Session'
+                                component={SessionScreen}
+                                options={{ statusBarColor: colors.card }}
+                              />
+                              <Stack.Group screenOptions={{
+                                presentation: "modal",
+                                animationDuration: 100,
+                                statusBarColor: colors.card
+                              }}>
+                                <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                              </Stack.Group>
+                            </Stack.Navigator>
+                          </AuthProvider>
+                        </BottomSheetModalProvider>
+                      </GestureHandlerRootView>
+                    </FlashcardProvider>
+                  </WordsProvider>
+                </LanguageProvider>
+              </StatisticsProvider>
+            </UserPreferencesProvider>
           </NavigationContainer>
         </SafeAreaView>
       </SafeAreaProvider>

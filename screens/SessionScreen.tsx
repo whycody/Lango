@@ -19,11 +19,12 @@ import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useStatistics } from "../hooks/useStatistics";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
-import { SESSION_MODE } from "../sheets/StartSessionBottomSheet";
+import { FLASHCARD_SIDE, SESSION_MODE } from "../sheets/StartSessionBottomSheet";
 
 type RouteParams = {
   length: 1 | 2 | 3;
   mode: SESSION_MODE;
+  flashcardSide: FLASHCARD_SIDE
 };
 
 const SessionScreen = () => {
@@ -33,8 +34,10 @@ const SessionScreen = () => {
   const confettiRef = useRef<LottieView>();
 
   const route = useRoute();
-  const length = (route.params as RouteParams)?.length || 1;
-  const mode = (route.params as RouteParams)?.mode || SESSION_MODE.STUDY;
+  const params = route.params as RouteParams;
+  const length = params?.length || 1;
+  const mode = params?.mode || SESSION_MODE.STUDY;
+  const flashcardSide = params?.flashcardSide || FLASHCARD_SIDE.WORD;
   const wordsContext = useWords();
 
   const pagerRef = useRef(null);
@@ -52,7 +55,7 @@ const SessionScreen = () => {
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
   const [numberOfSession, setNumberOfSession] = useState(0);
-  const [flipped, setFlipped] = useState(false);
+  const [flipped, setFlipped] = useState(flashcardSide == FLASHCARD_SIDE.TRANSLATION);
   const [flippedCards, setFlippedCards] = useState(Array(length * 10).fill(false));
   const [lastPressTime, setLastPressTime] = useState<number>(0);
 

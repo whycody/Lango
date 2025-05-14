@@ -12,7 +12,7 @@ import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
 
 interface StartSessionBottomSheetProps {
-  onSessionStart: (length: 1 | 2 | 3, mode: SESSION_MODE) => void,
+  onSessionStart: (length: 1 | 2 | 3, mode: SESSION_MODE, flashcardSide: FLASHCARD_SIDE) => void,
   onChangeIndex?: (index: number) => void;
 }
 
@@ -22,15 +22,26 @@ export enum SESSION_MODE {
   OLDEST = 'OLDEST'
 }
 
+export enum FLASHCARD_SIDE {
+  WORD = 'WORD',
+  TRANSLATION = 'TRANSLATION',
+}
+
 const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
+  const [flashcardSide, setFlashcardSide] = useState<FLASHCARD_SIDE>(FLASHCARD_SIDE.WORD);
   const [sessionMode, setSessionMode] = useState<SESSION_MODE>(SESSION_MODE.STUDY)
   const [sessionLength, setSessionLength] = useState<1 | 2 | 3>(2)
   const { t } = useTranslation();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+
+  const handleFlashcardSideItemPress = (flashcardSide: FLASHCARD_SIDE) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+    setFlashcardSide(flashcardSide);
+  }
 
   const handleSessionModeItemPress = (mode: SESSION_MODE) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
@@ -53,7 +64,20 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
     >
       <BottomSheetScrollView style={styles.root}>
         <Header title={t('startSession')} style={styles.header}/>
-        <CustomText style={styles.subtitle}>Wybierz tryb sesji</CustomText>
+        <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
+        <View style={styles.sessionItemsContainer}>
+          <SessionModeItem
+            mode={FLASHCARD_SIDE.WORD}
+            selected={flashcardSide === FLASHCARD_SIDE.WORD}
+            onPress={() => handleFlashcardSideItemPress(FLASHCARD_SIDE.WORD)}
+          />
+          <SessionModeItem
+            mode={FLASHCARD_SIDE.TRANSLATION}
+            selected={flashcardSide === FLASHCARD_SIDE.TRANSLATION}
+            onPress={() => handleFlashcardSideItemPress(FLASHCARD_SIDE.TRANSLATION)}
+          />
+        </View>
+        <CustomText style={styles.subtitle}>{t('choose_session_mode')}</CustomText>
         <View style={styles.sessionItemsContainer}>
           <SessionModeItem
             mode={SESSION_MODE.STUDY}
@@ -90,7 +114,7 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
           />
         </View>
         <ActionButton
-          onPress={() => props.onSessionStart(sessionLength, sessionMode)}
+          onPress={() => props.onSessionStart(sessionLength, sessionMode, flashcardSide)}
           label={t('startSession')}
           primary={true}
           style={styles.button}

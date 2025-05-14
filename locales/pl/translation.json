@@ -91,5 +91,9 @@
   "loading_content": "Ładowanie zawartości",
   "loading_content_desc": "Bądź cierpliwy! To zajmie tylko chwilę.",
   "change_flashcard": "Wymienianie \uD83D\uDD04",
-  "switch_suggestions": "Wymień sugestie"
+  "switch_suggestions": "Wymień sugestie",
+  "choose_session_mode": "Wybierz tryb sesji",
+  "choose_flashcard_side": "Wybierz przód fiszki",
+  "word": "Słówko",
+  "translation": "Tłumaczenie"
 }

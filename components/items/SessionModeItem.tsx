@@ -4,11 +4,11 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import { SESSION_MODE } from "../../sheets/StartSessionBottomSheet";
+import { FLASHCARD_SIDE, SESSION_MODE } from "../../sheets/StartSessionBottomSheet";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface SessionModeItemProps {
-  mode: SESSION_MODE,
+  mode: SESSION_MODE | FLASHCARD_SIDE,
   selected: boolean;
   onPress?: () => void,
   style?: any;
@@ -18,6 +18,25 @@ const SessionModeItem: FC<SessionModeItemProps> = ({ mode, selected, onPress, st
   const { colors } = useTheme();
   const styles = getStyles(colors, selected);
   const { t } = useTranslation();
+
+  let iconName = '';
+  switch (mode) {
+    case SESSION_MODE.STUDY:
+      iconName = 'school-outline';
+      break;
+    case SESSION_MODE.RANDOM:
+      iconName = 'dice-outline';
+      break;
+    case SESSION_MODE.OLDEST:
+      iconName = 'time-outline';
+      break;
+    case FLASHCARD_SIDE.WORD:
+      iconName = 'chatbubbles-outline';
+      break;
+    case FLASHCARD_SIDE.TRANSLATION:
+      iconName = 'language-outline';
+      break;
+  }
 
   return (
     <Pressable
@@ -30,15 +49,15 @@ const SessionModeItem: FC<SessionModeItemProps> = ({ mode, selected, onPress, st
         end={{ x: 1, y: 1 }}
         style={[styles.root, style]}
       >
-      <Ionicons
-        name={mode == SESSION_MODE.STUDY ? 'school-outline' : mode == SESSION_MODE.RANDOM ? 'dice-outline' : 'time-outline'}
-        color={colors.primary300}
-        size={18}
-        style={styles.icon}
-      />
-      <CustomText weight={"Bold"} style={styles.title}>
-        {t(mode.toLowerCase())}
-      </CustomText>
+        <Ionicons
+          name={iconName}
+          color={colors.primary300}
+          size={18}
+          style={styles.icon}
+        />
+        <CustomText weight={"Bold"} style={styles.title}>
+          {t(mode.toLowerCase())}
+        </CustomText>
       </LinearGradient>
     </Pressable>
   );

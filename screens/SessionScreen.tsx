@@ -196,6 +196,7 @@ const SessionScreen = () => {
   }
 
   const startNewSession = () => {
+    setFlippedCards(Array(length * 10).fill(false));
     setNumberOfSession((prev) => prev + 1);
     setFlashcardUpdates([]);
     setCards(wordsContext.getWordSet(length * 10, mode).sort(() => Math.random() - 0.5));
@@ -253,7 +254,7 @@ const SessionScreen = () => {
         />
         <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
           <ProgressBar
-            animatedValue={progress / cards.length}
+            animatedValue={progress ? progress / cards.length : 0.000001}
             color={colors.primary}
             style={styles.progressBar}
           />

@@ -94,7 +94,7 @@ const HeaderCard = () => {
           <SquareFlag languageCode={langContext.studyingLangCode} size={24}/>
         </Pressable>
       </View>
-      <ProgressBar animatedValue={lastWellKnownWords} color={colors.primary300} style={styles.progressBar}/>
+      <ProgressBar animatedValue={lastWellKnownWords ? lastWellKnownWords : 0.000001} color={colors.primary300} style={styles.progressBar}/>
       <CustomText style={styles.descText}>{getReportMessage()}</CustomText>
       <ActionButton
         label={t('startLearning')}

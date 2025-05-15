@@ -1,6 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from "../hooks/useLanguage";
+import { insertNewWord, updateWord } from "../hooks/useApi";
 import { SESSION_MODE } from "./UserPreferencesContext";
 
 export interface Word {
@@ -16,6 +17,7 @@ export interface Word {
   lastReviewDate: string;
   nextReviewDate: string;
   EF: number;
+  removed: boolean;
 }
 
 export interface Evaluation {
@@ -79,6 +81,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     lastReviewDate: new Date(Date.now()).toISOString(),
     nextReviewDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     EF: 2.5,
+    removed: false,
   });
 
   const createEvaluation = (wordId: string, grade: number): Evaluation => ({
@@ -94,6 +97,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     const updatedWords = [newWord, ...words];
     setWords(updatedWords);
     saveWords(updatedWords);
+    insertNewWord(newWord);
     return true;
   };
 
@@ -119,6 +123,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
     setWords(updatedWords);
     saveWords(updatedWords);
+    updateWord({ id, text, translation });
   };
 
   const removeWord = (id: string) => {
@@ -126,6 +131,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
     setWords(updatedWords);
     saveWords(updatedWords);
+    updateWord({ id, removed: true });
   };
 
   const saveWords = async (wordsToSave: Word[] = words) => {

@@ -17,6 +17,7 @@ export interface Word {
   lastReviewDate: string;
   nextReviewDate: string;
   EF: number;
+  active: boolean;
   removed: boolean;
 }
 
@@ -35,7 +36,7 @@ interface WordsContextProps {
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
   updateFlashcards: (updates: FlashcardUpdate[]) => void;
-  getWordSet: (size: number, mode: string) => Word[];
+  getWordSet: (size: number, sessionMode: SESSION_MODE) => Word[];
   deleteWords: () => void;
   evaluationsNumber: number;
 }
@@ -81,6 +82,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     lastReviewDate: new Date(Date.now()).toISOString(),
     nextReviewDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     EF: 2.5,
+    active: true,
     removed: false,
   });
 
@@ -154,7 +156,11 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     try {
       const storedWords = await AsyncStorage.getItem('words');
       const parsedWords = storedWords ? JSON.parse(storedWords) : [];
-      setWords(parsedWords);
+      setWords(parsedWords.map((word: Word) => ({
+        ...word,
+        active: word.active ?? true,
+        removed: word.removed ?? false,
+      })));
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
@@ -225,13 +231,12 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     setWords(updatedFlashcards);
     saveWords(updatedFlashcards);
   };
-
-
+  
   const getWordSet = (size: number, mode: SESSION_MODE): Word[] => {
     const now = new Date();
 
-    const sortedWords = [...langWords].sort((a, b) => {
-      if(mode == SESSION_MODE.RANDOM) return Math.random() - 0.5;
+    const sortedWords = [...langWords].filter((word: Word) => word.active).sort((a, b) => {
+      if (mode == SESSION_MODE.RANDOM) return Math.random() - 0.5;
       const dateA = new Date(mode == SESSION_MODE.STUDY ? a.nextReviewDate : a.lastReviewDate).getTime();
       const dateB = new Date(mode == SESSION_MODE.STUDY ? b.nextReviewDate : b.lastReviewDate).getTime();
 

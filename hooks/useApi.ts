@@ -76,30 +76,15 @@ export const signOut = async () => {
   }
 }
 
-export const insertNewWord = async (word: Word) => {
+export const syncWordsOnServer = async (words: Word[]) => {
   try {
     return await apiCall({
       method: 'POST',
-      url: '/api/words',
-      data: word
-    }, true);
+      url: '/api/words/sync',
+      data: words
+    });
   } catch (e) {
-    console.error('POST /api/words', e);
+    console.error('POST /api/words/sync', e);
     return null;
   }
-}
-
-type PartialWordUpdate = Pick<Word, 'id'> & Partial<Omit<Word, 'id'>>;
-
-export const updateWord = async (word: PartialWordUpdate) => {
-  try {
-    return await apiCall({
-      method: 'PUT',
-      url: '/api/words/' + word.id,
-      data: word
-    }, true);
-  } catch (e) {
-    console.error('PUT /api/words', e);
-    return null;
-  }
-}
+};

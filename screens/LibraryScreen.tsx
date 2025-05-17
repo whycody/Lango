@@ -7,7 +7,7 @@ import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLanguage } from "../hooks/useLanguage";
-import { useWords } from "../store/WordsContext";
+import { useWords, Word } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
@@ -65,7 +65,7 @@ const LibraryScreen = () => {
     {
       id: LibraryItems.MY_WORDS,
       label: t('myWords'),
-      description: t('words_desc', { words_number: words.words.length.toString() }),
+      description: t('words_desc', { words_number: words.words.filter((word: Word) => !word.removed).length.toString() }),
       icon: 'albums-sharp'
     },
     {

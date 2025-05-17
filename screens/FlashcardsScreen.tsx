@@ -20,8 +20,8 @@ const FlashcardsScreen = () => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const wordsContext = useWords();
-  const numberOfWords = wordsContext.langWords.length;
-  const langoWords = wordsContext.langWords.filter((word) => word.source == LANGO).length;
+  const numberOfWords = wordsContext.langWords.filter((word) => !word.removed).length;
+  const langoWords = wordsContext.langWords.filter((word) => word.source == LANGO && !word.removed).length;
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
@@ -33,9 +33,9 @@ const FlashcardsScreen = () => {
   const [searchingMode, setSearchingMode] = useState(false);
 
   const flashcards = useMemo(() => wordsContext.langWords.filter((word: Word) =>
-    !searchingMode || (filter.trim() && (
+    !word.removed && (!searchingMode || (filter.trim() && (
       word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
-      word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase())))
+      word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
   ), [searchingMode, filter, wordsContext.langWords]);
 
   useEffect(() => {

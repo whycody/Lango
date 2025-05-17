@@ -1,7 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from "../hooks/useLanguage";
-import { insertNewWord, updateWord } from "../hooks/useApi";
+import { syncWordsOnServer } from "../hooks/useApi";
 import { SESSION_MODE } from "./UserPreferencesContext";
 
 export interface Word {
@@ -19,6 +19,8 @@ export interface Word {
   EF: number;
   active: boolean;
   removed: boolean;
+  synced: boolean;
+  updatedAt?: Date | null;
 }
 
 export interface Evaluation {
@@ -84,6 +86,8 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     EF: 2.5,
     active: true,
     removed: false,
+    synced: false,
+    updatedAt: null
   });
 
   const createEvaluation = (wordId: string, grade: number): Evaluation => ({
@@ -97,9 +101,9 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     if (words.find((word) => word.text === text && word.translation === translation)) return false;
     const newWord = createWord(text, translation, source);
     const updatedWords = [newWord, ...words];
+    syncWords(updatedWords);
     setWords(updatedWords);
     saveWords(updatedWords);
-    insertNewWord(newWord);
     return true;
   };
 
@@ -118,22 +122,27 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const editWord = (id: string, text: string, translation: string) => {
     const updatedWords = words.map(word => {
       if (word.id === id) {
-        return { ...word, text, translation };
+        return { ...word, text, translation, synced: false };
       }
       return word;
     });
 
+    syncWords(updatedWords);
     setWords(updatedWords);
     saveWords(updatedWords);
-    updateWord({ id, text, translation });
   };
 
   const removeWord = (id: string) => {
-    const updatedWords = words.filter(word => word.id !== id);
+    const updatedWords = words.map(word => {
+      if (word.id === id) {
+        return { ...word, synced: false, removed: true };
+      }
+      return word;
+    });
 
+    syncWords(updatedWords);
     setWords(updatedWords);
     saveWords(updatedWords);
-    updateWord({ id, removed: true });
   };
 
   const saveWords = async (wordsToSave: Word[] = words) => {
@@ -156,13 +165,42 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     try {
       const storedWords = await AsyncStorage.getItem('words');
       const parsedWords = storedWords ? JSON.parse(storedWords) : [];
-      setWords(parsedWords.map((word: Word) => ({
+      const wordsToLoad = parsedWords.map((word: Word) => ({
         ...word,
         active: word.active ?? true,
         removed: word.removed ?? false,
-      })));
+      }));
+
+      syncWords(wordsToLoad);
+      setWords(wordsToLoad);
     } catch (error) {
       console.log('Error loading words from storage:', error);
+    }
+  };
+
+  const syncWords = async (words: Word[]) => {
+    const res = await syncWordsOnServer(words.filter(word => !word.synced));
+    if (res) {
+      const updatesMap = new Map(res.map((u: { id: number, updatedAt: string }) => [u.id, u.updatedAt]));
+
+      const updatedWords: Word[] = words.map(word => {
+        if (updatesMap.has(word.id)) {
+          return {
+            ...word,
+            synced: true,
+            updatedAt: new Date(updatesMap.get(word.id).updatedAt)
+          };
+        }
+        return word;
+      });
+
+      const newList = words.map(word => {
+        const updatedWord = updatedWords.find(u => u.id === word.id);
+        return updatedWord ? updatedWord : word;
+      });
+
+      setWords(newList);
+      await saveWords(newList);
     }
   };
 
@@ -219,7 +257,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         const lastReviewDate = new Date(Date.now()).toISOString();
         const nextReviewDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000).toISOString();
 
-        return { ...flashcard, interval, repetitionCount, EF, lastReviewDate, nextReviewDate };
+        return { ...flashcard, interval, repetitionCount, EF, lastReviewDate, nextReviewDate, synced: false };
       }
 
       return flashcard;
@@ -230,8 +268,9 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
     setWords(updatedFlashcards);
     saveWords(updatedFlashcards);
+    syncWords(updatedFlashcards);
   };
-  
+
   const getWordSet = (size: number, mode: SESSION_MODE): Word[] => {
     const now = new Date();
 

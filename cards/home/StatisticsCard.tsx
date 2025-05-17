@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/items/StatisticItem";
-import { LANGO, useWords } from "../../store/WordsContext";
+import { LANGO, useWords, Word } from "../../store/WordsContext";
 import { useStatistics } from "../../hooks/useStatistics";
 
 const StatisticsCard = () => {
@@ -26,8 +26,8 @@ const StatisticsCard = () => {
   };
 
   useEffect(() => {
-    updateStat('numberOfWords', wordsContext.langWords.length);
-    updateStat('numberOfLangoWords', wordsContext.langWords.filter((word) => word.source == LANGO).length);
+    updateStat('numberOfWords', wordsContext.langWords.filter((word: Word) => !word.removed).length);
+    updateStat('numberOfLangoWords', wordsContext.langWords.filter((word) => word.source == LANGO && !word.removed).length);
     updateStat('numberOfStudyDays', statsContext.studyDaysList.length);
     updateStat('numberOfSessions', statsContext.numberOfSessions);
   }, [wordsContext.langWords, statsContext.studyDaysList, statsContext.numberOfSessions]);

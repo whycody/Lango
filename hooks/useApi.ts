@@ -88,3 +88,16 @@ export const syncWordsOnServer = async (words: Word[]) => {
     return null;
   }
 };
+
+export const fetchUpdatedWords = async (since: string): Promise<Word[]> => {
+  try {
+    return await apiCall({
+      method: 'GET',
+      url: `/api/words?since=${since}`,
+      data: {}
+    });
+  } catch (e) {
+    console.error('GET /api/words', e);
+    return [];
+  }
+};

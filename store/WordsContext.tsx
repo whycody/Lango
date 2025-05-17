@@ -1,7 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from "../hooks/useLanguage";
-import { syncWordsOnServer } from "../hooks/useApi";
+import { fetchUpdatedWords, syncWordsOnServer } from "../hooks/useApi";
 import { SESSION_MODE } from "./UserPreferencesContext";
 
 export interface Word {
@@ -20,7 +20,8 @@ export interface Word {
   active: boolean;
   removed: boolean;
   synced: boolean;
-  updatedAt?: Date | null;
+  updatedAt?: string;
+  locallyUpdatedAt: string;
 }
 
 export interface Evaluation {
@@ -56,11 +57,15 @@ export const WordsContext = createContext<WordsContextProps>({
   langWords: [],
   addWord: () => true,
   getWord: () => undefined,
-  editWord: () => {},
-  removeWord: () => {},
-  updateFlashcards: () => {},
+  editWord: () => {
+  },
+  removeWord: () => {
+  },
+  updateFlashcards: () => {
+  },
   getWordSet: () => [],
-  deleteWords: () => {},
+  deleteWords: () => {
+  },
   evaluationsNumber: 0,
 });
 
@@ -87,7 +92,8 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     active: true,
     removed: false,
     synced: false,
-    updatedAt: null
+    updatedAt: null,
+    locallyUpdatedAt: new Date().toISOString(),
   });
 
   const createEvaluation = (wordId: string, grade: number): Evaluation => ({
@@ -122,7 +128,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const editWord = (id: string, text: string, translation: string) => {
     const updatedWords = words.map(word => {
       if (word.id === id) {
-        return { ...word, text, translation, synced: false };
+        return { ...word, text, translation, synced: false, locallyUpdatedAt: new Date().toISOString() };
       }
       return word;
     });
@@ -135,7 +141,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const removeWord = (id: string) => {
     const updatedWords = words.map(word => {
       if (word.id === id) {
-        return { ...word, synced: false, removed: true };
+        return { ...word, synced: false, removed: true, locallyUpdatedAt: new Date().toISOString() };
       }
       return word;
     });
@@ -169,38 +175,59 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         ...word,
         active: word.active ?? true,
         removed: word.removed ?? false,
+        locallyUpdatedAt: word.locallyUpdatedAt ?? new Date().toISOString(),
       }));
 
-      syncWords(wordsToLoad);
       setWords(wordsToLoad);
+      await syncWords(wordsToLoad);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
   };
 
-  const syncWords = async (words: Word[]) => {
-    const res = await syncWordsOnServer(words.filter(word => !word.synced));
-    if (res) {
-      const updatesMap = new Map(res.map((u: { id: number, updatedAt: string }) => [u.id, u.updatedAt]));
+  const syncWords = async (inputWords?: Word[]) => {
+    const wordsList = inputWords ?? words;
+    const unsyncedWords = wordsList.filter(word => !word.synced);
+    const res = await syncWordsOnServer(unsyncedWords);
 
-      const updatedWords: Word[] = words.map(word => {
+    if (res) {
+      const updatesMap = new Map(res.map((u: { id: string, updatedAt: string }) => [u.id, u.updatedAt]));
+
+      const updatedWords = wordsList.map(word => {
         if (updatesMap.has(word.id)) {
+          const serverUpdatedAt = updatesMap.get(word.id) as string;
           return {
             ...word,
             synced: true,
-            updatedAt: new Date(updatesMap.get(word.id).updatedAt)
+            updatedAt: serverUpdatedAt,
+            locallyUpdatedAt: serverUpdatedAt
           };
         }
         return word;
       });
 
-      const newList = words.map(word => {
-        const updatedWord = updatedWords.find(u => u.id === word.id);
-        return updatedWord ? updatedWord : word;
+      const latestUpdatedAt = new Date(
+        Math.max(...updatedWords.map(word => new Date(word.updatedAt).getTime()), 0)
+      ).toISOString();
+
+      const serverWords = await fetchUpdatedWords(latestUpdatedAt);
+      const serverWordsMap = new Map(serverWords.map(sw => [sw.id, sw]));
+
+      const mergedWords = updatedWords.map(word => {
+        if (serverWordsMap.has(word.id)) {
+          const serverWord = serverWordsMap.get(word.id) as Word;
+          return {
+            ...serverWord,
+            synced: true,
+            locallyUpdatedAt: serverWord.updatedAt,
+            updatedAt: serverWord.updatedAt
+          };
+        }
+        return word;
       });
 
-      setWords(newList);
-      await saveWords(newList);
+      setWords(mergedWords);
+      await saveWords(mergedWords);
     }
   };
 

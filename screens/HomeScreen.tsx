@@ -4,14 +4,17 @@ import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
 import StatisticsCard from "../cards/home/StatisticsCard";
 import { useWords } from "../store/WordsContext";
+import { useSessions } from "../store/SessionsContext";
 
 const HomeScreen = () => {
   const words = useWords();
+  const sessions = useSessions();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await words.syncWords();
+    await sessions.syncSessions();
     setRefreshing(false);
   }, [words]);
 

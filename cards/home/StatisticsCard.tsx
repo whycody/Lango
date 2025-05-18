@@ -6,11 +6,14 @@ import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/items/StatisticItem";
 import { LANGO, useWords, Word } from "../../store/WordsContext";
 import { useStatistics } from "../../hooks/useStatistics";
+import { useSessions } from "../../store/SessionsContext";
 
 const StatisticsCard = () => {
   const { t } = useTranslation();
   const wordsContext = useWords();
   const statsContext = useStatistics();
+  const sessionsContext = useSessions();
+
   const [studyStats, setStudyStats] = useState({
     numberOfWords: 0,
     numberOfSessions: 0,
@@ -29,8 +32,8 @@ const StatisticsCard = () => {
     updateStat('numberOfWords', wordsContext.langWords.filter((word: Word) => !word.removed).length);
     updateStat('numberOfLangoWords', wordsContext.langWords.filter((word) => word.source == LANGO && !word.removed).length);
     updateStat('numberOfStudyDays', statsContext.studyDaysList.length);
-    updateStat('numberOfSessions', statsContext.numberOfSessions);
-  }, [wordsContext.langWords, statsContext.studyDaysList, statsContext.numberOfSessions]);
+    updateStat('numberOfSessions', sessionsContext.sessions.length);
+  }, [wordsContext.langWords, statsContext.studyDaysList, sessionsContext.sessions]);
 
   return (
     <View style={styles.root}>

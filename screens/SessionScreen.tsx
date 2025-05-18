@@ -20,6 +20,7 @@ import { useStatistics } from "../hooks/useStatistics";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
 import { FLASHCARD_SIDE, SESSION_MODE } from "../store/UserPreferencesContext";
+import { useSessions } from "../store/SessionsContext";
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -39,6 +40,7 @@ const SessionScreen = () => {
   const mode = params?.mode || SESSION_MODE.STUDY;
   const flashcardSide = params?.flashcardSide || FLASHCARD_SIDE.WORD;
   const wordsContext = useWords();
+  const sessionsContext = useSessions();
 
   const pagerRef = useRef(null);
   const [cards, setCards] = useState(wordsContext.getWordSet(length * 10, mode));
@@ -178,6 +180,8 @@ const SessionScreen = () => {
   const finishSession = () => {
     incrementCurrentIndex();
     confettiRef.current?.play(0);
+    const avgGrade = flashcardUpdates.reduce((sum, u) => sum + u.grade, 0) / flashcardUpdates.length;
+    sessionsContext.addSession(mode, avgGrade, length * 10);
     statsContext.addTodayDayToStudyDaysList();
     statsContext.increaseNumberOfSessions();
     finishSessionBottomSheetRef.current?.present();

@@ -2,6 +2,7 @@ import { apiCall } from "../auth/ApiHandler";
 import { User } from "../auth/AuthProvider";
 import DeviceInfo from 'react-native-device-info';
 import { Word } from "../store/WordsContext";
+import { Session } from "../store/SessionsContext";
 
 const getDeviceId = async () => {
   try {
@@ -98,6 +99,32 @@ export const fetchUpdatedWords = async (since: string): Promise<Word[]> => {
     });
   } catch (e) {
     console.error('GET /api/words', e);
+    return [];
+  }
+};
+
+export const syncSessionsOnServer = async (sessions: Session[]) => {
+  try {
+    return await apiCall({
+      method: 'POST',
+      url: '/sessions/sessions/sync',
+      data: sessions
+    });
+  } catch (e) {
+    console.error('POST /api/sessions/sync', e);
+    return null;
+  }
+};
+
+export const fetchUpdatedSessions = async (since: string): Promise<Session[]> => {
+  try {
+    return await apiCall({
+      method: 'GET',
+      url: `/sessions/sessions?since=${since}`,
+      data: {}
+    });
+  } catch (e) {
+    console.error('GET /api/sessions', e);
     return [];
   }
 };

@@ -51,11 +51,11 @@ export default function App() {
             <UserPreferencesProvider>
               <StatisticsProvider>
                 <LanguageProvider>
-                  <WordsProvider>
-                    <FlashcardProvider>
-                      <GestureHandlerRootView>
-                        <BottomSheetModalProvider>
-                          <AuthProvider>
+                  <AuthProvider>
+                    <WordsProvider>
+                      <FlashcardProvider>
+                        <GestureHandlerRootView>
+                          <BottomSheetModalProvider>
                             <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
                               <Stack.Screen
                                 name='Tabs'
@@ -74,11 +74,11 @@ export default function App() {
                                 <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
                               </Stack.Group>
                             </Stack.Navigator>
-                          </AuthProvider>
-                        </BottomSheetModalProvider>
-                      </GestureHandlerRootView>
-                    </FlashcardProvider>
-                  </WordsProvider>
+                          </BottomSheetModalProvider>
+                        </GestureHandlerRootView>
+                      </FlashcardProvider>
+                    </WordsProvider>
+                  </AuthProvider>
                 </LanguageProvider>
               </StatisticsProvider>
             </UserPreferencesProvider>

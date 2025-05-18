@@ -49,6 +49,7 @@
     "react-native-screens": "~4.4.0",
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-svg": "15.8.0",
+    "react-native-uuid": "^2.0.3",
     "react-native-vector-icons": "~10.2.0",
     "square-flags": "github:kapowaz/square-flags",
     "typescript": "~5.3.3"
@@ -56,6 +57,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@react-native-community/cli": "latest",
+    "@types/react-native-sqlite-storage": "^6.0.5",
     "react-native-svg-transformer": "~1.5.0"
   },
   "expo": {

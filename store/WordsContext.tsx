@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from "../hooks/useLanguage";
 import { fetchUpdatedWords, syncWordsOnServer } from "../hooks/useApi";
 import { SESSION_MODE } from "./UserPreferencesContext";
+import { useWordsRepository } from "../hooks/useWordsRepository";
+import uuid from 'react-native-uuid';
 
 export interface Word {
   id: string;
@@ -41,6 +43,7 @@ interface WordsContextProps {
   updateFlashcards: (updates: FlashcardUpdate[]) => void;
   getWordSet: (size: number, sessionMode: SESSION_MODE) => Word[];
   deleteWords: () => void;
+  syncWords: () => Promise<void>;
   evaluationsNumber: number;
 }
 
@@ -57,15 +60,12 @@ export const WordsContext = createContext<WordsContextProps>({
   langWords: [],
   addWord: () => true,
   getWord: () => undefined,
-  editWord: () => {
-  },
-  removeWord: () => {
-  },
-  updateFlashcards: () => {
-  },
+  editWord: () => {},
+  removeWord: () => {},
+  updateFlashcards: () => {},
   getWordSet: () => [],
-  deleteWords: () => {
-  },
+  deleteWords: () => {},
+  syncWords: () => Promise.resolve(),
   evaluationsNumber: 0,
 });
 
@@ -73,11 +73,12 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const [words, setWords] = useState<Word[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const languageContext = useLanguage();
+  const { saveWords, getAllWords, updateWord, createTables } = useWordsRepository();
   const langWords = words.filter((word) =>
     word.firstLang == languageContext.studyingLangCode && word.secondLang == languageContext.mainLangCode);
 
   const createWord = (text: string, translation: string, source: string): Word => ({
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+    id: uuid.v4(),
     text,
     translation,
     firstLang: languageContext.studyingLangCode,
@@ -109,7 +110,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     const updatedWords = [newWord, ...words];
     syncWords(updatedWords);
     setWords(updatedWords);
-    saveWords(updatedWords);
+    saveWords([newWord]);
     return true;
   };
 
@@ -126,16 +127,14 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   };
 
   const editWord = (id: string, text: string, translation: string) => {
-    const updatedWords = words.map(word => {
-      if (word.id === id) {
-        return { ...word, text, translation, synced: false, locallyUpdatedAt: new Date().toISOString() };
-      }
-      return word;
-    });
+    const updatedAt = new Date().toISOString();
+    const updatedWords = words.map(word =>
+      word.id === id ? { ...word, text, translation, synced: false, locallyUpdatedAt: updatedAt } : word
+    );
 
-    syncWords(updatedWords);
+    updateWord(updatedWords.find(word => word.id === id)!);
     setWords(updatedWords);
-    saveWords(updatedWords);
+    syncWords(updatedWords);
   };
 
   const removeWord = (id: string) => {
@@ -146,17 +145,9 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       return word;
     });
 
-    syncWords(updatedWords);
+    updateWord(updatedWords.find(word => word.id === id)!);
     setWords(updatedWords);
-    saveWords(updatedWords);
-  };
-
-  const saveWords = async (wordsToSave: Word[] = words) => {
-    try {
-      await AsyncStorage.setItem('words', JSON.stringify(wordsToSave));
-    } catch (error) {
-      console.log('Error saving words to storage:', error);
-    }
+    syncWords(updatedWords);
   };
 
   const saveEvaluations = async (evaluationsToSave: Evaluation[] = evaluations) => {
@@ -167,30 +158,45 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     }
   };
 
-  const loadWords = async () => {
+  const saveWordsFromAsyncStorage = async () => {
     try {
       const storedWords = await AsyncStorage.getItem('words');
-      const parsedWords = storedWords ? JSON.parse(storedWords) : [];
-      const wordsToLoad = parsedWords.map((word: Word) => ({
+      if (!storedWords) return;
+
+      const parsedWords: Word[] = JSON.parse(storedWords);
+      const wordsToLoad = parsedWords.map((word) => ({
         ...word,
         active: word.active ?? true,
         removed: word.removed ?? false,
         locallyUpdatedAt: word.locallyUpdatedAt ?? new Date().toISOString(),
       }));
 
-      setWords(wordsToLoad);
-      await syncWords(wordsToLoad);
+      await saveWords(wordsToLoad);
+      await AsyncStorage.removeItem('words');
+      console.log('Migrated words from AsyncStorage to SQLite');
+    } catch (error) {
+      console.error('Error migrating words from AsyncStorage:', error);
+    }
+  };
+
+  const loadWords = async () => {
+    try {
+      const loadedWords = await getAllWords();
+      syncWords(loadedWords);
+      setWords(loadedWords);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
   };
 
   const syncWords = async (inputWords?: Word[]) => {
-    const wordsList = inputWords ?? words;
-    const unsyncedWords = wordsList.filter(word => !word.synced);
-    const res = await syncWordsOnServer(unsyncedWords);
+    try {
+      const wordsList = inputWords ?? (await getAllWords());
+      const unsyncedWords = wordsList.filter(word => !word.synced);
+      const res = await syncWordsOnServer(unsyncedWords);
 
-    if (res) {
+      if (!res) return;
+
       const updatesMap = new Map(res.map((u: { id: string, updatedAt: string }) => [u.id, u.updatedAt]));
 
       const updatedWords = wordsList.map(word => {
@@ -200,34 +206,45 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
             ...word,
             synced: true,
             updatedAt: serverUpdatedAt,
-            locallyUpdatedAt: serverUpdatedAt
+            locallyUpdatedAt: serverUpdatedAt,
           };
         }
         return word;
       });
 
       const latestUpdatedAt = new Date(
-        Math.max(...updatedWords.map(word => new Date(word.updatedAt).getTime()), 0)
+        Math.max(...updatedWords.map(word => new Date(word.updatedAt || word.locallyUpdatedAt).getTime()), 0)
       ).toISOString();
 
       const serverWords = await fetchUpdatedWords(latestUpdatedAt);
       const serverWordsMap = new Map(serverWords.map(sw => [sw.id, sw]));
+      const existingIds = new Set(updatedWords.map(w => w.id));
 
-      const mergedWords = updatedWords.map(word => {
-        if (serverWordsMap.has(word.id)) {
-          const serverWord = serverWordsMap.get(word.id) as Word;
-          return {
-            ...serverWord,
-            synced: true,
-            locallyUpdatedAt: serverWord.updatedAt,
-            updatedAt: serverWord.updatedAt
-          };
-        }
-        return word;
-      });
+      const mergedWords = [
+        ...updatedWords.map(word => {
+          if (serverWordsMap.has(word.id)) {
+            const serverWord = serverWordsMap.get(word.id) as Word;
+            return {
+              ...serverWord,
+              synced: true,
+              locallyUpdatedAt: serverWord.updatedAt,
+              updatedAt: serverWord.updatedAt,
+            };
+          }
+          return word;
+        }),
+        ...serverWords.filter(sw => !existingIds.has(sw.id)).map(sw => ({
+          ...sw,
+          synced: true,
+          locallyUpdatedAt: sw.updatedAt,
+          updatedAt: sw.updatedAt,
+        })),
+      ];
 
       setWords(mergedWords);
       await saveWords(mergedWords);
+    } catch (error) {
+      console.log("Error syncing words:", error);
     }
   };
 
@@ -316,9 +333,19 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       : [...reviewWords, ...sortedWords.slice(reviewWords.length, size)].slice(0, size).sort(() => Math.random() - 0.5);
   };
 
+  const loadData = async () => {
+    try {
+      await createTables();
+      await saveWordsFromAsyncStorage();
+      await loadWords();
+      await loadEvaluations();
+    } catch (error) {
+      console.log('Error loading words from storage:', error);
+    }
+  }
+
   useEffect(() => {
-    loadWords();
-    loadEvaluations();
+    loadData();
   }, [languageContext.mainLangCode, languageContext.studyingLangCode]);
 
   return (
@@ -333,6 +360,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         updateFlashcards,
         getWordSet,
         deleteWords,
+        syncWords,
         evaluationsNumber: evaluations.length
       }}
     >

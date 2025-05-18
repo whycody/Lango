@@ -18,11 +18,17 @@ const HomeScreen = () => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={50} />}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing || words.loading}
+          onRefresh={onRefresh}
+          progressViewOffset={50}
+        />
+      }
     >
-      <HeaderCard />
-      <WordsSuggestionsCard />
-      <StatisticsCard />
+      <HeaderCard/>
+      <WordsSuggestionsCard/>
+      <StatisticsCard/>
     </ScrollView>
   );
 };

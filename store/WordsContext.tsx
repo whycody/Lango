@@ -35,6 +35,7 @@ export interface Evaluation {
 
 interface WordsContextProps {
   words: Word[];
+  loading: boolean;
   langWords: Word[];
   addWord: (text: string, translation: string, source?: string) => boolean;
   getWord: (id: string) => Word | undefined;
@@ -57,6 +58,7 @@ export type FlashcardUpdate = {
 
 export const WordsContext = createContext<WordsContextProps>({
   words: [],
+  loading: true,
   langWords: [],
   addWord: () => true,
   getWord: () => undefined,
@@ -70,6 +72,7 @@ export const WordsContext = createContext<WordsContextProps>({
 });
 
 export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [loading, setLoading] = useState(true);
   const [words, setWords] = useState<Word[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const languageContext = useLanguage();
@@ -335,10 +338,12 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
   const loadData = async () => {
     try {
+      setLoading(true);
       await createTables();
       await saveWordsFromAsyncStorage();
       await loadWords();
       await loadEvaluations();
+      setLoading(false);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
@@ -352,6 +357,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     <WordsContext.Provider
       value={{
         words,
+        loading,
         langWords,
         addWord,
         getWord,

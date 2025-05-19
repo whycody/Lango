@@ -142,16 +142,3 @@ export const syncEvaluationsOnServer = async (evaluations: Evaluation[]) => {
     return null;
   }
 };
-
-export const fetchUpdatedEvaluations = async (since: string): Promise<Evaluation[]> => {
-  try {
-    return await apiCall({
-      method: 'GET',
-      url: `/evaluations/evaluations?since=${since}`,
-      data: {}
-    });
-  } catch (e) {
-    console.error('GET /evaluations/evaluations', e);
-    return [];
-  }
-};

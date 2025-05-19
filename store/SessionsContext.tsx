@@ -74,63 +74,19 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
   const syncSessions = async (inputSessions?: Session[]) => {
     try {
       const sessionsList = inputSessions ?? (await getAllSessions());
-      const unsyncedSessions = sessionsList.filter(session => !session.synced);
+      const unsyncedSessions = getUnsyncedSessions(sessionsList);
+      const serverUpdates = await syncUnsyncedSessions(unsyncedSessions);
 
-      const res = await syncSessionsOnServer(unsyncedSessions);
-      if (!res) return;
+      if (!serverUpdates) return;
 
-      const updatesMap = new Map(res.map((u: { id: string, updatedAt: string }) => [u.id, u.updatedAt]));
+      const updatedSessions = updateLocalSessions(sessionsList, serverUpdates);
+      const serverSessions = await fetchNewSessions(updatedSessions);
+      const mergedSessions = mergeLocalAndServerSessions(updatedSessions, serverSessions);
 
-      const updatedSessions = sessionsList.map(session => {
-        if (updatesMap.has(session.id)) {
-          const serverUpdatedAt = updatesMap.get(session.id) as string;
-          return {
-            ...session,
-            synced: true,
-            updatedAt: serverUpdatedAt,
-          };
-        }
-        return session;
-      });
-
-      const latestUpdatedAt = new Date(
-        Math.max(...updatedSessions.map(session => new Date(session.updatedAt || session.date).getTime()), 0)
-      ).toISOString();
-
-      const serverSessions = await fetchUpdatedSessions(latestUpdatedAt);
-      const serverSessionsMap = new Map(serverSessions.map(ss => [ss.id, ss]));
-      const existingIds = new Set(updatedSessions.map(s => s.id));
-
-      const mergedSessions = updatedSessions.map(session => {
-        if (serverSessionsMap.has(session.id)) {
-          const serverSession = serverSessionsMap.get(session.id) as Session;
-          return {
-            ...serverSession,
-            synced: true,
-            updatedAt: serverSession.updatedAt,
-          };
-        }
-        return session;
-      });
-
-      const newSessions = serverSessions.filter(ss => !existingIds.has(ss.id)).map(ss => ({
-        ...ss,
-        synced: true,
-        updatedAt: ss.updatedAt,
-      }));
-
-      const finalSessions = [...mergedSessions, ...newSessions];
-
-      const changedSessions = finalSessions.filter((session, index) => {
-        const originalSession = sessionsList[index];
-        return (
-          originalSession.synced !== session.synced ||
-          originalSession.updatedAt !== session.updatedAt
-        );
-      });
+      const changedSessions = findChangedSessions(sessionsList, mergedSessions);
 
       if (changedSessions.length > 0) {
-        setSessions(finalSessions);
+        setSessions(mergedSessions);
         await saveSessions(changedSessions);
       }
     } catch (error) {
@@ -138,20 +94,103 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
     }
   };
 
+  const getUnsyncedSessions = (sessions: Session[]): Session[] => {
+    return sessions.filter(session => !session.synced);
+  };
+
+  const syncUnsyncedSessions = async (unsyncedSessions: Session[]): Promise<{ id: string, updatedAt: string }[]> => {
+    if (unsyncedSessions.length === 0) return [];
+    const result = await syncSessionsOnServer(unsyncedSessions) as { id: string, updatedAt: string }[] | null;
+    return result ?? [];
+  };
+
+  const updateLocalSessions = (sessions: Session[], serverUpdates: { id: string, updatedAt: string }[]): Session[] => {
+    const updatesMap = new Map(serverUpdates.map(update => [update.id, update.updatedAt]));
+    return sessions.map(session => {
+      if (updatesMap.has(session.id)) {
+        const serverUpdatedAt = updatesMap.get(session.id) as string;
+        return {
+          ...session,
+          synced: true,
+          updatedAt: serverUpdatedAt,
+        };
+      }
+      return session;
+    });
+  };
+
+  const findLatestUpdatedAt = (sessions: Session[]): string => {
+    return new Date(
+      Math.max(...sessions.map(session => new Date(session.updatedAt || session.date).getTime()), 0)
+    ).toISOString();
+  };
+
+  const fetchNewSessions = async (updatedSessions: Session[]): Promise<Session[]> => {
+    const latestUpdatedAt = findLatestUpdatedAt(updatedSessions);
+    return await fetchUpdatedSessions(latestUpdatedAt);
+  };
+
+  const mergeLocalAndServerSessions = (localSessions: Session[], serverSessions: Session[]): Session[] => {
+    const serverSessionsMap = new Map(serverSessions.map(ss => [ss.id, ss]));
+    const existingIds = new Set(localSessions.map(s => s.id));
+
+    const mergedSessions = localSessions.map(session => {
+      if (serverSessionsMap.has(session.id)) {
+        const serverSession = serverSessionsMap.get(session.id)!;
+        return {
+          ...serverSession,
+          synced: true,
+          updatedAt: serverSession.updatedAt,
+        };
+      }
+      return session;
+    });
+
+    const newSessions = serverSessions.filter(ss => !existingIds.has(ss.id)).map(ss => ({
+      ...ss,
+      synced: true,
+      updatedAt: ss.updatedAt,
+    }));
+
+    return [...mergedSessions, ...newSessions];
+  };
+
+  const findChangedSessions = (originalSessions: Session[], finalSessions: Session[]): Session[] => {
+    const originalMap = new Map(originalSessions.map(session => [session.id, session]));
+
+    return finalSessions.filter(session => {
+      const original = originalMap.get(session.id);
+      if (!original) return true;
+      return (
+        original.synced !== session.synced ||
+        original.updatedAt !== session.updatedAt
+      );
+    });
+  };
+
   const loadSessions = async () => {
     try {
-      setLoading(true);
-      await createTables();
       const loadedSessions = await getAllSessions();
+      await syncSessions(loadedSessions);
       setSessions(loadedSessions);
-      setLoading(false);
     } catch (error) {
       console.log('Error loading sessions from storage:', error);
     }
   };
 
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      await createTables();
+      await loadSessions();
+      setLoading(false);
+    } catch (error) {
+      console.log('Error loading evaluations from storage:', error);
+    }
+  };
+
   useEffect(() => {
-    loadSessions();
+    loadData();
   }, []);
 
   return (

@@ -12,16 +12,17 @@ export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     tx.executeSql(`
-      CREATE TABLE IF NOT EXISTS evaluations (
-        id TEXT PRIMARY KEY,
-        wordId TEXT,
-        sessionId TEXT,
-        grade INTEGER,
-        date TEXT,
-        synced INTEGER,
-        updatedAt TEXT,
-        locallyUpdatedAt TEXT
-      )
+        CREATE TABLE IF NOT EXISTS evaluations
+        (
+            id               TEXT PRIMARY KEY,
+            wordId           TEXT,
+            sessionId        TEXT,
+            grade            INTEGER,
+            date             TEXT,
+            synced           INTEGER,
+            updatedAt        TEXT,
+            locallyUpdatedAt TEXT
+        )
     `);
   });
 };
@@ -37,7 +38,8 @@ export const saveEvaluations = async (userId: string, evaluations: Evaluation[])
       const placeholders = columns.map(() => '?').join(', ');
 
       tx.executeSql(
-        `REPLACE INTO evaluations (${columns.join(', ')}) VALUES (${placeholders})`,
+        `REPLACE INTO evaluations (${columns.join(', ')})
+         VALUES (${placeholders})`,
         values
       );
     });
@@ -49,7 +51,8 @@ export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> =
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM evaluations`,
+        `SELECT *
+         FROM evaluations`,
         [],
         (_, results) => {
           const rows = results.rows;
@@ -72,5 +75,18 @@ export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> =
         error => reject(error)
       );
     });
+  });
+};
+
+export const deleteEvaluations = async (userId: string, ids: string[]) => {
+  const db = await getDb(userId);
+  await db.transaction(tx => {
+    const placeholders = ids.map(() => '?').join(', ');
+    tx.executeSql(
+      `DELETE
+       FROM evaluations
+       WHERE id IN (${placeholders})`,
+      ids
+    );
   });
 };

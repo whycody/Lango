@@ -26,7 +26,15 @@ interface SessionsContextProps {
 export const SessionsContext = createContext<SessionsContextProps>({
   sessions: [],
   loading: true,
-  addSession: () => ({ id: '', date: '', mode: SESSION_MODE.STUDY, averageScore: 0, wordsCount: 0, synced: false, locallyUpdatedAt: '' }),
+  addSession: () => ({
+    id: '',
+    date: '',
+    mode: SESSION_MODE.STUDY,
+    averageScore: 0,
+    wordsCount: 0,
+    synced: false,
+    locallyUpdatedAt: ''
+  }),
   getSession: () => undefined,
   syncSessions: () => Promise.resolve(),
 });
@@ -93,27 +101,38 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
       const serverSessionsMap = new Map(serverSessions.map(ss => [ss.id, ss]));
       const existingIds = new Set(updatedSessions.map(s => s.id));
 
-      const mergedSessions = [
-        ...updatedSessions.map(session => {
-          if (serverSessionsMap.has(session.id)) {
-            const serverSession = serverSessionsMap.get(session.id) as Session;
-            return {
-              ...serverSession,
-              synced: true,
-              updatedAt: serverSession.updatedAt,
-            };
-          }
-          return session;
-        }),
-        ...serverSessions.filter(ss => !existingIds.has(ss.id)).map(ss => ({
-          ...ss,
-          synced: true,
-          updatedAt: ss.updatedAt,
-        })),
-      ];
+      const mergedSessions = updatedSessions.map(session => {
+        if (serverSessionsMap.has(session.id)) {
+          const serverSession = serverSessionsMap.get(session.id) as Session;
+          return {
+            ...serverSession,
+            synced: true,
+            updatedAt: serverSession.updatedAt,
+          };
+        }
+        return session;
+      });
 
-      setSessions(mergedSessions);
-      await saveSessions(mergedSessions);
+      const newSessions = serverSessions.filter(ss => !existingIds.has(ss.id)).map(ss => ({
+        ...ss,
+        synced: true,
+        updatedAt: ss.updatedAt,
+      }));
+
+      const finalSessions = [...mergedSessions, ...newSessions];
+
+      const changedSessions = finalSessions.filter((session, index) => {
+        const originalSession = sessionsList[index];
+        return (
+          originalSession.synced !== session.synced ||
+          originalSession.updatedAt !== session.updatedAt
+        );
+      });
+
+      if (changedSessions.length > 0) {
+        setSessions(finalSessions);
+        await saveSessions(changedSessions);
+      }
     } catch (error) {
       console.log("Error syncing sessions:", error);
     }

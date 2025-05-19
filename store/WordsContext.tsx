@@ -244,8 +244,19 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         })),
       ];
 
-      setWords(mergedWords);
-      await saveWords(mergedWords);
+      const changedWords = mergedWords.filter((word, index) => {
+        const originalWord = wordsList[index];
+        return (
+          originalWord.synced !== word.synced ||
+          originalWord.updatedAt !== word.updatedAt ||
+          originalWord.locallyUpdatedAt !== word.locallyUpdatedAt
+        );
+      });
+
+      if (changedWords.length > 0) {
+        setWords(mergedWords);
+        await saveWords(changedWords);
+      }
     } catch (error) {
       console.log("Error syncing words:", error);
     }

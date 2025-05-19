@@ -1,23 +1,23 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { Session } from "../store/SessionsContext";
+import { Evaluation } from "../store/EvaluationsContext";
 
-const columns = ['id', 'date', 'averageScore', 'wordsCount', 'synced', 'updatedAt', 'locallyUpdatedAt'];
+const columns = ['id', 'wordId', 'sessionId', 'grade', 'date', 'synced', 'updatedAt', 'locallyUpdatedAt'];
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
   if (!userId) throw new Error("User ID not provided");
-  return SQLite.openDatabase({ name: `${userId}_sessions.db` });
+  return SQLite.openDatabase({ name: `${userId}_evaluations.db` });
 };
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     tx.executeSql(`
-      CREATE TABLE IF NOT EXISTS sessions (
+      CREATE TABLE IF NOT EXISTS evaluations (
         id TEXT PRIMARY KEY,
+        wordId TEXT,
+        sessionId TEXT,
+        grade INTEGER,
         date TEXT,
-        mode TEXT,
-        averageScore REAL,
-        wordsCount INTEGER,
         synced INTEGER,
         updatedAt TEXT,
         locallyUpdatedAt TEXT
@@ -26,48 +26,48 @@ export const createTables = async (userId: string) => {
   });
 };
 
-export const saveSessions = async (userId: string, sessions: Session[]) => {
+export const saveEvaluations = async (userId: string, evaluations: Evaluation[]) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
-    sessions.forEach(session => {
+    evaluations.forEach(evaluation => {
       const values = columns.map(col => {
-        if (col === 'synced') return session.synced ? 1 : 0;
-        return session[col as keyof Session] || null;
+        if (col === 'synced') return evaluation.synced ? 1 : 0;
+        return evaluation[col as keyof Evaluation] || null;
       });
       const placeholders = columns.map(() => '?').join(', ');
 
       tx.executeSql(
-        `REPLACE INTO sessions (${columns.join(', ')}) VALUES (${placeholders})`,
+        `REPLACE INTO evaluations (${columns.join(', ')}) VALUES (${placeholders})`,
         values
       );
     });
   });
 };
 
-export const getAllSessions = async (userId: string): Promise<Session[]> => {
+export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> => {
   const db = await getDb(userId);
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM sessions`,
+        `SELECT * FROM evaluations`,
         [],
         (_, results) => {
           const rows = results.rows;
-          const sessions: Session[] = [];
+          const evaluations: Evaluation[] = [];
           for (let i = 0; i < rows.length; i++) {
             const row = rows.item(i);
-            sessions.push({
+            evaluations.push({
               id: row.id,
+              wordId: row.wordId,
+              sessionId: row.sessionId,
+              grade: row.grade,
               date: row.date,
-              mode: row.mode,
-              averageScore: row.averageScore,
-              wordsCount: row.wordsCount,
               synced: row.synced === 1,
               updatedAt: row.updatedAt || null,
               locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
             });
           }
-          resolve(sessions);
+          resolve(evaluations);
         },
         error => reject(error)
       );

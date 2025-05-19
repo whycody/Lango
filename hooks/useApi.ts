@@ -3,6 +3,7 @@ import { User } from "../auth/AuthProvider";
 import DeviceInfo from 'react-native-device-info';
 import { Word } from "../store/WordsContext";
 import { Session } from "../store/SessionsContext";
+import { Evaluation } from "../store/EvaluationsContext";
 
 const getDeviceId = async () => {
   try {
@@ -111,7 +112,7 @@ export const syncSessionsOnServer = async (sessions: Session[]) => {
       data: sessions
     });
   } catch (e) {
-    console.error('POST /api/sessions/sync', e);
+    console.error('POST /sessions/sessions/sync', e);
     return null;
   }
 };
@@ -124,7 +125,33 @@ export const fetchUpdatedSessions = async (since: string): Promise<Session[]> =>
       data: {}
     });
   } catch (e) {
-    console.error('GET /api/sessions', e);
+    console.error('GET /sessions/sessions', e);
+    return [];
+  }
+};
+
+export const syncEvaluationsOnServer = async (evaluations: Evaluation[]) => {
+  try {
+    return await apiCall({
+      method: 'POST',
+      url: '/evaluations/evaluations/sync',
+      data: evaluations
+    });
+  } catch (e) {
+    console.error('POST /evaluations/evaluations/sync', e);
+    return null;
+  }
+};
+
+export const fetchUpdatedEvaluations = async (since: string): Promise<Evaluation[]> => {
+  try {
+    return await apiCall({
+      method: 'GET',
+      url: `/evaluations/evaluations?since=${since}`,
+      data: {}
+    });
+  } catch (e) {
+    console.error('GET /evaluations/evaluations', e);
     return [];
   }
 };

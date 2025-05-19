@@ -5,16 +5,21 @@ import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
 import StatisticsCard from "../cards/home/StatisticsCard";
 import { useWords } from "../store/WordsContext";
 import { useSessions } from "../store/SessionsContext";
+import { useEvaluations } from "../store/EvaluationsContext";
 
 const HomeScreen = () => {
   const words = useWords();
   const sessions = useSessions();
+  const evaluations = useEvaluations();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await words.syncWords();
-    await sessions.syncSessions();
+    await Promise.all([
+      words.syncWords(),
+      sessions.syncSessions(),
+      evaluations.syncEvaluations(),
+    ]);
     setRefreshing(false);
   }, [words]);
 

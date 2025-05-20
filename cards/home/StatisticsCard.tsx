@@ -32,7 +32,7 @@ const StatisticsCard = () => {
     updateStat('numberOfWords', wordsContext.langWords.filter((word: Word) => !word.removed).length);
     updateStat('numberOfLangoWords', wordsContext.langWords.filter((word) => word.source == LANGO && !word.removed).length);
     updateStat('numberOfStudyDays', statsContext.studyDaysList.length);
-    updateStat('numberOfSessions', sessionsContext.sessions.length);
+    updateStat('numberOfSessions', statsContext.numberOfSessions);
   }, [wordsContext.langWords, statsContext.studyDaysList, sessionsContext.sessions]);
 
   return (

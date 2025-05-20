@@ -6,8 +6,10 @@ import StatisticsCard from "../cards/home/StatisticsCard";
 import { useWords } from "../store/WordsContext";
 import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
+import { useAuth } from "../hooks/useAuth";
 
 const HomeScreen = () => {
+  const auth = useAuth();
   const words = useWords();
   const sessions = useSessions();
   const evaluations = useEvaluations();
@@ -20,6 +22,7 @@ const HomeScreen = () => {
       sessions.syncSessions(),
       evaluations.syncEvaluations(),
     ]);
+    await auth.getSession();
     setRefreshing(false);
   }, [words]);
 

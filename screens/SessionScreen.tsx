@@ -16,7 +16,6 @@ import FinishSessionBottomSheet from "../sheets/FinishSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
-import { useStatistics } from "../hooks/useStatistics";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
 import { FLASHCARD_SIDE, SESSION_MODE } from "../store/UserPreferencesContext";
@@ -54,7 +53,6 @@ const SessionScreen = () => {
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const statsContext = useStatistics();
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
@@ -189,8 +187,6 @@ const SessionScreen = () => {
       sessionId: session.id,
       grade: update.grade
     })));
-    statsContext.addTodayDayToStudyDaysList();
-    statsContext.increaseNumberOfSessions();
     finishSessionBottomSheetRef.current?.present();
     wordsContext.updateFlashcards(flashcardUpdates);
   }

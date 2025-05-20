@@ -1,71 +1,47 @@
 import { createContext, FC, useState, useEffect } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSessions } from "./SessionsContext";
+import { useAuth } from "../hooks/useAuth";
 
 interface StatisticsContextProps {
   numberOfSessions: number;
-  increaseNumberOfSessions: () => void;
   studyDaysList: string[];
-  addTodayDayToStudyDaysList: () => void;
 }
 
 export const StatisticsContext = createContext<StatisticsContextProps>({
   numberOfSessions: 0,
-  increaseNumberOfSessions: () => {},
   studyDaysList: [],
-  addTodayDayToStudyDaysList: () => {},
 });
 
 export const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [numberOfSessions, setNumberOfSessions] = useState(0);
-  const [numberOfDays, setNumberOfDays] = useState(0);
+  const [serverSessionsCount, setServerSessionsCount] = useState(0);
   const [daysList, setDaysList] = useState<string[]>([]);
+  const sessions = useSessions();
+  const auth = useAuth();
+
+  const localUnsyncedSessions = sessions.sessions.filter(s => !s.synced);
+  const localUnsyncedSessionsCount = localUnsyncedSessions.length;
+  const numberOfSessions = serverSessionsCount + localUnsyncedSessionsCount;
 
   useEffect(() => {
-    const loadStatistics = async () => {
-      try {
-        const sessions = await AsyncStorage.getItem('numberOfSessions');
-        const days = await AsyncStorage.getItem('daysList');
+    const serverDaysList: string[] = auth.user.stats?.studyDays || [];
+    const unsyncedDaysSet = new Set(localUnsyncedSessions.map(s => s.date.split('T')[0]));
 
-        if (sessions) {
-          setNumberOfSessions(parseInt(sessions));
-        }
+    const combinedDaysSet = new Set([
+      ...serverDaysList,
+      ...unsyncedDaysSet,
+    ]);
 
-        if (days) {
-          const parsedDays = JSON.parse(days);
-          setDaysList(parsedDays);
-          setNumberOfDays(parsedDays.length);
-        }
-      } catch (error) {
-        console.error("Failed to load statistics from AsyncStorage", error);
-      }
-    };
+    const combinedDaysList = Array.from(combinedDaysSet).sort();
 
-    loadStatistics();
-  }, []);
-
-  const increaseNumberOfSessions = async () => {
-    const newSessionCount = numberOfSessions + 1;
-    setNumberOfSessions(newSessionCount);
-    await AsyncStorage.setItem('numberOfSessions', newSessionCount.toString());
-  };
-
-  const addTodayDayToStudyDaysList = async () => {
-    const today = new Date().toISOString().split('T')[0];
-    if (!daysList.includes(today)) {
-      const updatedDaysList = [...daysList, today];
-      setDaysList(updatedDaysList);
-      setNumberOfDays(updatedDaysList.length);
-      await AsyncStorage.setItem('daysList', JSON.stringify(updatedDaysList));
-    }
-  };
+    setDaysList(combinedDaysList);
+    setServerSessionsCount(auth.user.stats?.sessionCount || 0);
+  }, [auth.user.stats, sessions.sessions]);
 
   return (
     <StatisticsContext.Provider
       value={{
         numberOfSessions,
-        increaseNumberOfSessions,
         studyDaysList: daysList,
-        addTodayDayToStudyDaysList: addTodayDayToStudyDaysList
       }}
     >
       {children}

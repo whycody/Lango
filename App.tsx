@@ -50,11 +50,11 @@ export default function App() {
       <SafeAreaProvider style={{ backgroundColor: colors.background }}>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
           <NavigationContainer theme={DarkTheme}>
-            <UserPreferencesProvider>
-              <StatisticsProvider>
+            <AuthProvider>
+              <UserPreferencesProvider>
                 <LanguageProvider>
-                  <AuthProvider>
-                    <SessionsProvider>
+                  <SessionsProvider>
+                    <StatisticsProvider>
                       <WordsProvider>
                         <EvaluationsProvider>
                           <FlashcardProvider>
@@ -84,11 +84,11 @@ export default function App() {
                           </FlashcardProvider>
                         </EvaluationsProvider>
                       </WordsProvider>
-                    </SessionsProvider>
-                  </AuthProvider>
+                    </StatisticsProvider>
+                  </SessionsProvider>
                 </LanguageProvider>
-              </StatisticsProvider>
-            </UserPreferencesProvider>
+              </UserPreferencesProvider>
+            </AuthProvider>
           </NavigationContainer>
         </SafeAreaView>
       </SafeAreaProvider>

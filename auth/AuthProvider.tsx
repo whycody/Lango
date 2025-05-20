@@ -13,6 +13,7 @@ import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../h
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
+  getSession: () => Promise<void>;
   logout: () => void;
 }
 
@@ -22,13 +23,21 @@ GoogleSignin.configure({
   scopes: ['profile', 'email'],
 });
 
+export type UserStats = {
+  sessionCount: number;
+  averageScore: number;
+  evaluationCount: number;
+  studyDays: string[];
+};
+
 export type User = {
   userId: string;
   name: string;
   email: string;
   picture: string;
   provider: 'google' | 'facebook';
-}
+  stats?: UserStats;
+};
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 const USER_PROFILE_INFO = "@user_info";
@@ -173,7 +182,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     );
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, getSession, logout }}>
       {isAuthenticated ? children : <LoginScreen login={login} authError={authError} loading={loading}/>}
     </AuthContext.Provider>
   );

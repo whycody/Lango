@@ -3,6 +3,7 @@ import { useSessionsRepository } from "../hooks/useSessionsRepository";
 import uuid from 'react-native-uuid';
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../hooks/useApi";
 import { SESSION_MODE } from "./UserPreferencesContext";
+import { useAuth } from "../hooks/useAuth";
 
 export interface Session {
   id: string;
@@ -43,6 +44,7 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
   const { getAllSessions, saveSessions, createTables } = useSessionsRepository();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
+  const auth = useAuth();
 
   const createSession = (mode: SESSION_MODE, averageScore: number, wordsCount: number): Session => {
     const now = new Date().toISOString();
@@ -63,7 +65,7 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
     const updatedSessions = [newSession, ...sessions];
     setSessions(updatedSessions);
     saveSessions([newSession]);
-    syncSessions(updatedSessions);
+    syncSessions(updatedSessions).then(auth.getSession);
     return newSession;
   };
 
@@ -183,9 +185,10 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
       setLoading(true);
       await createTables();
       await loadSessions();
-      setLoading(false);
     } catch (error) {
       console.log('Error loading evaluations from storage:', error);
+    } finally {
+      setLoading(false);
     }
   };
 

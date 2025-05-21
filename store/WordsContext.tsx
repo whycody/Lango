@@ -34,7 +34,7 @@ interface WordsContextProps {
   getWord: (id: string) => Word | undefined;
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
-  updateFlashcards: (updates: FlashcardUpdate[]) => void;
+  updateWords: (updates: WordUpdate[]) => void;
   getWordSet: (size: number, sessionMode: SESSION_MODE) => Word[];
   deleteWords: () => void;
   syncWords: () => Promise<void>;
@@ -43,7 +43,7 @@ interface WordsContextProps {
 export const USER = 'user';
 export const LANGO = 'lango';
 
-export type FlashcardUpdate = {
+export type WordUpdate = {
   flashcardId: string;
   grade: 1 | 2 | 3;
 };
@@ -56,7 +56,7 @@ export const WordsContext = createContext<WordsContextProps>({
   getWord: () => undefined,
   editWord: () => [],
   removeWord: () => [],
-  updateFlashcards: () => [],
+  updateWords: () => [],
   getWordSet: () => [],
   deleteWords: () => [],
   syncWords: () => Promise.resolve(),
@@ -270,7 +270,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     }
   };
 
-  const updateFlashcards = (updates: FlashcardUpdate[]) => {
+  const updateWords = (updates: WordUpdate[]) => {
     const now = new Date();
     const updatedFlashcards = words.map(flashcard => {
       const update = updates.find(u => u.flashcardId === flashcard.id);
@@ -338,9 +338,10 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       await createTables();
       await saveWordsFromAsyncStorage();
       await loadWords();
-      setLoading(false);
     } catch (error) {
       console.log('Error loading words from storage:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -358,7 +359,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         getWord,
         editWord,
         removeWord,
-        updateFlashcards,
+        updateWords,
         getWordSet,
         deleteWords,
         syncWords,

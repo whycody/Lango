@@ -121,9 +121,10 @@ export const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ childre
       setLoading(true);
       await createTables();
       await loadEvaluations();
-      setLoading(false);
     } catch (error) {
       console.log('Error loading evaluations from storage:', error);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,4 +1,4 @@
-import { View, StyleSheet, BackHandler } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
@@ -26,8 +26,8 @@ const WordsSuggestionsCard = () => {
   }, [flashcardsContext.flashcards]);
 
   const flipFlashcards = () => {
-    firstFlashcardRef.current?.flipWithoutAdd();
-    secondFlashcardRef.current?.flipWithoutAdd();
+    if (firstFlashcard) firstFlashcardRef.current?.flipWithoutAdd();
+    if (secondFlashcard) secondFlashcardRef.current?.flipWithoutAdd();
   }
 
   return (

@@ -77,7 +77,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, flashcardContent, style }: Fla
   }
 
   return (
-    <View pointerEvents={flippable ? 'auto' : 'none'} style={{ flex: 1 }}>
+    <View pointerEvents={flippable && flashcardContent ? 'auto' : 'none'} style={{ flex: 1 }}>
       <FlipCard flip={flip} onFlipStart={() => handleFlip(true)}>
         <LinearGradient
           colors={[colors.cardAccent, colors.cardAccent600]}
@@ -89,8 +89,16 @@ const Flashcard = forwardRef(({ onFlashcardPress, flashcardContent, style }: Fla
             <SquareFlag languageCode={languageContext.mainLangCode} style={{ marginRight: 6 }}/>
             <SquareFlag languageCode={languageContext.studyingLangCode}/>
           </View>
-          <CustomText weight={"SemiBold"} style={styles.word} numberOfLines={1}>{flashcardContent?.word}</CustomText>
-          <CustomText style={styles.translation} numberOfLines={1}>{flashcardContent?.translation}</CustomText>
+          <CustomText
+            weight={"SemiBold"}
+            style={[styles.word, !flashcardContent?.word && { backgroundColor: colors.primary600, opacity: 0.5 }]}
+            numberOfLines={1}
+          >
+            {flashcardContent?.word}
+          </CustomText>
+          <CustomText style={[styles.translation]} numberOfLines={1}>
+            {flashcardContent?.translation}
+          </CustomText>
           <View style={styles.plusContainer}>
             <Foundation name={'plus'} size={12} color={colors.primary}/>
           </View>

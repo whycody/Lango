@@ -67,6 +67,8 @@ export const apiCall = async <T>(
     await loadTokens();
   }
 
+  console.log('Access Token:', accessToken);
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };

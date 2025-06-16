@@ -4,6 +4,7 @@ import DeviceInfo from 'react-native-device-info';
 import { Word } from "../store/WordsContext";
 import { Session } from "../store/SessionsContext";
 import { Evaluation } from "../store/EvaluationsContext";
+import { Suggestion } from "../store/SuggestionsContext";
 
 const getDeviceId = async () => {
   try {
@@ -139,6 +140,32 @@ export const syncEvaluationsOnServer = async (evaluations: Evaluation[]) => {
     });
   } catch (e) {
     console.error('POST /evaluations/evaluations/sync', e);
+    return null;
+  }
+};
+
+export const fetchUpdatedSuggestions = async (firstLang: string, secondLang: string, since: string): Promise<Suggestion[]> => {
+  try {
+    return await apiCall({
+      method: 'GET',
+      url: `/suggestions/?since=${since}&firstLang=${firstLang}&secondLang=${secondLang}`,
+      data: {}
+    });
+  } catch (e) {
+    console.error(`GET /suggestions/?since=${since}`, e);
+    return [];
+  }
+};
+
+export const syncSuggestionsOnServer = async (suggestions: Suggestion[]) => {
+  try {
+    return await apiCall({
+      method: 'POST',
+      url: '/suggestions/sync',
+      data: suggestions
+    });
+  } catch (e) {
+    console.error('POST /suggestions/sync', e);
     return null;
   }
 };

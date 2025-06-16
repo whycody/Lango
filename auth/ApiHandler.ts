@@ -61,13 +61,13 @@ const refreshAccessToken = async (): Promise<void> => {
 
 export const apiCall = async <T>(
   options: { method: string; url: string; data?: object | string }, refreshed: boolean = false,): Promise<T> => {
-  console.log('Calling API:', options.method, `${baseURL}${options.url}`, options.data);
+  // console.log('Calling API:', options.method, `${baseURL}${options.url}`, options.data);
 
   if (!accessToken) {
     await loadTokens();
   }
 
-  console.log('Access Token:', accessToken);
+  // console.log('Access Token:', accessToken);
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

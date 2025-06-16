@@ -12,16 +12,17 @@ export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     tx.executeSql(`
-      CREATE TABLE IF NOT EXISTS sessions (
-        id TEXT PRIMARY KEY,
-        date TEXT,
-        mode TEXT,
-        averageScore REAL,
-        wordsCount INTEGER,
-        synced INTEGER,
-        updatedAt TEXT,
-        locallyUpdatedAt TEXT
-      )
+        CREATE TABLE IF NOT EXISTS sessions
+        (
+            id               TEXT PRIMARY KEY,
+            date             TEXT,
+            mode             TEXT,
+            averageScore     REAL,
+            wordsCount       INTEGER,
+            synced           INTEGER,
+            updatedAt        TEXT,
+            locallyUpdatedAt TEXT
+        )
     `);
   });
 };

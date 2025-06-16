@@ -7,11 +7,13 @@ import { useWords } from "../store/WordsContext";
 import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { useAuth } from "../hooks/useAuth";
+import { useSuggestions } from "../store/SuggestionsContext";
 
 const HomeScreen = () => {
   const auth = useAuth();
   const words = useWords();
   const sessions = useSessions();
+  const suggestions = useSuggestions();
   const evaluations = useEvaluations();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -20,6 +22,7 @@ const HomeScreen = () => {
     await Promise.all([
       words.syncWords(),
       sessions.syncSessions(),
+      suggestions.syncSuggestions(),
       evaluations.syncEvaluations(),
     ]);
     await auth.getSession();

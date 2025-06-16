@@ -2,9 +2,8 @@ import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { Word } from "../store/WordsContext";
 
 const columns = [
-  'id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'interval', 'addDate',
-  'repetitionCount', 'lastReviewDate', 'nextReviewDate', 'EF', 'active', 'removed', 'synced',
-  'locallyUpdatedAt', 'updatedAt'
+  'id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'interval', 'addDate', 'repetitionCount',
+  'lastReviewDate', 'nextReviewDate', 'EF', 'active', 'removed', 'synced', 'locallyUpdatedAt', 'updatedAt'
 ];
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
@@ -16,25 +15,26 @@ export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     tx.executeSql(`
-      CREATE TABLE IF NOT EXISTS words (
-        id TEXT PRIMARY KEY,
-        text TEXT,
-        translation TEXT,
-        firstLang TEXT,
-        secondLang TEXT,
-        source TEXT,
-        interval INTEGER,
-        addDate TEXT,
-        repetitionCount INTEGER,
-        lastReviewDate TEXT,
-        nextReviewDate TEXT,
-        EF REAL,
-        active INTEGER,
-        removed INTEGER,
-        synced INTEGER,
-        locallyUpdatedAt TEXT,
-        updatedAt TEXT
-      )
+        CREATE TABLE IF NOT EXISTS words
+        (
+            id               TEXT PRIMARY KEY,
+            text             TEXT,
+            translation      TEXT,
+            firstLang        TEXT,
+            secondLang       TEXT,
+            source           TEXT,
+            interval         INTEGER,
+            addDate          TEXT,
+            repetitionCount  INTEGER,
+            lastReviewDate   TEXT,
+            nextReviewDate   TEXT,
+            EF               REAL,
+            active           INTEGER,
+            removed          INTEGER,
+            synced           INTEGER,
+            locallyUpdatedAt TEXT,
+            updatedAt        TEXT
+        )
     `);
   });
 };
@@ -56,7 +56,8 @@ export const saveWords = async (userId: string, words: Word[]) => {
       const placeholders = columns.map(() => '?').join(', ');
 
       tx.executeSql(
-        `REPLACE INTO words (${columns.join(', ')}) VALUES (${placeholders})`,
+        `REPLACE INTO words (${columns.join(', ')})
+         VALUES (${placeholders})`,
         values
       );
     });
@@ -68,7 +69,8 @@ export const getAllWords = async (userId: string): Promise<Word[]> => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM words`,
+        `SELECT *
+         FROM words`,
         [],
         (_, results) => {
           const rows = results.rows;

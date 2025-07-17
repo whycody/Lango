@@ -131,6 +131,20 @@ export const fetchUpdatedSessions = async (since: string): Promise<Session[]> =>
   }
 };
 
+export const fetchUpdatedEvaluations = async (since: string): Promise<Evaluation[]> => {
+  try {
+    return await apiCall({
+      method: 'GET',
+      url: `/evaluations/evaluations/?since=${since}`,
+      data: {}
+    });
+  } catch (e) {
+    console.error(`GET /evaluations/?since=${since}`, e);
+    return [];
+  }
+};
+
+
 export const syncEvaluationsOnServer = async (evaluations: Evaluation[]) => {
   try {
     return await apiCall({

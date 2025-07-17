@@ -1,6 +1,6 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import { useEvaluationsRepository } from "../hooks/useEvaluationsRepository";
-import { syncEvaluationsOnServer } from "../hooks/useApi";
+import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../hooks/useApi";
 import uuid from 'react-native-uuid';
 
 export interface Evaluation {
@@ -29,7 +29,7 @@ export const EvaluationsContext = createContext<EvaluationsContextProps>({
 });
 
 export const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { getAllEvaluations, deleteEvaluations, saveEvaluations, createTables } = useEvaluationsRepository();
+  const { getAllEvaluations, saveEvaluations, createTables } = useEvaluationsRepository();
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -68,12 +68,13 @@ export const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ childre
       if (!serverUpdates) return;
 
       const updatedLocalEvaluations = updateLocalEvaluations(evaluationsList, new Map(serverUpdates.map(update => [update.id, update.updatedAt])));
-      const locallyKeptEvaluations = updatedLocalEvaluations.filter(evaluation => !evaluation.synced);
-      const evaluationsToRemove = updatedLocalEvaluations.filter(evaluation => evaluation.synced);
+      const serverEvaluations = await fetchNewEvaluations(updatedLocalEvaluations);
+      const mergedEvaluations = mergeLocalAndServerEvaluations(updatedLocalEvaluations, serverEvaluations);
+      const changedEvaluations = findChangedEvaluations(evaluationsList, mergedEvaluations);
 
-      if (evaluationsToRemove.length > 0) {
-        await deleteEvaluations(evaluationsToRemove.map(e => e.id));
-        setEvaluations(locallyKeptEvaluations);
+      if (changedEvaluations.length > 0) {
+        setEvaluations(mergedEvaluations);
+        await saveEvaluations(changedEvaluations);
       }
     } catch (error) {
       console.log("Error syncing evaluations:", error);
@@ -93,6 +94,44 @@ export const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ childre
     return result ?? [];
   };
 
+  const findLatestUpdatedAt = (evaluations: Evaluation[]): string => {
+    return new Date(
+      Math.max(...evaluations.map(evaluation => new Date(evaluation.updatedAt || evaluation.locallyUpdatedAt).getTime()), 0)
+    ).toISOString();
+  };
+
+  const fetchNewEvaluations = async (updatedEvaluations: Evaluation[]): Promise<Evaluation[]> => {
+    const latestUpdatedAt = findLatestUpdatedAt(updatedEvaluations);
+    return await fetchUpdatedEvaluations(latestUpdatedAt);
+  };
+
+  const mergeLocalAndServerEvaluations = (localEvaluations: Evaluation[], serverEvaluations: Evaluation[]): Evaluation[] => {
+    const serverEvaluationsMap = new Map(serverEvaluations.map(sw => [sw.id, sw]));
+    const existingIds = new Set(localEvaluations.map(w => w.id));
+
+    const mergedEvaluations = localEvaluations.map(word => {
+      if (serverEvaluationsMap.has(word.id)) {
+        const serverEvaluations = serverEvaluationsMap.get(word.id)!;
+        return {
+          ...serverEvaluations,
+          synced: true,
+          locallyUpdatedAt: serverEvaluations.updatedAt,
+          updatedAt: serverEvaluations.updatedAt,
+        };
+      }
+      return word;
+    });
+
+    const newEvaluations = serverEvaluations.filter(sw => !existingIds.has(sw.id)).map(sw => ({
+      ...sw,
+      synced: true,
+      locallyUpdatedAt: sw.updatedAt,
+      updatedAt: sw.updatedAt,
+    }));
+
+    return [...mergedEvaluations, ...newEvaluations];
+  };
+
   const updateLocalEvaluations = (evaluations: Evaluation[], updatesMap: Map<string, string>): Evaluation[] => {
     return evaluations.map(evaluation => {
       if (updatesMap.has(evaluation.id)) {
@@ -103,6 +142,20 @@ export const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ childre
         };
       }
       return evaluation;
+    });
+  };
+
+  const findChangedEvaluations = (originalEvaluations: Evaluation[], finalEvaluations: Evaluation[]): Evaluation[] => {
+    const originalMap = new Map(originalEvaluations.map(evaluation => [evaluation.id, evaluation]));
+
+    return finalEvaluations.filter(evaluation => {
+      const original = originalMap.get(evaluation.id);
+      if (!original) return true;
+      return (
+        original.synced !== evaluation.synced ||
+        original.updatedAt !== evaluation.updatedAt ||
+        original.locallyUpdatedAt !== evaluation.locallyUpdatedAt
+      );
     });
   };
 

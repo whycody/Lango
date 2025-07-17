@@ -80,10 +80,6 @@ export const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ childre
     });
   };
 
-  useEffect(() => {
-    // console.log(suggestions.map(sugg => ({ word: sugg.word, skipped: sugg.skipped })));
-  }, [suggestions]);
-
   const syncSuggestions = async (inputSuggestions?: Suggestion[]) => {
     try {
       const suggestionsList = inputSuggestions ?? (await getAllSuggestions());

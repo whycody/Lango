@@ -6,7 +6,7 @@ import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
 import { useEffect, useRef, useState } from "react";
-import { Suggestion, useSuggestions } from "../../store/SuggestionsContext";
+import { Suggestion, useDebouncedSyncSuggestions, useSuggestions } from "../../store/SuggestionsContext";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();
@@ -23,22 +23,27 @@ const WordsSuggestionsCard = () => {
     if (suggestionsContext.suggestions.length == 0 || firstFlashcard || secondFlashcard) return;
     const sortedSuggestions = suggestionsContext.langSuggestions.slice().sort((a, b) => a.displayCount - b.displayCount);
     const [firstSuggestion, secondSuggestion] = sortedSuggestions.slice(0, 2);
+
     suggestionsContext.increaseSuggestionsDisplayCount([firstSuggestion.id, secondSuggestion.id]);
     setFirstFlashcard(firstSuggestion);
     setSecondFlashcard(secondSuggestion);
   }, [suggestionsContext.suggestions, firstFlashcard, secondFlashcard]);
 
+  const debouncedSyncSuggestions = useDebouncedSyncSuggestions(suggestionsContext.syncSuggestions, 3000);
+
   const flipFlashcards = () => {
     if (firstFlashcard) firstFlashcardRef.current?.flipWithoutAdd();
     if (secondFlashcard) secondFlashcardRef.current?.flipWithoutAdd();
+    debouncedSyncSuggestions();
   }
 
-  const handleFlashcardPress = async (first: boolean) => {
+  const handleFlashcardPress = async (first: boolean, add: boolean) => {
     await suggestionsContext.skipSuggestions(first ? [firstFlashcard?.id] : [secondFlashcard?.id]);
     const newSuggestion = suggestionsContext.langSuggestions.filter((suggestion) =>
       ![firstFlashcard.id, secondFlashcard.id].includes(suggestion.id))[first ? 0 : 1];
-    console.log(firstFlashcard.word, secondFlashcard.word)
+    await suggestionsContext.increaseSuggestionsDisplayCount([newSuggestion?.id])
     first ? setFirstFlashcard(newSuggestion) : setSecondFlashcard(newSuggestion);
+    debouncedSyncSuggestions();
   }
 
   return (
@@ -47,13 +52,13 @@ const WordsSuggestionsCard = () => {
       <View style={styles.flashcardsContainer}>
         <Flashcard
           ref={firstFlashcardRef}
-          onFlashcardPress={() => handleFlashcardPress(true)}
+          onFlashcardPress={(add: boolean) => handleFlashcardPress(true, add)}
           suggestion={firstFlashcard}
           style={{ flex: 1, marginRight: MARGIN_HORIZONTAL / 2 }}
         />
         <Flashcard
           ref={secondFlashcardRef}
-          onFlashcardPress={() => handleFlashcardPress(false)}
+          onFlashcardPress={(add: boolean) => handleFlashcardPress(false, add)}
           suggestion={secondFlashcard}
           style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
         />

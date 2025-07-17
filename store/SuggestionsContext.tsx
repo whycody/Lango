@@ -1,7 +1,8 @@
-import React, { createContext, FC, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, useContext, useEffect, useRef, useState } from 'react';
 import { useSuggestionsRepository } from "../hooks/useSuggestionsRepository";
 import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from "../hooks/useApi";
 import { useLanguage } from "../hooks/useLanguage";
+import debounce from "lodash.debounce";
 
 export interface Suggestion {
   id: string;
@@ -44,21 +45,21 @@ export const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ childre
     suggestion.secondLang == languageContext.mainLangCode && !suggestion.skipped).sort((a, b) => a.displayCount - b.displayCount);
 
   const increaseSuggestionsDisplayCount = async (ids: string[]) => {
-    const updatedSuggestions = suggestions.map(suggestion => {
-      if (ids.includes(suggestion.id)) {
-        return {
-          ...suggestion,
-          synced: false,
-          displayCount: suggestion.displayCount + 1,
-          locallyUpdatedAt: new Date().toISOString()
-        };
-      }
-      return suggestion;
+    setSuggestions(prevSuggestions => {
+      const updated = prevSuggestions.map(suggestion => {
+        if (ids.includes(suggestion.id)) {
+          return {
+            ...suggestion,
+            synced: false,
+            displayCount: suggestion.displayCount + 1,
+            locallyUpdatedAt: new Date().toISOString()
+          };
+        }
+        return suggestion;
+      });
+      saveSuggestions(updated);
+      return updated;
     });
-
-    setSuggestions(updatedSuggestions);
-    await saveSuggestions(updatedSuggestions);
-    await syncSuggestions();
   };
 
   const skipSuggestions = async (ids: string[]) => {
@@ -75,7 +76,6 @@ export const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ childre
         return suggestion;
       });
       saveSuggestions(updated);
-      syncSuggestions();
       return updated;
     });
   };
@@ -228,6 +228,24 @@ export const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ childre
     </SuggestionsContext.Provider>
   );
 };
+
+export function useDebouncedSyncSuggestions(syncFn: () => void, delay: number = 1000) {
+  const syncFnRef = useRef(syncFn);
+  const debouncedRef = useRef<() => void>();
+
+  useEffect(() => {
+    syncFnRef.current = syncFn;
+  }, [syncFn]);
+
+  useEffect(() => {
+    debouncedRef.current = debounce(() => syncFnRef.current(), delay);
+    return () => {
+      debouncedRef.current?.cancel();
+    };
+  }, [delay]);
+
+  return () => debouncedRef.current?.();
+}
 
 export const useSuggestions = (): SuggestionsContextProps => {
   const context = useContext(SuggestionsContext);

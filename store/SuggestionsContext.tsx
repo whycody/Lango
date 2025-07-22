@@ -1,9 +1,9 @@
 import React, { createContext, FC, useContext, useEffect, useRef, useState } from 'react';
-import { useSuggestionsRepository } from "../hooks/useSuggestionsRepository";
-import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from "../hooks/useApi";
-import { useLanguage } from "../hooks/useLanguage";
+import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
+import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from "../api/apiClient";
 import debounce from "lodash.debounce";
 import { Suggestion } from "./types";
+import { useLanguage } from "./LanguageContext";
 
 interface SuggestionsContextProps {
   suggestions: Suggestion[];
@@ -23,7 +23,7 @@ export const SuggestionsContext = createContext<SuggestionsContextProps>({
   syncSuggestions: () => Promise.resolve(),
 });
 
-export const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getAllSuggestions, deleteSuggestions, saveSuggestions, createTables } = useSuggestionsRepository();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -233,7 +233,7 @@ export function useDebouncedSyncSuggestions(syncFn: () => void, delay: number = 
 export const useSuggestions = (): SuggestionsContextProps => {
   const context = useContext(SuggestionsContext);
   if (!context) {
-    throw new Error("useEvaluations must be used within an EvaluationsProvider");
+    throw new Error("useSuggestions must be used within an SuggestionsProvider");
   }
   return context;
 };

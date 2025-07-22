@@ -10,14 +10,14 @@ import ActionButton from "../../components/ActionButton";
 import StartSessionBottomSheet from "../../sheets/StartSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SquareFlag from "../../components/SquareFlag";
-import { useLanguage } from "../../hooks/useLanguage";
 import LanguageBottomSheet from "../../sheets/LanguageBottomSheet";
 import { useWords } from "../../store/WordsContext";
-import { useStatistics } from "../../hooks/useStatistics";
 import { getCurrentStreak, Streak } from "../../utils/streakUtils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SESSION_MODE } from "../../store/types";
 import { FLASHCARD_SIDE } from "../../store/UserPreferencesContext";
+import { useStatistics } from "../../store/StatisticsContext";
+import { useLanguage } from "../../store/LanguageContext";
 
 const HeaderCard = () => {
   const { t } = useTranslation();

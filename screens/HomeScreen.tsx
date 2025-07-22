@@ -6,8 +6,8 @@ import StatisticsCard from "../cards/home/StatisticsCard";
 import { useWords } from "../store/WordsContext";
 import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
-import { useAuth } from "../hooks/useAuth";
 import { useSuggestions } from "../store/SuggestionsContext";
+import { useAuth } from "../api/auth/AuthProvider";
 
 const HomeScreen = () => {
   const auth = useAuth();

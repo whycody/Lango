@@ -11,10 +11,10 @@ import WordInput from "../components/WordInput";
 import Alert from "../components/Alert";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
-import { useLanguage } from "../hooks/useLanguage";
 import axios from "axios";
 import TranslationUtils from "../utils/translationUtils";
 import { Word } from "../store/types";
+import { useLanguage } from "../store/LanguageContext";
 
 type WordTranslations = {
   word: string;

@@ -1,6 +1,6 @@
-import { useAuth } from "./useAuth";
-import { createTables, saveWordsDetails, getAllWordsDetails, updateWordDetails, } from "../database/WordsDetailsRepository";
-import { WordDetails } from "../store/types";
+import { createTables, saveWordsDetails, getAllWordsDetails, updateWordDetails, } from "../../database/WordsDetailsRepository";
+import { WordDetails } from "../../store/types";
+import { useAuth } from "../../api/auth/AuthProvider";
 
 export const useWordsDetailsRepository = () => {
   const userId = useAuth().user.userId;

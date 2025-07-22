@@ -1,6 +1,6 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
-import { useEvaluationsRepository } from "../hooks/useEvaluationsRepository";
-import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../hooks/useApi";
+import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
+import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../api/apiClient";
 import uuid from 'react-native-uuid';
 import { Evaluation } from "./types";
 
@@ -18,7 +18,7 @@ export const EvaluationsContext = createContext<EvaluationsContextProps>({
   syncEvaluations: () => Promise.resolve(),
 });
 
-export const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getAllEvaluations, saveEvaluations, createTables } = useEvaluationsRepository();
   const [evaluations, setEvaluations] = useState<Evaluation[] | null>(null);
   const [loading, setLoading] = useState(true);

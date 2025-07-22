@@ -1,6 +1,6 @@
-import { createContext, FC, useState, useEffect } from "react";
+import { createContext, FC, useState, useEffect, useContext } from "react";
 import { useSessions } from "./SessionsContext";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../api/auth/AuthProvider";
 
 interface StatisticsContextProps {
   numberOfSessions: number;
@@ -12,7 +12,7 @@ export const StatisticsContext = createContext<StatisticsContextProps>({
   studyDaysList: [],
 });
 
-export const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [serverSessionsCount, setServerSessionsCount] = useState(0);
   const [daysList, setDaysList] = useState<string[]>([]);
   const sessions = useSessions();
@@ -48,3 +48,15 @@ export const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children
     </StatisticsContext.Provider>
   );
 };
+
+export const useStatistics = () => {
+  const context = useContext(StatisticsContext);
+
+  if (!context) {
+    throw new Error("useStatistics must be used within a StatisticsProvider");
+  }
+
+  return context;
+};
+
+export default StatisticsProvider;

@@ -8,9 +8,9 @@ import FlipCard from 'react-native-flip-card'
 import { Foundation } from "@expo/vector-icons";
 import { LANGO, useWords } from "../store/WordsContext";
 import SquareFlag from "./SquareFlag";
-import { useLanguage } from "../hooks/useLanguage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Suggestion } from "../store/types";
+import { useLanguage } from "../store/LanguageContext";
 
 interface FlashcardProps {
   onFlashcardPress?: (add: boolean) => void;

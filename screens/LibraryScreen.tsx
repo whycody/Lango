@@ -6,14 +6,14 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useLanguage } from "../hooks/useLanguage";
 import { useWords } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
-import { useAuth } from "../hooks/useAuth";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { Word } from "../store/types";
+import { useLanguage } from "../store/LanguageContext";
+import { useAuth } from "../api/auth/AuthProvider";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();

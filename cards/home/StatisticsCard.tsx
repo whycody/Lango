@@ -5,9 +5,9 @@ import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/items/StatisticItem";
 import { LANGO, useWords } from "../../store/WordsContext";
-import { useStatistics } from "../../hooks/useStatistics";
 import { useSessions } from "../../store/SessionsContext";
 import { Word } from "../../store/types";
+import { useStatistics } from "../../store/StatisticsContext";
 
 const StatisticsCard = () => {
   const { t } = useTranslation();

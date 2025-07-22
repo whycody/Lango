@@ -1,4 +1,4 @@
-import { apiCall } from "../auth/ApiHandler";
+import { apiCall } from "./auth/apiHandler";
 import DeviceInfo from 'react-native-device-info';
 import { Evaluation, Session, Suggestion, User, Word } from "../store/types";
 

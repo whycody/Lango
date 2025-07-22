@@ -1,7 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
 import { useEvaluations } from "./EvaluationsContext";
 import { useWords } from "./WordsContext";
-import { useWordsDetailsRepository } from "../hooks/useWordsDetailsRepository";
+import { useWordsDetailsRepository } from "../hooks/repo/useWordsDetailsRepository";
 import { score } from "../utils/model";
 import { Word, WordDetails, Evaluation } from "./types";
 
@@ -15,7 +15,7 @@ export const WordsDetailsContext = createContext<WordDetailsContextProps>({
   wordsDetails: [],
 })
 
-export const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [wordsDetails, setWordsDetails] = useState<WordDetails[] | null>(null);
   const wordsDetailsRef = useRef<WordDetails[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -255,7 +255,9 @@ export const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ childr
 export const useWordDetails = (): WordDetailsContextProps => {
   const context = useContext(WordsDetailsContext);
   if (!context) {
-    throw new Error("useWords must be used within a WordsProvider");
+    throw new Error("useWordDetails must be used within a WordsDetailsProvider");
   }
   return context;
 };
+
+export default WordsDetailsProvider;

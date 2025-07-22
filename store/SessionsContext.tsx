@@ -1,9 +1,9 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
-import { useSessionsRepository } from "../hooks/useSessionsRepository";
+import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
 import uuid from 'react-native-uuid';
-import { fetchUpdatedSessions, syncSessionsOnServer } from "../hooks/useApi";
-import { useAuth } from "../hooks/useAuth";
+import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
 import { Session, SESSION_MODE } from './types';
+import { useAuth } from "../api/auth/AuthProvider";
 
 interface SessionsContextProps {
   sessions: Session[];
@@ -13,7 +13,7 @@ interface SessionsContextProps {
   syncSessions: () => Promise<void>;
 }
 
-export const SessionsContext = createContext<SessionsContextProps>({
+const SessionsContext = createContext<SessionsContextProps>({
   sessions: [],
   loading: true,
   addSession: () => ({

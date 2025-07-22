@@ -3,7 +3,7 @@ import { MARGIN_VERTICAL } from "../../src/constants";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import CustomText from "../../components/CustomText";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../api/auth/AuthProvider";
 
 const ProfileCard = () => {
   const { colors } = useTheme();

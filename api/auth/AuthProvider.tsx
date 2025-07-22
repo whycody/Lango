@@ -1,15 +1,15 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import { ActivityIndicator, Image, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './ApiHandler';
-import LoginScreen from "../screens/LoginScreen";
+import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './apiHandler';
+import LoginScreen from "../../screens/LoginScreen";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import CustomText from "../components/CustomText";
+import CustomText from "../../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
-import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../hooks/useApi";
-import { User } from '../store/types';
+import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
+import { User } from '../../store/types';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -155,7 +155,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           </CustomText>
         </View>
         <Image
-          source={require('../assets/lango-logo.png')}
+          source={require('../../assets/lango-logo.png')}
           style={{
             height: 40,
             alignSelf: 'center',
@@ -171,6 +171,14 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       {isAuthenticated ? children : <LoginScreen login={login} authError={authError} loading={loading}/>}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within a AuthProvider");
+  }
+  return context;
 };
 
 export default AuthProvider;

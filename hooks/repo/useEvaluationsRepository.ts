@@ -1,6 +1,6 @@
-import { createTables, getAllEvaluations, saveEvaluations, deleteEvaluations } from "../database/EvaluationsRepository";
-import { useAuth } from "./useAuth";
-import { Evaluation } from "../store/types";
+import { createTables, getAllEvaluations, saveEvaluations, deleteEvaluations } from "../../database/EvaluationsRepository";
+import { Evaluation } from "../../store/types";
+import { useAuth } from "../../api/auth/AuthProvider";
 
 export const useEvaluationsRepository = () => {
   const userId = useAuth().user.userId;

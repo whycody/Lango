@@ -1,10 +1,10 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLanguage } from "../hooks/useLanguage";
-import { fetchUpdatedWords, syncWordsOnServer } from "../hooks/useApi";
-import { useWordsRepository } from "../hooks/useWordsRepository";
+import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
+import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import uuid from 'react-native-uuid';
 import { SESSION_MODE, Word } from './types';
+import { useLanguage } from "./LanguageContext";
 
 interface WordsContextProps {
   words: Word[];
@@ -28,7 +28,7 @@ export type WordUpdate = {
   grade: 1 | 2 | 3;
 };
 
-export const WordsContext = createContext<WordsContextProps>({
+const WordsContext = createContext<WordsContextProps>({
   words: [],
   loading: true,
   langWords: [],

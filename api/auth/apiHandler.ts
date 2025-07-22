@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import axios, { AxiosResponse } from "axios";
-import { refreshTokens } from "../hooks/useApi";
+import { refreshTokens } from "../apiClient";
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;

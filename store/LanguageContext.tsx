@@ -1,4 +1,4 @@
-import { createContext, FC, useState, useEffect } from "react";
+import { createContext, FC, useState, useEffect, useContext } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from "react-i18next";
 import { Language, LanguageCode } from "./types";
@@ -19,7 +19,7 @@ export const LanguageContext = createContext<LanguageContextProps>({
   setStudyingLangCode: () => {},
 });
 
-export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
   const [mainLangCode, setMainLangCodeState] = useState<string>(LanguageCode.POLISH);
   const [studyingLangCode, setStudyingLangCodeState] = useState<string>(LanguageCode.SPANISH);
@@ -71,3 +71,13 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
     </LanguageContext.Provider>
   );
 };
+
+export const useLanguage = (): LanguageContextProps => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useSessions must be used within a SessionsProvider");
+  }
+  return context;
+};
+
+export default LanguageProvider;

@@ -20,6 +20,7 @@ import { UserPreferencesProvider } from "./store/UserPreferencesContext";
 import SessionsProvider from "./store/SessionsContext";
 import EvaluationsProvider from "./store/EvaluationsContext";
 import SuggestionsProvider from "./store/SuggestionsContext";
+import { WordsDetailsProvider } from "./store/WordsDetailsContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,31 +60,33 @@ export default function App() {
                       <StatisticsProvider>
                         <WordsProvider>
                           <EvaluationsProvider>
-                            <FlashcardProvider>
-                              <GestureHandlerRootView>
-                                <BottomSheetModalProvider>
-                                  <Stack.Navigator
-                                    screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
-                                    <Stack.Screen
-                                      name='Tabs'
-                                      component={TabsNavigator}
-                                    />
-                                    <Stack.Screen
-                                      name='Session'
-                                      component={SessionScreen}
-                                      options={{ statusBarColor: colors.card }}
-                                    />
-                                    <Stack.Group screenOptions={{
-                                      presentation: "modal",
-                                      animationDuration: 100,
-                                      statusBarColor: colors.card
-                                    }}>
-                                      <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
-                                    </Stack.Group>
-                                  </Stack.Navigator>
-                                </BottomSheetModalProvider>
-                              </GestureHandlerRootView>
-                            </FlashcardProvider>
+                            <WordsDetailsProvider>
+                              <FlashcardProvider>
+                                <GestureHandlerRootView>
+                                  <BottomSheetModalProvider>
+                                    <Stack.Navigator
+                                      screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
+                                      <Stack.Screen
+                                        name='Tabs'
+                                        component={TabsNavigator}
+                                      />
+                                      <Stack.Screen
+                                        name='Session'
+                                        component={SessionScreen}
+                                        options={{ statusBarColor: colors.card }}
+                                      />
+                                      <Stack.Group screenOptions={{
+                                        presentation: "modal",
+                                        animationDuration: 100,
+                                        statusBarColor: colors.card
+                                      }}>
+                                        <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                                      </Stack.Group>
+                                    </Stack.Navigator>
+                                  </BottomSheetModalProvider>
+                                </GestureHandlerRootView>
+                              </FlashcardProvider>
+                            </WordsDetailsProvider>
                           </EvaluationsProvider>
                         </WordsProvider>
                       </StatisticsProvider>

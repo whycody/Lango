@@ -1,7 +1,7 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { WordDetails } from "../store/WordsDetailsContext";
 
-const columns = ['wordId', 'hoursSinceLastRepetition', 'studyDuration', 'gradesAverage', 'repetitionsCount', 'gradesTrend'];
+const columns = ['wordId', 'hoursSinceLastRepetition', 'studyDuration', 'gradesAverage', 'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
 const TABLE_NAME = 'words_details';
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
@@ -20,7 +20,9 @@ export const createTables = async (userId: string) => {
             studyDuration            REAL,
             gradesAverage            REAL,
             repetitionsCount         INTEGER,
-            gradesTrend              REAL
+            gradesTrend              REAL,
+            predictedGrade           INTEGER,
+            gradeThreeProb           REAL
         )
     `);
   });
@@ -29,14 +31,16 @@ export const createTables = async (userId: string) => {
 export const saveWordsDetails = async (userId: string, wordsDetails: WordDetails[]) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
-    wordsDetails.forEach(word => {
+    wordsDetails.forEach(wordDetails => {
       const values = [
-        word.wordId,
-        word.hoursSinceLastRepetition,
-        word.studyDuration,
-        word.gradesAverage,
-        word.repetitionsCount,
-        word.gradesTrend
+        wordDetails.wordId,
+        wordDetails.hoursSinceLastRepetition,
+        wordDetails.studyDuration,
+        wordDetails.gradesAverage,
+        wordDetails.repetitionsCount,
+        wordDetails.gradesTrend,
+        wordDetails.predictedGrade,
+        wordDetails.gradeThreeProb
       ];
 
       const placeholders = columns.map(() => '?').join(', ');
@@ -68,6 +72,8 @@ export const getAllWordsDetails = async (userId: string): Promise<WordDetails[]>
               gradesAverage: row.gradesAverage,
               repetitionsCount: row.repetitionsCount,
               gradesTrend: row.gradesTrend,
+              predictedGrade: row.predictedGrade,
+              gradeThreeProb: row.gradeThreeProb
             } satisfies WordDetails;
           });
           resolve(words);

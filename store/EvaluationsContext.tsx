@@ -15,7 +15,7 @@ export interface Evaluation {
 }
 
 interface EvaluationsContextProps {
-  evaluations: Evaluation[];
+  evaluations: Evaluation[] | null;
   loading: boolean;
   addEvaluations: (evaluationsData: { wordId: string, sessionId: string, grade: number }[]) => Evaluation[];
   syncEvaluations: () => Promise<void>;
@@ -30,7 +30,7 @@ export const EvaluationsContext = createContext<EvaluationsContextProps>({
 
 export const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getAllEvaluations, saveEvaluations, createTables } = useEvaluationsRepository();
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [evaluations, setEvaluations] = useState<Evaluation[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   const createEvaluation = (wordId: string, sessionId: string, grade: number): Evaluation => {

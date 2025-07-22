@@ -10,7 +10,7 @@ import { LANGO, useWords } from "../store/WordsContext";
 import SquareFlag from "./SquareFlag";
 import { useLanguage } from "../hooks/useLanguage";
 import { LinearGradient } from "expo-linear-gradient";
-import { Suggestion, useSuggestions } from "../store/SuggestionsContext";
+import { Suggestion } from "../store/types";
 
 interface FlashcardProps {
   onFlashcardPress?: (add: boolean) => void;

@@ -6,7 +6,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { USER, useWords, Word } from "../store/WordsContext";
+import { USER, useWords } from "../store/WordsContext";
 import WordInput from "../components/WordInput";
 import Alert from "../components/Alert";
 import Header from "../components/Header";
@@ -14,6 +14,7 @@ import { FullWindowOverlay } from "react-native-screens";
 import { useLanguage } from "../hooks/useLanguage";
 import axios from "axios";
 import TranslationUtils from "../utils/translationUtils";
+import { Word } from "../store/types";
 
 type WordTranslations = {
   word: string;

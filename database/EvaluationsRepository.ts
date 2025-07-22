@@ -1,5 +1,5 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { Evaluation } from "../store/EvaluationsContext";
+import { Evaluation } from "../store/types";
 
 const columns = ['id', 'wordId', 'sessionId', 'grade', 'date', 'synced', 'updatedAt', 'locallyUpdatedAt'];
 

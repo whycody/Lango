@@ -9,8 +9,8 @@ import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import LanguageItem from "../components/items/LanguageItem";
 import { useLanguage } from "../hooks/useLanguage";
-import { Language } from "../store/LanguageContext";
 import * as Haptics from "expo-haptics";
+import { Language } from "../store/types";
 
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;

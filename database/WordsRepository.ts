@@ -1,5 +1,5 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { Word } from "../store/WordsContext";
+import { Word } from "../store/types";
 
 const columns = [
   'id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'interval', 'addDate', 'repetitionCount',

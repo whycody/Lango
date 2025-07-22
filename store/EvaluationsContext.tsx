@@ -2,17 +2,7 @@ import React, { createContext, FC, useContext, useEffect, useState } from 'react
 import { useEvaluationsRepository } from "../hooks/useEvaluationsRepository";
 import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../hooks/useApi";
 import uuid from 'react-native-uuid';
-
-export interface Evaluation {
-  id: string;
-  wordId: string;
-  sessionId: string;
-  grade: number;
-  date: string;
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
-}
+import { Evaluation } from "./types";
 
 interface EvaluationsContextProps {
   evaluations: Evaluation[] | null;

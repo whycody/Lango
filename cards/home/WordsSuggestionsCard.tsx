@@ -6,7 +6,8 @@ import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
 import { useEffect, useRef, useState } from "react";
-import { Suggestion, useDebouncedSyncSuggestions, useSuggestions } from "../../store/SuggestionsContext";
+import { useDebouncedSyncSuggestions, useSuggestions } from "../../store/SuggestionsContext";
+import { Suggestion } from "../../store/types";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();

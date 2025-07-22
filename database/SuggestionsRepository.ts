@@ -1,5 +1,5 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { Suggestion } from "../store/SuggestionsContext";
+import { Suggestion } from "../store/types";
 
 const columns = [
   'id', 'userId', 'word', 'translation', 'firstLang', 'secondLang', 'displayCount', 'skipped', 'synced', 'updatedAt',

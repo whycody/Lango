@@ -9,6 +9,7 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../hooks/useApi";
+import { User } from '../store/types';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -22,22 +23,6 @@ GoogleSignin.configure({
   iosClientId: process.env["GOOGLE_IOS_CLIENT_ID"],
   scopes: ['profile', 'email'],
 });
-
-export type UserStats = {
-  sessionCount: number;
-  averageScore: number;
-  evaluationCount: number;
-  studyDays: string[];
-};
-
-export type User = {
-  userId: string;
-  name: string;
-  email: string;
-  picture: string;
-  provider: 'google' | 'facebook';
-  stats?: UserStats;
-};
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 const USER_PROFILE_INFO = "@user_info";

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useWords, Word } from "./WordsContext";
+import { useWords } from "./WordsContext";
 import { useLanguage } from "../hooks/useLanguage";
-import { LanguageCode } from "./LanguageContext";
+import { LanguageCode, Word } from "./types";
 
 export interface FlashcardContent {
   word: string;

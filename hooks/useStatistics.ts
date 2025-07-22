@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { StatisticsContext } from "../store/StatisticsContext";
 
-
 export const useStatistics = () => {
   const context = useContext(StatisticsContext);
 

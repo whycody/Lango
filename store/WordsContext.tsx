@@ -2,29 +2,9 @@ import React, { createContext, FC, useContext, useEffect, useState } from 'react
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from "../hooks/useLanguage";
 import { fetchUpdatedWords, syncWordsOnServer } from "../hooks/useApi";
-import { SESSION_MODE } from "./UserPreferencesContext";
 import { useWordsRepository } from "../hooks/useWordsRepository";
 import uuid from 'react-native-uuid';
-
-export interface Word {
-  id: string;
-  text: string;
-  translation: string;
-  firstLang: string;
-  secondLang: string;
-  source: string;
-  interval: number;
-  addDate: string;
-  repetitionCount: number;
-  lastReviewDate: string;
-  nextReviewDate: string;
-  EF: number;
-  active: boolean;
-  removed: boolean;
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
-}
+import { SESSION_MODE, Word } from './types';
 
 interface WordsContextProps {
   words: Word[];

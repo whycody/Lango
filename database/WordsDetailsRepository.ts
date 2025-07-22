@@ -1,5 +1,5 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { WordDetails } from "../store/WordsDetailsContext";
+import { WordDetails } from "../store/types";
 
 const columns = ['wordId', 'hoursSinceLastRepetition', 'studyDuration', 'gradesAverage', 'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
 const TABLE_NAME = 'words_details';

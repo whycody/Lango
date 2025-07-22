@@ -1,19 +1,9 @@
-import React, { createContext, FC, useEffect, useRef, useState } from "react";
-import { Evaluation, useEvaluations } from "./EvaluationsContext";
-import { useWords, Word } from "./WordsContext";
+import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
+import { useEvaluations } from "./EvaluationsContext";
+import { useWords } from "./WordsContext";
 import { useWordsDetailsRepository } from "../hooks/useWordsDetailsRepository";
 import { score } from "../utils/model";
-
-export interface WordDetails {
-  wordId: string;
-  hoursSinceLastRepetition: number;
-  studyDuration: number;
-  gradesAverage: number;
-  repetitionsCount: number;
-  gradesTrend: number;
-  predictedGrade: 1 | 2 | 3;
-  gradeThreeProb: number;
-}
+import { Word, WordDetails, Evaluation } from "./types";
 
 interface WordDetailsContextProps {
   loading: boolean;
@@ -261,3 +251,11 @@ export const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ childr
     </WordsDetailsContext.Provider>
   );
 }
+
+export const useWordDetails = (): WordDetailsContextProps => {
+  const context = useContext(WordsDetailsContext);
+  if (!context) {
+    throw new Error("useWords must be used within a WordsProvider");
+  }
+  return context;
+};

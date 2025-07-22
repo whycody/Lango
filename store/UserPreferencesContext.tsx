@@ -1,11 +1,6 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-export enum SESSION_MODE {
-  STUDY = 'STUDY',
-  RANDOM = 'RANDOM',
-  OLDEST = 'OLDEST'
-}
+import { SESSION_MODE } from "./types";
 
 export enum FLASHCARD_SIDE {
   WORD = 'WORD',

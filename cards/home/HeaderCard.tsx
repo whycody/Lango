@@ -7,7 +7,7 @@ import CustomText from "../../components/CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../../components/ActionButton";
-import StartSessionBottomSheet, { FLASHCARD_SIDE, SESSION_MODE } from "../../sheets/StartSessionBottomSheet";
+import StartSessionBottomSheet from "../../sheets/StartSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SquareFlag from "../../components/SquareFlag";
 import { useLanguage } from "../../hooks/useLanguage";
@@ -16,6 +16,8 @@ import { useWords } from "../../store/WordsContext";
 import { useStatistics } from "../../hooks/useStatistics";
 import { getCurrentStreak, Streak } from "../../utils/streakUtils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SESSION_MODE } from "../../store/types";
+import { FLASHCARD_SIDE } from "../../store/UserPreferencesContext";
 
 const HeaderCard = () => {
   const { t } = useTranslation();

@@ -1,19 +1,7 @@
 import { createContext, FC, useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from "react-i18next";
-
-export type Language = {
-  languageCode: LanguageCode;
-  languageName: string;
-  languageInTargetLanguage: string;
-}
-
-export enum LanguageCode {
-  ENGLISH = 'en',
-  POLISH = 'pl',
-  SPANISH = 'es',
-  ITALIAN = 'it',
-}
+import { Language, LanguageCode } from "./types";
 
 interface LanguageContextProps {
   languages: Language[];

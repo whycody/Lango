@@ -2,19 +2,8 @@ import React, { createContext, FC, useContext, useEffect, useState } from 'react
 import { useSessionsRepository } from "../hooks/useSessionsRepository";
 import uuid from 'react-native-uuid';
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../hooks/useApi";
-import { SESSION_MODE } from "./UserPreferencesContext";
 import { useAuth } from "../hooks/useAuth";
-
-export interface Session {
-  id: string;
-  date: string;
-  mode: SESSION_MODE;
-  averageScore: number;
-  wordsCount: number;
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
-}
+import { Session, SESSION_MODE } from './types';
 
 interface SessionsContextProps {
   sessions: Session[];

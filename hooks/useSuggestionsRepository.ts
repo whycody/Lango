@@ -1,6 +1,6 @@
 import { useAuth } from "./useAuth";
 import { createTables, deleteSuggestions, getAllSuggestions, saveSuggestions } from "../database/SuggestionsRepository";
-import { Suggestion } from "../store/SuggestionsContext";
+import { Suggestion } from "../store/types";
 
 export const useSuggestionsRepository = () => {
   const userId = useAuth().user.userId;

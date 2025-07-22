@@ -1,10 +1,6 @@
 import { apiCall } from "../auth/ApiHandler";
-import { User } from "../auth/AuthProvider";
 import DeviceInfo from 'react-native-device-info';
-import { Word } from "../store/WordsContext";
-import { Session } from "../store/SessionsContext";
-import { Evaluation } from "../store/EvaluationsContext";
-import { Suggestion } from "../store/SuggestionsContext";
+import { Evaluation, Session, Suggestion, User, Word } from "../store/types";
 
 const getDeviceId = async () => {
   try {

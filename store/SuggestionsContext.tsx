@@ -3,20 +3,7 @@ import { useSuggestionsRepository } from "../hooks/useSuggestionsRepository";
 import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from "../hooks/useApi";
 import { useLanguage } from "../hooks/useLanguage";
 import debounce from "lodash.debounce";
-
-export interface Suggestion {
-  id: string;
-  userId: string;
-  word: string;
-  translation: string;
-  firstLang: string;
-  secondLang: string;
-  displayCount: number;
-  skipped: boolean;
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
-}
+import { Suggestion } from "./types";
 
 interface SuggestionsContextProps {
   suggestions: Suggestion[];

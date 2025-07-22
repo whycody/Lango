@@ -18,9 +18,10 @@ import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
-import { FLASHCARD_SIDE, SESSION_MODE } from "../store/UserPreferencesContext";
+import { FLASHCARD_SIDE } from "../store/UserPreferencesContext";
 import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
+import { SESSION_MODE } from "../store/types";
 
 type RouteParams = {
   length: 1 | 2 | 3;

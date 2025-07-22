@@ -1,6 +1,6 @@
 import { createTables, getAllSessions, saveSessions } from "../database/SessionRepository";
 import { useAuth } from "./useAuth";
-import { Session } from "../store/SessionsContext";
+import { Session } from "../store/types";
 
 export const useSessionsRepository = () => {
   const userId = useAuth().user.userId;

@@ -3,7 +3,7 @@ import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import StatisticItem from "../components/items/StatisticItem";
-import { LANGO, useWords, Word } from "../store/WordsContext";
+import { LANGO, useWords } from "../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
@@ -14,6 +14,7 @@ import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons } from "@expo/vector-icons";
 import ListFilter from "../components/ListFilter";
+import { Word } from "../store/types";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();

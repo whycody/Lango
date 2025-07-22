@@ -1,0 +1,86 @@
+import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
+import { WordDetails } from "../store/WordsDetailsContext";
+
+const columns = ['wordId', 'hoursSinceLastRepetition', 'studyDuration', 'gradesAverage', 'repetitionsCount', 'gradesTrend'];
+const TABLE_NAME = 'words_details';
+
+const getDb = async (userId: string): Promise<SQLiteDatabase> => {
+  if (!userId) throw new Error("User ID not provided");
+  return SQLite.openDatabase({ name: `${userId}_words.db` });
+};
+
+export const createTables = async (userId: string) => {
+  const db = await getDb(userId);
+  await db.transaction(tx => {
+    tx.executeSql(`
+        CREATE TABLE IF NOT EXISTS ${TABLE_NAME}
+        (
+            wordId                   TEXT PRIMARY KEY,
+            hoursSinceLastRepetition REAL,
+            studyDuration            REAL,
+            gradesAverage            REAL,
+            repetitionsCount         INTEGER,
+            gradesTrend              REAL
+        )
+    `);
+  });
+};
+
+export const saveWordsDetails = async (userId: string, wordsDetails: WordDetails[]) => {
+  const db = await getDb(userId);
+  await db.transaction(tx => {
+    wordsDetails.forEach(word => {
+      const values = [
+        word.wordId,
+        word.hoursSinceLastRepetition,
+        word.studyDuration,
+        word.gradesAverage,
+        word.repetitionsCount,
+        word.gradesTrend
+      ];
+
+      const placeholders = columns.map(() => '?').join(', ');
+
+      tx.executeSql(
+        `REPLACE INTO ${TABLE_NAME} (${columns.join(', ')})
+         VALUES (${placeholders})`,
+        values
+      );
+    });
+  });
+};
+
+export const getAllWordsDetails = async (userId: string): Promise<WordDetails[]> => {
+  const db = await getDb(userId);
+
+  return new Promise((resolve, reject) => {
+    db.readTransaction(tx => {
+      tx.executeSql(
+        `SELECT * FROM ${TABLE_NAME}`,
+        [],
+        (_, { rows }) => {
+          const words = Array.from({ length: rows.length }, (_, i) => {
+            const row = rows.item(i);
+            return {
+              wordId: row.wordId,
+              hoursSinceLastRepetition: row.hoursSinceLastRepetition,
+              studyDuration: row.studyDuration,
+              gradesAverage: row.gradesAverage,
+              repetitionsCount: row.repetitionsCount,
+              gradesTrend: row.gradesTrend,
+            } satisfies WordDetails;
+          });
+          resolve(words);
+        },
+        (_, error) => {
+          reject(error);
+          return true;
+        }
+      );
+    });
+  });
+};
+
+export const updateWordDetails = async (userId: string, wordDetails: WordDetails) => {
+  await saveWordsDetails(userId, [wordDetails]);
+};

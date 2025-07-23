@@ -1,10 +1,9 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { Word } from "../store/types";
 
-const columns = [
-  'id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'interval', 'addDate', 'repetitionCount',
-  'lastReviewDate', 'nextReviewDate', 'EF', 'active', 'removed', 'synced', 'locallyUpdatedAt', 'updatedAt'
-];
+export const WORDS_COLUMNS = ['id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'interval', 'addDate',
+  'repetitionCount', 'lastReviewDate', 'nextReviewDate', 'EF', 'active', 'removed', 'synced', 'locallyUpdatedAt', 'updatedAt'];
+export const WORDS = 'words';
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
   if (!userId) throw new Error("User ID not provided");
@@ -15,7 +14,7 @@ export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS words
+        CREATE TABLE IF NOT EXISTS ${WORDS}
         (
             id               TEXT PRIMARY KEY,
             text             TEXT,
@@ -43,7 +42,7 @@ export const saveWords = async (userId: string, words: Word[]) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     words.forEach(word => {
-      const values = columns.map(col => {
+      const values = WORDS_COLUMNS.map(col => {
         if (col === 'active' || col === 'removed' || col === 'synced') {
           return word[col] ? 1 : 0;
         }
@@ -53,10 +52,10 @@ export const saveWords = async (userId: string, words: Word[]) => {
         return word[col];
       });
 
-      const placeholders = columns.map(() => '?').join(', ');
+      const placeholders = WORDS_COLUMNS.map(() => '?').join(', ');
 
       tx.executeSql(
-        `REPLACE INTO words (${columns.join(', ')})
+        `REPLACE INTO ${WORDS} (${WORDS_COLUMNS.join(', ')})
          VALUES (${placeholders})`,
         values
       );
@@ -70,7 +69,7 @@ export const getAllWords = async (userId: string): Promise<Word[]> => {
     db.transaction(tx => {
       tx.executeSql(
         `SELECT *
-         FROM words`,
+         FROM ${WORDS}`,
         [],
         (_, results) => {
           const rows = results.rows;

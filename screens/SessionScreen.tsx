@@ -22,6 +22,7 @@ import { FLASHCARD_SIDE } from "../store/UserPreferencesContext";
 import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { SESSION_MODE } from "../store/types";
+import { useWordSet } from "../hooks/useWordSet";
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -45,7 +46,9 @@ const SessionScreen = () => {
   const evaluationsContext = useEvaluations();
 
   const pagerRef = useRef(null);
-  const [cards, setCards] = useState(wordsContext.getWordSet(length * 10, mode));
+  const wordSet = useWordSet(length * 10, mode);
+
+  const [cards, setCards] = useState(wordSet);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -181,6 +184,7 @@ const SessionScreen = () => {
   const finishSession = () => {
     incrementCurrentIndex();
     confettiRef.current?.play(0);
+    wordsContext.updateWords(wordsUpdates);
     const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
     const session = sessionsContext.addSession(mode, avgGrade, length * 10);
     evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
@@ -189,7 +193,6 @@ const SessionScreen = () => {
       grade: update.grade
     })));
     finishSessionBottomSheetRef.current?.present();
-    wordsContext.updateWords(wordsUpdates);
   }
 
   useEffect(() => {
@@ -207,7 +210,7 @@ const SessionScreen = () => {
     setFlippedCards(Array(length * 10).fill(false));
     setNumberOfSession((prev) => prev + 1);
     setWordsUpdates([]);
-    setCards(wordsContext.getWordSet(length * 10, mode).sort(() => Math.random() - 0.5));
+    setCards(wordSet);
     setTimeout(() => {
       setCurrentIndex(0);
       finishSessionBottomSheetRef.current?.dismiss();

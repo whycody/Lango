@@ -1,8 +1,9 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { WordDetails } from "../store/types";
 
-const columns = ['wordId', 'hoursSinceLastRepetition', 'studyDuration', 'gradesAverage', 'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
-const TABLE_NAME = 'words_details';
+export const WORDS_DETAILS_COLUMNS = ['wordId', 'hoursSinceLastRepetition', 'studyDuration', 'gradesAverage',
+  'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
+export const WORD_DETAILS = 'words_details';
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
   if (!userId) throw new Error("User ID not provided");
@@ -13,7 +14,7 @@ export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS ${TABLE_NAME}
+        CREATE TABLE IF NOT EXISTS ${WORD_DETAILS}
         (
             wordId                   TEXT PRIMARY KEY,
             hoursSinceLastRepetition REAL,
@@ -43,10 +44,10 @@ export const saveWordsDetails = async (userId: string, wordsDetails: WordDetails
         wordDetails.gradeThreeProb
       ];
 
-      const placeholders = columns.map(() => '?').join(', ');
+      const placeholders = WORDS_DETAILS_COLUMNS.map(() => '?').join(', ');
 
       tx.executeSql(
-        `REPLACE INTO ${TABLE_NAME} (${columns.join(', ')})
+        `REPLACE INTO ${WORD_DETAILS} (${WORDS_DETAILS_COLUMNS.join(', ')})
          VALUES (${placeholders})`,
         values
       );
@@ -60,7 +61,7 @@ export const getAllWordsDetails = async (userId: string): Promise<WordDetails[]>
   return new Promise((resolve, reject) => {
     db.readTransaction(tx => {
       tx.executeSql(
-        `SELECT * FROM ${TABLE_NAME}`,
+        `SELECT * FROM ${WORD_DETAILS}`,
         [],
         (_, { rows }) => {
           const words = Array.from({ length: rows.length }, (_, i) => {

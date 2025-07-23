@@ -1,31 +1,38 @@
 import { useMemo } from 'react';
-import { useWordDetails } from "../store/WordsDetailsContext";
 import { useWords } from "../store/WordsContext";
 import { SESSION_MODE, Word } from "../store/types";
+import { useWordDetails } from "../store/WordsDetailsContext";
 
 export const useWordSet = (size: number, mode: SESSION_MODE): Word[] => {
-  const { langWords } = useWords();
+  const { words } = useWords();
   const { wordsDetails } = useWordDetails();
 
   return useMemo(() => {
-    const now = new Date();
+    if (!words || !wordsDetails) return [];
 
-    const sortedWords = [...langWords]
-      .filter(word => word.active)
-      .sort((a, b) => {
-        if (mode === SESSION_MODE.RANDOM) return Math.random() - 0.5;
-        const dateA = new Date(mode === SESSION_MODE.STUDY ? a.nextReviewDate : a.lastReviewDate).getTime();
-        const dateB = new Date(mode === SESSION_MODE.STUDY ? b.nextReviewDate : b.lastReviewDate).getTime();
-        if (dateA !== dateB) return dateA - dateB;
-        return a.repetitionCount - b.repetitionCount;
-      });
+    const sortedDetails = [...wordsDetails].sort((a, b) => {
+      if (mode === SESSION_MODE.RANDOM) {
+        return Math.random() - 0.5;
+      }
+      if (mode === SESSION_MODE.STUDY) {
+        return a.gradeThreeProb - b.gradeThreeProb;
+      }
+      if (mode === SESSION_MODE.OLDEST) {
+        return b.hoursSinceLastRepetition - a.hoursSinceLastRepetition;
+      }
+      return 0;
+    });
 
-    const reviewWords = sortedWords.filter(word => new Date(word.nextReviewDate) <= now);
+    const sliced = sortedDetails.slice(0, size)
 
-    return reviewWords.length >= size
-      ? reviewWords.slice(0, size).sort(() => Math.random() - 0.5)
-      : [...reviewWords, ...sortedWords.slice(reviewWords.length, size)]
-          .slice(0, size)
-          .sort(() => Math.random() - 0.5);
-  }, [langWords, size, mode]);
+    const ids = sliced.map(wd => wd.wordId);
+
+    const idToWordMap = new Map(words.map(w => [w.id, w]));
+
+    const result: Word[] = ids
+      .map(id => idToWordMap.get(id))
+      .filter((w): w is Word => w !== undefined);
+
+    return result.sort(() => Math.random() - 0.5);
+  }, [words, wordsDetails, size, mode]);
 };

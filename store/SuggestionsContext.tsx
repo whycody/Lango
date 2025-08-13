@@ -174,8 +174,8 @@ const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ children }) =>
   const loadSuggestions = async () => {
     try {
       const loadedSuggestions = await getAllSuggestions();
-      await syncSuggestions(loadedSuggestions);
       setSuggestions(loadedSuggestions);
+      await syncSuggestions(loadedSuggestions);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
@@ -195,7 +195,7 @@ const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [languageContext.mainLangCode, languageContext.studyingLangCode]);
 
   return (
     <SuggestionsContext.Provider

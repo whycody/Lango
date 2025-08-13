@@ -8,6 +8,7 @@ import ActionButton from "../../components/ActionButton";
 import { useEffect, useRef, useState } from "react";
 import { useDebouncedSyncSuggestions, useSuggestions } from "../../store/SuggestionsContext";
 import { Suggestion } from "../../store/types";
+import { useLanguage } from "../../store/LanguageContext";
 
 const WordsSuggestionsCard = () => {
   const { t } = useTranslation();
@@ -15,20 +16,27 @@ const WordsSuggestionsCard = () => {
   const styles = getStyles(colors);
 
   const suggestionsContext = useSuggestions();
+  const { studyingLangCode } = useLanguage();
   const [firstFlashcard, setFirstFlashcard] = useState<Suggestion>();
   const [secondFlashcard, setSecondFlashcard] = useState<Suggestion>();
   const firstFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
   const secondFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
 
   useEffect(() => {
-    if (suggestionsContext.suggestions.length == 0 || firstFlashcard || secondFlashcard) return;
+    if (suggestionsContext.suggestions.length == 0 ||
+      (firstFlashcard && firstFlashcard.firstLang == studyingLangCode) ||
+      (secondFlashcard && secondFlashcard.firstLang == studyingLangCode)
+    ) return;
     const sortedSuggestions = suggestionsContext.langSuggestions.slice().sort((a, b) => a.displayCount - b.displayCount);
     const [firstSuggestion, secondSuggestion] = sortedSuggestions.slice(0, 2);
 
-    suggestionsContext.increaseSuggestionsDisplayCount([firstSuggestion.id, secondSuggestion.id]);
     setFirstFlashcard(firstSuggestion);
     setSecondFlashcard(secondSuggestion);
-  }, [suggestionsContext.suggestions, firstFlashcard, secondFlashcard]);
+
+    if (!firstSuggestion && !secondSuggestion) return;
+
+    suggestionsContext.increaseSuggestionsDisplayCount([firstSuggestion, secondSuggestion].filter(Boolean).map(s => s.id));
+  }, [suggestionsContext.langSuggestions, firstFlashcard, secondFlashcard]);
 
   const debouncedSyncSuggestions = useDebouncedSyncSuggestions(suggestionsContext.syncSuggestions, 3000);
 

@@ -132,8 +132,8 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const loadWords = async () => {
     try {
       const loadedWords = await getAllWords();
-      syncWords(loadedWords);
       setWords(loadedWords);
+      await syncWords(loadedWords);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }

@@ -1,3 +1,9 @@
+export enum SESSION_MODEL {
+  HEURISTIC = 'heuristic',
+  ML = 'ml',
+  HYBRID = 'hybrid',
+}
+
 export type UserStats = {
   sessionCount: number;
   averageScore: number;
@@ -11,5 +17,6 @@ export type User = {
   email: string;
   picture: string;
   provider: 'google' | 'facebook';
+  sessionModel: SESSION_MODEL;
   stats?: UserStats;
 };

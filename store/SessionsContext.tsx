@@ -2,13 +2,13 @@ import React, { createContext, FC, useContext, useEffect, useState } from 'react
 import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
 import uuid from 'react-native-uuid';
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
-import { Session, SESSION_MODE } from './types';
+import { Session, SESSION_MODE, SESSION_MODEL } from './types';
 import { useAuth } from "../api/auth/AuthProvider";
 
 interface SessionsContextProps {
   sessions: Session[];
   loading: boolean;
-  addSession: (mode: SESSION_MODE, averageScore: number, wordsCount: number, finished: boolean) => Session;
+  addSession: (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number, finished: boolean) => Session;
   getSession: (id: string) => Session | undefined;
   syncSessions: () => Promise<void>;
 }
@@ -20,6 +20,7 @@ const SessionsContext = createContext<SessionsContextProps>({
     id: '',
     date: '',
     mode: SESSION_MODE.STUDY,
+    sessionModel: SESSION_MODEL.HEURISTIC,
     averageScore: 0,
     wordsCount: 0,
     finished: false,
@@ -36,12 +37,13 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
   const [loading, setLoading] = useState(true);
   const auth = useAuth();
 
-  const createSession = (mode: SESSION_MODE, averageScore: number, wordsCount: number, finished: boolean): Session => {
+  const createSession = (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number, finished: boolean): Session => {
     const now = new Date().toISOString();
     return {
       id: uuid.v4(),
       date: now,
       mode: mode,
+      sessionModel: model,
       averageScore,
       wordsCount,
       finished,
@@ -51,8 +53,8 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
     };
   };
 
-  const addSession = (mode: SESSION_MODE, averageScore: number, wordsCount: number, finished: boolean) => {
-    const newSession = createSession(mode, averageScore, wordsCount, finished);
+  const addSession = (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number, finished: boolean) => {
+    const newSession = createSession(mode, model, averageScore, wordsCount, finished);
     const updatedSessions = [newSession, ...sessions];
     setSessions(updatedSessions);
     saveSessions([newSession]);

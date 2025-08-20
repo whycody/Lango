@@ -1,7 +1,8 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { Session } from "../store/types";
 
-const columns = ['id', 'date', 'averageScore', 'wordsCount', 'finished', 'synced', 'updatedAt', 'locallyUpdatedAt'];
+const columns = ['id', 'date', 'mode', 'sessionModel', 'averageScore', 'wordsCount', 'finished', 'synced',
+  'updatedAt', 'locallyUpdatedAt'];
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
   if (!userId) throw new Error("User ID not provided");
@@ -17,6 +18,7 @@ export const createTables = async (userId: string) => {
             id               TEXT PRIMARY KEY,
             date             TEXT,
             mode             TEXT,
+            sessionModel     TEXT,
             averageScore     REAL,
             wordsCount       INTEGER,
             finished         INTEGER,
@@ -40,7 +42,8 @@ export const saveSessions = async (userId: string, sessions: Session[]) => {
       const placeholders = columns.map(() => '?').join(', ');
 
       tx.executeSql(
-        `REPLACE INTO sessions (${columns.join(', ')}) VALUES (${placeholders})`,
+        `REPLACE INTO sessions (${columns.join(', ')})
+         VALUES (${placeholders})`,
         values
       );
     });
@@ -52,7 +55,8 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM sessions`,
+        `SELECT *
+         FROM sessions`,
         [],
         (_, results) => {
           const rows = results.rows;
@@ -63,6 +67,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
               id: row.id,
               date: row.date,
               mode: row.mode,
+              sessionModel: row.sessionModel,
               averageScore: row.averageScore,
               wordsCount: row.wordsCount,
               finished: row.finished === 1,

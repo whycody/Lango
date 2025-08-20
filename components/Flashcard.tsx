@@ -59,7 +59,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
     setTimeout(() => {
       setBackText(getRandomMessage());
       setFlippable(true);
-    }, 100);
+    }, 200);
   }, [setNewFlashcardIsReady, newFlashcardIsReady, readyToFlip]);
 
   const handleFlip = async (add: boolean = true) => {

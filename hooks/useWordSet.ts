@@ -1,14 +1,27 @@
 import { useMemo } from 'react';
-import { useWords } from "../store/WordsContext";
-import { SESSION_MODE, Word } from "../store/types";
+import { useWords, WordsSet } from "../store/WordsContext";
+import { Session, SESSION_MODE, SESSION_MODEL, Word } from "../store/types";
 import { useWordDetails } from "../store/WordsDetailsContext";
+import { useAuth } from "../api/auth/AuthProvider";
+import { useSessions } from "../store/SessionsContext";
 
-export const useWordSet = (size: number, mode: SESSION_MODE): Word[] => {
-  const { langWords } = useWords();
+export const useWordSet = (size: number, mode: SESSION_MODE): WordsSet => {
+  const { langWords, getWordSet } = useWords();
   const { langWordsDetails } = useWordDetails();
+  const { sessions } = useSessions();
+  const { user } = useAuth();
 
   return useMemo(() => {
-    if (!langWords || !langWordsDetails) return [];
+    if (!langWords || !langWordsDetails) return { words: [], model: SESSION_MODEL.HEURISTIC };
+
+    const lastSession = sessions ? sessions.filter((s: Session) => s.mode == SESSION_MODE.STUDY)
+      .sort((s1, s2) => new Date(s2.date).getTime() - new Date(s1.date).getTime())[0] : null;
+    const model = user.sessionModel;
+
+    if (model == SESSION_MODEL.HEURISTIC || (lastSession && lastSession.sessionModel == SESSION_MODEL.ML &&
+      model == SESSION_MODEL.HYBRID)) {
+      return getWordSet(size, mode);
+    }
 
     const sortedDetails = [...langWordsDetails].sort((a, b) => {
       if (mode === SESSION_MODE.RANDOM) {
@@ -23,29 +36,14 @@ export const useWordSet = (size: number, mode: SESSION_MODE): Word[] => {
       return 0;
     });
 
-    console.log('Sorted details: ', sortedDetails.length)
-
     const sliced = sortedDetails.slice(0, size)
-
-    console.log('Sliced: ', sliced.length)
-
     const ids = sliced.map(wd => wd.wordId);
-
     const idToWordMap = new Map(langWords.map(w => [w.id, w]));
 
     const result: Word[] = ids
       .map(id => idToWordMap.get(id))
       .filter((w): w is Word => w !== undefined);
 
-    console.log("📋 Wybrane słowa:");
-    sliced.forEach(detail => {
-      const word = idToWordMap.get(detail.wordId);
-      if (word) {
-        console.log(`📝 ${word.text} — gradeThreeProb: ${detail.gradeThreeProb.toFixed(2)}`);
-      }
-    });
-    console.log("===================")
-
-    return result.sort(() => Math.random() - 0.5);
-  }, [langWords, langWordsDetails, size, mode]);
+    return { words: result.sort(() => Math.random() - 0.5), model: SESSION_MODEL.ML };
+  }, [user.sessionModel, langWords, langWordsDetails, size, mode]);
 };

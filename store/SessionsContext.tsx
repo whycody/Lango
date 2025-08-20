@@ -8,7 +8,7 @@ import { useAuth } from "../api/auth/AuthProvider";
 interface SessionsContextProps {
   sessions: Session[];
   loading: boolean;
-  addSession: (mode: SESSION_MODE, averageScore: number, wordsCount: number) => Session;
+  addSession: (mode: SESSION_MODE, averageScore: number, wordsCount: number, finished: boolean) => Session;
   getSession: (id: string) => Session | undefined;
   syncSessions: () => Promise<void>;
 }
@@ -22,6 +22,7 @@ const SessionsContext = createContext<SessionsContextProps>({
     mode: SESSION_MODE.STUDY,
     averageScore: 0,
     wordsCount: 0,
+    finished: false,
     synced: false,
     locallyUpdatedAt: ''
   }),
@@ -35,7 +36,7 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
   const [loading, setLoading] = useState(true);
   const auth = useAuth();
 
-  const createSession = (mode: SESSION_MODE, averageScore: number, wordsCount: number): Session => {
+  const createSession = (mode: SESSION_MODE, averageScore: number, wordsCount: number, finished: boolean): Session => {
     const now = new Date().toISOString();
     return {
       id: uuid.v4(),
@@ -43,14 +44,15 @@ export const SessionsProvider: FC<{ children: React.ReactNode }> = ({ children }
       mode: mode,
       averageScore,
       wordsCount,
+      finished,
       synced: false,
       updatedAt: now,
       locallyUpdatedAt: now,
     };
   };
 
-  const addSession = (mode: SESSION_MODE, averageScore: number, wordsCount: number) => {
-    const newSession = createSession(mode, averageScore, wordsCount);
+  const addSession = (mode: SESSION_MODE, averageScore: number, wordsCount: number, finished: boolean) => {
+    const newSession = createSession(mode, averageScore, wordsCount, finished);
     const updatedSessions = [newSession, ...sessions];
     setSessions(updatedSessions);
     saveSessions([newSession]);

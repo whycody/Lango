@@ -1,7 +1,7 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { Session } from "../store/types";
 
-const columns = ['id', 'date', 'averageScore', 'wordsCount', 'synced', 'updatedAt', 'locallyUpdatedAt'];
+const columns = ['id', 'date', 'averageScore', 'wordsCount', 'finished', 'synced', 'updatedAt', 'locallyUpdatedAt'];
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
   if (!userId) throw new Error("User ID not provided");
@@ -19,6 +19,7 @@ export const createTables = async (userId: string) => {
             mode             TEXT,
             averageScore     REAL,
             wordsCount       INTEGER,
+            finished         INTEGER,
             synced           INTEGER,
             updatedAt        TEXT,
             locallyUpdatedAt TEXT
@@ -32,6 +33,7 @@ export const saveSessions = async (userId: string, sessions: Session[]) => {
   await db.transaction(tx => {
     sessions.forEach(session => {
       const values = columns.map(col => {
+        if (col === 'finished') return session.finished ? 1 : 0;
         if (col === 'synced') return session.synced ? 1 : 0;
         return session[col as keyof Session] || null;
       });
@@ -63,6 +65,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
               mode: row.mode,
               averageScore: row.averageScore,
               wordsCount: row.wordsCount,
+              finished: row.finished === 1,
               synced: row.synced === 1,
               updatedAt: row.updatedAt || null,
               locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),

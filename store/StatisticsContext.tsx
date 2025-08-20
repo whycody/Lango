@@ -18,7 +18,7 @@ const StatisticsProvider: FC<{ children: React.ReactNode }> = ({ children }) => 
   const sessions = useSessions();
   const auth = useAuth();
 
-  const localUnsyncedSessions = sessions.sessions.filter(s => !s.synced);
+  const localUnsyncedSessions = sessions.sessions.filter(s => s.finished && !s.synced);
   const localUnsyncedSessionsCount = localUnsyncedSessions.length;
   const numberOfSessions = serverSessionsCount + localUnsyncedSessionsCount;
 

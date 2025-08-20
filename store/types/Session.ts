@@ -10,6 +10,7 @@ export type Session = {
   mode: SESSION_MODE;
   averageScore: number;
   wordsCount: number;
+  finished: boolean;
   synced: boolean;
   updatedAt?: string;
   locallyUpdatedAt: string;

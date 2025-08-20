@@ -184,14 +184,7 @@ const SessionScreen = () => {
   const finishSession = () => {
     incrementCurrentIndex();
     confettiRef.current?.play(0);
-    wordsContext.updateWords(wordsUpdates);
-    const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
-    const session = sessionsContext.addSession(mode, avgGrade, length * 10);
-    evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
-      wordId: update.flashcardId,
-      sessionId: session.id,
-      grade: update.grade
-    })));
+    saveProgress(true);
     finishSessionBottomSheetRef.current?.present();
   }
 
@@ -218,8 +211,19 @@ const SessionScreen = () => {
   }
 
   const handleSessionExit = () => {
-    wordsContext.updateWords(wordsUpdates);
+    saveProgress(false);
     navigation.navigate('Tabs' as never);
+  }
+
+  const saveProgress = (finished: boolean) => {
+    wordsContext.updateWords(wordsUpdates);
+    const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
+    const session = sessionsContext.addSession(mode, avgGrade, length * 10, finished);
+    evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
+      wordId: update.flashcardId,
+      sessionId: session.id,
+      grade: update.grade
+    })));
   }
 
   const handleFlipCards = () => {

@@ -5,11 +5,7 @@ import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import uuid from 'react-native-uuid';
 import { SESSION_MODE, SESSION_MODEL, Word } from './types';
 import { useLanguage } from "./LanguageContext";
-
-export type WordsSet = {
-  words: Word[];
-  model: SESSION_MODEL;
-}
+import { WordSet } from "./types/WordSet";
 
 interface WordsContextProps {
   words: Word[];
@@ -20,7 +16,7 @@ interface WordsContextProps {
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
   updateWords: (updates: WordUpdate[]) => void;
-  getWordSet: (size: number, sessionMode: SESSION_MODE) => WordsSet;
+  getWordSet: (size: number, sessionMode: SESSION_MODE) => WordSet;
   deleteWords: () => void;
   syncWords: () => Promise<void>;
 }
@@ -299,7 +295,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     syncWords(updatedFlashcards);
   };
 
-  const getWordSet = (size: number, mode: SESSION_MODE): WordsSet => {
+  const getWordSet = (size: number, mode: SESSION_MODE): WordSet => {
     const now = new Date();
 
     const sortedWords = [...langWords].filter((word: Word) => word.active).sort((a, b) => {

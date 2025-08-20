@@ -49,20 +49,20 @@ export default function App() {
   return (
     <>
       <StatusBar barStyle='light-content' backgroundColor={colors.background}/>
-      <SafeAreaProvider style={{ backgroundColor: colors.background }}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-          <NavigationContainer theme={DarkTheme}>
-            <AuthProvider>
-              <UserPreferencesProvider>
-                <LanguageProvider>
-                  <SessionsProvider>
-                    <SuggestionsProvider>
-                      <StatisticsProvider>
-                        <WordsProvider>
-                          <EvaluationsProvider>
-                            <WordsDetailsProvider>
-                              <WordsWithDetailsProvider>
-                                <GestureHandlerRootView>
+      <GestureHandlerRootView>
+        <SafeAreaProvider style={{ backgroundColor: colors.background }}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+            <NavigationContainer theme={DarkTheme}>
+              <AuthProvider>
+                <UserPreferencesProvider>
+                  <LanguageProvider>
+                    <SessionsProvider>
+                      <SuggestionsProvider>
+                        <StatisticsProvider>
+                          <WordsProvider>
+                            <EvaluationsProvider>
+                              <WordsDetailsProvider>
+                                <WordsWithDetailsProvider>
                                   <BottomSheetModalProvider>
                                     <Stack.Navigator
                                       screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
@@ -84,20 +84,20 @@ export default function App() {
                                       </Stack.Group>
                                     </Stack.Navigator>
                                   </BottomSheetModalProvider>
-                                </GestureHandlerRootView>
-                              </WordsWithDetailsProvider>
-                            </WordsDetailsProvider>
-                          </EvaluationsProvider>
-                        </WordsProvider>
-                      </StatisticsProvider>
-                    </SuggestionsProvider>
-                  </SessionsProvider>
-                </LanguageProvider>
-              </UserPreferencesProvider>
-            </AuthProvider>
-          </NavigationContainer>
-        </SafeAreaView>
-      </SafeAreaProvider>
+                                </WordsWithDetailsProvider>
+                              </WordsDetailsProvider>
+                            </EvaluationsProvider>
+                          </WordsProvider>
+                        </StatisticsProvider>
+                      </SuggestionsProvider>
+                    </SessionsProvider>
+                  </LanguageProvider>
+                </UserPreferencesProvider>
+              </AuthProvider>
+            </NavigationContainer>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
     </>
   );
 }

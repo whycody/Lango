@@ -8,11 +8,13 @@ import { Word, WordDetails, Evaluation } from "./types";
 interface WordDetailsContextProps {
   loading: boolean;
   wordsDetails: WordDetails[] | null;
+  langWordsDetails: WordDetails[] | null;
 }
 
 export const WordsDetailsContext = createContext<WordDetailsContextProps>({
   loading: false,
   wordsDetails: [],
+  langWordsDetails: []
 })
 
 const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -22,7 +24,10 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const [initialized, setInitialized] = useState(false);
   const { createTables, getAllWordsDetails, updateWordDetails, saveWordsDetails } = useWordsDetailsRepository();
   const { evaluations } = useEvaluations();
-  const { words } = useWords();
+  const { words, langWords } = useWords();
+  const langWordsIds = langWords.map((l) => l.id);
+  const langWordsDetails = wordsDetails?.filter((wordDetail: WordDetails) =>
+    langWordsIds.includes(wordDetail.wordId));
 
   useEffect(() => {
     if (!words || !initialized || !evaluations) return;
@@ -74,6 +79,7 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         details.studyDuration,
         details.gradesAverage,
         details.repetitionsCount,
+        details.studyStreak,
         details.gradesTrend,
       ];
 
@@ -112,6 +118,7 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     const gradesAverage = last5.length > 0 ? last5.reduce((a, b) => a + b, 0) / last5.length : 0;
     const gradesTrend = last5.length > 1 ? calculateGradesTrend(last5) : 0;
 
+    let studyStreak = 0;
     let studyDuration = 0;
     let startTime: Date | null = null;
     let endTime: Date | null = null;
@@ -126,9 +133,11 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         if (g === 3) {
           currentSeriesType = 'learned';
           studyDuration = 1;
+          studyStreak = 1;
         } else if (g === 1 || g === 2) {
           currentSeriesType = 'unlearned';
           studyDuration = 1;
+          studyStreak = -1;
         } else {
           break;
         }
@@ -136,9 +145,11 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       } else {
         if (currentSeriesType === 'learned' && g === 3) {
           studyDuration += 1;
+          studyStreak += 1;
           startTime = d;
         } else if (currentSeriesType === 'unlearned' && (g === 1 || g === 2)) {
           studyDuration += 1;
+          studyStreak -= 1;
           startTime = d;
         } else {
           break;
@@ -155,6 +166,7 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     return {
       wordId: word.id,
       hoursSinceLastRepetition: 0,
+      studyStreak: studyStreak,
       studyDuration: durationHours,
       gradesAverage,
       repetitionsCount,
@@ -196,6 +208,7 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
           wordDetail.studyDuration,
           wordDetail.gradesAverage,
           wordDetail.repetitionsCount,
+          wordDetail.studyStreak,
           wordDetail.gradesTrend,
         ];
 
@@ -246,7 +259,7 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <WordsDetailsContext.Provider value={{ loading, wordsDetails }}>
+    <WordsDetailsContext.Provider value={{ loading, wordsDetails, langWordsDetails }}>
       {children}
     </WordsDetailsContext.Provider>
   );

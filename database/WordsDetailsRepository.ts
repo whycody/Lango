@@ -1,7 +1,7 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { WordDetails } from "../store/types";
 
-export const WORDS_DETAILS_COLUMNS = ['wordId', 'hoursSinceLastRepetition', 'studyDuration', 'gradesAverage',
+export const WORDS_DETAILS_COLUMNS = ['wordId', 'hoursSinceLastRepetition', 'studyStreak', 'studyDuration', 'gradesAverage',
   'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
 export const WORD_DETAILS = 'words_details';
 
@@ -18,6 +18,7 @@ export const createTables = async (userId: string) => {
         (
             wordId                   TEXT PRIMARY KEY,
             hoursSinceLastRepetition REAL,
+            studyStreak              INTEGER,
             studyDuration            REAL,
             gradesAverage            REAL,
             repetitionsCount         INTEGER,
@@ -36,6 +37,7 @@ export const saveWordsDetails = async (userId: string, wordsDetails: WordDetails
       const values = [
         wordDetails.wordId,
         wordDetails.hoursSinceLastRepetition,
+        wordDetails.studyStreak,
         wordDetails.studyDuration,
         wordDetails.gradesAverage,
         wordDetails.repetitionsCount,
@@ -69,6 +71,7 @@ export const getAllWordsDetails = async (userId: string): Promise<WordDetails[]>
             return {
               wordId: row.wordId,
               hoursSinceLastRepetition: row.hoursSinceLastRepetition,
+              studyStreak: row.studyStreak,
               studyDuration: row.studyDuration,
               gradesAverage: row.gradesAverage,
               repetitionsCount: row.repetitionsCount,

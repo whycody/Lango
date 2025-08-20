@@ -2,6 +2,7 @@ export type WordDetails = {
   wordId: string;
   hoursSinceLastRepetition: number;
   studyDuration: number;
+  studyStreak: number;
   gradesAverage: number;
   repetitionsCount: number;
   gradesTrend: number;

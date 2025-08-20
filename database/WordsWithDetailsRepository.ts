@@ -46,6 +46,7 @@ export const getAllWordsWithDetails = async (userId: string): Promise<WordWithDe
               updatedAt: row.updatedAt,
 
               hoursSinceLastRepetition: row.hoursSinceLastRepetition,
+              studyStreak: row.studyStreak,
               studyDuration: row.studyDuration,
               gradesAverage: row.gradesAverage,
               repetitionsCount: row.repetitionsCount,

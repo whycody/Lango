@@ -13,7 +13,7 @@ import { Suggestion } from "../store/types";
 import { useLanguage } from "../store/LanguageContext";
 
 interface FlashcardProps {
-  onFlashcardPress?: (add: boolean) => void;
+  onFlashcardPress?: () => void;
   suggestion?: Suggestion,
   style?: any;
 }
@@ -48,7 +48,6 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
   const [backText, setBackText] = useState(getRandomMessage());
 
   useEffect(() => {
-    if (!suggestion) return;
     setNewFlashcardIsReady(true);
   }, [suggestion]);
 
@@ -73,7 +72,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
       const addWord = wordsContext.addWord(suggestion.word, suggestion.translation, LANGO);
       if (!addWord) setBackText(t('wordNotAdded'));
     } else setBackText(t('change_flashcard'));
-    setTimeout(() => onFlashcardPress(add), 150);
+    setTimeout(() => onFlashcardPress(), 150);
     setTimeout(() => setReadyToFlip(true), 1000);
   }
 

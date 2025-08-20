@@ -59,9 +59,12 @@ const refreshAccessToken = async (): Promise<void> => {
   }
 }
 
-export const apiCall = async <T>(
-  options: { method: string; url: string; data?: object | string }, refreshed: boolean = false,): Promise<T> => {
-  console.log('Calling API:', options.method, `${baseURL}${options.url}`, options.data);
+export const apiCall = async <T>(options: {
+  method: string;
+  url: string;
+  data?: object | string
+}, refreshed: boolean = false, timeout: number = 2000): Promise<T> => {
+  // console.log('Calling API:', options.method, `${baseURL}${options.url}`, options.data);
 
   if (!accessToken) {
     await loadTokens();
@@ -83,7 +86,7 @@ export const apiCall = async <T>(
       url: `${baseURL}${options.url}`,
       headers,
       data: options.data,
-      timeout: 2000,
+      timeout,
     });
 
     return response.data;

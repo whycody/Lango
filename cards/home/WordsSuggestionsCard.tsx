@@ -24,8 +24,8 @@ const WordsSuggestionsCard = () => {
 
   useEffect(() => {
     if (suggestionsContext.suggestions.length == 0 ||
-      (firstFlashcard && firstFlashcard.firstLang == studyingLangCode) ||
-      (secondFlashcard && secondFlashcard.firstLang == studyingLangCode)
+      (firstFlashcard && firstFlashcard.firstLang == studyingLangCode &&
+        secondFlashcard && secondFlashcard.firstLang == studyingLangCode)
     ) return;
     const sortedSuggestions = suggestionsContext.langSuggestions.slice().sort((a, b) => a.displayCount - b.displayCount);
     const [firstSuggestion, secondSuggestion] = sortedSuggestions.slice(0, 2);
@@ -46,11 +46,13 @@ const WordsSuggestionsCard = () => {
     debouncedSyncSuggestions();
   }
 
-  const handleFlashcardPress = async (first: boolean, add: boolean) => {
+  const handleFlashcardPress = async (first: boolean) => {
     await suggestionsContext.skipSuggestions(first ? [firstFlashcard?.id] : [secondFlashcard?.id]);
-    const newSuggestion = suggestionsContext.langSuggestions.filter((suggestion) =>
-      ![firstFlashcard.id, secondFlashcard.id].includes(suggestion.id))[first ? 0 : 1];
-    await suggestionsContext.increaseSuggestionsDisplayCount([newSuggestion?.id])
+    const currentFlashcards = [firstFlashcard, secondFlashcard].filter(Boolean);
+    const filteredSuggestions = suggestionsContext.langSuggestions.filter((suggestion) =>
+      !currentFlashcards.map((flashcard) => flashcard.id).includes(suggestion.id))
+    const newSuggestion = filteredSuggestions.length > 0 ? filteredSuggestions[first ? 0 : 1] : null;
+    if (newSuggestion) await suggestionsContext.increaseSuggestionsDisplayCount([newSuggestion?.id])
     first ? setFirstFlashcard(newSuggestion) : setSecondFlashcard(newSuggestion);
     debouncedSyncSuggestions();
   }
@@ -61,13 +63,13 @@ const WordsSuggestionsCard = () => {
       <View style={styles.flashcardsContainer}>
         <Flashcard
           ref={firstFlashcardRef}
-          onFlashcardPress={(add: boolean) => handleFlashcardPress(true, add)}
+          onFlashcardPress={() => handleFlashcardPress(true)}
           suggestion={firstFlashcard}
           style={{ flex: 1, marginRight: MARGIN_HORIZONTAL / 2 }}
         />
         <Flashcard
           ref={secondFlashcardRef}
-          onFlashcardPress={(add: boolean) => handleFlashcardPress(false, add)}
+          onFlashcardPress={() => handleFlashcardPress(false)}
           suggestion={secondFlashcard}
           style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
         />

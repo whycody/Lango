@@ -3,9 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import uuid from 'react-native-uuid';
-import { SESSION_MODE, SESSION_MODEL, Word } from './types';
+import { Word } from './types';
 import { useLanguage } from "./LanguageContext";
-import { WordSet } from "./types/WordSet";
 
 interface WordsContextProps {
   words: Word[];
@@ -16,7 +15,6 @@ interface WordsContextProps {
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
   updateWords: (updates: WordUpdate[]) => void;
-  getWordSet: (size: number, sessionMode: SESSION_MODE) => WordSet;
   deleteWords: () => void;
   syncWords: () => Promise<void>;
 }
@@ -38,7 +36,6 @@ const WordsContext = createContext<WordsContextProps>({
   editWord: () => [],
   removeWord: () => [],
   updateWords: () => [],
-  getWordSet: () => ({ words: [], model: SESSION_MODEL.HEURISTIC }),
   deleteWords: () => [],
   syncWords: () => Promise.resolve(),
 });
@@ -117,6 +114,7 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       const parsedWords: Word[] = JSON.parse(storedWords);
       const wordsToLoad = parsedWords.map((word) => ({
         ...word,
+        synced: false,
         active: word.active ?? true,
         removed: word.removed ?? false,
         locallyUpdatedAt: word.locallyUpdatedAt ?? new Date().toISOString(),
@@ -295,25 +293,6 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     syncWords(updatedFlashcards);
   };
 
-  const getWordSet = (size: number, mode: SESSION_MODE): WordSet => {
-    const now = new Date();
-
-    const sortedWords = [...langWords].filter((word: Word) => word.active).sort((a, b) => {
-      if (mode == SESSION_MODE.RANDOM) return Math.random() - 0.5;
-      const dateA = new Date(mode == SESSION_MODE.STUDY ? a.nextReviewDate : a.lastReviewDate).getTime();
-      const dateB = new Date(mode == SESSION_MODE.STUDY ? b.nextReviewDate : b.lastReviewDate).getTime();
-
-      if (dateA !== dateB) return dateA - dateB;
-      return a.repetitionCount - b.repetitionCount;
-    });
-
-    const reviewWords = sortedWords.filter(word => new Date(word.nextReviewDate) <= now);
-    const words: Word[] = reviewWords.length >= size
-      ? reviewWords.slice(0, size).sort(() => Math.random() - 0.5)
-      : [...reviewWords, ...sortedWords.slice(reviewWords.length, size)].slice(0, size).sort(() => Math.random() - 0.5);
-    return { words, model: SESSION_MODEL.HEURISTIC };
-  };
-
   const loadData = async () => {
     try {
       setLoading(true);
@@ -342,7 +321,6 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         editWord,
         removeWord,
         updateWords,
-        getWordSet,
         deleteWords,
         syncWords,
       }}

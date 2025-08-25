@@ -1,7 +1,7 @@
 import SQLite from 'react-native-sqlite-storage';
 import { WordWithDetails } from '../store/types';
 import { WORDS, WORDS_COLUMNS } from "./WordsRepository";
-import { WORD_DETAILS, WORDS_DETAILS_COLUMNS } from "./WordsDetailsRepository";
+import { WORD_ML_STATE, WORD_ML_STATE_COLUMNS } from "./WordsMLStatesRepository";
 
 const getDb = async (userId: string) => {
   if (!userId) throw new Error("User ID not provided");
@@ -17,9 +17,9 @@ export const getAllWordsWithDetails = async (userId: string): Promise<WordWithDe
         `
         SELECT
           ${WORDS_COLUMNS.map(c => `w.${c}`).join(', ')},
-          ${WORDS_DETAILS_COLUMNS.map(c => `d.${c}`).join(', ')}
+          ${WORD_ML_STATE_COLUMNS.map(c => `d.${c}`).join(', ')}
         FROM ${WORDS} w
-        LEFT JOIN ${WORD_DETAILS} d ON w.id = d.wordId
+        LEFT JOIN ${WORD_ML_STATE} d ON w.id = d.wordId
         `,
         [],
         (_, { rows }) => {

@@ -1,6 +1,6 @@
 import { Word } from "./Word";
-import { WordDetails } from "./WordDetails";
+import { WordMLState } from "./WordMLState";
 
 export type WordWithDetails = {
   id: string;
-} & Omit<WordDetails, 'wordId'> & Word;
+} & Omit<WordMLState, 'wordId'> & Word;

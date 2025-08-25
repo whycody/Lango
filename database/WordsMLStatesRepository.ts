@@ -1,9 +1,9 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { WordDetails } from "../store/types";
+import { WordMLState } from "../store/types";
 
-export const WORDS_DETAILS_COLUMNS = ['wordId', 'hoursSinceLastRepetition', 'studyStreak', 'studyDuration', 'gradesAverage',
+export const WORD_ML_STATE_COLUMNS = ['wordId', 'hoursSinceLastRepetition', 'studyStreak', 'studyDuration', 'gradesAverage',
   'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
-export const WORD_DETAILS = 'words_details';
+export const WORD_ML_STATE = 'word_ml_state';
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
   if (!userId) throw new Error("User ID not provided");
@@ -14,7 +14,7 @@ export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS ${WORD_DETAILS}
+        CREATE TABLE IF NOT EXISTS ${WORD_ML_STATE}
         (
             wordId                   TEXT PRIMARY KEY,
             hoursSinceLastRepetition REAL,
@@ -30,10 +30,10 @@ export const createTables = async (userId: string) => {
   });
 };
 
-export const saveWordsDetails = async (userId: string, wordsDetails: WordDetails[]) => {
+export const saveWordsMLStates = async (userId: string, wordsMLStates: WordMLState[]) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
-    wordsDetails.forEach(wordDetails => {
+    wordsMLStates.forEach(wordDetails => {
       const values = [
         wordDetails.wordId,
         wordDetails.hoursSinceLastRepetition,
@@ -46,10 +46,10 @@ export const saveWordsDetails = async (userId: string, wordsDetails: WordDetails
         wordDetails.gradeThreeProb
       ];
 
-      const placeholders = WORDS_DETAILS_COLUMNS.map(() => '?').join(', ');
+      const placeholders = WORD_ML_STATE_COLUMNS.map(() => '?').join(', ');
 
       tx.executeSql(
-        `REPLACE INTO ${WORD_DETAILS} (${WORDS_DETAILS_COLUMNS.join(', ')})
+        `REPLACE INTO ${WORD_ML_STATE} (${WORD_ML_STATE_COLUMNS.join(', ')})
          VALUES (${placeholders})`,
         values
       );
@@ -57,13 +57,13 @@ export const saveWordsDetails = async (userId: string, wordsDetails: WordDetails
   });
 };
 
-export const getAllWordsDetails = async (userId: string): Promise<WordDetails[]> => {
+export const getAllWordsMLStates = async (userId: string): Promise<WordMLState[]> => {
   const db = await getDb(userId);
 
   return new Promise((resolve, reject) => {
     db.readTransaction(tx => {
       tx.executeSql(
-        `SELECT * FROM ${WORD_DETAILS}`,
+        `SELECT * FROM ${WORD_ML_STATE}`,
         [],
         (_, { rows }) => {
           const words = Array.from({ length: rows.length }, (_, i) => {
@@ -78,7 +78,7 @@ export const getAllWordsDetails = async (userId: string): Promise<WordDetails[]>
               gradesTrend: row.gradesTrend,
               predictedGrade: row.predictedGrade,
               gradeThreeProb: row.gradeThreeProb
-            } satisfies WordDetails;
+            } satisfies WordMLState;
           });
           resolve(words);
         },
@@ -91,6 +91,6 @@ export const getAllWordsDetails = async (userId: string): Promise<WordDetails[]>
   });
 };
 
-export const updateWordDetails = async (userId: string, wordDetails: WordDetails) => {
-  await saveWordsDetails(userId, [wordDetails]);
+export const updateWordMLState = async (userId: string, wordsMLStates: WordMLState) => {
+  await saveWordsMLStates(userId, [wordsMLStates]);
 };

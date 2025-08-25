@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useWords } from "../store/WordsContext";
-import { useWordDetails } from "../store/WordsDetailsContext";
+import { useWordsMLStatesContext } from "../store/WordsMLStatesContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSessions } from "../store/SessionsContext";
 import { SESSION_MODE, SESSION_MODEL } from "../store/types";
@@ -9,12 +9,12 @@ import { WordSet } from "../store/types/WordSet";
 
 export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
   const { langWords } = useWords();
-  const { langWordsDetails } = useWordDetails();
+  const { langWordsMLStates } = useWordsMLStatesContext();
   const { sessions } = useSessions();
   const { user } = useAuth();
 
   return useMemo(() => {
-    if (!langWords || !langWordsDetails) return { words: [], model: SESSION_MODEL.HEURISTIC };
+    if (!langWords || !langWordsMLStates) return { words: [], model: SESSION_MODEL.HEURISTIC };
 
     const lastSession = sessions
       ?.filter(s => s.mode === SESSION_MODE.STUDY)
@@ -36,9 +36,9 @@ export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
     })();
 
     if (currentModel === SESSION_MODEL.HYBRID) {
-      return strategy(size, mode, langWords, langWordsDetails, lastSessionModel);
+      return strategy(size, mode, langWords, langWordsMLStates, lastSessionModel);
     }
 
-    return strategy(size, mode, langWords, langWordsDetails);
-  }, [user.sessionModel, langWords, langWordsDetails, sessions, size, mode]);
+    return strategy(size, mode, langWords, langWordsMLStates);
+  }, [user.sessionModel, langWords, langWordsMLStates, sessions, size, mode]);
 };

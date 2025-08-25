@@ -1,4 +1,4 @@
-export type WordDetails = {
+export type WordMLState = {
   wordId: string;
   hoursSinceLastRepetition: number;
   studyDuration: number;

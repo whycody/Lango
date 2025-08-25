@@ -19,7 +19,7 @@ import UserPreferencesProvider from "./store/UserPreferencesContext";
 import SessionsProvider from "./store/SessionsContext";
 import EvaluationsProvider from "./store/EvaluationsContext";
 import SuggestionsProvider from "./store/SuggestionsContext";
-import WordsDetailsProvider from "./store/WordsDetailsContext";
+import WordsMLStatesProvider from "./store/WordsMLStatesContext";
 import WordsWithDetailsProvider from "./store/WordsWithDetailsContext";
 
 const Stack = createNativeStackNavigator();
@@ -61,7 +61,7 @@ export default function App() {
                         <StatisticsProvider>
                           <WordsProvider>
                             <EvaluationsProvider>
-                              <WordsDetailsProvider>
+                              <WordsMLStatesProvider>
                                 <WordsWithDetailsProvider>
                                   <BottomSheetModalProvider>
                                     <Stack.Navigator
@@ -85,7 +85,7 @@ export default function App() {
                                     </Stack.Navigator>
                                   </BottomSheetModalProvider>
                                 </WordsWithDetailsProvider>
-                              </WordsDetailsProvider>
+                              </WordsMLStatesProvider>
                             </EvaluationsProvider>
                           </WordsProvider>
                         </StatisticsProvider>

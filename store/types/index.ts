@@ -1,5 +1,5 @@
 export * from './Word';
-export * from './WordDetails';
+export * from './WordMLState';
 export * from './WordWithDetails';
 export * from './Evaluation';
 export * from './Session';

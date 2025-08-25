@@ -1,45 +1,45 @@
 import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
 import { useEvaluations } from "./EvaluationsContext";
 import { useWords } from "./WordsContext";
-import { useWordsDetailsRepository } from "../hooks/repo/useWordsDetailsRepository";
+import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { score } from "../utils/model";
-import { Word, WordDetails, Evaluation } from "./types";
+import { Word, WordMLState, Evaluation } from "./types";
 
-interface WordDetailsContextProps {
+interface WordsMLStatesContextProps {
   loading: boolean;
-  wordsDetails: WordDetails[] | null;
-  langWordsDetails: WordDetails[] | null;
+  wordsMLStates: WordMLState[] | null;
+  langWordsMLStates: WordMLState[] | null;
 }
 
-export const WordsDetailsContext = createContext<WordDetailsContextProps>({
+export const WordsMLStatesContext = createContext<WordsMLStatesContextProps>({
   loading: false,
-  wordsDetails: [],
-  langWordsDetails: []
+  wordsMLStates: [],
+  langWordsMLStates: []
 })
 
-const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [wordsDetails, setWordsDetails] = useState<WordDetails[] | null>(null);
-  const wordsDetailsRef = useRef<WordDetails[] | null>(null);
+const WordsMLStatesProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [wordsMLStates, setWordsMLStates] = useState<WordMLState[] | null>(null);
+  const wordsMLStatesRef = useRef<WordMLState[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [initialized, setInitialized] = useState(false);
-  const { createTables, getAllWordsDetails, updateWordDetails, saveWordsDetails } = useWordsDetailsRepository();
+  const { createTables, getAllWordsMLStates, updateWordMLState, saveWordsMLStates } = useWordsMLStatesRepository();
   const { evaluations } = useEvaluations();
   const { words, langWords } = useWords();
   const langWordsIds = langWords.map((l) => l.id);
-  const langWordsDetails = wordsDetails?.filter((wordDetail: WordDetails) =>
+  const langWordsMLStates = wordsMLStates?.filter((wordDetail: WordMLState) =>
     langWordsIds.includes(wordDetail.wordId));
 
   useEffect(() => {
     if (!words || !initialized || !evaluations) return;
-    words.forEach((word: Word) => syncWithWordDetails(word.id));
+    words.forEach((word: Word) => syncWithWordMLStates(word.id));
   }, [words, evaluations, initialized]);
 
   useEffect(() => {
-    if (wordsDetails !== null) {
-      wordsDetailsRef.current = wordsDetails;
+    if (wordsMLStates !== null) {
+      wordsMLStatesRef.current = wordsMLStates;
       setInitialized(true);
     }
-  }, [wordsDetails]);
+  }, [wordsMLStates]);
 
   const calculateGradesTrend = (grades: number[]): number => {
     if (grades.length < 2) return 0;
@@ -51,18 +51,18 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     return sum / diffs.length;
   };
 
-  const syncWithWordDetails = async (wordId: string) => {
-    const currentWordsDetails = wordsDetailsRef.current;
-    if (!currentWordsDetails) return;
+  const syncWithWordMLStates = async (wordId: string) => {
+    const currentWordsMLStates = wordsMLStatesRef.current;
+    if (!currentWordsMLStates) return;
 
-    const existingDetails = currentWordsDetails.find(d => d.wordId === wordId);
+    const existingMLState = currentWordsMLStates.find(d => d.wordId === wordId);
     const relatedEvals = evaluations.filter(e => e.wordId === wordId);
 
-    if (!existingDetails || existingDetails.repetitionsCount !== relatedEvals.length) {
+    if (!existingMLState || existingMLState.repetitionsCount !== relatedEvals.length) {
       const word = words?.find(w => w.id === wordId);
       if (!word) return;
 
-      const details = computeWordDetails(word, relatedEvals);
+      const state = computeWordMLState(word, relatedEvals);
 
       const lastEvalDate = relatedEvals.length
         ? new Date(
@@ -76,26 +76,26 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
       const input = [
         diffHours,
-        details.studyDuration,
-        details.gradesAverage,
-        details.repetitionsCount,
-        details.studyStreak,
-        details.gradesTrend,
+        state.studyDuration,
+        state.gradesAverage,
+        state.repetitionsCount,
+        state.studyStreak,
+        state.gradesTrend,
       ];
 
       const [p1, p2, p3] = score(input);
       const predictedGrade = ([p1, p2, p3].indexOf(Math.max(p1, p2, p3)) + 1) as 1 | 2 | 3;
 
-      const updated: WordDetails = {
-        ...details,
+      const updated: WordMLState = {
+        ...state,
         hoursSinceLastRepetition: diffHours,
         predictedGrade,
         gradeThreeProb: p3,
       };
 
-      await updateWordDetails(updated);
+      await updateWordMLState(updated);
 
-      setWordsDetails(prev =>
+      setWordsMLStates(prev =>
         prev
           ? prev.map(d => (d.wordId === wordId ? updated : d)).concat(
             prev.find(d => d.wordId === wordId) ? [] : [updated]
@@ -105,7 +105,7 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     }
   };
 
-  const computeWordDetails = (word: Word, evaluations: Evaluation[]): WordDetails => {
+  const computeWordMLState = (word: Word, evaluations: Evaluation[]): WordMLState => {
     const sorted = evaluations
       .filter(e => e.wordId === word.id)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -176,12 +176,12 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     };
   };
 
-  const syncHoursSinceLastRepetition = async (wordDetails: WordDetails[]) => {
+  const syncHoursSinceLastRepetition = async (wordMLState: WordMLState[]) => {
     const now = new Date().getTime();
 
-    const updatedDetails: WordDetails[] = [];
+    const updatedStates: WordMLState[] = [];
 
-    for (const wordDetail of wordDetails) {
+    for (const wordDetail of wordMLState) {
       const wordId = wordDetail.wordId;
       const matchingEvaluations = evaluations.filter(e => e.wordId === wordId);
 
@@ -216,7 +216,7 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
         const maxIndex = [p1, p2, p3].indexOf(Math.max(p1, p2, p3));
         const predictedGrade = (maxIndex + 1) as 1 | 2 | 3;
 
-        updatedDetails.push({
+        updatedStates.push({
           ...wordDetail,
           hoursSinceLastRepetition: diffHours,
           predictedGrade,
@@ -225,30 +225,30 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
       }
     }
 
-    if (updatedDetails.length > 0) {
-      await saveWordsDetails(updatedDetails);
-      setWordsDetails(prev =>
+    if (updatedStates.length > 0) {
+      await saveWordsMLStates(updatedStates);
+      setWordsMLStates(prev =>
         prev
           ? prev.map(detail => {
-            const updated = updatedDetails.find(u => u.wordId === detail.wordId);
+            const updated = updatedStates.find(u => u.wordId === detail.wordId);
             return updated ? updated : detail;
           })
-          : updatedDetails
+          : updatedStates
       );
     }
   };
 
-  const loadWordsDetails = async () => {
-    const wordsDetails = await getAllWordsDetails();
-    setWordsDetails(wordsDetails);
-    await syncHoursSinceLastRepetition(wordsDetails);
+  const loadWordsMLStates = async () => {
+    const wordsMLStates = await getAllWordsMLStates();
+    setWordsMLStates(wordsMLStates);
+    await syncHoursSinceLastRepetition(wordsMLStates);
   }
 
   const loadData = async () => {
     try {
       setLoading(true);
       await createTables();
-      await loadWordsDetails();
+      await loadWordsMLStates();
     } finally {
       setLoading(false);
     }
@@ -259,18 +259,18 @@ const WordsDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <WordsDetailsContext.Provider value={{ loading, wordsDetails, langWordsDetails }}>
+    <WordsMLStatesContext.Provider value={{ loading, wordsMLStates, langWordsMLStates }}>
       {children}
-    </WordsDetailsContext.Provider>
+    </WordsMLStatesContext.Provider>
   );
 }
 
-export const useWordDetails = (): WordDetailsContextProps => {
-  const context = useContext(WordsDetailsContext);
+export const useWordsMLStatesContext = (): WordsMLStatesContextProps => {
+  const context = useContext(WordsMLStatesContext);
   if (!context) {
-    throw new Error("useWordDetails must be used within a WordsDetailsProvider");
+    throw new Error("useWordsMLStatesContext must be used within a WordsMLStatesProvider");
   }
   return context;
 };
 
-export default WordsDetailsProvider;
+export default WordsMLStatesProvider;

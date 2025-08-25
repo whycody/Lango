@@ -1,5 +1,5 @@
 import React, { createContext, FC, useContext, useEffect, useState, } from "react";
-import { useWordDetails } from "./WordsDetailsContext";
+import { useWordsMLStatesContext } from "./WordsMLStatesContext";
 import { WordWithDetails } from "./types";
 import { useWordsWithDetailsRepository } from "../hooks/repo/useWordsWithDetailsRepository";
 
@@ -17,9 +17,9 @@ const WordsWithDetailsProvider: FC<{ children: React.ReactNode }> = ({ children 
   const [wordsWithDetails, setWordsWithDetails] = useState<WordWithDetails[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { getAllWordsWithDetails } = useWordsWithDetailsRepository();
-  const { wordsDetails } = useWordDetails();
+  const { wordsMLStates } = useWordsMLStatesContext();
 
-  const loadWordsWithDetails = async () => {
+  const loadWordsMLStates = async () => {
     setLoading(true);
     try {
       const data = await getAllWordsWithDetails();
@@ -30,8 +30,8 @@ const WordsWithDetailsProvider: FC<{ children: React.ReactNode }> = ({ children 
   };
 
   useEffect(() => {
-    loadWordsWithDetails();
-  }, [wordsDetails]);
+    loadWordsMLStates();
+  }, [wordsMLStates]);
 
   return (
     <WordsWithDetailsContext.Provider value={{ loading, wordsWithDetails }}>

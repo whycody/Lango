@@ -1,4 +1,6 @@
-export type Suggestion = {
+import { SyncMetadata } from "./SyncMetadata";
+
+export type Suggestion = SyncMetadata & {
   id: string;
   userId: string;
   word: string;
@@ -7,7 +9,4 @@ export type Suggestion = {
   secondLang: string;
   displayCount: number;
   skipped: boolean;
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
 }

@@ -1,4 +1,5 @@
 import { SESSION_MODEL } from "./User";
+import { SyncMetadata } from "./SyncMetadata";
 
 export enum SESSION_MODE {
   STUDY = 'STUDY',
@@ -6,7 +7,7 @@ export enum SESSION_MODE {
   OLDEST = 'OLDEST'
 }
 
-export type Session = {
+export type Session = SyncMetadata & {
   id: string;
   date: string;
   mode: SESSION_MODE;
@@ -14,7 +15,4 @@ export type Session = {
   averageScore: number;
   wordsCount: number;
   finished: boolean;
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
 }

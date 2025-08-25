@@ -1,4 +1,6 @@
-export type Word = {
+import { SyncMetadata } from "./SyncMetadata";
+
+export type Word = SyncMetadata & {
   id: string;
   text: string;
   translation: string;
@@ -13,7 +15,4 @@ export type Word = {
   EF: number;
   active: boolean;
   removed: boolean;
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
 }

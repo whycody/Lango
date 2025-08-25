@@ -1,8 +1,8 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { Word } from "../store/types";
 
-export const WORDS_COLUMNS = ['id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'interval', 'addDate',
-  'repetitionCount', 'lastReviewDate', 'nextReviewDate', 'EF', 'active', 'removed', 'synced', 'locallyUpdatedAt', 'updatedAt'];
+export const WORDS_COLUMNS = ['id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'addDate', 'active',
+  'removed', 'synced', 'locallyUpdatedAt', 'updatedAt'];
 export const WORDS = 'words';
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
@@ -22,12 +22,7 @@ export const createTables = async (userId: string) => {
             firstLang        TEXT,
             secondLang       TEXT,
             source           TEXT,
-            interval         INTEGER,
             addDate          TEXT,
-            repetitionCount  INTEGER,
-            lastReviewDate   TEXT,
-            nextReviewDate   TEXT,
-            EF               REAL,
             active           INTEGER,
             removed          INTEGER,
             synced           INTEGER,
@@ -45,6 +40,9 @@ export const saveWords = async (userId: string, words: Word[]) => {
       const values = WORDS_COLUMNS.map(col => {
         if (col === 'active' || col === 'removed' || col === 'synced') {
           return word[col] ? 1 : 0;
+        }
+        if (col === 'addDate') {
+          return word.addDate ?? new Date().toISOString();
         }
         if (col === 'updatedAt') {
           return word.updatedAt ?? word.locallyUpdatedAt;

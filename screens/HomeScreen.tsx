@@ -1,5 +1,5 @@
-import { ScrollView, RefreshControl } from "react-native";
-import { useState, useCallback } from "react";
+import { RefreshControl, ScrollView } from "react-native";
+import { useCallback, useState } from "react";
 import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
 import StatisticsCard from "../cards/home/StatisticsCard";

@@ -1,7 +1,7 @@
 import {
   createHeuristicTable,
-  saveWordsHeuristicStates,
   getAllWordsHeuristicStates,
+  saveWordsHeuristicStates,
   updateWordHeuristicState,
 } from "../../database/WordsHeuristicStatesRepository";
 import { useAuth } from "../../api/auth/AuthProvider";

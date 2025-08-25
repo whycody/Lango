@@ -1,4 +1,9 @@
-import { createTables, getAllEvaluations, saveEvaluations, deleteEvaluations } from "../../database/EvaluationsRepository";
+import {
+  createTables,
+  deleteEvaluations,
+  getAllEvaluations,
+  saveEvaluations
+} from "../../database/EvaluationsRepository";
 import { Evaluation } from "../../store/types";
 import { useAuth } from "../../api/auth/AuthProvider";
 

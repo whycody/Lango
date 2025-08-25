@@ -7,12 +7,7 @@ export type Word = SyncMetadata & {
   firstLang: string;
   secondLang: string;
   source: string;
-  interval: number;
   addDate: string;
-  repetitionCount: number;
-  lastReviewDate: string;
-  nextReviewDate: string;
-  EF: number;
   active: boolean;
   removed: boolean;
 }

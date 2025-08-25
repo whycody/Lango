@@ -1,4 +1,9 @@
-import { createTables, deleteSuggestions, getAllSuggestions, saveSuggestions } from "../../database/SuggestionsRepository";
+import {
+  createTables,
+  deleteSuggestions,
+  getAllSuggestions,
+  saveSuggestions
+} from "../../database/SuggestionsRepository";
 import { Suggestion } from "../../store/types";
 import { useAuth } from "../../api/auth/AuthProvider";
 

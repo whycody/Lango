@@ -1,7 +1,7 @@
 import {
   createTables,
-  saveWordsMLStates,
   getAllWordsMLStates,
+  saveWordsMLStates,
   updateWordMLState,
 } from "../../database/WordsMLStatesRepository";
 import { WordMLState } from "../../store/types";

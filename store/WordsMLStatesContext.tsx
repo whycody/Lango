@@ -3,7 +3,7 @@ import { useEvaluations } from "./EvaluationsContext";
 import { useWords } from "./WordsContext";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { score } from "../utils/model";
-import { Word, WordMLState, Evaluation } from "./types";
+import { Evaluation, Word, WordMLState } from "./types";
 
 interface WordsMLStatesContextProps {
   loading: boolean;

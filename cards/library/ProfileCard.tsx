@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { MARGIN_VERTICAL } from "../../src/constants";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";

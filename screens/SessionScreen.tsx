@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import CustomText from '../components/CustomText';
 import WordLevelItem from '../components/items/WordLevelItem';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../src/constants';
-import { WordUpdate, useWords } from '../store/WordsContext';
 import FlipCard from "react-native-flip-card";
 import Card from "../components/Card";
 import * as Haptics from "expo-haptics";
@@ -23,6 +22,11 @@ import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { SESSION_MODE } from "../store/types";
 import { useWordSet } from "../hooks/useWordSet";
+
+type WordUpdate = {
+  flashcardId: string;
+  grade: 1 | 2 | 3;
+};
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -41,7 +45,6 @@ const SessionScreen = () => {
   const length = params?.length || 1;
   const mode = params?.mode || SESSION_MODE.STUDY;
   const flashcardSide = params?.flashcardSide || FLASHCARD_SIDE.WORD;
-  const wordsContext = useWords();
   const sessionsContext = useSessions();
   const evaluationsContext = useEvaluations();
 
@@ -219,7 +222,6 @@ const SessionScreen = () => {
 
   const saveProgress = (finished: boolean) => {
     if (wordsUpdates.length == 0) return;
-    wordsContext.updateWords(wordsUpdates);
     const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
     const session = sessionsContext.addSession(mode, model, avgGrade, length * 10, finished);
     evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({

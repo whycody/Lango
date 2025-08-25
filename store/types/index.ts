@@ -7,3 +7,4 @@ export * from './Suggestion';
 export * from './Language';
 export * from './User';
 export * from './SyncMetadata';
+export * from './WordHeuristicState';

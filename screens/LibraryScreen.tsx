@@ -19,7 +19,7 @@ const LibraryScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const words = useWords();
-  const evaluations = useEvaluations();
+  const { evaluations } = useEvaluations();
   const navigation = useNavigation();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
@@ -74,7 +74,7 @@ const LibraryScreen = () => {
     {
       id: LibraryItems.EXPORT,
       label: t('export'),
-      description: t('export_desc', { records_number: evaluations.evaluations.length.toString() }),
+      description: t('export_desc', { records_number: evaluations.length.toString() }),
       icon: 'share-outline'
     },
     {

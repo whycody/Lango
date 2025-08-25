@@ -63,7 +63,7 @@ export const apiCall = async <T>(options: {
   method: string;
   url: string;
   data?: object | string
-}, refreshed: boolean = false, timeout: number = 2000): Promise<T> => {
+}, refreshed: boolean = false, timeout: number = 15000): Promise<T> => {
   // console.log('Calling API:', options.method, `${baseURL}${options.url}`, options.data);
 
   if (!accessToken) {

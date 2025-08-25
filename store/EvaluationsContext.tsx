@@ -173,8 +173,8 @@ const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ children }) =>
   const loadEvaluations = async () => {
     try {
       const loadedEvaluations = await getAllEvaluations();
-      await syncEvaluations(loadedEvaluations);
       setEvaluations(loadedEvaluations);
+      await syncEvaluations(loadedEvaluations);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }

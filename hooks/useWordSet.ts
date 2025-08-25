@@ -5,16 +5,20 @@ import { useAuth } from "../api/auth/AuthProvider";
 import { useSessions } from "../store/SessionsContext";
 import { SESSION_MODE, SESSION_MODEL } from "../store/types";
 import { strategies } from "../strategies";
-import { WordSet } from "../store/types/WordSet";
+import { WordSet, WordSetStrategy } from "../store/types/WordSet";
+import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
 
 export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
   const { langWords } = useWords();
   const { langWordsMLStates } = useWordsMLStatesContext();
+  const { langWordsHeuristicStates } = useWordsHeuristicStates();
   const { sessions } = useSessions();
   const { user } = useAuth();
 
   return useMemo(() => {
-    if (!langWords || !langWordsMLStates) return { words: [], model: SESSION_MODEL.HEURISTIC };
+    if (!langWords || !langWordsMLStates || !langWordsHeuristicStates) {
+      return { words: [], model: SESSION_MODEL.NONE };
+    }
 
     const lastSession = sessions
       ?.filter(s => s.mode === SESSION_MODE.STUDY)
@@ -23,7 +27,11 @@ export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
 
     const currentModel = user.sessionModel || SESSION_MODEL.HYBRID;
 
-    const strategy = (() => {
+    const strategy: WordSetStrategy = (() => {
+      if (mode == SESSION_MODE.OLDEST)
+        return strategies.OLDEST;
+      else if (mode == SESSION_MODE.RANDOM)
+        return strategies.RANDOM;
       switch (currentModel) {
         case SESSION_MODEL.HEURISTIC:
           return strategies.HEURISTIC;
@@ -35,10 +43,6 @@ export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
       }
     })();
 
-    if (currentModel === SESSION_MODEL.HYBRID) {
-      return strategy(size, mode, langWords, langWordsMLStates, lastSessionModel);
-    }
-
-    return strategy(size, mode, langWords, langWordsMLStates);
-  }, [user.sessionModel, langWords, langWordsMLStates, sessions, size, mode]);
+    return strategy(size, langWords, langWordsMLStates, langWordsHeuristicStates, lastSessionModel);
+  }, [user.sessionModel, langWords.length, langWordsMLStates, langWordsHeuristicStates, sessions, size, mode]);
 };

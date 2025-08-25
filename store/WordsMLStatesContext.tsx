@@ -22,7 +22,14 @@ const WordsMLStatesProvider: FC<{ children: React.ReactNode }> = ({ children }) 
   const wordsMLStatesRef = useRef<WordMLState[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [initialized, setInitialized] = useState(false);
-  const { createTables, getAllWordsMLStates, updateWordMLState, saveWordsMLStates } = useWordsMLStatesRepository();
+
+  const {
+    createTables,
+    getAll: getAllWordsMLStates,
+    update: updateWordMLState,
+    save: saveWordsMLStates
+  } = useWordsMLStatesRepository();
+
   const { evaluations } = useEvaluations();
   const { words, langWords } = useWords();
   const langWordsIds = langWords.map((l) => l.id);
@@ -31,8 +38,8 @@ const WordsMLStatesProvider: FC<{ children: React.ReactNode }> = ({ children }) 
 
   useEffect(() => {
     if (!words || !initialized || !evaluations) return;
-    words.forEach((word: Word) => syncWithWordMLStates(word.id));
-  }, [words, evaluations, initialized]);
+    words.forEach((word: Word) => syncWithWordsMLStates(word.id));
+  }, [words?.length, evaluations?.length, initialized]);
 
   useEffect(() => {
     if (wordsMLStates !== null) {
@@ -51,7 +58,7 @@ const WordsMLStatesProvider: FC<{ children: React.ReactNode }> = ({ children }) 
     return sum / diffs.length;
   };
 
-  const syncWithWordMLStates = async (wordId: string) => {
+  const syncWithWordsMLStates = async (wordId: string) => {
     const currentWordsMLStates = wordsMLStatesRef.current;
     if (!currentWordsMLStates) return;
 

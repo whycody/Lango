@@ -10,7 +10,7 @@ interface WordsContextProps {
   words: Word[];
   loading: boolean;
   langWords: Word[];
-  addWord: (text: string, translation: string, source?: string) => boolean;
+  addWord: (text: string, translation: string, source?: string) => Word | null;
   getWord: (id: string) => Word | undefined;
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
@@ -31,7 +31,7 @@ const WordsContext = createContext<WordsContextProps>({
   words: [],
   loading: true,
   langWords: [],
-  addWord: () => true,
+  addWord: () => null,
   getWord: () => undefined,
   editWord: () => [],
   removeWord: () => [],
@@ -69,18 +69,16 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   });
 
   const addWord = (text: string, translation: string, source: string) => {
-    if (words.find((word) => word.text === text && word.translation === translation)) return false;
+    if (words.find((word) => word.text === text && word.translation === translation)) return null;
     const newWord = createWord(text, translation, source);
     const updatedWords = [newWord, ...words];
     syncWords(updatedWords);
     setWords(updatedWords);
     saveWords([newWord]);
-    return true;
+    return newWord;
   };
 
-  const getWord = (id: string): Word | undefined => {
-    return words.find(word => word.id === id);
-  };
+  const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
 
   const editWord = (id: string, text: string, translation: string) => {
     const updatedAt = new Date().toISOString();

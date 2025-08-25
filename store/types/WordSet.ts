@@ -1,13 +1,13 @@
-import { SESSION_MODE } from "./Session";
 import { Word } from "./Word";
 import { WordMLState } from "./WordMLState";
 import { SESSION_MODEL } from "./User";
+import { WordHeuristicState } from "./WordHeuristicState";
 
 export type WordSetStrategy = (
   size: number,
-  mode: SESSION_MODE,
   words: Word[],
-  wordDetails: WordMLState[],
+  wordsMLStates: WordMLState[],
+  wordsHeuristicStates: WordHeuristicState[],
   lastSessionModel?: SESSION_MODEL
 ) => WordSet;
 

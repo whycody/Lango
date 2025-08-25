@@ -8,7 +8,7 @@ import { useAuth } from "../../api/auth/AuthProvider";
 import { WordHeuristicState } from "../../store/types";
 import { WordsStatesRepository } from "../../database/WordsStatesRepository";
 
-export const useWordsHeuristicRepository = (): WordsStatesRepository<WordHeuristicState> => {
+export const useWordsHeuristicStatesRepository = (): WordsStatesRepository<WordHeuristicState> => {
   const userId = useAuth().user.userId;
   if (!userId) throw new Error("User not logged in");
 

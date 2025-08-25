@@ -2,6 +2,7 @@ export enum SESSION_MODEL {
   HEURISTIC = 'heuristic',
   ML = 'ml',
   HYBRID = 'hybrid',
+  NONE = 'none',
 }
 
 export type UserStats = {

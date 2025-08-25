@@ -1,8 +1,8 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { WordHeuristicState } from "../store/types";
 
-export const WORD_HEURISTIC_STATE_COLUMNS = ['wordId', 'interval', 'repetitionsCount', 'lastReviewDate', 'nextReviewDate',
-  'EF', 'synced', 'updatedAt', 'locallyUpdatedAt'];
+export const WORD_HEURISTIC_STATE_COLUMNS = ['wordId', 'interval', 'repetitionsCount', 'studyCount', 'lastReviewDate', 'nextReviewDate',
+  'EF'];
 export const WORD_HEURISTIC_STATE = 'word_heuristic_state';
 
 const getDb = async (userId: string): Promise<SQLiteDatabase> => {
@@ -18,13 +18,11 @@ export const createHeuristicTable = async (userId: string) => {
         (
             wordId           TEXT PRIMARY KEY,
             interval         INTEGER,
-            repetitionsCount INTEGER,
+            repetitionsCount INTEGER DEFAULT 0,
+            studyCount       INTEGER DEFAULT 0,
             lastReviewDate   TEXT,
             nextReviewDate   TEXT,
-            EF               REAL,
-            synced           INTEGER,
-            updatedAt        TEXT,
-            locallyUpdatedAt TEXT
+            EF               REAL
         )
     `);
   });
@@ -38,12 +36,10 @@ export const saveWordsHeuristicStates = async (userId: string, wordsHeuristicSta
         state.wordId,
         state.interval,
         state.repetitionsCount,
+        state.studyCount,
         state.lastReviewDate,
         state.nextReviewDate,
         state.EF,
-        state.synced ? 1 : 0,
-        state.updatedAt ?? null,
-        state.locallyUpdatedAt
       ];
 
       const placeholders = WORD_HEURISTIC_STATE_COLUMNS.map(() => '?').join(', ');
@@ -73,12 +69,10 @@ export const getAllWordsHeuristicStates = async (userId: string): Promise<WordHe
               wordId: row.wordId,
               interval: row.interval,
               repetitionsCount: row.repetitionsCount,
+              studyCount: row.studyCount,
               lastReviewDate: row.lastReviewDate,
               nextReviewDate: row.nextReviewDate,
               EF: row.EF,
-              synced: !!row.synced,
-              updatedAt: row.updatedAt ?? undefined,
-              locallyUpdatedAt: row.locallyUpdatedAt
             } satisfies WordHeuristicState;
           });
           resolve(words);

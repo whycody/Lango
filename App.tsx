@@ -21,6 +21,7 @@ import EvaluationsProvider from "./store/EvaluationsContext";
 import SuggestionsProvider from "./store/SuggestionsContext";
 import WordsMLStatesProvider from "./store/WordsMLStatesContext";
 import WordsWithDetailsProvider from "./store/WordsWithDetailsContext";
+import { WordsHeuristicProvider } from "./store/WordsHeuristicStatesContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -62,29 +63,31 @@ export default function App() {
                           <WordsProvider>
                             <EvaluationsProvider>
                               <WordsMLStatesProvider>
-                                <WordsWithDetailsProvider>
-                                  <BottomSheetModalProvider>
-                                    <Stack.Navigator
-                                      screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
-                                      <Stack.Screen
-                                        name='Tabs'
-                                        component={TabsNavigator}
-                                      />
-                                      <Stack.Screen
-                                        name='Session'
-                                        component={SessionScreen}
-                                        options={{ statusBarColor: colors.card }}
-                                      />
-                                      <Stack.Group screenOptions={{
-                                        presentation: "modal",
-                                        animationDuration: 100,
-                                        statusBarColor: colors.card
-                                      }}>
-                                        <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
-                                      </Stack.Group>
-                                    </Stack.Navigator>
-                                  </BottomSheetModalProvider>
-                                </WordsWithDetailsProvider>
+                                <WordsHeuristicProvider>
+                                  <WordsWithDetailsProvider>
+                                    <BottomSheetModalProvider>
+                                      <Stack.Navigator
+                                        screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
+                                        <Stack.Screen
+                                          name='Tabs'
+                                          component={TabsNavigator}
+                                        />
+                                        <Stack.Screen
+                                          name='Session'
+                                          component={SessionScreen}
+                                          options={{ statusBarColor: colors.card }}
+                                        />
+                                        <Stack.Group screenOptions={{
+                                          presentation: "modal",
+                                          animationDuration: 100,
+                                          statusBarColor: colors.card
+                                        }}>
+                                          <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                                        </Stack.Group>
+                                      </Stack.Navigator>
+                                    </BottomSheetModalProvider>
+                                  </WordsWithDetailsProvider>
+                                </WordsHeuristicProvider>
                               </WordsMLStatesProvider>
                             </EvaluationsProvider>
                           </WordsProvider>

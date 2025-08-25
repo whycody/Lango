@@ -3,6 +3,7 @@ import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository
 import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../api/apiClient";
 import uuid from 'react-native-uuid';
 import { Evaluation } from "./types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface EvaluationsContextProps {
   evaluations: Evaluation[] | null;
@@ -149,6 +150,26 @@ const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ children }) =>
     });
   };
 
+  const saveEvaluationsFromAsyncStorage = async () => {
+    try {
+      const storedEvaluations = await AsyncStorage.getItem('evaluations');
+      if (!storedEvaluations) return;
+
+      const parsedEvaluations: Evaluation[] = JSON.parse(storedEvaluations);
+      const evaluationsToLoad = parsedEvaluations.map((evaluation) => ({
+        ...evaluation,
+        synced: false,
+        locallyUpdatedAt: evaluation.locallyUpdatedAt ?? new Date().toISOString(),
+      }));
+
+      await saveEvaluations(evaluationsToLoad);
+      await AsyncStorage.removeItem('evaluations');
+      console.log('Migrated evaluations from AsyncStorage to SQLite');
+    } catch (error) {
+      console.error('Error migrating evaluations from AsyncStorage:', error);
+    }
+  };
+
   const loadEvaluations = async () => {
     try {
       const loadedEvaluations = await getAllEvaluations();
@@ -163,6 +184,7 @@ const EvaluationsProvider: FC<{ children: React.ReactNode }> = ({ children }) =>
     try {
       setLoading(true);
       await createTables();
+      await saveEvaluationsFromAsyncStorage();
       await loadEvaluations();
     } catch (error) {
       console.log('Error loading evaluations from storage:', error);

@@ -2,11 +2,11 @@ import { SyncMetadata, SyncResult } from "../store/types";
 
 export async function syncInBatches<T>(
   items: T[],
-  syncFn: (chunk: T[]) => Promise<{ id: string; updatedAt: string }[] | null>,
+  syncFn: (chunk: T[]) => Promise<SyncResult[] | null>,
   batchSize: number = 500
-): Promise<{ id: string; updatedAt: string }[]> {
+): Promise<SyncResult[]> {
   if (items.length === 0) return [];
-  const results: { id: string; updatedAt: string }[] = [];
+  const results: SyncResult[] = [];
   for (let i = 0; i < items.length; i += batchSize) {
     const chunk = items.slice(i, i + batchSize);
     const res = await syncFn(chunk);

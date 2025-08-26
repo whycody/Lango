@@ -1,4 +1,4 @@
-import { createContext, FC, useContext, useEffect, useState } from "react";
+import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from "react-i18next";
 import { Language, LanguageCode } from "./types";
@@ -19,7 +19,7 @@ export const LanguageContext = createContext<LanguageContextProps>({
   setStudyingLangCode: () => {},
 });
 
-const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
   const [mainLangCode, setMainLangCodeState] = useState<string>(LanguageCode.POLISH);
   const [studyingLangCode, setStudyingLangCodeState] = useState<string>(LanguageCode.SPANISH);

@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useEffect, useState, } from "react";
+import React, { createContext, FC, ReactNode, useContext, useEffect, useState, } from "react";
 import { useWordsMLStatesContext } from "./WordsMLStatesContext";
 import { WordWithDetails } from "./types";
 import { useWordsWithDetailsRepository } from "../hooks/repo/useWordsWithDetailsRepository";
@@ -13,7 +13,7 @@ export const WordsWithDetailsContext = createContext<WordsWithDetailsContextProp
   wordsWithDetails: null,
 });
 
-const WordsWithDetailsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [wordsWithDetails, setWordsWithDetails] = useState<WordWithDetails[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { getAllWordsWithDetails } = useWordsWithDetailsRepository();

@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { Evaluation, Word, WordHeuristicState } from './types';
 import { useWords } from "./WordsContext";
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
@@ -16,7 +16,7 @@ const WordsHeuristicContext = createContext<WordsHeuristicContextProps>({
   langWordsHeuristicStates: [],
 });
 
-export const WordsHeuristicProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WordsHeuristicProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [wordsHeuristicStates, setWordsHeuristicStates] = useState<WordHeuristicState[]>([]);
   const wordsHeuristicStatesRef = useRef<WordHeuristicState[]>([]);
   const [loading, setLoading] = useState(true);

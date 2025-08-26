@@ -1,9 +1,17 @@
-import React, { createContext, FC, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
 import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from "../api/apiClient";
 import debounce from "lodash.debounce";
 import { Suggestion } from "./types";
 import { useLanguage } from "./LanguageContext";
+import {
+  findChangedItems,
+  findLatestUpdatedAt,
+  getUnsyncedItems,
+  mergeLocalAndServer,
+  syncInBatches,
+  updateLocalItems
+} from "../utils/sync";
 
 interface SuggestionsContextProps {
   suggestions: Suggestion[];
@@ -23,7 +31,7 @@ export const SuggestionsContext = createContext<SuggestionsContextProps>({
   syncSuggestions: () => Promise.resolve(),
 });
 
-const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { getAllSuggestions, deleteSuggestions, saveSuggestions, createTables } = useSuggestionsRepository();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,18 +78,18 @@ const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ children }) =>
   const syncSuggestions = async (inputSuggestions?: Suggestion[]) => {
     try {
       const suggestionsList = inputSuggestions ?? (await getAllSuggestions());
-      const unsyncedSuggestions = getUnsyncedSuggestions(suggestionsList);
-      const serverUpdates = await syncUnsyncedSuggestions(unsyncedSuggestions);
+      const unsyncedSuggestions = getUnsyncedItems<Suggestion>(suggestionsList);
+      const serverUpdates = await syncInBatches<Suggestion>(unsyncedSuggestions, syncSuggestionsOnServer);
 
       if (!serverUpdates) return;
 
-      const updatedLocalSuggestions = updateLocalSuggestions(suggestionsList, new Map(serverUpdates.map(update => [update.id, update.updatedAt])));
+      const updatedLocalSuggestions = updateLocalItems<Suggestion>(suggestionsList, serverUpdates);
       const serverSuggestions = await fetchNewSuggestions(updatedLocalSuggestions);
-      const mergedSuggestions = mergeLocalAndServerSuggestions(updatedLocalSuggestions, serverSuggestions);
+      const mergedSuggestions = mergeLocalAndServer<Suggestion>(updatedLocalSuggestions, serverSuggestions);
       const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || !suggestion.skipped);
       const suggestionsToRemove = mergedSuggestions.filter(suggestion => suggestion.synced && suggestion.skipped);
 
-      const changedSuggestions = findChangedSuggestions(suggestionsList, mergedSuggestions);
+      const changedSuggestions = findChangedItems<Suggestion>(suggestionsList, mergedSuggestions);
 
       if (changedSuggestions.length > 0) {
         await deleteSuggestions(suggestionsToRemove.map(e => e.id));
@@ -93,82 +101,9 @@ const SuggestionsProvider: FC<{ children: React.ReactNode }> = ({ children }) =>
     }
   };
 
-  const getUnsyncedSuggestions = (suggestions: Suggestion[]): Suggestion[] => {
-    return suggestions.filter(suggestion => !suggestion.synced);
-  };
-
-  const syncUnsyncedSuggestions = async (unsyncedSuggestions: Suggestion[]): Promise<{
-    id: string,
-    updatedAt: string
-  }[]> => {
-    if (unsyncedSuggestions.length === 0) return [];
-    const result = await syncSuggestionsOnServer(unsyncedSuggestions) as { id: string, updatedAt: string }[] | null;
-    return result ?? [];
-  };
-
-  const findLatestUpdatedAt = (suggestions: Suggestion[]): string => {
-    return new Date(
-      Math.max(...suggestions.map(suggestion => new Date(suggestion.updatedAt || suggestion.locallyUpdatedAt).getTime()), 0)
-    ).toISOString();
-  };
-
   const fetchNewSuggestions = async (updatedSuggestions: Suggestion[]): Promise<Suggestion[]> => {
-    const latestUpdatedAt = findLatestUpdatedAt(updatedSuggestions);
+    const latestUpdatedAt = findLatestUpdatedAt<Suggestion>(updatedSuggestions);
     return await fetchUpdatedSuggestions(languageContext.studyingLangCode, languageContext.mainLangCode, latestUpdatedAt);
-  };
-
-  const mergeLocalAndServerSuggestions = (localSuggestions: Suggestion[], serverSuggestions: Suggestion[]): Suggestion[] => {
-    const serverSuggestionsMap = new Map(serverSuggestions.map(sw => [sw.id, sw]));
-    const existingIds = new Set(localSuggestions.map(w => w.id));
-
-    const mergedSuggestions = localSuggestions.map(word => {
-      if (serverSuggestionsMap.has(word.id)) {
-        const serverSuggestion = serverSuggestionsMap.get(word.id)!;
-        return {
-          ...serverSuggestion,
-          synced: true,
-          locallyUpdatedAt: serverSuggestion.updatedAt,
-          updatedAt: serverSuggestion.updatedAt,
-        };
-      }
-      return word;
-    });
-
-    const newSuggestions = serverSuggestions.filter(sw => !existingIds.has(sw.id)).map(sw => ({
-      ...sw,
-      synced: true,
-      locallyUpdatedAt: sw.updatedAt,
-      updatedAt: sw.updatedAt,
-    }));
-
-    return [...mergedSuggestions, ...newSuggestions];
-  };
-
-  const findChangedSuggestions = (originalSuggestions: Suggestion[], finalSuggestions: Suggestion[]): Suggestion[] => {
-    const originalMap = new Map(originalSuggestions.map(suggestion => [suggestion.id, suggestion]));
-
-    return finalSuggestions.filter(suggestion => {
-      const original = originalMap.get(suggestion.id);
-      if (!original) return true;
-      return (
-        original.synced !== suggestion.synced ||
-        original.updatedAt !== suggestion.updatedAt ||
-        original.locallyUpdatedAt !== suggestion.locallyUpdatedAt
-      );
-    });
-  };
-
-  const updateLocalSuggestions = (suggestions: Suggestion[], updatesMap: Map<string, string>): Suggestion[] => {
-    return suggestions.map(suggestion => {
-      if (updatesMap.has(suggestion.id)) {
-        return {
-          ...suggestion,
-          synced: true,
-          updatedAt: updatesMap.get(suggestion.id) as string,
-        };
-      }
-      return suggestion;
-    });
   };
 
   const loadSuggestions = async () => {

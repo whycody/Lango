@@ -1,6 +1,6 @@
 import { apiCall } from "./auth/apiHandler";
 import DeviceInfo from 'react-native-device-info';
-import { Evaluation, Session, Suggestion, User, Word } from "../store/types";
+import { Evaluation, Session, Suggestion, SyncResult, User, Word } from "../store/types";
 
 const getDeviceId = async () => {
   try {
@@ -75,7 +75,7 @@ export const signOut = async () => {
   }
 }
 
-export const syncWordsOnServer = async (words: Word[]) => {
+export const syncWordsOnServer = async (words: Word[]): Promise<SyncResult[]> => {
   try {
     return await apiCall({
       method: 'POST',
@@ -101,7 +101,7 @@ export const fetchUpdatedWords = async (since: string): Promise<Word[]> => {
   }
 };
 
-export const syncSessionsOnServer = async (sessions: Session[]) => {
+export const syncSessionsOnServer = async (sessions: Session[]): Promise<SyncResult[]> => {
   try {
     return await apiCall({
       method: 'POST',
@@ -141,7 +141,7 @@ export const fetchUpdatedEvaluations = async (since: string): Promise<Evaluation
 };
 
 
-export const syncEvaluationsOnServer = async (evaluations: Evaluation[]) => {
+export const syncEvaluationsOnServer = async (evaluations: Evaluation[]): Promise<SyncResult[]> => {
   try {
     return await apiCall({
       method: 'POST',
@@ -167,7 +167,7 @@ export const fetchUpdatedSuggestions = async (firstLang: string, secondLang: str
   }
 };
 
-export const syncSuggestionsOnServer = async (suggestions: Suggestion[]) => {
+export const syncSuggestionsOnServer = async (suggestions: Suggestion[]): Promise<SyncResult[]> => {
   try {
     return await apiCall({
       method: 'POST',

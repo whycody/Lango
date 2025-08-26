@@ -1,10 +1,18 @@
-import React, { createContext, FC, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import uuid from 'react-native-uuid';
 import { Word } from './types';
 import { useLanguage } from "./LanguageContext";
+import {
+  findChangedItems,
+  findLatestUpdatedAt,
+  getUnsyncedItems,
+  mergeLocalAndServer,
+  syncInBatches,
+  updateLocalItems
+} from "../utils/sync";
 
 interface WordsContextProps {
   words: Word[];
@@ -33,7 +41,7 @@ const WordsContext = createContext<WordsContextProps>({
   syncWords: () => Promise.resolve(),
 });
 
-export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [words, setWords] = useState<Word[]>([]);
   const languageContext = useLanguage();
@@ -127,16 +135,15 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const syncWords = async (inputWords?: Word[]) => {
     try {
       const wordsList = inputWords ?? (await getAllWords());
-      const unsyncedWords = getUnsyncedWords(wordsList);
-      const serverUpdates = await syncUnsyncedWords(unsyncedWords);
+      const unsyncedWords = getUnsyncedItems<Word>(wordsList);
+      const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
 
       if (!serverUpdates) return;
 
-      const updatedWords = updateLocalWords(wordsList, serverUpdates);
+      const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
       const serverWords = await fetchNewWords(updatedWords);
-      const mergedWords = mergeLocalAndServerWords(updatedWords, serverWords);
-
-      const changedWords = findChangedWords(wordsList, mergedWords);
+      const mergedWords = mergeLocalAndServer<Word>(updatedWords, serverWords);
+      const changedWords = findChangedItems<Word>(wordsList, mergedWords);
 
       if (changedWords.length > 0) {
         setWords(mergedWords);
@@ -147,82 +154,9 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     }
   };
 
-  const getUnsyncedWords = (words: Word[]): Word[] => {
-    return words.filter(word => !word.synced);
-  };
-
-  const syncUnsyncedWords = async (unsyncedWords: Word[]): Promise<{ id: string, updatedAt: string }[]> => {
-    if (unsyncedWords.length === 0) return [];
-    const result = await syncWordsOnServer(unsyncedWords) as { id: string, updatedAt: string }[] | null;
-    return result ?? [];
-  };
-
-  const updateLocalWords = (words: Word[], serverUpdates: { id: string, updatedAt: string }[]): Word[] => {
-    const updatesMap = new Map(serverUpdates.map(update => [update.id, update.updatedAt]));
-    return words.map(word => {
-      if (updatesMap.has(word.id)) {
-        const serverUpdatedAt = updatesMap.get(word.id) as string;
-        return {
-          ...word,
-          synced: true,
-          updatedAt: serverUpdatedAt,
-          locallyUpdatedAt: serverUpdatedAt,
-        };
-      }
-      return word;
-    });
-  };
-
-  const findLatestUpdatedAt = (words: Word[]): string => {
-    return new Date(
-      Math.max(...words.map(word => new Date(word.updatedAt || word.locallyUpdatedAt).getTime()), 0)
-    ).toISOString();
-  };
-
   const fetchNewWords = async (updatedWords: Word[]): Promise<Word[]> => {
-    const latestUpdatedAt = findLatestUpdatedAt(updatedWords);
+    const latestUpdatedAt = findLatestUpdatedAt<Word>(updatedWords);
     return await fetchUpdatedWords(latestUpdatedAt);
-  };
-
-  const mergeLocalAndServerWords = (localWords: Word[], serverWords: Word[]): Word[] => {
-    const serverWordsMap = new Map(serverWords.map(sw => [sw.id, sw]));
-    const existingIds = new Set(localWords.map(w => w.id));
-
-    const mergedWords = localWords.map(word => {
-      if (serverWordsMap.has(word.id)) {
-        const serverWord = serverWordsMap.get(word.id)!;
-        return {
-          ...serverWord,
-          synced: true,
-          locallyUpdatedAt: serverWord.updatedAt,
-          updatedAt: serverWord.updatedAt,
-        };
-      }
-      return word;
-    });
-
-    const newWords = serverWords.filter(sw => !existingIds.has(sw.id)).map(sw => ({
-      ...sw,
-      synced: true,
-      locallyUpdatedAt: sw.updatedAt,
-      updatedAt: sw.updatedAt,
-    }));
-
-    return [...mergedWords, ...newWords];
-  };
-
-  const findChangedWords = (originalWords: Word[], finalWords: Word[]): Word[] => {
-    const originalMap = new Map(originalWords.map(word => [word.id, word]));
-
-    return finalWords.filter(word => {
-      const original = originalMap.get(word.id);
-      if (!original) return true;
-      return (
-        original.synced !== word.synced ||
-        original.updatedAt !== word.updatedAt ||
-        original.locallyUpdatedAt !== word.locallyUpdatedAt
-      );
-    });
   };
 
   const deleteWords = async () => {

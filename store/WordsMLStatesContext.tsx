@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { useEvaluations } from "./EvaluationsContext";
 import { useWords } from "./WordsContext";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
@@ -17,7 +17,7 @@ export const WordsMLStatesContext = createContext<WordsMLStatesContextProps>({
   langWordsMLStates: []
 })
 
-const WordsMLStatesProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [wordsMLStates, setWordsMLStates] = useState<WordMLState[] | null>(null);
   const wordsMLStatesRef = useRef<WordMLState[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);

@@ -1,12 +1,7 @@
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { Evaluation } from "../store/types";
+import { getDb } from "./utils/db";
 
 const columns = ['id', 'wordId', 'sessionId', 'grade', 'date', 'synced', 'updatedAt', 'locallyUpdatedAt'];
-
-const getDb = async (userId: string): Promise<SQLiteDatabase> => {
-  if (!userId) throw new Error("User ID not provided");
-  return SQLite.openDatabase({ name: `${userId}_evaluations.db` });
-};
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);

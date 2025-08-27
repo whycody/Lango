@@ -1,14 +1,9 @@
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { WordHeuristicState } from "../store/types";
+import { getDb } from "./utils/db";
 
 export const WORD_HEURISTIC_STATE_COLUMNS = ['wordId', 'interval', 'repetitionsCount', 'studyCount', 'lastReviewDate', 'nextReviewDate',
   'EF'];
 export const WORD_HEURISTIC_STATE = 'word_heuristic_state';
-
-const getDb = async (userId: string): Promise<SQLiteDatabase> => {
-  if (!userId) throw new Error("User ID not provided");
-  return SQLite.openDatabase({ name: `${userId}_words.db` });
-};
 
 export const createHeuristicTable = async (userId: string) => {
   const db = await getDb(userId);

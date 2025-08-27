@@ -1,14 +1,9 @@
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { Word } from "../store/types";
+import { getDb } from "./utils/db";
 
 export const WORDS_COLUMNS = ['id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'addDate', 'active',
   'removed', 'synced', 'locallyUpdatedAt', 'updatedAt'];
 export const WORDS = 'words';
-
-const getDb = async (userId: string): Promise<SQLiteDatabase> => {
-  if (!userId) throw new Error("User ID not provided");
-  return SQLite.openDatabase({ name: `${userId}_words.db` });
-};
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);

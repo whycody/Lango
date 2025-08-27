@@ -137,7 +137,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, getSession, logout }}>
-      {isAuthenticated ? children : <LoginScreen login={login} authError={authError} loading={loading}/>}
+      {isAuthenticated === false ? <LoginScreen login={login} authError={authError} loading={loading}/> : children}
     </AuthContext.Provider>
   );
 };

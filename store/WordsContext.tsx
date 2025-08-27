@@ -13,6 +13,7 @@ import {
   syncInBatches,
   updateLocalItems
 } from "../utils/sync";
+import { useAppInitializer } from "./AppInitializerContext";
 
 interface WordsContextProps {
   words: Word[];
@@ -42,10 +43,11 @@ const WordsContext = createContext<WordsContextProps>({
 });
 
 export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const { initialLoad } = useAppInitializer();
   const [loading, setLoading] = useState(true);
-  const [words, setWords] = useState<Word[]>([]);
+  const [words, setWords] = useState<Word[]>(initialLoad.words);
   const languageContext = useLanguage();
-  const { saveWords, getAllWords, updateWord, createTables } = useWordsRepository();
+  const { saveWords, getAllWords, updateWord } = useWordsRepository();
   const langWords = words.filter((word) =>
     word.firstLang == languageContext.studyingLangCode && word.secondLang == languageContext.mainLangCode);
 
@@ -100,33 +102,31 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     syncWords(updatedWords);
   };
 
-  const saveWordsFromAsyncStorage = async () => {
-    try {
-      const storedWords = await AsyncStorage.getItem('words');
-      if (!storedWords) return;
-
-      const parsedWords: Word[] = JSON.parse(storedWords);
-      const wordsToLoad = parsedWords.map((word) => ({
-        ...word,
-        synced: false,
-        active: word.active ?? true,
-        removed: word.removed ?? false,
-        locallyUpdatedAt: word.locallyUpdatedAt ?? new Date().toISOString(),
-      }));
-
-      await saveWords(wordsToLoad);
-      await AsyncStorage.removeItem('words');
-      console.log('Migrated words from AsyncStorage to SQLite');
-    } catch (error) {
-      console.error('Error migrating words from AsyncStorage:', error);
-    }
-  };
+  // const saveWordsFromAsyncStorage = async () => {
+  //   try {
+  //     const storedWords = await AsyncStorage.getItem('words');
+  //     if (!storedWords) return;
+  //
+  //     const parsedWords: Word[] = JSON.parse(storedWords);
+  //     const wordsToLoad = parsedWords.map((word) => ({
+  //       ...word,
+  //       synced: false,
+  //       active: word.active ?? true,
+  //       removed: word.removed ?? false,
+  //       locallyUpdatedAt: word.locallyUpdatedAt ?? new Date().toISOString(),
+  //     }));
+  //
+  //     await saveWords(wordsToLoad);
+  //     await AsyncStorage.removeItem('words');
+  //     console.log('Migrated words from AsyncStorage to SQLite');
+  //   } catch (error) {
+  //     console.error('Error migrating words from AsyncStorage:', error);
+  //   }
+  // };
 
   const loadWords = async () => {
     try {
-      const loadedWords = await getAllWords();
-      setWords(loadedWords);
-      await syncWords(loadedWords);
+      await syncWords(initialLoad.words);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
@@ -172,8 +172,6 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      await createTables();
-      await saveWordsFromAsyncStorage();
       await loadWords();
     } catch (error) {
       console.log('Error loading words from storage:', error);

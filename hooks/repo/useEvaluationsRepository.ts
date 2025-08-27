@@ -1,21 +1,18 @@
-import {
-  createTables,
-  deleteEvaluations,
-  getAllEvaluations,
-  saveEvaluations
-} from "../../database/EvaluationsRepository";
+import { createTables, getAllEvaluations, saveEvaluations } from "../../database/EvaluationsRepository";
 import { Evaluation } from "../../store/types";
 import { useAuth } from "../../api/auth/AuthProvider";
 
 export const useEvaluationsRepository = () => {
-  const userId = useAuth().user.userId;
+  const { user } = useAuth();
 
-  if (!userId) throw new Error("User not logged in");
+  const getUserId = () => {
+    if (!user?.userId) throw new Error("User not logged in");
+    return user.userId;
+  };
 
   return {
-    createTables: () => createTables(userId),
-    saveEvaluations: (evaluations: Evaluation[]) => saveEvaluations(userId, evaluations),
-    getAllEvaluations: () => getAllEvaluations(userId),
-    deleteEvaluations: (ids: string[]) => deleteEvaluations(userId, ids),
+    createTables: () => createTables(getUserId()),
+    saveEvaluations: (evaluations: Evaluation[]) => saveEvaluations(getUserId(), evaluations),
+    getAllEvaluations: () => getAllEvaluations(getUserId()),
   };
 };

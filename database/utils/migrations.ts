@@ -17,10 +17,10 @@ export const runMigrations = async (userId: string) => {
     });
   });
 
-  if (version < 1) {
-    await migrateV1ToV2(db);
-    version = 1;
-  }
+  // if (version < 1) {
+  //   await migrateV1ToV2(db);
+  //   version = 1;
+  // }
 
   await new Promise<void>((resolve, reject) => {
     db.transaction(tx => {

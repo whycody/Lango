@@ -3,13 +3,16 @@ import { Session } from "../../store/types";
 import { useAuth } from "../../api/auth/AuthProvider";
 
 export const useSessionsRepository = () => {
-  const userId = useAuth().user.userId;
+  const { user } = useAuth();
 
-  if (!userId) throw new Error("User not logged in");
+  const getUserId = () => {
+    if (!user?.userId) throw new Error("User not logged in");
+    return user.userId;
+  };
 
   return {
-    createTables: () => createTables(userId),
-    saveSessions: (sessions: Session[]) => saveSessions(userId, sessions),
-    getAllSessions: () => getAllSessions(userId),
+    createTables: () => createTables(getUserId()),
+    saveSessions: (sessions: Session[]) => saveSessions(getUserId(), sessions),
+    getAllSessions: () => getAllSessions(getUserId()),
   };
 };

@@ -8,14 +8,17 @@ import { Suggestion } from "../../store/types";
 import { useAuth } from "../../api/auth/AuthProvider";
 
 export const useSuggestionsRepository = () => {
-  const userId = useAuth().user.userId;
+  const { user } = useAuth();
 
-  if (!userId) throw new Error("User not logged in");
+  const getUserId = () => {
+    if (!user?.userId) throw new Error("User not logged in");
+    return user.userId;
+  };
 
   return {
-    createTables: () => createTables(userId),
-    saveSuggestions: (suggestions: Suggestion[]) => saveSuggestions(userId, suggestions),
-    getAllSuggestions: () => getAllSuggestions(userId),
-    deleteSuggestions: (ids: string[]) => deleteSuggestions(userId, ids),
+    createTables: () => createTables(getUserId()),
+    saveSuggestions: (suggestions: Suggestion[]) => saveSuggestions(getUserId(), suggestions),
+    getAllSuggestions: () => getAllSuggestions(getUserId()),
+    deleteSuggestions: (ids: string[]) => deleteSuggestions(getUserId(), ids),
   };
 };

@@ -72,16 +72,3 @@ export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> =
     });
   });
 };
-
-export const deleteEvaluations = async (userId: string, ids: string[]) => {
-  const db = await getDb(userId);
-  await db.transaction(tx => {
-    const placeholders = ids.map(() => '?').join(', ');
-    tx.executeSql(
-      `DELETE
-       FROM evaluations
-       WHERE id IN (${placeholders})`,
-      ids
-    );
-  });
-};

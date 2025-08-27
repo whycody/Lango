@@ -12,6 +12,7 @@ import {
   syncInBatches,
   updateLocalItems
 } from "../utils/sync";
+import { useAppInitializer } from "./AppInitializerContext";
 
 interface SuggestionsContextProps {
   suggestions: Suggestion[];
@@ -32,8 +33,9 @@ export const SuggestionsContext = createContext<SuggestionsContextProps>({
 });
 
 const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const { getAllSuggestions, deleteSuggestions, saveSuggestions, createTables } = useSuggestionsRepository();
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const { initialLoad } = useAppInitializer();
+  const { getAllSuggestions, deleteSuggestions, saveSuggestions } = useSuggestionsRepository();
+  const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad.suggestions);
   const [loading, setLoading] = useState(true);
   const languageContext = useLanguage();
   const langSuggestions = suggestions.filter((suggestion) => suggestion.firstLang == languageContext.studyingLangCode &&
@@ -108,9 +110,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const loadSuggestions = async () => {
     try {
-      const loadedSuggestions = await getAllSuggestions();
-      setSuggestions(loadedSuggestions);
-      await syncSuggestions(loadedSuggestions);
+      await syncSuggestions(initialLoad.suggestions);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
@@ -119,7 +119,6 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      await createTables();
       await loadSuggestions();
     } catch (error) {
       console.log('Error loading evaluations from storage:', error);

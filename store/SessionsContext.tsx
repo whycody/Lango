@@ -12,6 +12,7 @@ import {
   syncInBatches,
   updateLocalItems
 } from "../utils/sync";
+import { useAppInitializer } from "./AppInitializerContext";
 
 interface SessionsContextProps {
   sessions: Session[];
@@ -38,8 +39,9 @@ const SessionsContext = createContext<SessionsContextProps>({
 });
 
 export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const { getAllSessions, saveSessions, createTables } = useSessionsRepository();
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const { initialLoad } = useAppInitializer();
+  const { getAllSessions, saveSessions } = useSessionsRepository();
+  const [sessions, setSessions] = useState<Session[]>(initialLoad.sessions);
   const [loading, setLoading] = useState(true);
   const auth = useAuth();
 
@@ -98,9 +100,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const loadSessions = async () => {
     try {
-      const loadedSessions = await getAllSessions();
-      await syncSessions(loadedSessions);
-      setSessions(loadedSessions);
+      await syncSessions(initialLoad.sessions);
     } catch (error) {
       console.log('Error loading sessions from storage:', error);
     }
@@ -109,7 +109,6 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      await createTables();
       await loadSessions();
     } catch (error) {
       console.log('Error loading evaluations from storage:', error);

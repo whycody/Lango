@@ -1,7 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './apiHandler';
-import LoginScreen from "../../screens/LoginScreen";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
@@ -10,6 +9,9 @@ import LoadingView from "../../components/LoadingView";
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  loading: "Google" | "Facebook" | false;
+  login: (method: 'Google' | 'Facebook') => Promise<void>;
+  authError: string | null;
   user: User | null;
   getSession: () => Promise<void>;
   logout: () => void;
@@ -136,8 +138,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   if (isAuthenticated == null) return <LoadingView/>;
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, getSession, logout }}>
-      {isAuthenticated === false ? <LoginScreen login={login} authError={authError} loading={loading}/> : children}
+    <AuthContext.Provider value={{ isAuthenticated, loading, login, authError, user, getSession, logout }}>
+      {children}
     </AuthContext.Provider>
   );
 };

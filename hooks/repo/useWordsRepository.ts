@@ -3,14 +3,17 @@ import { Word } from "../../store/types";
 import { useAuth } from "../../api/auth/AuthProvider";
 
 export const useWordsRepository = () => {
-  const userId = useAuth().user.userId;
+  const { user } = useAuth();
 
-  if (!userId) throw new Error("User not logged in");
+  const getUserId = () => {
+    if (!user?.userId) throw new Error("User not logged in");
+    return user.userId;
+  };
 
   return {
-    createTables: () => createTables(userId),
-    saveWords: (words: Word[]) => saveWords(userId, words),
-    getAllWords: () => getAllWords(userId),
-    updateWord: (word: Word) => updateWord(userId, word),
+    createTables: () => createTables(getUserId()),
+    saveWords: (words: Word[]) => saveWords(getUserId(), words),
+    getAllWords: () => getAllWords(getUserId()),
+    updateWord: (word: Word) => updateWord(getUserId(), word),
   };
 };

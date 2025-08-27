@@ -1,29 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar, SafeAreaView, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import TabsNavigator from './navigation/TabsNavigator';
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import './i18n';
 import * as Font from 'expo-font';
 import { DarkTheme } from "./themes";
-import WordsProvider from "./store/WordsContext";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import SessionScreen from "./screens/SessionScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import StatisticsProvider from "./store/StatisticsContext";
-import FlashcardsScreen from "./screens/FlashcardsScreen";
-import LanguageProvider from "./store/LanguageContext";
 import AuthProvider from "./api/auth/AuthProvider";
-import UserPreferencesProvider from "./store/UserPreferencesContext";
-import SessionsProvider from "./store/SessionsContext";
-import EvaluationsProvider from "./store/EvaluationsContext";
-import SuggestionsProvider from "./store/SuggestionsContext";
-import WordsMLStatesProvider from "./store/WordsMLStatesContext";
-import WordsWithDetailsProvider from "./store/WordsWithDetailsContext";
-import { WordsHeuristicProvider } from "./store/WordsHeuristicStatesContext";
-
-const Stack = createNativeStackNavigator();
+import Root from "./navigation/Root";
+import AppInitializerProvider from "./store/AppInitializerContext";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -55,47 +40,9 @@ export default function App() {
           <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
             <NavigationContainer theme={DarkTheme}>
               <AuthProvider>
-                <UserPreferencesProvider>
-                  <LanguageProvider>
-                    <SessionsProvider>
-                      <SuggestionsProvider>
-                        <StatisticsProvider>
-                          <WordsProvider>
-                            <EvaluationsProvider>
-                              <WordsMLStatesProvider>
-                                <WordsHeuristicProvider>
-                                  <WordsWithDetailsProvider>
-                                    <BottomSheetModalProvider>
-                                      <Stack.Navigator
-                                        screenOptions={{ headerShown: false, navigationBarColor: colors.card }}>
-                                        <Stack.Screen
-                                          name='Tabs'
-                                          component={TabsNavigator}
-                                        />
-                                        <Stack.Screen
-                                          name='Session'
-                                          component={SessionScreen}
-                                          options={{ statusBarColor: colors.card }}
-                                        />
-                                        <Stack.Group screenOptions={{
-                                          presentation: "modal",
-                                          animationDuration: 100,
-                                          statusBarColor: colors.card
-                                        }}>
-                                          <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
-                                        </Stack.Group>
-                                      </Stack.Navigator>
-                                    </BottomSheetModalProvider>
-                                  </WordsWithDetailsProvider>
-                                </WordsHeuristicProvider>
-                              </WordsMLStatesProvider>
-                            </EvaluationsProvider>
-                          </WordsProvider>
-                        </StatisticsProvider>
-                      </SuggestionsProvider>
-                    </SessionsProvider>
-                  </LanguageProvider>
-                </UserPreferencesProvider>
+                <AppInitializerProvider>
+                  <Root />
+                </AppInitializerProvider>
               </AuthProvider>
             </NavigationContainer>
           </SafeAreaView>

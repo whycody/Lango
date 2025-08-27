@@ -31,16 +31,10 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { createTables: createEvaluationsTables, getAllEvaluations } = useEvaluationsRepository();
   const { createTables: createSuggestionsTables, getAllSuggestions } = useSuggestionsRepository();
 
-  const [initialLoad, setInitialLoad] = useState<InitialLoad>({
-    sessions: [],
-    words: [],
-    evaluations: [],
-    suggestions: []
-  });
+  const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
   const [loading, setLoading] = useState(true);
 
   const init = async () => {
-    if (!user?.userId) return;
     try {
       await Promise.all([
         createSessionsTables(),
@@ -61,14 +55,17 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setInitialLoad({ sessions, words, evaluations, suggestions });
     } catch (e) {
       console.error("AppInitializer init failed", e);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
+    setLoading(!initialLoad);
+  }, [initialLoad]);
+
+  useEffect(() => {
+    if (!user?.userId) return;
     init();
-  }, []);
+  }, [user?.userId]);
 
   return (
     <AppInitializerContext.Provider value={{ initialLoad, loading }}>

@@ -27,7 +27,7 @@ export function mergeLocalAndServer<T extends SyncMetadata & { id: string }>(loc
         synced: true,
         locallyUpdatedAt: serverItem.updatedAt,
         updatedAt: serverItem.updatedAt,
-      } as T & { synced: boolean; locallyUpdatedAt: string };
+      } as T & SyncMetadata;
     }
     return item;
   });
@@ -39,7 +39,7 @@ export function mergeLocalAndServer<T extends SyncMetadata & { id: string }>(loc
       synced: true,
       locallyUpdatedAt: si.updatedAt,
       updatedAt: si.updatedAt,
-    } as T & { synced: boolean; locallyUpdatedAt: string }));
+    } as T & SyncMetadata));
 
   return [...merged, ...newItems];
 }

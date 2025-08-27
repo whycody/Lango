@@ -1,15 +1,12 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './apiHandler';
 import LoginScreen from "../../screens/LoginScreen";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import CustomText from "../../components/CustomText";
-import { useTheme } from "@react-navigation/native";
-import { useTranslation } from "react-i18next";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
 import { User } from '../../store/types';
+import LoadingView from "../../components/LoadingView";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -28,9 +25,6 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 const USER_PROFILE_INFO = "@user_info";
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<"Google" | "Facebook" | false>(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -139,32 +133,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }
 
-  if (isAuthenticated == null)
-    return (
-      <>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 90 }}>
-          <ActivityIndicator size="large" color={colors.primary}/>
-          <CustomText
-            weight={'Bold'}
-            style={{ color: colors.primary300, fontSize: 17, marginTop: 30 }}
-          >
-            {t('loading_content')}
-          </CustomText>
-          <CustomText style={{ color: colors.primary600, fontSize: 14, marginTop: 5 }}>
-            {t('loading_content_desc')}
-          </CustomText>
-        </View>
-        <Image
-          source={require('../../assets/lango-logo.png')}
-          style={{
-            height: 40,
-            alignSelf: 'center',
-            marginBottom: 50,
-          }}
-          resizeMode="contain"
-        />
-      </>
-    );
+  if (isAuthenticated == null) return <LoadingView/>;
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, getSession, logout }}>

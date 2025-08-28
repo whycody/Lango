@@ -5,8 +5,8 @@ export type Suggestion = SyncMetadata & {
   userId: string;
   word: string;
   translation: string;
-  firstLang: string;
-  secondLang: string;
+  mainLang: string;
+  translationLang: string;
   displayCount: number;
   skipped: boolean;
 }

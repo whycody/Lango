@@ -46,17 +46,16 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { initialLoad } = useAppInitializer();
   const [loading, setLoading] = useState(true);
   const [words, setWords] = useState<Word[]>(initialLoad.words);
-  const languageContext = useLanguage();
+  const { mainLang, translationLang } = useLanguage();
   const { saveWords, getAllWords, updateWord } = useWordsRepository();
-  const langWords = words.filter((word) =>
-    word.firstLang == languageContext.studyingLangCode && word.secondLang == languageContext.mainLangCode);
+  const langWords = words.filter((word) => word.mainLang == mainLang && word.translationLang == translationLang);
 
   const createWord = (text: string, translation: string, source: string): Word => ({
     id: uuid.v4(),
     text,
     translation,
-    firstLang: languageContext.studyingLangCode,
-    secondLang: languageContext.mainLangCode,
+    mainLang,
+    translationLang,
     source: source,
     addDate: new Date().toISOString(),
     active: true,
@@ -182,7 +181,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     loadData();
-  }, [languageContext.mainLangCode, languageContext.studyingLangCode]);
+  }, [translationLang, mainLang]);
 
   return (
     <WordsContext.Provider

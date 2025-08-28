@@ -1,3 +1,5 @@
+import { LanguageCode } from "./Language";
+
 export enum SESSION_MODEL {
   HEURISTIC = 'heuristic',
   ML = 'ml',
@@ -18,6 +20,8 @@ export type User = {
   email: string;
   picture: string;
   provider: 'google' | 'facebook';
+  mainLang: LanguageCode | null;
+  translationLang: LanguageCode | null;
   sessionModel: SESSION_MODEL;
   stats?: UserStats;
 };

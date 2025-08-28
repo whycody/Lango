@@ -9,13 +9,17 @@ import { WordHeuristicState } from "../../store/types";
 import { WordsStatesRepository } from "../../database/WordsStatesRepository";
 
 export const useWordsHeuristicStatesRepository = (): WordsStatesRepository<WordHeuristicState> => {
-  const userId = useAuth().user.userId;
-  if (!userId) throw new Error("User not logged in");
+  const { user } = useAuth();
+
+  const getUserId = () => {
+    if (!user?.userId) throw new Error("User not logged in");
+    return user.userId;
+  };
 
   return {
-    createTables: () => createHeuristicTable(userId),
-    save: (items) => saveWordsHeuristicStates(userId, items),
-    getAllWordsStates: () => getAllWordsHeuristicStates(userId),
-    update: (item) => updateWordHeuristicState(userId, item),
+    createTables: () => createHeuristicTable(getUserId()),
+    save: (items) => saveWordsHeuristicStates(getUserId(), items),
+    getAllWordsStates: () => getAllWordsHeuristicStates(getUserId()),
+    update: (item) => updateWordHeuristicState(getUserId(), item),
   };
 };

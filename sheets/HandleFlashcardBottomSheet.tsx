@@ -122,7 +122,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
 
   const abortControllerRef = useRef(new AbortController());
 
-  const translateWord = async (text, from = languageContext.studyingLangCode, to = languageContext.mainLangCode) => {
+  const translateWord = async (text, from = languageContext.mainLang, to = languageContext.translationLang) => {
     abortControllerRef.current && abortControllerRef.current.abort();
     abortControllerRef.current = new AbortController();
 
@@ -179,7 +179,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           word={word}
           onWordCommit={setWord}
           onWordChange={setCurrentWord}
-          languageCode={languageContext.studyingLangCode}
+          languageCode={languageContext.mainLang}
           style={{ marginTop: 15 }}
         />
         <WordInput
@@ -187,7 +187,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           word={translation}
           suggestions={suggestions}
           onWordCommit={setTranslation}
-          languageCode={languageContext.mainLangCode}
+          languageCode={languageContext.translationLang}
           style={{ marginTop: 15 }}
         />
         <ActionButton

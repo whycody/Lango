@@ -154,11 +154,11 @@ export const syncEvaluationsOnServer = async (evaluations: Evaluation[]): Promis
   }
 };
 
-export const fetchUpdatedSuggestions = async (firstLang: string, secondLang: string, since: string): Promise<Suggestion[]> => {
+export const fetchUpdatedSuggestions = async (mainLang: string, translationLang: string, since: string): Promise<Suggestion[]> => {
   try {
     return await apiCall({
       method: 'GET',
-      url: `/suggestions/?since=${since}&firstLang=${firstLang}&secondLang=${secondLang}`,
+      url: `/suggestions/?since=${since}&mainLang=${mainLang}&translationLang=${translationLang}`,
       data: {}
     }, false, 10000);
   } catch (e) {

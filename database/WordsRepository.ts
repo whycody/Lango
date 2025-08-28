@@ -1,7 +1,7 @@
 import { Word } from "../store/types";
 import { getDb } from "./utils/db";
 
-export const WORDS_COLUMNS = ['id', 'text', 'translation', 'firstLang', 'secondLang', 'source', 'addDate', 'active',
+export const WORDS_COLUMNS = ['id', 'text', 'translation', 'mainLang', 'translationLang', 'source', 'addDate', 'active',
   'removed', 'synced', 'locallyUpdatedAt', 'updatedAt'];
 export const WORDS = 'words';
 
@@ -14,8 +14,8 @@ export const createTables = async (userId: string) => {
             id               TEXT PRIMARY KEY,
             text             TEXT,
             translation      TEXT,
-            firstLang        TEXT,
-            secondLang       TEXT,
+            mainLang         TEXT,
+            translationLang  TEXT,
             source           TEXT,
             addDate          TEXT,
             active           INTEGER,

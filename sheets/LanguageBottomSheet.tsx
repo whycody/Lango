@@ -32,12 +32,12 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
     <LanguageItem
       language={item}
       index={index}
-      checked={item.languageCode == languageContext.studyingLangCode}
+      checked={item.languageCode == languageContext.mainLang}
       onPress={() => handleLanguagePick(item)}
     />;
 
   const handleLanguagePick = (language: Language) => {
-    languageContext.setStudyingLangCode(language.languageCode);
+    languageContext.setMainLang(language.languageCode);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     ref.current?.close();
   }

@@ -86,8 +86,8 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
           style={[styles.root, style]}
         >
           <View style={styles.flagsContainer}>
-            <SquareFlag languageCode={languageContext.mainLangCode} style={{ marginRight: 6 }}/>
-            <SquareFlag languageCode={languageContext.studyingLangCode}/>
+            <SquareFlag languageCode={languageContext.mainLang} style={{ marginRight: 6 }}/>
+            <SquareFlag languageCode={languageContext.translationLang}/>
           </View>
           <CustomText
             weight={"SemiBold"}

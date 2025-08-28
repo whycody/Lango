@@ -1,4 +1,4 @@
-import { Evaluation, Session, Suggestion, Word, WordHeuristicState, WordMLState } from "./types";
+import { Evaluation, LanguageCode, Session, Suggestion, Word, WordHeuristicState, WordMLState } from "./types";
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
 import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
@@ -8,6 +8,8 @@ import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository
 import { runMigrations } from "../database/utils/migrations";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
+import { determineLanguages } from "../database/utils/determineLanguages";
+import { useLanguageRepository } from "../hooks/repo/useLanguageRepository";
 
 type InitialLoad = {
   sessions: Session[];
@@ -16,6 +18,8 @@ type InitialLoad = {
   suggestions: Suggestion[];
   wordsMLStates: WordMLState[];
   wordsHeuristicStates: WordHeuristicState[];
+  mainLang: LanguageCode;
+  translationLang: LanguageCode;
 };
 
 interface AppInitializerContextProps {
@@ -42,6 +46,7 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
     createTables: createWordsHeuristicStatesTables,
     getAllWordsStates: getAllWordsHeuristicStates
   } = useWordsHeuristicStatesRepository();
+  const { getMainLang, getTranslationLang, setMainLang, setTranslationLang } = useLanguageRepository();
 
   const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +62,19 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
         createWordsHeuristicStatesTables()
       ]);
 
+      let [mainLang, translationLang] = await Promise.all([getMainLang(), getTranslationLang()]);
+
+      if (!mainLang || !translationLang) {
+        const determined = await determineLanguages(user);
+        mainLang = determined.mainLang;
+        translationLang = determined.translationLang;
+
+        await Promise.all([
+          setMainLang(mainLang),
+          setTranslationLang(translationLang)
+        ]);
+      }
+
       await runMigrations(user.userId);
 
       const [sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates] = await Promise.all([
@@ -65,10 +83,21 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
         getAllEvaluations(),
         getAllSuggestions(),
         getAllWordsMLStates(),
-        getAllWordsHeuristicStates()
+        getAllWordsHeuristicStates(),
+        mainLang,
+        translationLang
       ]);
 
-      setInitialLoad({ sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates });
+      setInitialLoad({
+        sessions,
+        words,
+        evaluations,
+        suggestions,
+        wordsMLStates,
+        wordsHeuristicStates,
+        mainLang,
+        translationLang
+      });
     } catch (e) {
       console.error("AppInitializer init failed", e);
     }

@@ -50,7 +50,7 @@ const LibraryScreen = () => {
     USE_CONDITIONS
   }
 
-  const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.studyingLangCode)[0].languageName;
+  const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.mainLang)[0].languageName;
 
   const libraryItems = [
     {

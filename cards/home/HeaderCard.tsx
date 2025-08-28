@@ -93,7 +93,7 @@ const HeaderCard = () => {
           {streak.numberOfDays.toString()}
         </CustomText>
         <Pressable onPress={() => languageSheetRef.current?.present()} style={{ paddingVertical: 5, paddingLeft: 5 }}>
-          <SquareFlag languageCode={langContext.studyingLangCode} size={24}/>
+          <SquareFlag languageCode={langContext.mainLang} size={24}/>
         </Pressable>
       </View>
       <ProgressBar animatedValue={lastWellKnownWords ? lastWellKnownWords : 0.000001} color={colors.primary300} style={styles.progressBar}/>

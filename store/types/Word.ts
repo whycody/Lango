@@ -4,8 +4,8 @@ export type Word = SyncMetadata & {
   id: string;
   text: string;
   translation: string;
-  firstLang: string;
-  secondLang: string;
+  mainLang: string;
+  translationLang: string;
   source: string;
   addDate: string;
   active: boolean;

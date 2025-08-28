@@ -38,8 +38,8 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad.suggestions);
   const [loading, setLoading] = useState(true);
   const languageContext = useLanguage();
-  const langSuggestions = suggestions.filter((suggestion) => suggestion.firstLang == languageContext.studyingLangCode &&
-    suggestion.secondLang == languageContext.mainLangCode && !suggestion.skipped).sort((a, b) => a.displayCount - b.displayCount);
+  const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == languageContext.mainLang &&
+    suggestion.translationLang == languageContext.translationLang && !suggestion.skipped).sort((a, b) => a.displayCount - b.displayCount);
 
   const increaseSuggestionsDisplayCount = async (ids: string[]) => {
     setSuggestions(prevSuggestions => {
@@ -105,7 +105,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const fetchNewSuggestions = async (updatedSuggestions: Suggestion[]): Promise<Suggestion[]> => {
     const latestUpdatedAt = findLatestUpdatedAt<Suggestion>(updatedSuggestions);
-    return await fetchUpdatedSuggestions(languageContext.studyingLangCode, languageContext.mainLangCode, latestUpdatedAt);
+    return await fetchUpdatedSuggestions(languageContext.mainLang, languageContext.translationLang, latestUpdatedAt);
   };
 
   const loadSuggestions = async () => {
@@ -129,7 +129,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     loadData();
-  }, [languageContext.mainLangCode, languageContext.studyingLangCode]);
+  }, [languageContext.translationLang, languageContext.mainLang]);
 
   return (
     <SuggestionsContext.Provider

@@ -153,7 +153,7 @@ const SessionScreen = () => {
     if (!word) return;
     if ((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) {
       Speech.stop().then(() => {
-        Speech.speak(word?.text, { language: word.firstLang });
+        Speech.speak(word?.text, { language: word.mainLang });
       });
     }
   }, [flipped, currentIndex, flippedCards]);

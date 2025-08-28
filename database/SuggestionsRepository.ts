@@ -2,7 +2,7 @@ import { Suggestion } from "../store/types";
 import { getDb } from "./utils/db";
 
 const columns = [
-  'id', 'userId', 'word', 'translation', 'firstLang', 'secondLang', 'displayCount', 'skipped', 'synced', 'updatedAt',
+  'id', 'userId', 'word', 'translation', 'mainLang', 'translationLang', 'displayCount', 'skipped', 'synced', 'updatedAt',
   'locallyUpdatedAt'
 ];
 
@@ -16,8 +16,8 @@ export const createTables = async (userId: string) => {
             userId           TEXT,
             word             TEXT,
             translation      TEXT,
-            firstLang        TEXT,
-            secondLang       TEXT,
+            mainLang         TEXT,
+            translationLang  TEXT,
             displayCount     INTEGER,
             skipped          INTEGER,
             synced           INTEGER,
@@ -65,8 +65,8 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
               userId: row.userId,
               word: row.word,
               translation: row.translation,
-              firstLang: row.firstLang,
-              secondLang: row.secondLang,
+              mainLang: row.mainLang,
+              translationLang: row.translationLang,
               displayCount: row.displayCount || 0,
               skipped: row.skipped === 1,
               synced: row.synced === 1,

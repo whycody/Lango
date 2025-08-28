@@ -4,6 +4,7 @@ import { useWords } from "./WordsContext";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { score } from "../utils/model";
 import { Evaluation, Word, WordMLState } from "./types";
+import { useAppInitializer } from "./AppInitializerContext";
 
 interface WordsMLStatesContextProps {
   loading: boolean;
@@ -18,14 +19,13 @@ export const WordsMLStatesContext = createContext<WordsMLStatesContextProps>({
 })
 
 const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [wordsMLStates, setWordsMLStates] = useState<WordMLState[] | null>(null);
+  const { initialLoad } = useAppInitializer();
+  const [wordsMLStates, setWordsMLStates] = useState<WordMLState[] | null>(initialLoad.wordsMLStates);
   const wordsMLStatesRef = useRef<WordMLState[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [initialized, setInitialized] = useState(false);
 
   const {
-    createTables,
-    getAll: getAllWordsMLStates,
     update: updateWordMLState,
     save: saveWordsMLStates
   } = useWordsMLStatesRepository();
@@ -245,17 +245,10 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const loadWordsMLStates = async () => {
-    const wordsMLStates = await getAllWordsMLStates();
-    setWordsMLStates(wordsMLStates);
-    await syncHoursSinceLastRepetition(wordsMLStates);
-  }
-
   const loadData = async () => {
     try {
       setLoading(true);
-      await createTables();
-      await loadWordsMLStates();
+      await syncHoursSinceLastRepetition(initialLoad.wordsMLStates);
     } finally {
       setLoading(false);
     }

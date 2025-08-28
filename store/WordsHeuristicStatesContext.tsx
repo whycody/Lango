@@ -3,6 +3,7 @@ import { Evaluation, Word, WordHeuristicState } from './types';
 import { useWords } from "./WordsContext";
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
 import { useEvaluations } from "./EvaluationsContext";
+import { useAppInitializer } from "./AppInitializerContext";
 
 interface WordsHeuristicContextProps {
   loading: boolean;
@@ -17,14 +18,13 @@ const WordsHeuristicContext = createContext<WordsHeuristicContextProps>({
 });
 
 export const WordsHeuristicProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [wordsHeuristicStates, setWordsHeuristicStates] = useState<WordHeuristicState[]>([]);
+  const { initialLoad } = useAppInitializer();
+  const [wordsHeuristicStates, setWordsHeuristicStates] = useState<WordHeuristicState[]>(initialLoad.wordsHeuristicStates);
   const wordsHeuristicStatesRef = useRef<WordHeuristicState[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
   const {
-    createTables,
-    getAll: getAllWordsHeuristicStates,
     update: updateWordHeuristicState
   } = useWordsHeuristicStatesRepository();
 
@@ -114,25 +114,6 @@ export const WordsHeuristicProvider: FC<{ children: ReactNode }> = ({ children }
       nextReviewDate,
     };
   }
-
-  const loadWordsHeuristicStates = async () => {
-    const wordsHeuristicStates = await getAllWordsHeuristicStates();
-    setWordsHeuristicStates(wordsHeuristicStates);
-  }
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      await createTables();
-      await loadWordsHeuristicStates();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   return (
     <WordsHeuristicContext.Provider

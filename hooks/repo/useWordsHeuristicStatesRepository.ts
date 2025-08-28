@@ -15,7 +15,7 @@ export const useWordsHeuristicStatesRepository = (): WordsStatesRepository<WordH
   return {
     createTables: () => createHeuristicTable(userId),
     save: (items) => saveWordsHeuristicStates(userId, items),
-    getAll: () => getAllWordsHeuristicStates(userId),
+    getAllWordsStates: () => getAllWordsHeuristicStates(userId),
     update: (item) => updateWordHeuristicState(userId, item),
   };
 };

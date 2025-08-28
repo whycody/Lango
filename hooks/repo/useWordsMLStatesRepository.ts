@@ -15,7 +15,7 @@ export const useWordsMLStatesRepository = (): WordsStatesRepository<WordMLState>
   return {
     createTables: () => createTables(userId),
     save: (items) => saveWordsMLStates(userId, items),
-    getAll: () => getAllWordsMLStates(userId),
+    getAllWordsStates: () => getAllWordsMLStates(userId),
     update: (item) => updateWordMLState(userId, item),
   };
 };

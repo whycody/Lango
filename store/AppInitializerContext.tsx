@@ -1,4 +1,4 @@
-import { Evaluation, Session, Suggestion, Word } from "./types";
+import { Evaluation, Session, Suggestion, Word, WordHeuristicState, WordMLState } from "./types";
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
 import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
@@ -6,12 +6,16 @@ import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
 import { runMigrations } from "../database/utils/migrations";
+import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
+import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
 
 type InitialLoad = {
   sessions: Session[];
   words: Word[];
   evaluations: Evaluation[];
   suggestions: Suggestion[];
+  wordsMLStates: WordMLState[];
+  wordsHeuristicStates: WordHeuristicState[];
 };
 
 interface AppInitializerContextProps {
@@ -30,6 +34,14 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { createTables: createWordsTables, getAllWords } = useWordsRepository();
   const { createTables: createEvaluationsTables, getAllEvaluations } = useEvaluationsRepository();
   const { createTables: createSuggestionsTables, getAllSuggestions } = useSuggestionsRepository();
+  const {
+    createTables: createWordsMLStatesTables,
+    getAllWordsStates: getAllWordsMLStates
+  } = useWordsMLStatesRepository();
+  const {
+    createTables: createWordsHeuristicStatesTables,
+    getAllWordsStates: getAllWordsHeuristicStates
+  } = useWordsHeuristicStatesRepository();
 
   const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,19 +52,23 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
         createSessionsTables(),
         createWordsTables(),
         createEvaluationsTables(),
-        createSuggestionsTables()
+        createSuggestionsTables(),
+        createWordsMLStatesTables(),
+        createWordsHeuristicStatesTables()
       ]);
 
       await runMigrations(user.userId);
 
-      const [sessions, words, evaluations, suggestions] = await Promise.all([
+      const [sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates] = await Promise.all([
         getAllSessions(),
         getAllWords(),
         getAllEvaluations(),
         getAllSuggestions(),
+        getAllWordsMLStates(),
+        getAllWordsHeuristicStates()
       ]);
 
-      setInitialLoad({ sessions, words, evaluations, suggestions });
+      setInitialLoad({ sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates });
     } catch (e) {
       console.error("AppInitializer init failed", e);
     }

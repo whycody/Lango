@@ -1,5 +1,3 @@
-import { SyncMetadata } from "./SyncMetadata";
-
 export type WordHeuristicState = {
   wordId: string;
   interval: number;

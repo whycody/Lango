@@ -13,10 +13,10 @@ export const StatisticsContext = createContext<StatisticsContextProps>({
 });
 
 const StatisticsProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [serverSessionsCount, setServerSessionsCount] = useState(0);
-  const [daysList, setDaysList] = useState<string[]>([]);
   const { sessions } = useSessions();
   const { user } = useAuth();
+  const [daysList, setDaysList] = useState<string[]>(user.stats?.studyDays || []);
+  const [serverSessionsCount, setServerSessionsCount] = useState(user.stats?.sessionCount || 0);
 
   const localUnsyncedSessions = sessions.filter(s => s.finished && !s.synced);
   const localUnsyncedSessionsCount = localUnsyncedSessions.length;

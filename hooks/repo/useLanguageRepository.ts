@@ -1,4 +1,4 @@
-import { getTranslationLang, getMainLang, setTranslationLang, setMainLang } from "../../database/LanguageRepository";
+import { getMainLang, getTranslationLang, setMainLang, setTranslationLang } from "../../database/LanguageRepository";
 
 export const useLanguageRepository = () => {
   return {

@@ -7,9 +7,12 @@ import { SESSION_MODE, SESSION_MODEL } from "../store/types";
 import { strategies } from "../strategies";
 import { WordSet, WordSetStrategy } from "../store/types/WordSet";
 import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
+import { useEvaluations } from "../store/EvaluationsContext";
+import { shuffle } from "../utils/shuffle";
 
 export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
   const { langWords } = useWords();
+  const { evaluations } = useEvaluations();
   const { langWordsMLStates } = useWordsMLStatesContext();
   const { langWordsHeuristicStates } = useWordsHeuristicStates();
   const { sessions } = useSessions();
@@ -27,7 +30,7 @@ export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
 
     const currentModel = user.sessionModel || SESSION_MODEL.HYBRID;
 
-    const strategy: WordSetStrategy = (() => {
+    const getStrategy: WordSetStrategy = (() => {
       if (mode == SESSION_MODE.OLDEST)
         return strategies.OLDEST;
       else if (mode == SESSION_MODE.RANDOM)
@@ -43,6 +46,11 @@ export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
       }
     })();
 
-    return strategy(size, langWords, langWordsMLStates, langWordsHeuristicStates, lastSessionModel);
-  }, [user.sessionModel, langWords.length, langWordsMLStates, langWordsHeuristicStates, sessions, size, mode]);
+    const strategy = getStrategy(size, langWords, evaluations, langWordsMLStates, langWordsHeuristicStates, lastSessionModel);
+
+    return {
+      words: shuffle(strategy.words),
+      model: currentModel
+    }
+  }, [user.sessionModel, langWords, evaluations.length, langWordsMLStates, langWordsHeuristicStates, sessions, size, mode]);
 };

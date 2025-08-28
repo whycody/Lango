@@ -1,7 +1,7 @@
 import { SESSION_MODEL } from "../store/types";
 import { WordSet, WordSetStrategy } from "../store/types/WordSet";
 
-export const mlStrategy: WordSetStrategy = (size, words, wordsMLStates): WordSet => {
+export const mlStrategy: WordSetStrategy = (size, words, _evaluations, wordsMLStates): WordSet => {
   const activeWords = words.filter(w => w.active);
   const scored = activeWords.map(w => {
     const st = wordsMLStates?.find(s => s.wordId === w.id);

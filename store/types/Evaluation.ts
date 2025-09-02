@@ -4,6 +4,6 @@ export type Evaluation = SyncMetadata & {
   id: string;
   wordId: string;
   sessionId: string;
-  grade: number;
+  grade: 1 | 2 | 3;
   date: string;
 };

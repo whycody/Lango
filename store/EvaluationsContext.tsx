@@ -33,7 +33,7 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [evaluations, setEvaluations] = useState<Evaluation[] | null>(initialLoad.evaluations);
   const [loading, setLoading] = useState(true);
 
-  const createEvaluation = (wordId: string, sessionId: string, grade: number): Evaluation => {
+  const createEvaluation = (wordId: string, sessionId: string, grade: 1 | 2 | 3): Evaluation => {
     const now = new Date().toISOString();
     return {
       id: uuid.v4(),
@@ -47,7 +47,7 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   };
 
-  const addEvaluations = (evaluationsData: { wordId: string, sessionId: string, grade: number }[]) => {
+  const addEvaluations = (evaluationsData: { wordId: string, sessionId: string, grade: 1 | 2 | 3 }[]) => {
     const newEvaluations = evaluationsData.map(({ wordId, sessionId, grade }) =>
       createEvaluation(wordId, sessionId, grade)
     );
@@ -85,26 +85,6 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const latestUpdatedAt = findLatestUpdatedAt<Evaluation>(updatedEvaluations);
     return await fetchUpdatedEvaluations(latestUpdatedAt);
   };
-
-  // const saveEvaluationsFromAsyncStorage = async () => {
-  //   try {
-  //     const storedEvaluations = await AsyncStorage.getItem('evaluations');
-  //     if (!storedEvaluations) return;
-  //
-  //     const parsedEvaluations: Evaluation[] = JSON.parse(storedEvaluations);
-  //     const evaluationsToLoad = parsedEvaluations.map((evaluation) => ({
-  //       ...evaluation,
-  //       synced: false,
-  //       locallyUpdatedAt: evaluation.locallyUpdatedAt ?? new Date().toISOString(),
-  //     }));
-  //
-  //     await saveEvaluations(evaluationsToLoad);
-  //     await AsyncStorage.removeItem('evaluations');
-  //     console.log('Migrated evaluations from AsyncStorage to SQLite');
-  //   } catch (error) {
-  //     console.error('Error migrating evaluations from AsyncStorage:', error);
-  //   }
-  // };
 
   const loadEvaluations = async () => {
     try {

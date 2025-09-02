@@ -4,7 +4,8 @@ import { SyncMetadata } from "./SyncMetadata";
 export enum SESSION_MODE {
   STUDY = 'STUDY',
   RANDOM = 'RANDOM',
-  OLDEST = 'OLDEST'
+  OLDEST = 'OLDEST',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export type Session = SyncMetadata & {

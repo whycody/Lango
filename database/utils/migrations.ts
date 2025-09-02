@@ -1,4 +1,5 @@
 import { getDb } from "./db";
+import { migrateV0ToV1 } from "./migrations/migrateV0ToV1";
 
 export const runMigrations = async (userId: string) => {
   const db = await getDb(userId);
@@ -17,18 +18,14 @@ export const runMigrations = async (userId: string) => {
     });
   });
 
-  // if (version < 1) {
-  //   await migrateV1ToV2(db);
-  //   version = 1;
-  // }
+  if (version < 1) {
+    await migrateV0ToV1(userId);
+    version = 1;
+  }
 
   await new Promise<void>((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(`PRAGMA user_version = ${version}`, [], () => resolve(), (_, err) => reject(err));
     });
   });
-};
-
-const migrateV1ToV2 = async (db: any) => {
-
 };

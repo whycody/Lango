@@ -82,6 +82,11 @@ export function getUnsyncedItems<T extends SyncMetadata>(items: T[]): T[] {
 }
 
 export function findLatestUpdatedAt<T extends SyncMetadata>(items: T[]): string {
-  const latestTime = Math.max(0, ...items.map(item => new Date(item.updatedAt ?? item.locallyUpdatedAt).getTime()));
+  const timestamps = items.map(item => {
+    const date = new Date(item.updatedAt ?? item.locallyUpdatedAt);
+    return isNaN(date.getTime()) ? 0 : date.getTime();
+  });
+
+  const latestTime = Math.max(...timestamps, 0);
   return new Date(latestTime).toISOString();
 }

@@ -34,12 +34,14 @@ export const saveSuggestions = async (userId: string, suggestions: Suggestion[])
     suggestions.forEach(suggestion => {
       const values = columns.map(col => {
         if (col === 'synced') return suggestion.synced ? 1 : 0;
-        return suggestion[col as keyof Suggestion] || null;
+        if (col === 'skipped') return suggestion.skipped ? 1 : 0;
+        return suggestion[col as keyof Suggestion] ?? null;
       });
       const placeholders = columns.map(() => '?').join(', ');
-
+      if (values[0] == '68dbb7f72c43da3dfa266290') console.log(placeholders, values)
       tx.executeSql(
-        `REPLACE INTO suggestions (${columns.join(', ')})
+        `INSERT OR
+         REPLACE INTO suggestions (${columns.join(', ')})
          VALUES (${placeholders})`,
         values
       );

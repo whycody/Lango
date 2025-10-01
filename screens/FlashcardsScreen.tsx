@@ -34,10 +34,11 @@ const FlashcardsScreen = () => {
   const [searchingMode, setSearchingMode] = useState(false);
 
   const flashcards = useMemo(() => wordsContext.langWords.filter((word: Word) =>
-    !word.removed && (!searchingMode || (filter.trim() && (
-      word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
-      word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
-  ), [searchingMode, filter, wordsContext.langWords]);
+      !word.removed && (!searchingMode || (filter.trim() && (
+        word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
+        word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
+    ).sort((a, b) => new Date(b.locallyUpdatedAt).getTime() - new Date(a.locallyUpdatedAt).getTime()),
+    [searchingMode, filter, wordsContext.langWords]);
 
   useEffect(() => {
     const handleBackPress = () => {

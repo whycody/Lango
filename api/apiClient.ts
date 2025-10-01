@@ -160,7 +160,7 @@ export const fetchUpdatedSuggestions = async (mainLang: string, translationLang:
       method: 'GET',
       url: `/suggestions/?since=${since}&mainLang=${mainLang}&translationLang=${translationLang}`,
       data: {}
-    }, false, 10000);
+    }, false, 20000);
   } catch (e) {
     console.error(`GET /suggestions/?since=${since}`, e);
     return [];

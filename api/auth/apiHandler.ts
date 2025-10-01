@@ -8,7 +8,7 @@ let refreshToken: string | null = null;
 const ACCESS_TOKEN = 'accessToken';
 const REFRESH_TOKEN = 'refreshToken';
 
-const baseURL = process.env['API_URL'];
+const getBaseURL = () => process.env['API_URL'];
 
 export const removeAccessToken = async (): Promise<void> => {
   accessToken = null;
@@ -64,7 +64,7 @@ export const apiCall = async <T>(options: {
   url: string;
   data?: object | string
 }, refreshed: boolean = false, timeout: number = 15000): Promise<T> => {
-  // console.log('Calling API:', options.method, `${baseURL}${options.url}`, options.data);
+  console.log('Calling API:', options.method, `${getBaseURL()}${options.url}`, options.data);
 
   if (!accessToken) {
     await loadTokens();
@@ -83,12 +83,13 @@ export const apiCall = async <T>(options: {
   try {
     const response: AxiosResponse<T> = await axios({
       method: options.method,
-      url: `${baseURL}${options.url}`,
+      url: `${getBaseURL()}${options.url}`,
       headers,
       data: options.data,
       timeout,
     });
 
+    console.log(response.data)
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 401) {

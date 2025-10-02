@@ -1,8 +1,8 @@
 import { WordHeuristicState } from "../store/types";
 import { getDb } from "./utils/db";
 
-export const WORD_HEURISTIC_STATE_COLUMNS = ['wordId', 'interval', 'repetitionsCount', 'studyCount', 'lastReviewDate', 'nextReviewDate',
-  'EF'];
+export const WORD_HEURISTIC_STATE_COLUMNS: Array<keyof WordHeuristicState> = ['wordId', 'interval', 'repetitionsCount',
+  'studyCount', 'lastReviewDate', 'nextReviewDate', 'EF'];
 export const WORD_HEURISTIC_STATE = 'word_heuristic_state';
 
 export const createHeuristicTable = async (userId: string) => {

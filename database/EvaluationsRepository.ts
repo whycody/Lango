@@ -1,7 +1,7 @@
 import { Evaluation } from "../store/types";
 import { getDb } from "./utils/db";
 
-const columns = ['id', 'wordId', 'sessionId', 'grade', 'date', 'synced', 'updatedAt', 'locallyUpdatedAt'];
+const columns: Array<keyof Evaluation> = ['id', 'wordId', 'sessionId', 'grade', 'date', 'synced', 'updatedAt', 'locallyUpdatedAt'];
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);

@@ -1,8 +1,8 @@
 import { Session } from "../store/types";
 import { getDb } from "./utils/db";
 
-const columns = ['id', 'date', 'mode', 'sessionModel', 'averageScore', 'wordsCount', 'finished', 'synced',
-  'updatedAt', 'locallyUpdatedAt'];
+const columns: Array<keyof Session> = ['id', 'date', 'mode', 'sessionModel', 'averageScore', 'wordsCount', 'finished',
+  'synced', 'updatedAt', 'locallyUpdatedAt'];
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);

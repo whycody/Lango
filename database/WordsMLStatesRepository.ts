@@ -1,8 +1,8 @@
 import { WordMLState } from "../store/types";
 import { getDb } from "./utils/db";
 
-export const WORD_ML_STATE_COLUMNS = ['wordId', 'hoursSinceLastRepetition', 'studyStreak', 'studyDuration', 'gradesAverage',
-  'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
+export const WORD_ML_STATE_COLUMNS: Array<keyof WordMLState> = ['wordId', 'hoursSinceLastRepetition', 'studyStreak',
+  'studyDuration', 'gradesAverage', 'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
 export const WORD_ML_STATE = 'word_ml_state';
 
 export const createTables = async (userId: string) => {
@@ -58,7 +58,8 @@ export const getAllWordsMLStates = async (userId: string): Promise<WordMLState[]
   return new Promise((resolve, reject) => {
     db.readTransaction(tx => {
       tx.executeSql(
-        `SELECT * FROM ${WORD_ML_STATE}`,
+        `SELECT *
+         FROM ${WORD_ML_STATE}`,
         [],
         (_, { rows }) => {
           const words = Array.from({ length: rows.length }, (_, i) => {

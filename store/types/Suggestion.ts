@@ -9,4 +9,5 @@ export type Suggestion = SyncMetadata & {
   translationLang: string;
   displayCount: number;
   skipped: boolean;
+  added: boolean;
 }

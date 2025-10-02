@@ -46,8 +46,8 @@ const WordsSuggestionsCard = () => {
     debouncedSyncSuggestions();
   }
 
-  const handleFlashcardPress = async (first: boolean) => {
-    await suggestionsContext.skipSuggestions(first ? [firstFlashcard?.id] : [secondFlashcard?.id]);
+  const handleFlashcardPress = async (first: boolean, add: boolean) => {
+    await suggestionsContext.skipSuggestions(first ? [firstFlashcard?.id] : [secondFlashcard?.id], add ? 'added' : 'skipped');
     const currentFlashcards = [firstFlashcard, secondFlashcard].filter(Boolean);
     const filteredSuggestions = suggestionsContext.langSuggestions.filter((suggestion) =>
       !currentFlashcards.map((flashcard) => flashcard.id).includes(suggestion.id))
@@ -63,13 +63,13 @@ const WordsSuggestionsCard = () => {
       <View style={styles.flashcardsContainer}>
         <Flashcard
           ref={firstFlashcardRef}
-          onFlashcardPress={() => handleFlashcardPress(true)}
+          onFlashcardPress={(add: boolean) => handleFlashcardPress(true, add)}
           suggestion={firstFlashcard}
           style={{ flex: 1, marginRight: MARGIN_HORIZONTAL / 2 }}
         />
         <Flashcard
           ref={secondFlashcardRef}
-          onFlashcardPress={() => handleFlashcardPress(false)}
+          onFlashcardPress={(add: boolean) => handleFlashcardPress(false, add)}
           suggestion={secondFlashcard}
           style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
         />

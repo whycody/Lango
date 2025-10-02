@@ -1,9 +1,9 @@
 import { Suggestion } from "../store/types";
 import { getDb } from "./utils/db";
 
-const columns = [
-  'id', 'userId', 'word', 'translation', 'mainLang', 'translationLang', 'displayCount', 'skipped', 'synced', 'updatedAt',
-  'locallyUpdatedAt'
+const columns: Array<keyof Suggestion> = [
+  'id', 'userId', 'word', 'translation', 'mainLang', 'translationLang', 'displayCount', 'skipped', 'added', 'synced',
+  'updatedAt', 'locallyUpdatedAt'
 ];
 
 export const createTables = async (userId: string) => {
@@ -20,6 +20,7 @@ export const createTables = async (userId: string) => {
             translationLang  TEXT,
             displayCount     INTEGER,
             skipped          INTEGER,
+            added            INTEGER,
             synced           INTEGER,
             updatedAt        TEXT,
             locallyUpdatedAt TEXT
@@ -35,13 +36,15 @@ export const saveSuggestions = async (userId: string, suggestions: Suggestion[])
       const values = columns.map(col => {
         if (col === 'synced') return suggestion.synced ? 1 : 0;
         if (col === 'skipped') return suggestion.skipped ? 1 : 0;
+        if (col === 'added') return suggestion.added ? 1 : 0;
         return suggestion[col as keyof Suggestion] ?? null;
       });
       const placeholders = columns.map(() => '?').join(', ');
       if (values[0] == '68dbb7f72c43da3dfa266290') console.log(placeholders, values)
       tx.executeSql(
         `INSERT OR
-         REPLACE INTO suggestions (${columns.join(', ')})
+         REPLACE
+         INTO suggestions (${columns.join(', ')})
          VALUES (${placeholders})`,
         values
       );
@@ -71,6 +74,7 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
               translationLang: row.translationLang,
               displayCount: row.displayCount || 0,
               skipped: row.skipped === 1,
+              added: row.added === 1,
               synced: row.synced === 1,
               updatedAt: row.updatedAt || null,
               locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),

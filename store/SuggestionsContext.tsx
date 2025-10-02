@@ -19,7 +19,7 @@ interface SuggestionsContextProps {
   langSuggestions: Suggestion[];
   loading: boolean;
   increaseSuggestionsDisplayCount: (ids: string[]) => Promise<void>;
-  skipSuggestions: (ids: string[]) => Promise<void>;
+  skipSuggestions: (ids: string[], prop: 'skipped' | 'added') => Promise<void>;
   syncSuggestions: () => Promise<void>;
 }
 
@@ -39,7 +39,8 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const languageContext = useLanguage();
   const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == languageContext.mainLang &&
-    suggestion.translationLang == languageContext.translationLang && !suggestion.skipped).sort((a, b) => a.displayCount - b.displayCount);
+    suggestion.translationLang == languageContext.translationLang && !suggestion.skipped && !suggestion.added)
+    .sort((a, b) => a.displayCount - b.displayCount);
 
   const increaseSuggestionsDisplayCount = async (ids: string[]) => {
     setSuggestions(prevSuggestions => {
@@ -59,14 +60,15 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     });
   };
 
-  const skipSuggestions = async (ids: string[]) => {
+  const skipSuggestions = async (ids: string[], prop: 'skipped' | 'added') => {
     setSuggestions(prevSuggestions => {
       const updated = prevSuggestions.map(suggestion => {
         if (ids.includes(suggestion.id)) {
           return {
             ...suggestion,
             synced: false,
-            skipped: true,
+            skipped: prop == 'skipped' ? true : suggestion.skipped,
+            added: prop == 'added' ? true : suggestion.added,
             locallyUpdatedAt: new Date().toISOString()
           };
         }
@@ -88,8 +90,8 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const updatedLocalSuggestions = updateLocalItems<Suggestion>(suggestionsList, serverUpdates);
       const serverSuggestions = await fetchNewSuggestions(updatedLocalSuggestions);
       const mergedSuggestions = mergeLocalAndServer<Suggestion>(updatedLocalSuggestions, serverSuggestions);
-      const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || !suggestion.skipped);
-      const suggestionsToRemove = mergedSuggestions.filter(suggestion => suggestion.synced && suggestion.skipped);
+      const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || (!suggestion.skipped && !suggestion.added));
+      const suggestionsToRemove = mergedSuggestions.filter(suggestion => suggestion.synced && (suggestion.skipped || suggestion.added));
 
       const changedSuggestions = findChangedItems<Suggestion>(suggestionsList, mergedSuggestions);
 

@@ -2,22 +2,29 @@ import React, { createContext, FC, ReactNode, useContext, useEffect, useState, }
 import { useWordsMLStatesContext } from "./WordsMLStatesContext";
 import { WordWithDetails } from "./types";
 import { useWordsWithDetailsRepository } from "../hooks/repo/useWordsWithDetailsRepository";
+import { useLanguage } from "./LanguageContext";
 
 interface WordsWithDetailsContextProps {
   loading: boolean;
-  wordsWithDetails: WordWithDetails[] | null;
+  wordsWithDetails: WordWithDetails[];
+  langWordsWithDetails: WordWithDetails[];
 }
 
 export const WordsWithDetailsContext = createContext<WordsWithDetailsContextProps>({
   loading: false,
-  wordsWithDetails: null,
+  wordsWithDetails: [],
+  langWordsWithDetails: [],
 });
 
 const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [wordsWithDetails, setWordsWithDetails] = useState<WordWithDetails[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { getAllWordsWithDetails } = useWordsWithDetailsRepository();
+  const { mainLang, translationLang } = useLanguage();
   const { wordsMLStates } = useWordsMLStatesContext();
+  const langWordsWithDetails = wordsWithDetails?.filter((word) =>
+    word.mainLang === mainLang && word.translationLang === translationLang
+  ) || [];
 
   const loadWordsMLStates = async () => {
     setLoading(true);
@@ -34,7 +41,7 @@ const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => 
   }, [wordsMLStates]);
 
   return (
-    <WordsWithDetailsContext.Provider value={{ loading, wordsWithDetails }}>
+    <WordsWithDetailsContext.Provider value={{ loading, wordsWithDetails, langWordsWithDetails }}>
       {children}
     </WordsWithDetailsContext.Provider>
   );

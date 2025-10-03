@@ -64,17 +64,7 @@ export const getAllWordsMLStates = async (userId: string): Promise<WordMLState[]
         (_, { rows }) => {
           const words = Array.from({ length: rows.length }, (_, i) => {
             const row = rows.item(i);
-            return {
-              wordId: row.wordId,
-              hoursSinceLastRepetition: row.hoursSinceLastRepetition,
-              studyStreak: row.studyStreak,
-              studyDuration: row.studyDuration,
-              gradesAverage: row.gradesAverage,
-              repetitionsCount: row.repetitionsCount,
-              gradesTrend: row.gradesTrend,
-              predictedGrade: row.predictedGrade,
-              gradeThreeProb: row.gradeThreeProb
-            } satisfies WordMLState;
+            return row satisfies WordMLState;
           });
           resolve(words);
         },

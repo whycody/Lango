@@ -10,6 +10,7 @@ import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import FlashcardListItem from "../components/items/FlashcardListItem";
 import { useWords } from "../store/WordsContext";
+import { useWordsWithDetails } from "../store/WordsWithDetailsContext";
 
 type AcceptationBottomSheetProps = {
   flashcardId: string;
@@ -23,7 +24,9 @@ const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBotto
   const styles = getStyles(colors);
   const { t } = useTranslation();
   const wordsContext = useWords();
-  const flashcard = wordsContext.getWord(props.flashcardId);
+  const wordsWithDetailsContext = useWordsWithDetails();
+
+  const flashcard = wordsWithDetailsContext.wordsWithDetails.find((word) => word.id === props.flashcardId);
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -44,7 +47,7 @@ const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBotto
         <Header title={t('removingFlashcard')} subtitle={t('removingFlashcardDesc')} style={styles.header}/>
         <FlashcardListItem
           id={props.flashcardId}
-          index={0}
+          level={flashcard?.gradeThreeProb ?? 0}
           text={flashcard?.text}
           translation={flashcard?.translation}
           style={{ backgroundColor: colors.background }}

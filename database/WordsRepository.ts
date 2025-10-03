@@ -75,7 +75,7 @@ export const getAllWords = async (userId: string): Promise<Word[]> => {
               removed: row.removed === 1,
               synced: row.synced === 1,
               locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
-            });
+            } satisfies Word);
           }
           resolve(words);
         },

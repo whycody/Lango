@@ -1,13 +1,15 @@
-import { FC, memo } from "react";
+import { FC, memo, useCallback, useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../src/constants";
 import CustomText from "../CustomText";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { getLevelColor } from "../../utils/getLevelColor";
 
 type FlashcardListItemProps = {
   id: string;
   text: string;
+  level: number;
   translation: string;
   style?: any;
   onEditPress?: (id: string) => void;
@@ -15,14 +17,18 @@ type FlashcardListItemProps = {
 }
 
 const FlashcardListItem: FC<FlashcardListItemProps> =
-  ({ id, text, translation, style, onEditPress, onRemovePress }) => {
+  ({ id, text, level, translation, style, onEditPress, onRemovePress }) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
+
+    const getColor = useCallback((level: number) => {
+      return getLevelColor(level);
+    }, []);
 
     return (
       <Pressable style={[styles.root, style]} android_ripple={{ color: colors.card }}>
         <View style={styles.container}>
-          <Ionicons name={'reader-sharp'} color={colors.primary600} size={22}/>
+          <Ionicons name={'reader-sharp'} color={getColor(level)} size={22}/>
           <View style={styles.textContainer}>
             <CustomText weight={'SemiBold'} style={styles.text}>{text}</CustomText>
             <CustomText style={styles.translation}>{translation}</CustomText>
@@ -39,8 +45,8 @@ const FlashcardListItem: FC<FlashcardListItemProps> =
           {onEditPress &&
             <Ionicons
               name={'pencil-sharp'}
-              color={colors.primary600}
-              size={22}
+              color={colors.primary300}
+              size={21}
               style={styles.icon}
               onPress={() => onEditPress(id)}
             />
@@ -77,6 +83,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginLeft: 10,
     padding: 5,
     paddingRight: 0,
+    opacity: 0.8,
   }
 })
 

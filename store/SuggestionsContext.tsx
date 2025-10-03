@@ -10,7 +10,6 @@ import {
   getUnsyncedItems,
   mergeLocalAndServer,
   syncInBatches,
-  updateLocalItems
 } from "../utils/sync";
 import { useAppInitializer } from "./AppInitializerContext";
 
@@ -87,9 +86,8 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       if (!serverUpdates) return;
 
-      const updatedLocalSuggestions = updateLocalItems<Suggestion>(suggestionsList, serverUpdates);
-      const serverSuggestions = await fetchNewSuggestions(updatedLocalSuggestions);
-      const mergedSuggestions = mergeLocalAndServer<Suggestion>(updatedLocalSuggestions, serverSuggestions);
+      const serverSuggestions = await fetchNewSuggestions(suggestionsList);
+      const mergedSuggestions = mergeLocalAndServer<Suggestion>(suggestionsList, serverSuggestions);
       const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || (!suggestion.skipped && !suggestion.added));
       const suggestionsToRemove = mergedSuggestions.filter(suggestion => suggestion.synced && (suggestion.skipped || suggestion.added));
 

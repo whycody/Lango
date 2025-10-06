@@ -25,6 +25,9 @@ export const createTables = async (userId: string) => {
             updatedAt        TEXT
         )
     `);
+
+    tx.executeSql(`CREATE INDEX IF NOT EXISTS idx_words_removed ON ${WORDS}(removed)`);
+    tx.executeSql(`CREATE INDEX IF NOT EXISTS idx_words_updatedAt ON ${WORDS}(locallyUpdatedAt)`);
   });
 };
 

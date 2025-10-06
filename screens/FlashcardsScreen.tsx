@@ -14,7 +14,7 @@ import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons } from "@expo/vector-icons";
 import ListFilter from "../components/ListFilter";
-import { Word, WordWithDetails } from "../store/types";
+import { WordWithDetails } from "../store/types";
 import { useWordsWithDetails } from "../store/WordsWithDetailsContext";
 
 const FlashcardsScreen = () => {
@@ -35,12 +35,13 @@ const FlashcardsScreen = () => {
   const inputRef = useRef<TextInput>(null);
   const [searchingMode, setSearchingMode] = useState(false);
 
-  const flashcards = useMemo(() => wordWithDetailsContext.langWordsWithDetails.filter((word: WordWithDetails) =>
-      !word.removed && (!searchingMode || (filter.trim() && (
-        word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
-        word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
-    ).sort((a, b) => new Date(b.locallyUpdatedAt).getTime() - new Date(a.locallyUpdatedAt).getTime()),
-    [searchingMode, filter, wordsContext.langWords]);
+  const flashcards = useMemo(() =>
+      wordWithDetailsContext.langWordsWithDetails.filter((word: WordWithDetails) =>
+        !word.removed && (!searchingMode || (filter.trim() && (
+          word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
+          word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
+      ).sort((a, b) => new Date(b.locallyUpdatedAt).getTime() - new Date(a.locallyUpdatedAt).getTime()),
+    [searchingMode, filter, wordWithDetailsContext.langWordsWithDetails]);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -136,7 +137,7 @@ const FlashcardsScreen = () => {
         </View>
       </View>
     );
-  }, []);
+  }, [numberOfWords, langoWords]);
 
   const renderSubheader = useMemo(() => {
     return (
@@ -205,7 +206,7 @@ const FlashcardsScreen = () => {
         keyExtractor={(item) => item.id}
         estimatedItemSize={70}
         stickyHeaderHiddenOnScroll={false}
-        stickyHeaderIndices={!searchingMode && [1]}
+        stickyHeaderIndices={searchingMode ? undefined : [1]}
         keyboardShouldPersistTaps={"always"}
         maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
         overScrollMode={"never"}

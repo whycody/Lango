@@ -1,8 +1,8 @@
 import React, { createContext, FC, ReactNode, useContext, useEffect, useState, } from "react";
 import { useWordsMLStatesContext } from "./WordsMLStatesContext";
-import { WordWithDetails } from "./types";
-import { useWordsWithDetailsRepository } from "../hooks/repo/useWordsWithDetailsRepository";
+import { WordMLState, WordWithDetails } from "./types";
 import { useLanguage } from "./LanguageContext";
+import { useWords } from "./WordsContext";
 
 interface WordsWithDetailsContextProps {
   loading: boolean;
@@ -19,26 +19,31 @@ export const WordsWithDetailsContext = createContext<WordsWithDetailsContextProp
 const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [wordsWithDetails, setWordsWithDetails] = useState<WordWithDetails[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { getAllWordsWithDetails } = useWordsWithDetailsRepository();
   const { mainLang, translationLang } = useLanguage();
   const { wordsMLStates } = useWordsMLStatesContext();
+  const { langWords } = useWords();
   const langWordsWithDetails = wordsWithDetails?.filter((word) =>
     word.mainLang === mainLang && word.translationLang === translationLang
   ) || [];
 
-  const loadWordsMLStates = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllWordsWithDetails();
-      setWordsWithDetails(data);
-    } finally {
-      setLoading(false);
+  const loadData = () => {
+    const statesByWordId: Record<string, WordMLState> = {};
+    for (const s of wordsMLStates) {
+      statesByWordId[s.wordId] = s;
     }
-  };
+
+    setWordsWithDetails(
+      langWords
+        .map(w => {
+            const state = statesByWordId[w.id];
+            return { ...w, ...state, } satisfies WordWithDetails;
+          }
+        ));
+  }
 
   useEffect(() => {
-    loadWordsMLStates();
-  }, [wordsMLStates]);
+    loadData();
+  }, [wordsMLStates, langWords]);
 
   return (
     <WordsWithDetailsContext.Provider value={{ loading, wordsWithDetails, langWordsWithDetails }}>

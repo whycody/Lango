@@ -13,20 +13,15 @@ export const getAllWordsWithDetails = async (userId: string): Promise<WordWithDe
             SELECT ${WORDS_COLUMNS.map(c => `w.${c}`).join(', ')},
                    ${WORD_ML_STATE_COLUMNS.map(c => `d.${c}`).join(', ')}
             FROM ${WORDS} w
-                     LEFT JOIN ${WORD_ML_STATE} d ON w.id = d.wordId
+                     INNER JOIN ${WORD_ML_STATE} d ON w.id = d.wordId
+            WHERE w.REMOVED IS 0
+            ORDER BY w.locallyUpdatedAt DESC
         `,
         [],
         (_, { rows }) => {
           const result: WordWithDetails[] = [];
           for (let i = 0; i < rows.length; i++) {
-            const row = rows.item(i);
-            result.push({
-              ...row,
-              active: row.active === 1,
-              removed: row.removed === 1,
-              synced: row.synced === 1,
-              locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
-            } satisfies WordWithDetails);
+            result.push(rows.item(i) satisfies WordWithDetails);
           }
           resolve(result);
         },

@@ -1,4 +1,4 @@
-import { BackHandler, FlatList, Image, Platform, ScrollView } from "react-native";
+import { BackHandler, FlatList, Image, Linking, Platform, ScrollView } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
@@ -105,6 +105,12 @@ const LibraryScreen = () => {
         break;
       case LibraryItems.LOGOUT:
         authContext.logout();
+        break;
+      case LibraryItems.PRIVACY_POLICY:
+        Linking.openURL(`${process.env['SITE_URL']}/privacy_policy`);
+        break;
+      case LibraryItems.USE_CONDITIONS:
+        Linking.openURL(`${process.env['SITE_URL']}/terms_of_service`);
         break;
       default:
         break;

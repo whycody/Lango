@@ -1,4 +1,3 @@
-import { Evaluation, LanguageCode, Session, Suggestion, Word, WordHeuristicState, WordMLState } from "./types";
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
 import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
@@ -10,17 +9,7 @@ import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesReposi
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
 import { determineLanguages } from "../database/utils/determineLanguages";
 import { useLanguageRepository } from "../hooks/repo/useLanguageRepository";
-
-type InitialLoad = {
-  sessions: Session[];
-  words: Word[];
-  evaluations: Evaluation[];
-  suggestions: Suggestion[];
-  wordsMLStates: WordMLState[];
-  wordsHeuristicStates: WordHeuristicState[];
-  mainLang: LanguageCode;
-  translationLang: LanguageCode;
-};
+import { InitialLoad } from "./types";
 
 interface AppInitializerContextProps {
   initialLoad: InitialLoad | null;
@@ -108,8 +97,11 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [initialLoad]);
 
   useEffect(() => {
-    if (!user?.userId) return;
-    init();
+    if (!user?.userId) {
+      setInitialLoad(null);
+    } else {
+      init();
+    }
   }, [user?.userId]);
 
   return (

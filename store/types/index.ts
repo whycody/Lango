@@ -9,3 +9,4 @@ export * from './User';
 export * from './SyncMetadata';
 export * from './WordHeuristicState';
 export * from './SyncResult';
+export * from './InitialLoad';

@@ -1,4 +1,4 @@
-import { BackHandler, FlatList, Platform, Image, ScrollView } from "react-native";
+import { BackHandler, FlatList, Image, Platform, ScrollView } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
@@ -6,17 +6,20 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useLanguage } from "../hooks/useLanguage";
 import { useWords } from "../store/WordsContext";
 import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
-import { useAuth } from "../hooks/useAuth";
+import { useEvaluations } from "../store/EvaluationsContext";
+import { Word } from "../store/types";
+import { useLanguage } from "../store/LanguageContext";
+import { useAuth } from "../api/auth/AuthProvider";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const words = useWords();
+  const { evaluations } = useEvaluations();
   const navigation = useNavigation();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
@@ -47,7 +50,7 @@ const LibraryScreen = () => {
     USE_CONDITIONS
   }
 
-  const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.studyingLangCode)[0].languageName;
+  const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.mainLang)[0].languageName;
 
   const libraryItems = [
     {
@@ -65,13 +68,13 @@ const LibraryScreen = () => {
     {
       id: LibraryItems.MY_WORDS,
       label: t('myWords'),
-      description: t('words_desc', { words_number: words.words.length.toString() }),
+      description: t('words_desc', { words_number: words.words.filter((word: Word) => !word.removed).length.toString() }),
       icon: 'albums-sharp'
     },
     {
       id: LibraryItems.EXPORT,
       label: t('export'),
-      description: t('export_desc', { records_number: words.evaluationsNumber.toString() }),
+      description: t('export_desc', { records_number: evaluations.length.toString() }),
       icon: 'share-outline'
     },
     {

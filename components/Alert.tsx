@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL } from "../src/constants";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import CustomText from "./CustomText";
 import React from "react";

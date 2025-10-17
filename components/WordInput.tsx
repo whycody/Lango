@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState, forwardRef, useImperativeHandle, useRef, useCallback } from "react";
+import React, { FC, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTheme } from "@react-navigation/native";
 import SquareFlag from "./SquareFlag";
-import { View, StyleSheet, Platform, TextInput, FlatList, Pressable } from "react-native";
+import { FlatList, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../src/constants";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import CustomText from "./CustomText";

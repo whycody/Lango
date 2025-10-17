@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Text, TextProps, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TextProps } from 'react-native';
 
 interface CustomTextProps extends TextProps {
   weight?: 'Regular' | 'SemiBold' | 'Bold' | 'Black';

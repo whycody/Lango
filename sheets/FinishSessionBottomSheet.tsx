@@ -6,10 +6,10 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { FlashcardUpdate } from "../store/WordsContext";
+import { WordUpdate } from "../store/WordsContext";
 
 type FinishSessionBottomSheetProps = {
-  flashcardUpdates: FlashcardUpdate[];
+  flashcardUpdates: WordUpdate[];
   endSession: () => void;
   startNewSession: () => void;
   onChangeIndex?: (index: number) => void;

@@ -8,9 +8,9 @@ import { useTranslation } from "react-i18next";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import LanguageItem from "../components/items/LanguageItem";
-import { useLanguage } from "../hooks/useLanguage";
-import { Language } from "../store/LanguageContext";
 import * as Haptics from "expo-haptics";
+import { Language } from "../store/types";
+import { useLanguage } from "../store/LanguageContext";
 
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
@@ -32,12 +32,12 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
     <LanguageItem
       language={item}
       index={index}
-      checked={item.languageCode == languageContext.studyingLangCode}
+      checked={item.languageCode == languageContext.mainLang}
       onPress={() => handleLanguagePick(item)}
     />;
 
   const handleLanguagePick = (language: Language) => {
-    languageContext.setStudyingLangCode(language.languageCode);
+    languageContext.setMainLang(language.languageCode);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     ref.current?.close();
   }

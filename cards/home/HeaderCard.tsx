@@ -7,15 +7,17 @@ import CustomText from "../../components/CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../../components/ActionButton";
-import StartSessionBottomSheet, { FLASHCARD_SIDE, SESSION_MODE } from "../../sheets/StartSessionBottomSheet";
+import StartSessionBottomSheet from "../../sheets/StartSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SquareFlag from "../../components/SquareFlag";
-import { useLanguage } from "../../hooks/useLanguage";
 import LanguageBottomSheet from "../../sheets/LanguageBottomSheet";
 import { useWords } from "../../store/WordsContext";
-import { useStatistics } from "../../hooks/useStatistics";
 import { getCurrentStreak, Streak } from "../../utils/streakUtils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SESSION_MODE } from "../../store/types";
+import { FLASHCARD_SIDE } from "../../store/UserPreferencesContext";
+import { useStatistics } from "../../store/StatisticsContext";
+import { useLanguage } from "../../store/LanguageContext";
 
 const HeaderCard = () => {
   const { t } = useTranslation();
@@ -91,10 +93,10 @@ const HeaderCard = () => {
           {streak.numberOfDays.toString()}
         </CustomText>
         <Pressable onPress={() => languageSheetRef.current?.present()} style={{ paddingVertical: 5, paddingLeft: 5 }}>
-          <SquareFlag languageCode={langContext.studyingLangCode} size={24}/>
+          <SquareFlag languageCode={langContext.mainLang} size={24}/>
         </Pressable>
       </View>
-      <ProgressBar animatedValue={lastWellKnownWords} color={colors.primary300} style={styles.progressBar}/>
+      <ProgressBar animatedValue={lastWellKnownWords ? lastWellKnownWords : 0.000001} color={colors.primary300} style={styles.progressBar}/>
       <CustomText style={styles.descText}>{getReportMessage()}</CustomText>
       <ActionButton
         label={t('startLearning')}

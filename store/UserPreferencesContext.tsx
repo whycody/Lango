@@ -1,11 +1,6 @@
-import { createContext, FC, useContext, useEffect, useState } from "react";
+import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-export enum SESSION_MODE {
-  STUDY = 'STUDY',
-  RANDOM = 'RANDOM',
-  OLDEST = 'OLDEST'
-}
+import { SESSION_MODE } from "./types";
 
 export enum FLASHCARD_SIDE {
   WORD = 'WORD',
@@ -34,7 +29,7 @@ const FLASHCARD_SIDE_KEY = 'flashcardSide';
 const SESSION_MODE_KEY = 'sessionMode';
 const SESSION_LENGTH_KEY = 'sessionLength';
 
-export const UserPreferencesProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [currentFlashcardSide, setCurrentFlashcardSide] = useState(FLASHCARD_SIDE.WORD);
   const [currentSessionMode, setCurrentSessionMode] = useState(SESSION_MODE.STUDY);
   const [currentSessionLength, setCurrentSessionLength] = useState<1 | 2 | 3>(2);
@@ -106,3 +101,5 @@ export const useUserPreferences = () => {
   }
   return context;
 };
+
+export default UserPreferencesProvider;

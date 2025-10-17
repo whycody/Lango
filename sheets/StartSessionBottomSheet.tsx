@@ -10,7 +10,8 @@ import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
-import { FLASHCARD_SIDE, SESSION_MODE, useUserPreferences } from "../store/UserPreferencesContext";
+import { FLASHCARD_SIDE, useUserPreferences } from "../store/UserPreferencesContext";
+import { SESSION_MODE } from "../store/types";
 
 interface StartSessionBottomSheetProps {
   onSessionStart: (length: 1 | 2 | 3, mode: SESSION_MODE, flashcardSide: FLASHCARD_SIDE) => void,

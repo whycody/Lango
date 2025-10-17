@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import CustomText from '../components/CustomText';
 import WordLevelItem from '../components/items/WordLevelItem';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../src/constants';
-import { FlashcardUpdate, useWords } from '../store/WordsContext';
 import FlipCard from "react-native-flip-card";
 import Card from "../components/Card";
 import * as Haptics from "expo-haptics";
@@ -16,10 +15,18 @@ import FinishSessionBottomSheet from "../sheets/FinishSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
-import { useStatistics } from "../hooks/useStatistics";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
-import { FLASHCARD_SIDE, SESSION_MODE } from "../store/UserPreferencesContext";
+import { FLASHCARD_SIDE } from "../store/UserPreferencesContext";
+import { useSessions } from "../store/SessionsContext";
+import { useEvaluations } from "../store/EvaluationsContext";
+import { SESSION_MODE } from "../store/types";
+import { useWordSet } from "../hooks/useWordSet";
+
+type WordUpdate = {
+  flashcardId: string;
+  grade: 1 | 2 | 3;
+};
 
 type RouteParams = {
   length: 1 | 2 | 3;
@@ -38,10 +45,14 @@ const SessionScreen = () => {
   const length = params?.length || 1;
   const mode = params?.mode || SESSION_MODE.STUDY;
   const flashcardSide = params?.flashcardSide || FLASHCARD_SIDE.WORD;
-  const wordsContext = useWords();
+  const sessionsContext = useSessions();
+  const evaluationsContext = useEvaluations();
 
   const pagerRef = useRef(null);
-  const [cards, setCards] = useState(wordsContext.getWordSet(length * 10, mode));
+  const wordSet = useWordSet(length * 10, mode);
+
+  const [model, setModel] = useState(wordSet.model);
+  const [cards, setCards] = useState(wordSet.words);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -50,10 +61,9 @@ const SessionScreen = () => {
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const statsContext = useStatistics();
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
-  const [flashcardUpdates, setFlashcardUpdates] = useState<FlashcardUpdate[]>([]);
+  const [wordsUpdates, setWordsUpdates] = useState<WordUpdate[]>([]);
   const [numberOfSession, setNumberOfSession] = useState(0);
   const [flipped, setFlipped] = useState(flashcardSide == FLASHCARD_SIDE.TRANSLATION);
   const [flippedCards, setFlippedCards] = useState(Array(length * 10).fill(false));
@@ -143,7 +153,7 @@ const SessionScreen = () => {
     if (!word) return;
     if ((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) {
       Speech.stop().then(() => {
-        Speech.speak(word?.text, { language: word.firstLang });
+        Speech.speak(word?.text, { language: word.mainLang });
       });
     }
   }, [flipped, currentIndex, flippedCards]);
@@ -157,7 +167,7 @@ const SessionScreen = () => {
 
     const currentCardId: string = cards[currentIndex].id;
 
-    setFlashcardUpdates(prevUpdates => {
+    setWordsUpdates(prevUpdates => {
       const existingUpdateIndex = prevUpdates.findIndex(update => update.flashcardId === currentCardId);
 
       if (existingUpdateIndex >= 0) {
@@ -171,17 +181,15 @@ const SessionScreen = () => {
   };
 
   useEffect(() => {
-    if (flashcardUpdates.length === 0) return;
-    (flashcardUpdates.length === cards.length) ? finishSession() : incrementCurrentIndex();
-  }, [flashcardUpdates]);
+    if (wordsUpdates.length === 0) return;
+    (wordsUpdates.length === cards.length) ? finishSession() : incrementCurrentIndex();
+  }, [wordsUpdates]);
 
   const finishSession = () => {
     incrementCurrentIndex();
     confettiRef.current?.play(0);
-    statsContext.addTodayDayToStudyDaysList();
-    statsContext.increaseNumberOfSessions();
+    saveProgress(true);
     finishSessionBottomSheetRef.current?.present();
-    wordsContext.updateFlashcards(flashcardUpdates);
   }
 
   useEffect(() => {
@@ -190,15 +198,17 @@ const SessionScreen = () => {
   }, [currentIndex]);
 
   const endSession = () => {
-    if (flashcardUpdates.length !== cards.length) return;
+    if (wordsUpdates.length !== cards.length) return;
     finishSessionBottomSheetRef.current?.dismiss();
     navigation.navigate('Tabs' as never);
   }
 
   const startNewSession = () => {
+    setFlippedCards(Array(length * 10).fill(false));
     setNumberOfSession((prev) => prev + 1);
-    setFlashcardUpdates([]);
-    setCards(wordsContext.getWordSet(length * 10, mode).sort(() => Math.random() - 0.5));
+    setWordsUpdates([]);
+    setModel(wordSet.model);
+    setCards(wordSet.words);
     setTimeout(() => {
       setCurrentIndex(0);
       finishSessionBottomSheetRef.current?.dismiss();
@@ -206,8 +216,19 @@ const SessionScreen = () => {
   }
 
   const handleSessionExit = () => {
-    wordsContext.updateFlashcards(flashcardUpdates);
+    saveProgress(false);
     navigation.navigate('Tabs' as never);
+  }
+
+  const saveProgress = (finished: boolean) => {
+    if (wordsUpdates.length == 0) return;
+    const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
+    const session = sessionsContext.addSession(mode, model, avgGrade, length * 10, finished);
+    evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
+      wordId: update.flashcardId,
+      sessionId: session.id,
+      grade: update.grade
+    })));
   }
 
   const handleFlipCards = () => {
@@ -238,7 +259,7 @@ const SessionScreen = () => {
       />
       <FinishSessionBottomSheet
         ref={finishSessionBottomSheetRef}
-        flashcardUpdates={flashcardUpdates}
+        flashcardUpdates={wordsUpdates}
         endSession={endSession}
         startNewSession={startNewSession}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
@@ -253,7 +274,7 @@ const SessionScreen = () => {
         />
         <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
           <ProgressBar
-            animatedValue={progress / cards.length}
+            animatedValue={progress ? progress / cards.length : 0.000001}
             color={colors.primary}
             style={styles.progressBar}
           />

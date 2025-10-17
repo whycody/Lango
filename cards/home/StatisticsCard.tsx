@@ -5,17 +5,21 @@ import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/items/StatisticItem";
 import { LANGO, useWords } from "../../store/WordsContext";
-import { useStatistics } from "../../hooks/useStatistics";
+import { useSessions } from "../../store/SessionsContext";
+import { Word } from "../../store/types";
+import { useStatistics } from "../../store/StatisticsContext";
 
 const StatisticsCard = () => {
   const { t } = useTranslation();
-  const wordsContext = useWords();
+  const { langWords } = useWords();
   const statsContext = useStatistics();
+  const { sessions } = useSessions();
+
   const [studyStats, setStudyStats] = useState({
-    numberOfWords: 0,
-    numberOfSessions: 0,
-    numberOfStudyDays: 0,
-    numberOfLangoWords: 0,
+    numberOfWords: langWords.filter((word: Word) => !word.removed).length,
+    numberOfSessions: statsContext.numberOfSessions,
+    numberOfStudyDays: statsContext.studyDaysList.length,
+    numberOfLangoWords: langWords.filter((word) => word.source == LANGO && !word.removed).length,
   });
 
   const updateStat = (key: keyof typeof studyStats, value: number) => {
@@ -26,11 +30,11 @@ const StatisticsCard = () => {
   };
 
   useEffect(() => {
-    updateStat('numberOfWords', wordsContext.langWords.length);
-    updateStat('numberOfLangoWords', wordsContext.langWords.filter((word) => word.source == LANGO).length);
+    updateStat('numberOfWords', langWords.filter((word: Word) => !word.removed).length);
+    updateStat('numberOfLangoWords', langWords.filter((word) => word.source == LANGO && !word.removed).length);
     updateStat('numberOfStudyDays', statsContext.studyDaysList.length);
     updateStat('numberOfSessions', statsContext.numberOfSessions);
-  }, [wordsContext.langWords, statsContext.studyDaysList, statsContext.numberOfSessions]);
+  }, [langWords, statsContext.studyDaysList, sessions]);
 
   return (
     <View style={styles.root}>

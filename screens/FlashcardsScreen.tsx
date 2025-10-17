@@ -1,9 +1,9 @@
-import { BackHandler, Keyboard, SafeAreaView, StyleSheet, TextInput, View } from "react-native";
+import { BackHandler, Keyboard, Pressable, SafeAreaView, StyleSheet, TextInput, View } from "react-native";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../src/constants";
 import StatisticItem from "../components/items/StatisticItem";
-import { LANGO, useWords, Word } from "../store/WordsContext";
+import { LANGO, useWords } from "../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
@@ -14,14 +14,17 @@ import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons } from "@expo/vector-icons";
 import ListFilter from "../components/ListFilter";
+import { WordWithDetails } from "../store/types";
+import { useWordsWithDetails } from "../store/WordsWithDetailsContext";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const wordsContext = useWords();
-  const numberOfWords = wordsContext.langWords.length;
-  const langoWords = wordsContext.langWords.filter((word) => word.source == LANGO).length;
+  const wordWithDetailsContext = useWordsWithDetails();
+  const numberOfWords = wordsContext.langWords.filter((word) => !word.removed).length;
+  const langoWords = wordsContext.langWords.filter((word) => word.source == LANGO && !word.removed).length;
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
@@ -32,11 +35,13 @@ const FlashcardsScreen = () => {
   const inputRef = useRef<TextInput>(null);
   const [searchingMode, setSearchingMode] = useState(false);
 
-  const flashcards = useMemo(() => wordsContext.langWords.filter((word: Word) =>
-    !searchingMode || (filter.trim() && (
-      word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
-      word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase())))
-  ), [searchingMode, filter, wordsContext.langWords]);
+  const flashcards = useMemo(() =>
+      wordWithDetailsContext.langWordsWithDetails.filter((word: WordWithDetails) =>
+        !word.removed && (!searchingMode || (filter.trim() && (
+          word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
+          word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
+      ).sort((a, b) => new Date(b.locallyUpdatedAt).getTime() - new Date(a.locallyUpdatedAt).getTime()),
+    [searchingMode, filter, wordWithDetailsContext.langWordsWithDetails]);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -66,6 +71,7 @@ const FlashcardsScreen = () => {
 
   const turnOnSearchingMode = () => {
     setSearchingMode(true);
+    setTimeout(() => inputRef?.current?.focus(), 100);
   }
 
   const handleActionButtonPress = () => {
@@ -96,10 +102,11 @@ const FlashcardsScreen = () => {
     removeFlashcardBottomSheetRef.current.present();
   }, []);
 
-  const renderFlashcardListItem = useCallback(({ id, text, translation }: Word) => (
+  const renderFlashcardListItem = useCallback(({ id, text, translation, gradeThreeProb }: WordWithDetails) => (
     <FlashcardListItem
       id={id}
       text={text}
+      level={gradeThreeProb}
       translation={translation}
       onEditPress={handleEditPress}
       onRemovePress={handleRemovePress}
@@ -130,20 +137,32 @@ const FlashcardsScreen = () => {
         </View>
       </View>
     );
-  }, []);
+  }, [numberOfWords, langoWords]);
 
   const renderSubheader = useMemo(() => {
     return (
+      <Pressable style={styles.subHeaderContainer} onPress={turnOnSearchingMode}>
+        <ListFilter
+          isSearching={searchingMode}
+          editable={false}
+          onClear={() => setFilter("")}
+          placeholder={t("searchFlashcard")}
+          placeholderTextColor={colors.primary600}
+        />
+      </Pressable>
+    );
+  }, [searchingMode, filter, setFilter]);
+
+  const ListFilterHeader = useMemo(() => {
+    return (
       <View style={styles.subHeaderContainer}>
-        {searchingMode &&
-          <Ionicons
-            name={'arrow-back-sharp'}
-            size={24}
-            color={colors.primary300}
-            style={{ marginRight: 10 }}
-            onPress={turnOffSearchingMode}
-          />
-        }
+        <Ionicons
+          name={'arrow-back-sharp'}
+          size={24}
+          color={colors.primary300}
+          style={{ marginRight: 10 }}
+          onPress={turnOffSearchingMode}
+        />
         <ListFilter
           ref={inputRef}
           isSearching={searchingMode}
@@ -155,16 +174,16 @@ const FlashcardsScreen = () => {
           placeholderTextColor={colors.primary600}
         />
       </View>
-    );
-  }, [searchingMode, filter, setFilter]);
+    )
+  }, [filter]);
 
   const renderListItem = ({ item }: { item: { id: string } }) => {
     if (item.id === "header") return renderHeader;
     if (item.id === "subheader") return renderSubheader;
-    return renderFlashcardListItem(item as Word);
+    return renderFlashcardListItem(item as WordWithDetails);
   };
 
-  const data = searchingMode ? [{ id: 'subheader' }, ...flashcards] : [{ id: 'header' }, { id: 'subheader' }, ...flashcards];
+  const data = searchingMode ? [...flashcards] : [{ id: 'header' }, { id: 'subheader' }, ...flashcards];
 
   return (
     <SafeAreaView style={styles.root}>
@@ -180,13 +199,14 @@ const FlashcardsScreen = () => {
         flashcardId={editFlashcardId}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
+      {searchingMode && ListFilterHeader}
       <FlashList
         data={data}
         renderItem={renderListItem}
         keyExtractor={(item) => item.id}
         estimatedItemSize={70}
         stickyHeaderHiddenOnScroll={false}
-        stickyHeaderIndices={searchingMode ? [0] : [1]}
+        stickyHeaderIndices={searchingMode ? undefined : [1]}
         keyboardShouldPersistTaps={"always"}
         maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
         overScrollMode={"never"}
@@ -221,7 +241,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.card,
     paddingHorizontal: MARGIN_HORIZONTAL,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   textInput: {
     flex: 1,

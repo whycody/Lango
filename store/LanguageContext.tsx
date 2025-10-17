@@ -1,40 +1,41 @@
-import { createContext, FC, useState, useEffect } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, FC, ReactNode, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-export type Language = {
-  languageCode: LanguageCode;
-  languageName: string;
-  languageInTargetLanguage: string;
-}
-
-export enum LanguageCode {
-  ENGLISH = 'en',
-  POLISH = 'pl',
-  SPANISH = 'es',
-  ITALIAN = 'it',
-}
+import { Language, LanguageCode } from "./types";
+import { useLanguageRepository } from "../hooks/repo/useLanguageRepository";
+import { useAppInitializer } from "./AppInitializerContext";
 
 interface LanguageContextProps {
   languages: Language[];
-  mainLangCode: string;
-  studyingLangCode: string;
-  setMainLangCode: (langCode: string) => void;
-  setStudyingLangCode: (langCode: string) => void;
+  mainLang: LanguageCode;
+  translationLang: LanguageCode;
+  setMainLang: (langCode: LanguageCode) => void;
+  setTranslationLang: (langCode: LanguageCode) => void;
 }
 
 export const LanguageContext = createContext<LanguageContextProps>({
   languages: [],
-  mainLangCode: '',
-  studyingLangCode: '',
-  setMainLangCode: () => {},
-  setStudyingLangCode: () => {},
+  mainLang: LanguageCode.SPANISH,
+  translationLang: LanguageCode.POLISH,
+  setMainLang: () => {},
+  setTranslationLang: () => {},
 });
 
-export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
-  const [mainLangCode, setMainLangCodeState] = useState<string>(LanguageCode.POLISH);
-  const [studyingLangCode, setStudyingLangCodeState] = useState<string>(LanguageCode.SPANISH);
+  const { initialLoad } = useAppInitializer();
+  const { setMainLang, setTranslationLang } = useLanguageRepository();
+  const [mainLangState, setMainLangState] = useState<LanguageCode>(initialLoad.mainLang);
+  const [translationLangState, setTranslationLangState] = useState<LanguageCode>(initialLoad.translationLang);
+
+  const updateMainLang = async (langCode: LanguageCode) => {
+    await setMainLang(langCode);
+    setMainLangState(langCode);
+  }
+
+  const updateTranslationLang = async (langCode: LanguageCode) => {
+    await setTranslationLang(langCode);
+    setTranslationLangState(langCode);
+  }
 
   const languages: Language[] = [
     { languageCode: LanguageCode.ENGLISH, languageName: t('english'), languageInTargetLanguage: 'English' },
@@ -42,44 +43,25 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
     { languageCode: LanguageCode.ITALIAN, languageName: t('italian'), languageInTargetLanguage: 'Italiano' },
   ];
 
-  useEffect(() => {
-    const loadLanguages = async () => {
-      try {
-        const storedMainLangCode = await AsyncStorage.getItem('mainLangCode');
-        const storedStudyingLangCode = await AsyncStorage.getItem('studyingLangCode');
-
-        if (storedMainLangCode) setMainLangCodeState(storedMainLangCode as LanguageCode);
-        if (storedStudyingLangCode) setStudyingLangCodeState(storedStudyingLangCode as LanguageCode);
-      } catch (error) {
-        console.error("Failed to load languages from AsyncStorage", error);
-      }
-    };
-
-    loadLanguages();
-  }, []);
-
-  const setMainLangCode = async (langCode: string) => {
-    try {
-      await AsyncStorage.setItem('mainLangCode', langCode);
-      setMainLangCodeState(langCode);
-    } catch (error) {
-      console.error("Failed to save main language code", error);
-    }
-  };
-
-  const setStudyingLangCode = async (langCode: string) => {
-    try {
-      await AsyncStorage.setItem('studyingLangCode', langCode);
-      setStudyingLangCodeState(langCode);
-    } catch (error) {
-      console.error("Failed to save studying language code", error);
-    }
-  };
-
   return (
-    <LanguageContext.Provider
-      value={{ languages, mainLangCode, studyingLangCode, setMainLangCode, setStudyingLangCode }}>
+    <LanguageContext.Provider value={{
+      languages,
+      mainLang: mainLangState,
+      translationLang: translationLangState,
+      setMainLang: updateMainLang,
+      setTranslationLang: updateTranslationLang
+    }}>
       {children}
     </LanguageContext.Provider>
   );
 };
+
+export const useLanguage = (): LanguageContextProps => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useSessions must be used within a SessionsProvider");
+  }
+  return context;
+};
+
+export default LanguageProvider;

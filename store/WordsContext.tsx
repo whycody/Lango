@@ -1,167 +1,139 @@
-import React, { createContext, FC, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLanguage } from "../hooks/useLanguage";
-import { SESSION_MODE } from "./UserPreferencesContext";
-
-export interface Word {
-  id: string;
-  text: string;
-  translation: string;
-  firstLang: string;
-  secondLang: string;
-  source: string;
-  interval: number;
-  addDate: string;
-  repetitionCount: number;
-  lastReviewDate: string;
-  nextReviewDate: string;
-  EF: number;
-}
-
-export interface Evaluation {
-  id: string;
-  wordId: string;
-  grade: number;
-  date: Date;
-}
+import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
+import { useWordsRepository } from "../hooks/repo/useWordsRepository";
+import uuid from 'react-native-uuid';
+import { Word } from './types';
+import { useLanguage } from "./LanguageContext";
+import {
+  findChangedItems,
+  findLatestUpdatedAt,
+  getUnsyncedItems,
+  mergeLocalAndServer,
+  syncInBatches,
+  updateLocalItems
+} from "../utils/sync";
+import { useAppInitializer } from "./AppInitializerContext";
 
 interface WordsContextProps {
   words: Word[];
+  loading: boolean;
   langWords: Word[];
-  addWord: (text: string, translation: string, source?: string) => boolean;
+  addWord: (text: string, translation: string, source?: string) => Word | null;
   getWord: (id: string) => Word | undefined;
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
-  updateFlashcards: (updates: FlashcardUpdate[]) => void;
-  getWordSet: (size: number, mode: string) => Word[];
   deleteWords: () => void;
-  evaluationsNumber: number;
+  syncWords: () => Promise<void>;
 }
 
 export const USER = 'user';
 export const LANGO = 'lango';
 
-export type FlashcardUpdate = {
-  flashcardId: string;
-  grade: 1 | 2 | 3;
-};
-
-export const WordsContext = createContext<WordsContextProps>({
+const WordsContext = createContext<WordsContextProps>({
   words: [],
+  loading: true,
   langWords: [],
-  addWord: () => true,
+  addWord: () => null,
   getWord: () => undefined,
-  editWord: () => {},
-  removeWord: () => {},
-  updateFlashcards: () => {},
-  getWordSet: () => [],
-  deleteWords: () => {},
-  evaluationsNumber: 0,
+  editWord: () => [],
+  removeWord: () => [],
+  deleteWords: () => [],
+  syncWords: () => Promise.resolve(),
 });
 
-export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [words, setWords] = useState<Word[]>([]);
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
-  const languageContext = useLanguage();
-  const langWords = words.filter((word) =>
-    word.firstLang == languageContext.studyingLangCode && word.secondLang == languageContext.mainLangCode);
+export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const { initialLoad } = useAppInitializer();
+  const [loading, setLoading] = useState(true);
+  const [words, setWords] = useState<Word[]>(initialLoad.words);
+  const { mainLang, translationLang } = useLanguage();
+  const { saveWords, getAllWords, updateWord } = useWordsRepository();
+  const langWords = words.filter((word) => word.mainLang == mainLang && word.translationLang == translationLang);
 
   const createWord = (text: string, translation: string, source: string): Word => ({
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+    id: uuid.v4(),
     text,
     translation,
-    firstLang: languageContext.studyingLangCode,
-    secondLang: languageContext.mainLangCode,
+    mainLang,
+    translationLang,
     source: source,
-    interval: 1,
     addDate: new Date().toISOString(),
-    repetitionCount: 0,
-    lastReviewDate: new Date(Date.now()).toISOString(),
-    nextReviewDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    EF: 2.5,
-  });
-
-  const createEvaluation = (wordId: string, grade: number): Evaluation => ({
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-    wordId,
-    grade,
-    date: new Date()
+    active: true,
+    removed: false,
+    synced: false,
+    updatedAt: null,
+    locallyUpdatedAt: new Date().toISOString(),
   });
 
   const addWord = (text: string, translation: string, source: string) => {
-    if (words.find((word) => word.text === text && word.translation === translation)) return false;
+    if (words.find((word) => word.text === text && word.translation === translation)) return null;
     const newWord = createWord(text, translation, source);
     const updatedWords = [newWord, ...words];
+    syncWords(updatedWords);
     setWords(updatedWords);
-    saveWords(updatedWords);
-    return true;
+    saveWords([newWord]);
+    return newWord;
   };
 
-  const addEvaluations = (flashcardsUpdates: FlashcardUpdate[]) => {
-    const newEvaluations = flashcardsUpdates.map(update => createEvaluation(update.flashcardId, update.grade));
-    const updatedEvaluations = [...evaluations, ...newEvaluations];
-    setEvaluations(updatedEvaluations);
-    saveEvaluations(updatedEvaluations);
-    return true;
-  };
-
-  const getWord = (id: string): Word | undefined => {
-    return words.find(word => word.id === id);
-  };
+  const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
 
   const editWord = (id: string, text: string, translation: string) => {
+    const updatedAt = new Date().toISOString();
+    const updatedWords = words.map(word =>
+      word.id === id ? { ...word, text, translation, synced: false, locallyUpdatedAt: updatedAt } : word
+    );
+
+    updateWord(updatedWords.find(word => word.id === id)!);
+    setWords(updatedWords);
+    syncWords(updatedWords);
+  };
+
+  const removeWord = (id: string) => {
     const updatedWords = words.map(word => {
       if (word.id === id) {
-        return { ...word, text, translation };
+        return { ...word, synced: false, removed: true, locallyUpdatedAt: new Date().toISOString() };
       }
       return word;
     });
 
+    updateWord(updatedWords.find(word => word.id === id)!);
     setWords(updatedWords);
-    saveWords(updatedWords);
-  };
-
-  const removeWord = (id: string) => {
-    const updatedWords = words.filter(word => word.id !== id);
-
-    setWords(updatedWords);
-    saveWords(updatedWords);
-  };
-
-  const saveWords = async (wordsToSave: Word[] = words) => {
-    try {
-      await AsyncStorage.setItem('words', JSON.stringify(wordsToSave));
-    } catch (error) {
-      console.log('Error saving words to storage:', error);
-    }
-  };
-
-  const saveEvaluations = async (evaluationsToSave: Evaluation[] = evaluations) => {
-    try {
-      await AsyncStorage.setItem('evaluations', JSON.stringify(evaluationsToSave));
-    } catch (error) {
-      console.log('Error saving evaluations to storage:', error);
-    }
+    syncWords(updatedWords);
   };
 
   const loadWords = async () => {
     try {
-      const storedWords = await AsyncStorage.getItem('words');
-      const parsedWords = storedWords ? JSON.parse(storedWords) : [];
-      setWords(parsedWords);
+      await syncWords(initialLoad.words);
     } catch (error) {
       console.log('Error loading words from storage:', error);
     }
   };
 
-  const loadEvaluations = async () => {
+  const syncWords = async (inputWords?: Word[]) => {
     try {
-      const storedEvaluations = await AsyncStorage.getItem('evaluations');
-      const parsedEvaluations = storedEvaluations ? JSON.parse(storedEvaluations) : [];
-      setEvaluations(parsedEvaluations);
+      const wordsList = inputWords ?? (await getAllWords());
+      const unsyncedWords = getUnsyncedItems<Word>(wordsList);
+      const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
+
+      if (!serverUpdates) return;
+
+      const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
+      const serverWords = await fetchNewWords(updatedWords);
+      const mergedWords = mergeLocalAndServer<Word>(updatedWords, serverWords);
+      const changedWords = findChangedItems<Word>(wordsList, mergedWords);
+
+      if (changedWords.length > 0) {
+        setWords(mergedWords);
+        await saveWords(changedWords);
+      }
     } catch (error) {
-      console.log('Error loading words from storage:', error);
+      console.log("Error syncing words:", error);
     }
+  };
+
+  const fetchNewWords = async (updatedWords: Word[]): Promise<Word[]> => {
+    const latestUpdatedAt = findLatestUpdatedAt<Word>(updatedWords);
+    return await fetchUpdatedWords(latestUpdatedAt);
   };
 
   const deleteWords = async () => {
@@ -174,89 +146,33 @@ export const WordsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
     }
   };
 
-  const updateFlashcards = (updates: FlashcardUpdate[]) => {
-    const now = new Date();
-    const updatedFlashcards = words.map(flashcard => {
-      const update = updates.find(u => u.flashcardId === flashcard.id);
-
-      if (update) {
-        let { interval, EF, repetitionCount } = flashcard;
-        const { grade } = update;
-
-        if (grade === 1) {
-          repetitionCount = 0;
-          interval = 1;
-        } else {
-          repetitionCount += 1;
-
-          if (repetitionCount === 1) {
-            interval = 1;
-          } else if (repetitionCount === 2) {
-            interval = 3;
-          } else if (repetitionCount === 3) {
-            interval = 6;
-          } else {
-            interval = Math.round(interval * EF);
-          }
-        }
-
-        EF = grade === 3
-          ? Math.min(2.5, EF + 0.1)
-          : Math.max(1.3, EF - (3 - grade) * (0.08 + (3 - grade) * 0.02));
-
-        const lastReviewDate = new Date(Date.now()).toISOString();
-        const nextReviewDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000).toISOString();
-
-        return { ...flashcard, interval, repetitionCount, EF, lastReviewDate, nextReviewDate };
-      }
-
-      return flashcard;
-    });
-
-    addEvaluations(updates.filter((update: FlashcardUpdate) =>
-      words.find((word) => word.id === update.flashcardId).addDate));
-
-    setWords(updatedFlashcards);
-    saveWords(updatedFlashcards);
-  };
-
-
-  const getWordSet = (size: number, mode: SESSION_MODE): Word[] => {
-    const now = new Date();
-
-    const sortedWords = [...langWords].sort((a, b) => {
-      if(mode == SESSION_MODE.RANDOM) return Math.random() - 0.5;
-      const dateA = new Date(mode == SESSION_MODE.STUDY ? a.nextReviewDate : a.lastReviewDate).getTime();
-      const dateB = new Date(mode == SESSION_MODE.STUDY ? b.nextReviewDate : b.lastReviewDate).getTime();
-
-      if (dateA !== dateB) return dateA - dateB;
-      return a.repetitionCount - b.repetitionCount;
-    });
-
-    const reviewWords = sortedWords.filter(word => new Date(word.nextReviewDate) <= now);
-    return reviewWords.length >= size
-      ? reviewWords.slice(0, size).sort(() => Math.random() - 0.5)
-      : [...reviewWords, ...sortedWords.slice(reviewWords.length, size)].slice(0, size).sort(() => Math.random() - 0.5);
-  };
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      await loadWords();
+    } catch (error) {
+      console.log('Error loading words from storage:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    loadWords();
-    loadEvaluations();
-  }, [languageContext.mainLangCode, languageContext.studyingLangCode]);
+    loadData();
+  }, [translationLang, mainLang]);
 
   return (
     <WordsContext.Provider
       value={{
         words,
+        loading,
         langWords,
         addWord,
         getWord,
         editWord,
         removeWord,
-        updateFlashcards,
-        getWordSet,
         deleteWords,
-        evaluationsNumber: evaluations.length
+        syncWords,
       }}
     >
       {children}

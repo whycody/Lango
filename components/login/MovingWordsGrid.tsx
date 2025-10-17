@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Marquee } from "@animatereactnative/marquee";
 import CustomText from "../CustomText";
 

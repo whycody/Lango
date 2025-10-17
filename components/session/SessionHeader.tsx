@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomText from "../CustomText";
 import { StyleSheet, View } from "react-native";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../src/constants";
+import { MARGIN_HORIZONTAL } from "../../src/constants";
 import { useTranslation } from "react-i18next";
 
 type SessionHeaderProps = {

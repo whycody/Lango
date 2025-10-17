@@ -1,20 +1,22 @@
-import { StyleSheet, View, Image } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { MARGIN_VERTICAL } from "../../src/constants";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import CustomText from "../../components/CustomText";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../api/auth/AuthProvider";
 
 const ProfileCard = () => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const auth = useAuth();
 
+  if (!auth.user) return null;
+
   return (
     <View style={styles.root}>
-      {auth.user.photo ? (
+      {auth.user.picture ? (
         <View style={styles.profileIconContainer}>
-          <Image source={{ uri: auth.user.photo }} style={{ width: 90, height: 90, marginTop: 5, }} resizeMode="cover"/>
+          <Image source={{ uri: auth.user.picture }} style={{ width: 90, height: 90, marginTop: 5, }} resizeMode="cover"/>
         </View>
       ) : (
         <View style={styles.profileIconContainer}>

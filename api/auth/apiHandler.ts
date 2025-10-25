@@ -5,8 +5,12 @@ import { refreshTokens } from "../apiClient";
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 
-const ACCESS_TOKEN = 'accessToken';
-const REFRESH_TOKEN = 'refreshToken';
+let isRefreshing = false;
+let refreshPromise: Promise<void> | null = null;
+const subscribers: (() => void)[] = [];
+
+const ACCESS_TOKEN = "accessToken";
+const REFRESH_TOKEN = "refreshToken";
 
 const getBaseURL = () => process.env['API_URL'];
 
@@ -32,52 +36,68 @@ export const setRefreshToken = async (token: string): Promise<void> => {
 
 export const loadTokens = async (): Promise<void> => {
   const savedAccessToken = await SecureStore.getItemAsync(ACCESS_TOKEN);
-
-  if (savedAccessToken) {
-    accessToken = savedAccessToken;
-  }
+  if (savedAccessToken) accessToken = savedAccessToken;
 
   const savedRefreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN);
-
-  if (savedRefreshToken) {
-    refreshToken = savedRefreshToken;
-  }
+  if (savedRefreshToken) refreshToken = savedRefreshToken;
 };
 
-const refreshAccessToken = async (): Promise<void> => {
-  if (!refreshToken) {
-    throw new Error('Brak tokenu odświeżającego.');
-  }
-
-  try {
-    const response = await refreshTokens(refreshToken);
-    await setAccessToken(response.accessToken);
-    await setRefreshToken(response.refreshToken);
-  } catch (error) {
-    console.error('Błąd podczas odświeżania tokena:', error);
-    throw new Error('Nie można odświeżyć tokena.');
-  }
+function subscribeTokenRefresh(callback: () => void) {
+  subscribers.push(callback);
 }
 
-export const apiCall = async <T>(options: {
-  method: string;
-  url: string;
-  data?: object | string
-}, refreshed: boolean = false, timeout: number = 15000): Promise<T> => {
-  console.log('Calling API:', options.method, `${getBaseURL()}${options.url}`, options.data);
+function onRefreshed() {
+  subscribers.forEach((cb) => cb());
+  subscribers.length = 0;
+}
+
+const refreshAccessToken = async (): Promise<void> => {
+  if (isRefreshing && refreshPromise) return refreshPromise;
+  if (!refreshToken) throw new Error("No refresh token provided.");
+
+  isRefreshing = true;
+
+  refreshPromise = (async () => {
+    try {
+      const response = await refreshTokens(refreshToken as string);
+      await setAccessToken(response.accessToken);
+      await setRefreshToken(response.refreshToken);
+      onRefreshed();
+    } catch (error) {
+      console.error("Error with refreshing token:", error);
+      await removeAccessToken();
+      await removeRefreshToken();
+      throw new Error("Cannot refresh token.");
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+};
+
+export const apiCall = async <T>(
+  options: {
+    method: string;
+    url: string;
+    data?: object | string;
+  },
+  refreshed: boolean = false,
+  timeout: number = 15000
+): Promise<T> => {
+  console.log("Calling API:", options.method, `${getBaseURL()}${options.url}`, options.data);
 
   if (!accessToken) {
     await loadTokens();
   }
 
-  // console.log('Access Token:', accessToken);
-
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   if (accessToken) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
+    headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
   try {
@@ -88,16 +108,19 @@ export const apiCall = async <T>(options: {
       data: options.data,
       timeout,
     });
-
-    // console.log(response.data)
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 401) {
       if (!refreshed) {
-        await refreshAccessToken();
+        if (isRefreshing) {
+          await new Promise<void>((resolve) => subscribeTokenRefresh(resolve));
+        } else {
+          await refreshAccessToken();
+        }
+
         return apiCall(options, true);
       } else {
-        throw new Error('Nieautoryzowany – accessToken wygasł lub jest nieprawidłowy.');
+        throw new Error("Unauthorized");
       }
     }
 

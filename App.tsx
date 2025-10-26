@@ -9,6 +9,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import AuthProvider from "./api/auth/AuthProvider";
 import Root from "./navigation/Root";
 import AppInitializerProvider from "./store/AppInitializerContext";
+import { UserStorageProvider } from "./store/UserStorageContext";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -40,9 +41,11 @@ export default function App() {
           <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
             <NavigationContainer theme={DarkTheme}>
               <AuthProvider>
-                <AppInitializerProvider>
-                  <Root />
-                </AppInitializerProvider>
+                <UserStorageProvider>
+                  <AppInitializerProvider>
+                    <Root/>
+                  </AppInitializerProvider>
+                </UserStorageProvider>
               </AuthProvider>
             </NavigationContainer>
           </SafeAreaView>

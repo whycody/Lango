@@ -52,11 +52,9 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
   }
   
   const handleActionButtonPress = async () => {
-    await Promise.all([
-      userPreferences.setFlashcardSide(flashcardSide),
-      userPreferences.setSessionMode(sessionMode),
-      userPreferences.setSessionLength(sessionLength),
-    ]);
+    userPreferences.setFlashcardSide(flashcardSide);
+    userPreferences.setSessionMode(sessionMode);
+    userPreferences.setSessionLength(sessionLength);
     props.onSessionStart(sessionLength, sessionMode, flashcardSide);
   }
 

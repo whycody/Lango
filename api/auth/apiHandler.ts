@@ -7,7 +7,10 @@ let refreshToken: string | null = null;
 
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
-const subscribers: (() => void)[] = [];
+const subscribers: {
+  resolve: () => void;
+  reject: (err: any) => void;
+}[] = [];
 
 const ACCESS_TOKEN = "accessToken";
 const REFRESH_TOKEN = "refreshToken";
@@ -42,24 +45,37 @@ export const loadTokens = async (): Promise<void> => {
   if (savedRefreshToken) refreshToken = savedRefreshToken;
 };
 
-function subscribeTokenRefresh(callback: () => void) {
-  subscribers.push(callback);
+function subscribeTokenRefresh(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    subscribers.push({ resolve, reject });
+  });
 }
 
 function onRefreshed() {
-  subscribers.forEach((cb) => cb());
+  subscribers.forEach(({ resolve }) => resolve());
   subscribers.length = 0;
+}
+
+function onRefreshFailed(error: any) {
+  subscribers.forEach(({ reject }) => reject(error));
+  subscribers.length = 0;
+}
+
+const getAPIError = (message: string, status: number) => {
+  const error: any = new Error(message);
+  error.response = { status: status };
+  return error;
 }
 
 const refreshAccessToken = async (): Promise<void> => {
   if (isRefreshing && refreshPromise) return refreshPromise;
-  if (!refreshToken) throw new Error("No refresh token provided.");
+  if (!refreshToken) throw getAPIError('No refresh token provided.', 401);
 
   isRefreshing = true;
 
   refreshPromise = (async () => {
     try {
-      const response = await refreshTokens(refreshToken as string);
+      const response = await refreshTokens(refreshToken);
       await setAccessToken(response.accessToken);
       await setRefreshToken(response.refreshToken);
       onRefreshed();
@@ -67,7 +83,8 @@ const refreshAccessToken = async (): Promise<void> => {
       console.error("Error with refreshing token:", error);
       await removeAccessToken();
       await removeRefreshToken();
-      throw new Error("Cannot refresh token.");
+      onRefreshFailed(error);
+      throw getAPIError("Cannot refresh token", 401);
     } finally {
       isRefreshing = false;
       refreshPromise = null;
@@ -117,10 +134,9 @@ export const apiCall = async <T>(
         } else {
           await refreshAccessToken();
         }
-
         return apiCall(options, true);
       } else {
-        throw new Error("Unauthorized");
+        throw getAPIError('Unathorized', 401);
       }
     }
 

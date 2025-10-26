@@ -1,6 +1,7 @@
-import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, FC, ReactNode, useContext } from "react";
 import { SESSION_MODE } from "./types";
+import { useUserStorage } from "./UserStorageContext";
+import { useTypedMMKV } from "../hooks/useTypedMKKV";
 
 export enum FLASHCARD_SIDE {
   WORD = 'WORD',
@@ -11,18 +12,18 @@ interface UserPreferencesContext {
   flashcardSide: FLASHCARD_SIDE;
   sessionMode: SESSION_MODE;
   sessionLength: 1 | 2 | 3;
-  setFlashcardSide: (side: FLASHCARD_SIDE) => Promise<void>;
-  setSessionMode: (mode: SESSION_MODE) => Promise<void>;
-  setSessionLength: (length: 1 | 2 | 3) => Promise<void>;
+  setFlashcardSide: (side: FLASHCARD_SIDE) => void;
+  setSessionMode: (mode: SESSION_MODE) => void;
+  setSessionLength: (length: 1 | 2 | 3) => void;
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContext>({
   flashcardSide: FLASHCARD_SIDE.WORD,
   sessionMode: SESSION_MODE.STUDY,
   sessionLength: 2,
-  setFlashcardSide: () => Promise.resolve(),
-  setSessionMode: () => Promise.resolve(),
-  setSessionLength: () => Promise.resolve()
+  setFlashcardSide: () => {},
+  setSessionMode: () => {},
+  setSessionLength: () => {}
 });
 
 const FLASHCARD_SIDE_KEY = 'flashcardSide';
@@ -30,64 +31,14 @@ const SESSION_MODE_KEY = 'sessionMode';
 const SESSION_LENGTH_KEY = 'sessionLength';
 
 const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [currentFlashcardSide, setCurrentFlashcardSide] = useState(FLASHCARD_SIDE.WORD);
-  const [currentSessionMode, setCurrentSessionMode] = useState(SESSION_MODE.STUDY);
-  const [currentSessionLength, setCurrentSessionLength] = useState<1 | 2 | 3>(2);
-
-  useEffect(() => {
-    const loadUserPreferences = async () => {
-      try {
-        const flashcardSide = await AsyncStorage.getItem(FLASHCARD_SIDE_KEY);
-        const sessionMode = await AsyncStorage.getItem(SESSION_MODE_KEY);
-        const sessionLength = await AsyncStorage.getItem(SESSION_LENGTH_KEY);
-
-        if (flashcardSide) {
-          setCurrentFlashcardSide(flashcardSide as FLASHCARD_SIDE);
-        }
-
-        if (sessionMode) {
-          setCurrentSessionMode(sessionMode as SESSION_MODE);
-        }
-
-        if (sessionLength) {
-          const length = Number(sessionLength);
-          if (length === 1 || length === 2 || length === 3) {
-            setCurrentSessionLength(length);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to load statistics from AsyncStorage", error);
-      }
-    };
-
-    loadUserPreferences();
-  }, []);
-
-  const setFlashcardSide = async (side: FLASHCARD_SIDE) => {
-    setCurrentFlashcardSide(side);
-    await AsyncStorage.setItem(FLASHCARD_SIDE_KEY, side);
-  };
-
-  const setSessionMode = async (mode: SESSION_MODE) => {
-    setCurrentSessionMode(mode);
-    await AsyncStorage.setItem(SESSION_MODE_KEY, mode);
-  };
-
-  const setSessionLength = async (length: 1 | 2 | 3) => {
-    setCurrentSessionLength(length);
-    await AsyncStorage.setItem(SESSION_LENGTH_KEY, String(length));
-  }
+  const { storage } = useUserStorage();
+  const [flashcardSide, setFlashcardSide] = useTypedMMKV<FLASHCARD_SIDE>(FLASHCARD_SIDE_KEY, FLASHCARD_SIDE.WORD, storage);
+  const [sessionMode, setSessionMode] = useTypedMMKV<SESSION_MODE>(SESSION_MODE_KEY, SESSION_MODE.STUDY, storage);
+  const [sessionLength, setSessionLength] = useTypedMMKV<1 | 2 | 3>(SESSION_LENGTH_KEY, 2, storage);
 
   return (
     <UserPreferencesContext.Provider
-      value={{
-        flashcardSide: currentFlashcardSide,
-        sessionMode: currentSessionMode,
-        sessionLength: currentSessionLength,
-        setFlashcardSide,
-        setSessionMode,
-        setSessionLength
-      }}
+      value={{ flashcardSide, sessionMode, sessionLength, setFlashcardSide, setSessionMode, setSessionLength }}
     >
       {children}
     </UserPreferencesContext.Provider>

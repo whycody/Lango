@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BackHandler, Pressable, StyleSheet, View } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { expo } from '../../app.json'
@@ -11,13 +11,13 @@ import StartSessionBottomSheet from "../../sheets/StartSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SquareFlag from "../../components/SquareFlag";
 import LanguageBottomSheet from "../../sheets/LanguageBottomSheet";
-import { useWords } from "../../store/WordsContext";
 import { getCurrentStreak, Streak } from "../../utils/streakUtils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SESSION_MODE } from "../../store/types";
 import { FLASHCARD_SIDE } from "../../store/UserPreferencesContext";
 import { useStatistics } from "../../store/StatisticsContext";
 import { useLanguage } from "../../store/LanguageContext";
+import { useWordsHeuristicStates } from "../../store/WordsHeuristicStatesContext";
 
 const HeaderCard = () => {
   const { t } = useTranslation();
@@ -25,18 +25,17 @@ const HeaderCard = () => {
   const styles = getStyles(colors);
   const navigation = useNavigation();
   const langContext = useLanguage();
-  const wordsContext = useWords();
-  const { langWords } = wordsContext;
+  const { langWordsHeuristicStates } = useWordsHeuristicStates();
   const statisticsContext = useStatistics();
   const [streak, setStreak] = useState<Streak>({ numberOfDays: 0, active: false });
   const languageSheetRef = useRef<BottomSheetModal>(null);
   const sessionSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
-  const availableWords = langWords.length <= 50 ? langWords.length : 50;
-  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((langWords.slice(0, 50).filter(
-    word => word.repetitionCount > 2 && new Date(word.nextReviewDate) > new Date()).length / availableWords) * 100) / 100;
-  const wellKnownWords = langWords.filter(word => word.repetitionCount > 2).length;
+  const availableWords = langWordsHeuristicStates.length <= 50 ? langWordsHeuristicStates.length : 50;
+  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((langWordsHeuristicStates.slice(0, 50).filter(
+    word => word.repetitionsCount > 2 && new Date(word.nextReviewDate) > new Date()).length / availableWords) * 100) / 100;
+  const wellKnownWords = langWordsHeuristicStates.filter(word => word.repetitionsCount > 2).length;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -51,7 +50,7 @@ const HeaderCard = () => {
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setStreak(getCurrentStreak(statisticsContext.studyDaysList));
   }, [statisticsContext.studyDaysList]);
 
@@ -67,7 +66,7 @@ const HeaderCard = () => {
   const getReportMessage = () => {
     const percentage = Math.floor(lastWellKnownWords * 100);
 
-    if (langWords.length < 5) return t('report1');
+    if (langWordsHeuristicStates.length < 5) return t('report1');
     if (wellKnownWords <= 10 && lastWellKnownWords < 0.1) return t('report2');
     if (wellKnownWords > 10 && lastWellKnownWords < 0.1) return t('report3', { wellKnownWords });
     if (lastWellKnownWords >= 0.1 && wellKnownWords <= 10) return t('report4', { percentage });
@@ -102,7 +101,7 @@ const HeaderCard = () => {
         label={t('startLearning')}
         primary={true}
         icon={'play'}
-        active={langWords.length >= 5}
+        active={langWordsHeuristicStates.length >= 5}
         style={styles.actionButton}
         onPress={handleActinButtonPress}
       />

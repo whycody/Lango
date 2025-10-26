@@ -1,11 +1,11 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './apiHandler';
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
 import { User } from '../../store/types';
 import LoadingView from "../../components/LoadingView";
+import { useMMKVObject } from "react-native-mmkv";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -30,7 +30,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<"Google" | "Facebook" | false>(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
   useEffect(() => {
     getSession();
@@ -40,36 +40,22 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const loggedUser = await getUserInfo();
       if (loggedUser) {
-        await saveUserToStorage(loggedUser);
+        setUser(loggedUser);
         setUser(loggedUser);
         setIsAuthenticated(true);
         return;
       }
 
-      const storedUser = await getUserFromStorage();
-      if (storedUser) {
-        setUser(storedUser);
+      if (user) {
+        setUser(user);
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
       }
     } catch (error) {
+      if (error.response?.status !== 401) return;
       console.log("Error loading session: ", error);
       await removeData();
-    }
-  }
-
-  const saveUserToStorage = async (user: User) => {
-    await AsyncStorage.setItem(USER_PROFILE_INFO, JSON.stringify(user));
-  }
-
-  const getUserFromStorage = async (): Promise<User | null> => {
-    try {
-      const userJson = await AsyncStorage.getItem(USER_PROFILE_INFO);
-      return userJson ? JSON.parse(userJson) : null;
-    } catch (error) {
-      console.log("Error loading user from storage: ", error);
-      return null;
     }
   }
 
@@ -77,7 +63,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setIsAuthenticated(false);
     await removeAccessToken();
     await removeRefreshToken();
-    await AsyncStorage.removeItem(USER_PROFILE_INFO);
     setUser(null);
   }
 

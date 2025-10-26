@@ -1,8 +1,9 @@
-import { createContext, FC, ReactNode, useContext, useState } from "react";
+import { createContext, FC, ReactNode, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Language, LanguageCode } from "./types";
-import { useLanguageRepository } from "../hooks/repo/useLanguageRepository";
-import { useAppInitializer } from "./AppInitializerContext";
+import { MAIN_LANG, TRANSLATION_LANG, useAppInitializer } from "./AppInitializerContext";
+import { useTypedMMKV } from "../hooks/useTypedMKKV";
+import { useUserStorage } from "./UserStorageContext";
 
 interface LanguageContextProps {
   languages: Language[];
@@ -23,19 +24,9 @@ export const LanguageContext = createContext<LanguageContextProps>({
 const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
   const { initialLoad } = useAppInitializer();
-  const { setMainLang, setTranslationLang } = useLanguageRepository();
-  const [mainLangState, setMainLangState] = useState<LanguageCode>(initialLoad.mainLang);
-  const [translationLangState, setTranslationLangState] = useState<LanguageCode>(initialLoad.translationLang);
-
-  const updateMainLang = async (langCode: LanguageCode) => {
-    await setMainLang(langCode);
-    setMainLangState(langCode);
-  }
-
-  const updateTranslationLang = async (langCode: LanguageCode) => {
-    await setTranslationLang(langCode);
-    setTranslationLangState(langCode);
-  }
+  const { storage } = useUserStorage();
+  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, initialLoad.mainLang, storage);
+  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(TRANSLATION_LANG, initialLoad.translationLang, storage);
 
   const languages: Language[] = [
     { languageCode: LanguageCode.ENGLISH, languageName: t('english'), languageInTargetLanguage: 'English' },
@@ -46,10 +37,10 @@ const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <LanguageContext.Provider value={{
       languages,
-      mainLang: mainLangState,
-      translationLang: translationLangState,
-      setMainLang: updateMainLang,
-      setTranslationLang: updateTranslationLang
+      mainLang,
+      translationLang,
+      setMainLang,
+      setTranslationLang
     }}>
       {children}
     </LanguageContext.Provider>

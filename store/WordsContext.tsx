@@ -1,5 +1,4 @@
 import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import uuid from 'react-native-uuid';
@@ -23,7 +22,6 @@ interface WordsContextProps {
   getWord: (id: string) => Word | undefined;
   editWord: (id: string, text: string, translation: string) => void;
   removeWord: (id: string) => void;
-  deleteWords: () => void;
   syncWords: () => Promise<void>;
 }
 
@@ -38,7 +36,6 @@ const WordsContext = createContext<WordsContextProps>({
   getWord: () => undefined,
   editWord: () => [],
   removeWord: () => [],
-  deleteWords: () => [],
   syncWords: () => Promise.resolve(),
 });
 
@@ -136,16 +133,6 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return await fetchUpdatedWords(latestUpdatedAt);
   };
 
-  const deleteWords = async () => {
-    try {
-      await AsyncStorage.removeItem('words');
-      setWords([]);
-      console.log('All words have been deleted from storage.');
-    } catch (error) {
-      console.log('Error deleting words from storage:', error);
-    }
-  };
-
   const loadData = async () => {
     try {
       setLoading(true);
@@ -171,7 +158,6 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         getWord,
         editWord,
         removeWord,
-        deleteWords,
         syncWords,
       }}
     >

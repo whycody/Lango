@@ -8,8 +8,9 @@ import { runMigrations } from "../database/utils/migrations";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
 import { determineLanguages } from "../database/utils/determineLanguages";
-import { useLanguageRepository } from "../hooks/repo/useLanguageRepository";
-import { InitialLoad } from "./types";
+import { InitialLoad, LanguageCode } from "./types";
+import { useTypedMMKV } from "../hooks/useTypedMKKV";
+import { useUserStorage } from "./UserStorageContext";
 
 interface AppInitializerContextProps {
   initialLoad: InitialLoad | null;
@@ -20,6 +21,9 @@ export const AppInitializerContext = createContext<AppInitializerContextProps>({
   initialLoad: null,
   loading: true,
 });
+
+export const MAIN_LANG = "mainLangCode";
+export const TRANSLATION_LANG = "translationLangCode";
 
 const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
@@ -35,7 +39,9 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
     createTables: createWordsHeuristicStatesTables,
     getAllWordsStates: getAllWordsHeuristicStates
   } = useWordsHeuristicStatesRepository();
-  const { getMainLang, getTranslationLang, setMainLang, setTranslationLang } = useLanguageRepository();
+  const { storage } = useUserStorage();
+  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode | ''>(MAIN_LANG, '', storage);
+  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode | ''>(TRANSLATION_LANG, '', storage);
 
   const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,17 +57,15 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
         createWordsHeuristicStatesTables()
       ]);
 
-      let [mainLang, translationLang] = await Promise.all([getMainLang(), getTranslationLang()]);
+      let [currentMainLang, currentTranslationLang] = [mainLang, translationLang]
 
       if (!mainLang || !translationLang) {
         const determined = await determineLanguages(user);
-        mainLang = determined.mainLang;
-        translationLang = determined.translationLang;
+        currentMainLang = determined.mainLang;
+        currentTranslationLang = determined.translationLang;
 
-        await Promise.all([
-          setMainLang(mainLang),
-          setTranslationLang(translationLang)
-        ]);
+        setMainLang(currentMainLang);
+        setTranslationLang(currentTranslationLang);
       }
 
       await runMigrations(user.userId);
@@ -84,8 +88,8 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
         suggestions,
         wordsMLStates,
         wordsHeuristicStates,
-        mainLang,
-        translationLang
+        mainLang: mainLang as LanguageCode,
+        translationLang: translationLang as LanguageCode
       });
     } catch (e) {
       console.error("AppInitializer init failed", e);

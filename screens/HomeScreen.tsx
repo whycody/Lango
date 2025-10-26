@@ -17,17 +17,24 @@ const HomeScreen = () => {
   const evaluations = useEvaluations();
   const [refreshing, setRefreshing] = useState(false);
 
+  const tryToRefreshData = async () => {
+    try {
+      setRefreshing(true);
+      await words.syncWords();
+      await Promise.all([
+        sessions.syncSessions(),
+        suggestions.syncSuggestions(),
+        evaluations.syncEvaluations(),
+      ]);
+    } finally {
+      await auth.getSession();
+      setRefreshing(false);
+    }
+  }
+
   const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await Promise.all([
-      words.syncWords(),
-      sessions.syncSessions(),
-      suggestions.syncSuggestions(),
-      evaluations.syncEvaluations(),
-    ]);
-    await auth.getSession();
-    setRefreshing(false);
-  }, [words]);
+    tryToRefreshData();
+  }, [words, sessions, suggestions, evaluations, auth]);
 
   return (
     <ScrollView

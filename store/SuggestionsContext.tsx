@@ -81,12 +81,14 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const syncSuggestions = async (inputSuggestions?: Suggestion[]) => {
     try {
       const suggestionsList = inputSuggestions ?? (await getAllSuggestions());
-      const unsyncedSuggestions = getUnsyncedItems<Suggestion>(suggestionsList);
+      const langSuggestionsList = suggestionsList.filter((suggestion) => suggestion.mainLang ==
+        languageContext.mainLang && suggestion.translationLang == languageContext.translationLang);
+      const unsyncedSuggestions = getUnsyncedItems<Suggestion>(langSuggestionsList);
       const serverUpdates = await syncInBatches<Suggestion>(unsyncedSuggestions, syncSuggestionsOnServer);
 
       if (!serverUpdates) return;
 
-      const serverSuggestions = await fetchNewSuggestions(suggestionsList);
+      const serverSuggestions = await fetchNewSuggestions(langSuggestionsList);
       const mergedSuggestions = mergeLocalAndServer<Suggestion>(suggestionsList, serverSuggestions);
       const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || (!suggestion.skipped && !suggestion.added));
       const suggestionsToRemove = mergedSuggestions.filter(suggestion => suggestion.synced && (suggestion.skipped || suggestion.added));

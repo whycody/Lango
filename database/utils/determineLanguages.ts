@@ -1,4 +1,4 @@
-import RNLocalize from 'react-native-localize';
+import * as RNLocalize from 'react-native-localize';
 import { LanguageCode, User } from "../../store/types";
 
 export const determineLanguages = async (user?: User) => {

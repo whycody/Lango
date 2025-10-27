@@ -4,12 +4,12 @@
     "jsEngine": "hermes",
     "name": "Lango",
     "slug": "lango",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "newArchEnabled": true,
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.0.6",
+    "runtimeVersion": "1.1.0",
     "plugins": [
       [
         "react-native-fbsdk-next",
@@ -33,7 +33,19 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "5"
+      "buildNumber": "6",
+      "bundleIdentifier": "com.whycody.lango",
+      "infoPlist": {
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,7 +53,7 @@
         "backgroundColor": "#07071b"
       },
       "package": "com.whycody.lango",
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "favicon": "./assets/favicon.png"

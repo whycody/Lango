@@ -47,54 +47,70 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const init = async () => {
-    try {
-      await Promise.all([
-        createSessionsTables(),
-        createWordsTables(),
-        createEvaluationsTables(),
-        createSuggestionsTables(),
-        createWordsMLStatesTables(),
-        createWordsHeuristicStatesTables()
-      ]);
+      try {
+        await Promise.all([
+          createSessionsTables(),
+          createWordsTables(),
+          createEvaluationsTables(),
+          createSuggestionsTables(),
+          createWordsMLStatesTables(),
+          createWordsHeuristicStatesTables()
+        ]);
 
-      let [currentMainLang, currentTranslationLang] = [mainLang, translationLang]
+        await runMigrations(user.userId);
 
-      if (!mainLang || !translationLang) {
-        const determined = await determineLanguages(user);
-        currentMainLang = determined.mainLang;
-        currentTranslationLang = determined.translationLang;
+        const [sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates] = await Promise.all([
+          getAllSessions(),
+          getAllWords(),
+          getAllEvaluations(),
+          getAllSuggestions(),
+          getAllWordsMLStates(),
+          getAllWordsHeuristicStates(),
+        ]);
 
-        setMainLang(currentMainLang);
-        setTranslationLang(currentTranslationLang);
+        let [currentMainLang, currentTranslationLang] = [mainLang, translationLang]
+
+        if ((!mainLang || !translationLang) && words && wordsHeuristicStates) {
+          const earliestState = wordsHeuristicStates.reduce((earliest, current) => {
+            const earliestDate = new Date(earliest.lastReviewDate);
+            const currentDate = new Date(current.lastReviewDate);
+            return currentDate > earliestDate ? current : earliest;
+          }, wordsHeuristicStates[0]);
+
+          if (earliestState) {
+            const word = words.find(w => (w.id && w.id === earliestState.wordId));
+            if (word) {
+              setMainLang(word.mainLang as LanguageCode);
+              setTranslationLang(word.translationLang as LanguageCode);
+            }
+          }
+        }
+
+        if (!mainLang || !translationLang) {
+          const determined = await determineLanguages(user);
+          currentMainLang = determined.mainLang;
+          currentTranslationLang = determined.translationLang;
+
+          setMainLang(currentMainLang);
+          setTranslationLang(currentTranslationLang);
+        }
+
+        setInitialLoad({
+          sessions,
+          words,
+          evaluations,
+          suggestions,
+          wordsMLStates,
+          wordsHeuristicStates,
+          mainLang: mainLang as LanguageCode,
+          translationLang: translationLang as LanguageCode
+        });
+      } catch
+        (e) {
+        console.error("AppInitializer init failed", e);
       }
-
-      await runMigrations(user.userId);
-
-      const [sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates] = await Promise.all([
-        getAllSessions(),
-        getAllWords(),
-        getAllEvaluations(),
-        getAllSuggestions(),
-        getAllWordsMLStates(),
-        getAllWordsHeuristicStates(),
-        mainLang,
-        translationLang
-      ]);
-
-      setInitialLoad({
-        sessions,
-        words,
-        evaluations,
-        suggestions,
-        wordsMLStates,
-        wordsHeuristicStates,
-        mainLang: mainLang as LanguageCode,
-        translationLang: translationLang as LanguageCode
-      });
-    } catch (e) {
-      console.error("AppInitializer init failed", e);
     }
-  };
+  ;
 
   useEffect(() => {
     setLoading(!initialLoad);

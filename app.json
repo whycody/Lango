@@ -52,6 +52,7 @@
         "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#07071b"
       },
+      "edgeToEdgeEnabled": true,
       "package": "com.whycody.lango",
       "versionCode": 6
     },

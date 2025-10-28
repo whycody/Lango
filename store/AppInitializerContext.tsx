@@ -70,7 +70,7 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         let [currentMainLang, currentTranslationLang] = [mainLang, translationLang]
 
-        if ((!mainLang || !translationLang) && words && evaluations) {
+        if ((!mainLang || !translationLang) && !!words && !!evaluations) {
           const earliestEvaluation = evaluations.reduce((earliest, current) => {
             const earliestDate = new Date(earliest.locallyUpdatedAt);
             const currentDate = new Date(current.locallyUpdatedAt);
@@ -78,15 +78,18 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
           }, evaluations[0]);
 
           if (earliestEvaluation) {
-            const word = words.find(w => (w.id && w.id === earliestEvaluation.wordId));
+            const word = words.find(w => w.id === earliestEvaluation.wordId);
+
             if (word) {
+              currentMainLang = word.mainLang as LanguageCode;
+              currentTranslationLang = word.translationLang as LanguageCode;
               setMainLang(word.mainLang as LanguageCode);
               setTranslationLang(word.translationLang as LanguageCode);
             }
           }
         }
 
-        if (!mainLang || !translationLang) {
+        if (!currentMainLang || !currentTranslationLang) {
           const determined = await determineLanguages(user);
           currentMainLang = determined.mainLang;
           currentTranslationLang = determined.translationLang;

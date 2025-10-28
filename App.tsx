@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar, SafeAreaView, View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import './i18n';
 import * as Font from 'expo-font';
@@ -35,7 +35,6 @@ export default function App() {
 
   return (
     <>
-      <StatusBar barStyle='light-content' backgroundColor={colors.background}/>
       <GestureHandlerRootView>
         <SafeAreaProvider style={{ backgroundColor: colors.background }}>
           <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>

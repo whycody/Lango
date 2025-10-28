@@ -66,7 +66,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const updatedSessions = [newSession, ...sessions];
     setSessions(updatedSessions);
     saveSessions([newSession]);
-    syncSessions(updatedSessions).then(auth.getSession);
+    syncSessions(updatedSessions);
     return newSession;
   };
 
@@ -88,6 +88,8 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setSessions(mergedSessions);
         await saveSessions(changedSessions);
       }
+
+      await auth.getSession();
     } catch (error) {
       console.log("Error syncing sessions:", error);
     }

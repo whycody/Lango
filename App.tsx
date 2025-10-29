@@ -11,10 +11,13 @@ import AppInitializerProvider from "./store/AppInitializerContext";
 import { UserStorageProvider } from "./store/UserStorageContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import { checkUpdates } from "./utils/checkUpdates";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const { colors } = DarkTheme;
+
+  checkUpdates();
 
   useEffect(() => {
     async function loadFonts() {

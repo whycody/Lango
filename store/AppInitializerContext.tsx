@@ -49,8 +49,6 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const init = async () => {
       try {
-        await checkUpdates();
-
         await Promise.all([
           createSessionsTables(),
           createWordsTables(),

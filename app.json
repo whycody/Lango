@@ -10,6 +10,9 @@
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "runtimeVersion": "1.1.0",
+    "splash": {
+      "backgroundColor": "#0f0f30"
+    },
     "plugins": [
       [
         "react-native-fbsdk-next",

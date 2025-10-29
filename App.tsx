@@ -5,12 +5,11 @@ import './i18n';
 import * as Font from 'expo-font';
 import { DarkTheme } from "./themes";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import AuthProvider from "./api/auth/AuthProvider";
 import Root from "./navigation/Root";
 import AppInitializerProvider from "./store/AppInitializerContext";
 import { UserStorageProvider } from "./store/UserStorageContext";
-import { enableEdgeToEdge } from 'react-native-edge-to-edge'
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -18,7 +17,6 @@ export default function App() {
 
   useEffect(() => {
     async function loadFonts() {
-      enableEdgeToEdge()
       await Font.loadAsync({
         'Montserrat-Regular': require('./assets/fonts/Montserrat-Regular.ttf'),
         'Montserrat-SemiBold': require('./assets/fonts/Montserrat-SemiBold.ttf'),
@@ -37,9 +35,8 @@ export default function App() {
 
   return (
     <>
-      <StatusBar />
-      <GestureHandlerRootView>
-        <SafeAreaProvider style={{ backgroundColor: colors.background }}>
+      <SafeAreaProvider style={{ backgroundColor: colors.background }}>
+        <GestureHandlerRootView>
           <NavigationContainer theme={DarkTheme}>
             <AuthProvider>
               <UserStorageProvider>
@@ -49,8 +46,8 @@ export default function App() {
               </UserStorageProvider>
             </AuthProvider>
           </NavigationContainer>
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
     </>
   );
 }

@@ -39,7 +39,8 @@ const AppStack = () => {
                                 screenOptions={{
                                   headerShown: false,
                                   navigationBarColor: colors.card,
-                                  statusBarHidden: true
+                                  statusBarTranslucent: true,
+                                  statusBarColor: 'transparent'
                                 }}>
                                 <Stack.Screen
                                   name='Tabs'

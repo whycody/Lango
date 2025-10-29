@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ListFilter from "../components/ListFilter";
 import { WordWithDetails } from "../store/types";
 import { useWordsWithDetails } from "../store/WordsWithDetailsContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -34,6 +35,7 @@ const FlashcardsScreen = () => {
 
   const inputRef = useRef<TextInput>(null);
   const [searchingMode, setSearchingMode] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const flashcards = useMemo(() =>
       wordWithDetailsContext.langWordsWithDetails.filter((word: WordWithDetails) =>
@@ -186,7 +188,7 @@ const FlashcardsScreen = () => {
   const data = searchingMode ? [...flashcards] : [{ id: 'header' }, { id: 'subheader' }, ...flashcards];
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: colors.card }]}>
       <RemoveFlashcardBottomSheet
         ref={removeFlashcardBottomSheetRef}
         flashcardId={editFlashcardId}

@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView } from "react-native";
+import { RefreshControl, ScrollView, View } from "react-native";
 import { useCallback, useState } from "react";
 import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
@@ -8,6 +8,7 @@ import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { useSuggestions } from "../store/SuggestionsContext";
 import { useAuth } from "../api/auth/AuthProvider";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
   const auth = useAuth();
@@ -16,6 +17,7 @@ const HomeScreen = () => {
   const suggestions = useSuggestions();
   const evaluations = useEvaluations();
   const [refreshing, setRefreshing] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const tryToRefreshData = async () => {
     try {
@@ -47,6 +49,7 @@ const HomeScreen = () => {
         />
       }
     >
+      <View style={{ height: insets.top }}/>
       <HeaderCard/>
       <WordsSuggestionsCard/>
       <StatisticsCard/>

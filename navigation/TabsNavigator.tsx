@@ -9,6 +9,7 @@ import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type TabsParamList = {
   Home: undefined;
@@ -23,6 +24,7 @@ const TabsNavigator = () => {
   const { colors } = useTheme();
   const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -63,7 +65,7 @@ const TabsNavigator = () => {
               {t(route.name.toLowerCase())}
             </CustomText>
           ),
-          tabBarStyle: styles.tabBarStyle,
+          tabBarStyle: [styles.tabBarStyle, { paddingBottom: 5 + insets.bottom, height: 58 + insets.bottom }],
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>

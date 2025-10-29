@@ -11,6 +11,7 @@ import { determineLanguages } from "../database/utils/determineLanguages";
 import { InitialLoad, LanguageCode } from "./types";
 import { useTypedMMKV } from "../hooks/useTypedMKKV";
 import { useUserStorage } from "./UserStorageContext";
+import { checkUpdates } from "../utils/checkUpdates";
 
 interface AppInitializerContextProps {
   initialLoad: InitialLoad | null;
@@ -48,6 +49,8 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const init = async () => {
       try {
+        await checkUpdates();
+
         await Promise.all([
           createSessionsTables(),
           createWordsTables(),

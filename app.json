@@ -77,6 +77,7 @@
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/f03ad99f-a6b8-42b4-a859-a05091b51fbc"
     }
   }

@@ -10,6 +10,7 @@ import { useSuggestions } from "../store/SuggestionsContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDynamicStatusBar } from "../hooks/useDynamicStatusBar";
+import { checkUpdates } from "../utils/checkUpdates";
 
 const HomeScreen = () => {
   const auth = useAuth();
@@ -24,6 +25,7 @@ const HomeScreen = () => {
   const tryToRefreshData = async () => {
     try {
       setRefreshing(true);
+      await checkUpdates();
       await words.syncWords();
       await Promise.all([
         sessions.syncSessions(),

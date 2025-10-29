@@ -101,7 +101,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setSuggestions(locallyKeptSuggestions);
       }
     } catch (error) {
-      console.log("Error syncing evaluations:", error);
+      console.log("Error syncing suggestions:", error);
     }
   };
 
@@ -123,7 +123,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(true);
       await loadSuggestions();
     } catch (error) {
-      console.log('Error loading evaluations from storage:', error);
+      console.log('Error loading suggestions from storage:', error);
     } finally {
       setLoading(false);
     }

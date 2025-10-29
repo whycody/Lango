@@ -15,6 +15,7 @@ import { Word } from "../store/types";
 import { useLanguage } from "../store/LanguageContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useDynamicStatusBar } from "../hooks/useDynamicStatusBar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ const LibraryScreen = () => {
   const buildNumber = Platform.OS === 'ios' ? appBuildNumbers.expo.ios.buildNumber : appBuildNumbers.expo.android.versionCode;
   const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
   const { style, onScroll } = useDynamicStatusBar(100, 0.3);
+  const insets = useSafeAreaInsets();
   const authContext = useAuth();
 
   useEffect(() => {
@@ -138,6 +140,7 @@ const LibraryScreen = () => {
           ref={languageBottomSheetRef}
           onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
         />
+        <View style={{ height: insets.top }} />
         <ProfileCard/>
         <FlatList
           scrollEnabled={false}

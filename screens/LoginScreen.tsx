@@ -7,6 +7,7 @@ import { MARGIN_VERTICAL } from "../src/constants";
 import { expo } from '../app.json'
 import { useTranslation } from "react-i18next";
 import MarqueeRow from "../components/login/MovingWordsGrid";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type LoginProps = {
   login: (method: "Google" | "Facebook") => Promise<void>;
@@ -18,9 +19,10 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { paddingTop: MARGIN_VERTICAL * 2 + insets.top, paddingBottom: MARGIN_VERTICAL * 2 + insets.bottom }]}>
       <View style={{ flex: 3 }}>
         <MarqueeRow loading={!!loading} words={['taal', 'ቋንቋ', 'jezik', 'lingua', 'sprooch', 'lingwa']} reverse={false}/>
         <MarqueeRow loading={!!loading} words={['keel', 'jazyk', 'nyelv', 'язык', 'језик', 'ژبه']} reverse={true}/>
@@ -57,8 +59,9 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
 const getStyles = (colors: any) => StyleSheet.create({
   root: {
     flex: 1,
-    marginBottom: MARGIN_VERTICAL * 2,
-    marginTop: MARGIN_VERTICAL * 2
+    paddingBottom: MARGIN_VERTICAL * 2,
+    paddingTop: MARGIN_VERTICAL * 2,
+    backgroundColor: colors.background
   },
   contentContainer: {
     flex: 3,

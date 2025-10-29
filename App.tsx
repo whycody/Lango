@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import './i18n';
 import * as Font from 'expo-font';
@@ -36,6 +36,7 @@ export default function App() {
 
   return (
     <>
+      <StatusBar barStyle="light-content" translucent backgroundColor={'transparent'}/>
       <SafeAreaProvider style={{ backgroundColor: colors.card }}>
         <GestureHandlerRootView>
           <NavigationContainer theme={DarkTheme}>

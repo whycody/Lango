@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, View } from 'react-native';
+import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import './i18n';
 import * as Font from 'expo-font';
@@ -10,6 +10,7 @@ import Root from "./navigation/Root";
 import AppInitializerProvider from "./store/AppInitializerContext";
 import { UserStorageProvider } from "./store/UserStorageContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -35,13 +36,15 @@ export default function App() {
 
   return (
     <>
-      <SafeAreaProvider style={{ backgroundColor: colors.background }}>
+      <SafeAreaProvider style={{ backgroundColor: colors.card }}>
         <GestureHandlerRootView>
           <NavigationContainer theme={DarkTheme}>
             <AuthProvider>
               <UserStorageProvider>
                 <AppInitializerProvider>
-                  <Root/>
+                  <KeyboardProvider>
+                    <Root/>
+                  </KeyboardProvider>
                 </AppInitializerProvider>
               </UserStorageProvider>
             </AuthProvider>

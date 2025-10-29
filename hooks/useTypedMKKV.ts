@@ -1,4 +1,4 @@
-import { useMMKVString, useMMKVNumber } from 'react-native-mmkv';
+import { useMMKVNumber, useMMKVString } from 'react-native-mmkv';
 
 type MMKVValue = string | number;
 

@@ -1,7 +1,7 @@
 import React, { FC, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTheme } from "@react-navigation/native";
 import SquareFlag from "./SquareFlag";
-import { FlatList, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../src/constants";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import CustomText from "./CustomText";
@@ -62,30 +62,18 @@ const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordCommit, onWordCh
     <View>
       <View style={[styles.inputContainer, style]}>
         <SquareFlag size={30} style={{ marginRight: 10 }} languageCode={languageCode}/>
-        {Platform.OS == 'ios' ?
-          <BottomSheetTextInput
-            ref={inputRef}
-            style={styles.input}
-            cursorColor={colors.primary}
-            autoCapitalize={'none'}
-            autoCorrect={true}
-            value={internalWord}
-            onChangeText={handleTextChange}
-            onBlur={handleBlur}
-          /> :
-          <TextInput
-            ref={inputRef}
-            style={styles.input}
-            cursorColor={colors.primary}
-            autoCorrect={true}
-            autoCapitalize={'none'}
-            textContentType={'none'}
-            value={internalWord}
-            onFocus={setFocused}
-            onChangeText={handleTextChange}
-            onBlur={handleBlur}
-          />
-        }
+        <BottomSheetTextInput
+          ref={inputRef}
+          style={styles.input}
+          cursorColor={colors.primary}
+          autoCapitalize={'none'}
+          textContentType={'none'}
+          autoCorrect={true}
+          value={internalWord}
+          onFocus={setFocused}
+          onChangeText={handleTextChange}
+          onBlur={handleBlur}
+        />
       </View>
       {currentSuggestions.length > 0 && focused && (
         <FlatList

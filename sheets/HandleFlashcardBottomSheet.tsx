@@ -15,6 +15,7 @@ import axios from "axios";
 import TranslationUtils from "../utils/translationUtils";
 import { Word } from "../store/types";
 import { useLanguage } from "../store/LanguageContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type WordTranslations = {
   word: string;
@@ -32,6 +33,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const styles = getStyles(colors);
   const { t } = useTranslation();
   const wordsContext = useWords();
+  const insets = useSafeAreaInsets();
 
   const wordInputRef = useRef<any>(null);
   const translationInputRef = useRef<any>(null);

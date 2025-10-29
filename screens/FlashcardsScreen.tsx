@@ -188,7 +188,8 @@ const FlashcardsScreen = () => {
   const data = searchingMode ? [...flashcards] : [{ id: 'header' }, { id: 'subheader' }, ...flashcards];
 
   return (
-    <SafeAreaView style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: colors.card }]}>
+    <SafeAreaView style={[styles.root]}>
+      <View style={{ height: insets.top, backgroundColor: colors.card}} />
       <RemoveFlashcardBottomSheet
         ref={removeFlashcardBottomSheetRef}
         flashcardId={editFlashcardId}

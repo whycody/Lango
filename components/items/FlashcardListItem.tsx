@@ -1,4 +1,4 @@
-import { FC, memo, useCallback, useMemo } from "react";
+import { FC, memo, useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../src/constants";
 import CustomText from "../CustomText";

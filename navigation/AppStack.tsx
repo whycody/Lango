@@ -14,64 +14,61 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import TabsNavigator from "./TabsNavigator";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DarkTheme } from "../themes";
-import { KeyboardProvider } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
   const { colors } = DarkTheme;
+  const insets = useSafeAreaInsets();
 
   return (
-    <>
-      <KeyboardProvider>
-        <UserPreferencesProvider>
-          <LanguageProvider>
-            <SessionsProvider>
-              <SuggestionsProvider>
-                <StatisticsProvider>
-                  <WordsProvider>
-                    <EvaluationsProvider>
-                      <WordsMLStatesProvider>
-                        <WordsHeuristicProvider>
-                          <WordsWithDetailsProvider>
-                            <BottomSheetModalProvider>
-                              <Stack.Navigator
-                                screenOptions={{
-                                  headerShown: false,
-                                  navigationBarColor: colors.card,
-                                  statusBarTranslucent: true,
-                                  statusBarColor: 'transparent'
-                                }}>
-                                <Stack.Screen
-                                  name='Tabs'
-                                  component={TabsNavigator}
-                                />
-                                <Stack.Screen
-                                  name='Session'
-                                  component={SessionScreen}
-                                  options={{ statusBarColor: colors.card }}
-                                />
-                                <Stack.Group screenOptions={{
-                                  presentation: "modal",
-                                  animationDuration: 100,
-                                  statusBarTranslucent: true
-                                }}>
-                                  <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
-                                </Stack.Group>
-                              </Stack.Navigator>
-                            </BottomSheetModalProvider>
-                          </WordsWithDetailsProvider>
-                        </WordsHeuristicProvider>
-                      </WordsMLStatesProvider>
-                    </EvaluationsProvider>
-                  </WordsProvider>
-                </StatisticsProvider>
-              </SuggestionsProvider>
-            </SessionsProvider>
-          </LanguageProvider>
-        </UserPreferencesProvider>
-      </KeyboardProvider>
-    </>
+    <View style={{ marginBottom: insets.bottom, flex: 1 }}>
+      <UserPreferencesProvider>
+        <LanguageProvider>
+          <SessionsProvider>
+            <SuggestionsProvider>
+              <StatisticsProvider>
+                <WordsProvider>
+                  <EvaluationsProvider>
+                    <WordsMLStatesProvider>
+                      <WordsHeuristicProvider>
+                        <WordsWithDetailsProvider>
+                          <BottomSheetModalProvider>
+                            <Stack.Navigator
+                              screenOptions={{
+                                headerShown: false,
+                                navigationBarColor: colors.card,
+                                statusBarTranslucent: true,
+                              }}>
+                              <Stack.Screen
+                                name='Tabs'
+                                component={TabsNavigator}
+                              />
+                              <Stack.Screen
+                                name='Session'
+                                component={SessionScreen}
+                              />
+                              <Stack.Group screenOptions={{
+                                presentation: "modal",
+                                animationDuration: 100,
+                              }}>
+                                <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                              </Stack.Group>
+                            </Stack.Navigator>
+                          </BottomSheetModalProvider>
+                        </WordsWithDetailsProvider>
+                      </WordsHeuristicProvider>
+                    </WordsMLStatesProvider>
+                  </EvaluationsProvider>
+                </WordsProvider>
+              </StatisticsProvider>
+            </SuggestionsProvider>
+          </SessionsProvider>
+        </LanguageProvider>
+      </UserPreferencesProvider>
+    </View>
   )
 }
 

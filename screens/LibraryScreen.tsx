@@ -1,4 +1,4 @@
-import { BackHandler, FlatList, Image, Linking, Platform, ScrollView } from "react-native";
+import { BackHandler, FlatList, Image, Linking, Platform, ScrollView, View } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
@@ -14,6 +14,7 @@ import { useEvaluations } from "../store/EvaluationsContext";
 import { Word } from "../store/types";
 import { useLanguage } from "../store/LanguageContext";
 import { useAuth } from "../api/auth/AuthProvider";
+import { useDynamicStatusBar } from "../hooks/useDynamicStatusBar";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ const LibraryScreen = () => {
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const buildNumber = Platform.OS === 'ios' ? appBuildNumbers.expo.ios.buildNumber : appBuildNumbers.expo.android.versionCode;
   const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
+  const { style, onScroll } = useDynamicStatusBar(100, 0.3);
   const authContext = useAuth();
 
   useEffect(() => {
@@ -129,35 +131,38 @@ const LibraryScreen = () => {
   );
 
   return (
-    <ScrollView showsHorizontalScrollIndicator={false}>
-      <LanguageBottomSheet
-        ref={languageBottomSheetRef}
-        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
-      />
-      <ProfileCard/>
-      <FlatList
-        scrollEnabled={false}
-        data={libraryItems}
-        renderItem={renderLibraryItem}
-        ListFooterComponent={() => (
-          <>
-            <Image
-              source={require('../assets/logo.png')}
-              style={{
-                height: 40,
-                alignSelf: 'center',
-                marginTop: 30,
-              }}
-              resizeMode="contain"
-            />
-            <CustomText
-              style={{ color: colors.text, marginTop: 5, fontWeight: 'bold', marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
-              {`${runtimeVersion}.${buildNumber}`}
-            </CustomText>
-          </>
-        )}
-      />
-    </ScrollView>
+    <>
+      <View style={style} />
+      <ScrollView showsHorizontalScrollIndicator={false} onScroll={onScroll}>
+        <LanguageBottomSheet
+          ref={languageBottomSheetRef}
+          onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
+        />
+        <ProfileCard/>
+        <FlatList
+          scrollEnabled={false}
+          data={libraryItems}
+          renderItem={renderLibraryItem}
+          ListFooterComponent={() => (
+            <>
+              <Image
+                source={require('../assets/logo.png')}
+                style={{
+                  height: 40,
+                  alignSelf: 'center',
+                  marginTop: 30,
+                }}
+                resizeMode="contain"
+              />
+              <CustomText
+                style={{ color: colors.text, marginTop: 5, fontWeight: 'bold', marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
+                {`${runtimeVersion}.${buildNumber}`}
+              </CustomText>
+            </>
+          )}
+        />
+      </ScrollView>
+    </>
   );
 }
 

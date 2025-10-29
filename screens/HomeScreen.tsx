@@ -9,6 +9,7 @@ import { useEvaluations } from "../store/EvaluationsContext";
 import { useSuggestions } from "../store/SuggestionsContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useDynamicStatusBar } from "../hooks/useDynamicStatusBar";
 
 const HomeScreen = () => {
   const auth = useAuth();
@@ -17,6 +18,7 @@ const HomeScreen = () => {
   const suggestions = useSuggestions();
   const evaluations = useEvaluations();
   const [refreshing, setRefreshing] = useState(false);
+  const { style, onScroll } = useDynamicStatusBar(100, 0.5);
   const insets = useSafeAreaInsets();
 
   const tryToRefreshData = async () => {
@@ -39,21 +41,25 @@ const HomeScreen = () => {
   }, [words, sessions, suggestions, evaluations, auth]);
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing || words.loading}
-          onRefresh={onRefresh}
-          progressViewOffset={50}
-        />
-      }
-    >
-      <View style={{ height: insets.top }}/>
-      <HeaderCard/>
-      <WordsSuggestionsCard/>
-      <StatisticsCard/>
-    </ScrollView>
+    <>
+      <View style={style} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={onScroll}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing || words.loading}
+            onRefresh={onRefresh}
+            progressViewOffset={50}
+          />
+        }
+      >
+        <View style={{ height: insets.top }}/>
+        <HeaderCard/>
+        <WordsSuggestionsCard/>
+        <StatisticsCard/>
+      </ScrollView>
+    </>
   );
 };
 

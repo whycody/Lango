@@ -22,6 +22,7 @@ import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { SESSION_MODE } from "../store/types";
 import { useWordSet } from "../hooks/useWordSet";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type WordUpdate = {
   flashcardId: string;
@@ -70,6 +71,7 @@ const SessionScreen = () => {
   const [lastPressTime, setLastPressTime] = useState<number>(0);
 
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -246,6 +248,7 @@ const SessionScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{ height: insets.top, backgroundColor: colors.card }} />
       <LeaveSessionBottomSheet
         ref={leaveSessionBottomSheetRef}
         leaveSession={handleSessionExit}

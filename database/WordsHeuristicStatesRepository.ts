@@ -8,7 +8,7 @@ export const WORD_HEURISTIC_STATE = 'word_heuristic_state';
 export const createHeuristicTable = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
-    tx.execute(`
+    tx.executeSql(`
         CREATE TABLE IF NOT EXISTS ${WORD_HEURISTIC_STATE}
         (
             wordId           TEXT PRIMARY KEY,
@@ -39,7 +39,7 @@ export const saveWordsHeuristicStates = async (userId: string, wordsHeuristicSta
 
       const placeholders = WORD_HEURISTIC_STATE_COLUMNS.map(() => '?').join(', ');
 
-      tx.execute(
+      tx.executeSql(
         `REPLACE INTO ${WORD_HEURISTIC_STATE} (${WORD_HEURISTIC_STATE_COLUMNS.join(', ')})
          VALUES (${placeholders})`,
         values
@@ -51,17 +51,34 @@ export const saveWordsHeuristicStates = async (userId: string, wordsHeuristicSta
 export const getAllWordsHeuristicStates = async (userId: string): Promise<WordHeuristicState[]> => {
   const db = await getDb(userId);
 
-  const results = db.execute(`SELECT * FROM ${WORD_HEURISTIC_STATE}`, []);
-
-  return results.rows._array.map(row => ({
-    wordId: String(row.wordId),
-    interval: Number(row.interval),
-    repetitionsCount: Number(row.repetitionsCount),
-    studyCount: Number(row.studyCount),
-    lastReviewDate: row.lastReviewDate != null ? String(row.lastReviewDate) : null,
-    nextReviewDate: row.nextReviewDate != null ? String(row.nextReviewDate) : null,
-    EF: Number(row.EF),
-  }));
+  return new Promise((resolve, reject) => {
+    db.readTransaction(tx => {
+      tx.executeSql(
+        `SELECT *
+         FROM ${WORD_HEURISTIC_STATE}`,
+        [],
+        (_, { rows }) => {
+          const words = Array.from({ length: rows.length }, (_, i) => {
+            const row = rows.item(i);
+            return {
+              wordId: row.wordId,
+              interval: row.interval,
+              repetitionsCount: row.repetitionsCount,
+              studyCount: row.studyCount,
+              lastReviewDate: row.lastReviewDate,
+              nextReviewDate: row.nextReviewDate,
+              EF: row.EF,
+            } satisfies WordHeuristicState;
+          });
+          resolve(words);
+        },
+        (_, error) => {
+          reject(error);
+          return true;
+        }
+      );
+    });
+  });
 };
 
 export const updateWordHeuristicState = async (userId: string, state: WordHeuristicState) => {

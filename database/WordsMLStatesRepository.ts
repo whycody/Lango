@@ -8,7 +8,7 @@ export const WORD_ML_STATE = 'word_ml_state';
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
-    tx.execute(`
+    tx.executeSql(`
         CREATE TABLE IF NOT EXISTS ${WORD_ML_STATE}
         (
             wordId                   TEXT PRIMARY KEY,
@@ -43,7 +43,7 @@ export const saveWordsMLStates = async (userId: string, wordsMLStates: WordMLSta
 
       const placeholders = WORD_ML_STATE_COLUMNS.map(() => '?').join(', ');
 
-      tx.execute(
+      tx.executeSql(
         `REPLACE INTO ${WORD_ML_STATE} (${WORD_ML_STATE_COLUMNS.join(', ')})
          VALUES (${placeholders})`,
         values
@@ -55,19 +55,26 @@ export const saveWordsMLStates = async (userId: string, wordsMLStates: WordMLSta
 export const getAllWordsMLStates = async (userId: string): Promise<WordMLState[]> => {
   const db = await getDb(userId);
 
-  const results = db.execute(`SELECT * FROM ${WORD_ML_STATE}`, []);
-
-  return results.rows._array.map(row => ({
-    wordId: String(row.wordId),
-    hoursSinceLastRepetition: Number(row.hoursSinceLastRepetition || 0),
-    studyDuration: Number(row.studyDuration || 0),
-    studyStreak: Number(row.studyStreak || 0),
-    gradesAverage: Number(row.gradesAverage || 0),
-    repetitionsCount: Number(row.repetitionsCount || 0),
-    gradesTrend: Number(row.gradesTrend || 0),
-    predictedGrade: Number(row.predictedGrade) as 1 | 2 | 3,
-    gradeThreeProb: Number(row.gradeThreeProb || 0),
-  }));
+  return new Promise((resolve, reject) => {
+    db.readTransaction(tx => {
+      tx.executeSql(
+        `SELECT *
+         FROM ${WORD_ML_STATE}`,
+        [],
+        (_, { rows }) => {
+          const words = Array.from({ length: rows.length }, (_, i) => {
+            const row = rows.item(i);
+            return row satisfies WordMLState;
+          });
+          resolve(words);
+        },
+        (_, error) => {
+          reject(error);
+          return true;
+        }
+      );
+    });
+  });
 };
 
 export const updateWordMLState = async (userId: string, wordsMLStates: WordMLState) => {

@@ -9,7 +9,7 @@ const columns: Array<keyof Suggestion> = [
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
-    tx.execute(`
+    tx.executeSql(`
         CREATE TABLE IF NOT EXISTS suggestions
         (
             id               TEXT PRIMARY KEY,
@@ -41,7 +41,7 @@ export const saveSuggestions = async (userId: string, suggestions: Suggestion[])
       });
       const placeholders = columns.map(() => '?').join(', ');
       if (values[0] == '68dbb7f72c43da3dfa266290') console.log(placeholders, values)
-      tx.execute(
+      tx.executeSql(
         `INSERT OR
          REPLACE
          INTO suggestions (${columns.join(', ')})
@@ -54,30 +54,45 @@ export const saveSuggestions = async (userId: string, suggestions: Suggestion[])
 
 export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> => {
   const db = await getDb(userId);
-
-  const results = db.execute(`SELECT * FROM suggestions`, []);
-
-  return results.rows._array.map(row => ({
-    id: String(row.id),
-    userId: String(row.userId),
-    word: String(row.word),
-    translation: String(row.translation),
-    mainLang: String(row.mainLang),
-    translationLang: String(row.translationLang),
-    displayCount: row.displayCount != null ? Number(row.displayCount) : 0,
-    skipped: row.skipped === 1,
-    added: row.added === 1,
-    synced: row.synced === 1,
-    updatedAt: row.updatedAt != null ? String(row.updatedAt) : null,
-    locallyUpdatedAt: row.locallyUpdatedAt != null ? String(row.locallyUpdatedAt) : new Date().toISOString(),
-  }));
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT *
+         FROM suggestions`,
+        [],
+        (_, results) => {
+          const rows = results.rows;
+          const suggestions: Suggestion[] = [];
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows.item(i);
+            suggestions.push({
+              id: row.id,
+              userId: row.userId,
+              word: row.word,
+              translation: row.translation,
+              mainLang: row.mainLang,
+              translationLang: row.translationLang,
+              displayCount: row.displayCount || 0,
+              skipped: row.skipped === 1,
+              added: row.added === 1,
+              synced: row.synced === 1,
+              updatedAt: row.updatedAt || null,
+              locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
+            });
+          }
+          resolve(suggestions);
+        },
+        error => reject(error)
+      );
+    });
+  });
 };
 
 export const deleteSuggestions = async (userId: string, ids: string[]) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
     const placeholders = ids.map(() => '?').join(', ');
-    tx.execute(
+    tx.executeSql(
       `DELETE
        FROM suggestions
        WHERE id IN (${placeholders})`,

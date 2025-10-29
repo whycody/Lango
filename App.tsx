@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView, StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import './i18n';
 import * as Font from 'expo-font';
@@ -10,6 +10,7 @@ import AuthProvider from "./api/auth/AuthProvider";
 import Root from "./navigation/Root";
 import AppInitializerProvider from "./store/AppInitializerContext";
 import { UserStorageProvider } from "./store/UserStorageContext";
+import { enableEdgeToEdge } from 'react-native-edge-to-edge'
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -17,6 +18,7 @@ export default function App() {
 
   useEffect(() => {
     async function loadFonts() {
+      enableEdgeToEdge()
       await Font.loadAsync({
         'Montserrat-Regular': require('./assets/fonts/Montserrat-Regular.ttf'),
         'Montserrat-SemiBold': require('./assets/fonts/Montserrat-SemiBold.ttf'),
@@ -35,19 +37,18 @@ export default function App() {
 
   return (
     <>
+      <StatusBar />
       <GestureHandlerRootView>
         <SafeAreaProvider style={{ backgroundColor: colors.background }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-            <NavigationContainer theme={DarkTheme}>
-              <AuthProvider>
-                <UserStorageProvider>
-                  <AppInitializerProvider>
-                    <Root/>
-                  </AppInitializerProvider>
-                </UserStorageProvider>
-              </AuthProvider>
-            </NavigationContainer>
-          </SafeAreaView>
+          <NavigationContainer theme={DarkTheme}>
+            <AuthProvider>
+              <UserStorageProvider>
+                <AppInitializerProvider>
+                  <Root/>
+                </AppInitializerProvider>
+              </UserStorageProvider>
+            </AuthProvider>
+          </NavigationContainer>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </>

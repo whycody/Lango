@@ -1,6 +1,6 @@
-import SQLite, { SQLiteDatabase } from "react-native-sqlite-storage";
+import { NitroSQLiteConnection, open } from 'react-native-nitro-sqlite'
 
-export const getDb = async (userId: string): Promise<SQLiteDatabase> => {
+export const getDb = async (userId: string): Promise<NitroSQLiteConnection> => {
   if (!userId) throw new Error("User ID not provided");
-  return SQLite.openDatabase({ name: `${userId}_sessions.db` });
+  return open({ name: `${userId}_sessions.sqlite`, location: 'default' });
 };

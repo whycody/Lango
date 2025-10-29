@@ -5,19 +5,18 @@ const columns: Array<keyof Evaluation> = ['id', 'wordId', 'sessionId', 'grade', 
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
-  await db.transaction(tx => {
-    tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS evaluations
-        (
-            id               TEXT PRIMARY KEY,
-            wordId           TEXT,
-            sessionId        TEXT,
-            grade            INTEGER,
-            date             TEXT,
-            synced           INTEGER,
-            updatedAt        TEXT,
-            locallyUpdatedAt TEXT
-        )
+  await db.transaction(async (tx) => {
+    tx.execute(`
+      CREATE TABLE IF NOT EXISTS evaluations (
+        id TEXT PRIMARY KEY,
+        wordId TEXT,
+        sessionId TEXT,
+        grade INTEGER,
+        date TEXT,
+        synced INTEGER,
+        updatedAt TEXT,
+        locallyUpdatedAt TEXT
+      )
     `);
   });
 };
@@ -32,7 +31,7 @@ export const saveEvaluations = async (userId: string, evaluations: Evaluation[])
       });
       const placeholders = columns.map(() => '?').join(', ');
 
-      tx.executeSql(
+      tx.execute(
         `REPLACE INTO evaluations (${columns.join(', ')})
          VALUES (${placeholders})`,
         values
@@ -43,32 +42,16 @@ export const saveEvaluations = async (userId: string, evaluations: Evaluation[])
 
 export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> => {
   const db = await getDb(userId);
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `SELECT *
-         FROM evaluations`,
-        [],
-        (_, results) => {
-          const rows = results.rows;
-          const evaluations: Evaluation[] = [];
-          for (let i = 0; i < rows.length; i++) {
-            const row = rows.item(i);
-            evaluations.push({
-              id: row.id,
-              wordId: row.wordId,
-              sessionId: row.sessionId,
-              grade: row.grade,
-              date: row.date,
-              synced: row.synced === 1,
-              updatedAt: row.updatedAt || null,
-              locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
-            });
-          }
-          resolve(evaluations);
-        },
-        error => reject(error)
-      );
-    });
-  });
+
+  const results = db.execute(`SELECT * FROM evaluations`, []);
+  return results.rows._array.map(row => ({
+    id: String(row.id),
+    wordId: String(row.wordId),
+    sessionId: String(row.sessionId),
+    grade: Number(row.grade) as 1 | 2 | 3,
+    date: String(row.date),
+    synced: row.synced === 1,
+    updatedAt: row.updatedAt != null ? String(row.updatedAt) : null,
+    locallyUpdatedAt: row.locallyUpdatedAt != null ? String(row.locallyUpdatedAt) : new Date().toISOString(),
+  }));
 };

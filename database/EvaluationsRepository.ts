@@ -7,16 +7,17 @@ export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(async (tx) => {
     tx.execute(`
-      CREATE TABLE IF NOT EXISTS evaluations (
-        id TEXT PRIMARY KEY,
-        wordId TEXT,
-        sessionId TEXT,
-        grade INTEGER,
-        date TEXT,
-        synced INTEGER,
-        updatedAt TEXT,
-        locallyUpdatedAt TEXT
-      )
+        CREATE TABLE IF NOT EXISTS evaluations
+        (
+            id               TEXT PRIMARY KEY,
+            wordId           TEXT,
+            sessionId        TEXT,
+            grade            INTEGER,
+            date             TEXT,
+            synced           INTEGER,
+            updatedAt        TEXT,
+            locallyUpdatedAt TEXT
+        )
     `);
   });
 };

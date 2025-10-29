@@ -1,4 +1,4 @@
-import { Session } from "../store/types";
+import { Session, SESSION_MODE, SESSION_MODEL } from "../store/types";
 import { getDb } from "./utils/db";
 
 const columns: Array<keyof Session> = ['id', 'date', 'mode', 'sessionModel', 'averageScore', 'wordsCount', 'finished',
@@ -7,7 +7,7 @@ const columns: Array<keyof Session> = ['id', 'date', 'mode', 'sessionModel', 'av
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
-    tx.executeSql(`
+    tx.execute(`
         CREATE TABLE IF NOT EXISTS sessions
         (
             id               TEXT PRIMARY KEY,
@@ -36,7 +36,7 @@ export const saveSessions = async (userId: string, sessions: Session[]) => {
       });
       const placeholders = columns.map(() => '?').join(', ');
 
-      tx.executeSql(
+      tx.execute(
         `REPLACE INTO sessions (${columns.join(', ')})
          VALUES (${placeholders})`,
         values
@@ -47,34 +47,19 @@ export const saveSessions = async (userId: string, sessions: Session[]) => {
 
 export const getAllSessions = async (userId: string): Promise<Session[]> => {
   const db = await getDb(userId);
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `SELECT *
-         FROM sessions`,
-        [],
-        (_, results) => {
-          const rows = results.rows;
-          const sessions: Session[] = [];
-          for (let i = 0; i < rows.length; i++) {
-            const row = rows.item(i);
-            sessions.push({
-              id: row.id,
-              date: row.date,
-              mode: row.mode,
-              sessionModel: row.sessionModel,
-              averageScore: row.averageScore,
-              wordsCount: row.wordsCount,
-              finished: row.finished === 1,
-              synced: row.synced === 1,
-              updatedAt: row.updatedAt || null,
-              locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
-            });
-          }
-          resolve(sessions);
-        },
-        error => reject(error)
-      );
-    });
-  });
+
+  const results = db.execute(`SELECT * FROM sessions`, []);
+
+  return results.rows._array.map(row => ({
+    id: String(row.id),
+    date: String(row.date),
+    mode: String(row.mode) as SESSION_MODE,
+    sessionModel: String(row.sessionModel) as SESSION_MODEL,
+    averageScore: Number(row.averageScore),
+    wordsCount: Number(row.wordsCount),
+    finished: row.finished === 1,
+    synced: row.synced === 1,
+    updatedAt: row.updatedAt != null ? String(row.updatedAt) : null,
+    locallyUpdatedAt: row.locallyUpdatedAt != null ? String(row.locallyUpdatedAt) : new Date().toISOString(),
+  }));
 };

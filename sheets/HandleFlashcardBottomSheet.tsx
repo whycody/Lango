@@ -162,6 +162,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
       containerComponent={renderContainerComponent}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
+      keyboardBlurBehavior={'restore'}
       onDismiss={handleSheetDismiss}
     >
       <BottomSheetView style={styles.root}>

@@ -35,11 +35,13 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { initialLoad } = useAppInitializer();
   const { getAllSuggestions, deleteSuggestions, saveSuggestions } = useSuggestionsRepository();
   const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad.suggestions);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { translationLang, mainLang } = useLanguage();
   const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == mainLang &&
     suggestion.translationLang == translationLang && !suggestion.skipped && !suggestion.added)
     .sort((a, b) => a.displayCount - b.displayCount);
+  const validLangSuggestionsNumber = langSuggestions.filter((suggestion) => suggestion.displayCount <= 3).length;
+  const syncedOnMount = useRef(false);
 
   const increaseSuggestionsDisplayCount = async (ids: string[]) => {
     setSuggestions(prevSuggestions => {
@@ -122,8 +124,10 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   useEffect(() => {
+    if (validLangSuggestionsNumber >= 20 && syncedOnMount.current) return;
+    syncedOnMount.current = true;
     loadData();
-  }, [mainLang, translationLang]);
+  }, [mainLang, translationLang, validLangSuggestionsNumber]);
 
   return (
     <SuggestionsContext.Provider

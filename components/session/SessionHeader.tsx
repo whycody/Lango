@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { useTheme } from "@react-navigation/native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomText from "../CustomText";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../src/constants";
@@ -11,10 +11,10 @@ type SessionHeaderProps = {
   cardsSetLength: number;
   progress: number;
   onSessionExit: () => void;
-  onFlipCards: () => void;
+  onSettingsPressed: () => void;
 }
 
-const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progress, onSessionExit, onFlipCards }) => {
+const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progress, onSessionExit, onSettingsPressed }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -41,11 +41,11 @@ const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progres
       <CustomText weight={"SemiBold"} style={styles.progressText}>
         {`${cardsSetLength - progress}`}
       </CustomText>
-      <MaterialCommunityIcons
-        name={'flip-horizontal'}
+      <Ionicons
+        name={'settings-outline'}
         size={21}
         color={colors.primary300}
-        onPress={onFlipCards}
+        onPress={onSettingsPressed}
         style={styles.icon}
       />
     </View>

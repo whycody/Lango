@@ -17,13 +17,14 @@ import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
-import { FLASHCARD_SIDE } from "../store/UserPreferencesContext";
+import { FLASHCARD_SIDE, useUserPreferences } from "../store/UserPreferencesContext";
 import { useSessions } from "../store/SessionsContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { SESSION_MODE } from "../store/types";
 import { useWordSet } from "../hooks/useWordSet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { calculateWeightedColor } from "../utils/calculateWeightedColor";
+import SessionSettingsBottomSheet from "../sheets/SessionSettingsBottomSheet";
 
 type WordUpdate = {
   flashcardId: string;
@@ -62,17 +63,30 @@ const SessionScreen = () => {
   const leaveSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
+  const sessionSettingsBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [wordsUpdates, setWordsUpdates] = useState<WordUpdate[]>([]);
   const [numberOfSession, setNumberOfSession] = useState(0);
-  const [flipped, setFlipped] = useState(flashcardSide == FLASHCARD_SIDE.TRANSLATION);
   const [flippedCards, setFlippedCards] = useState(Array(length * 10).fill(false));
   const [lastPressTime, setLastPressTime] = useState<number>(0);
 
+  const userPreferences = useUserPreferences();
+  const [flipped, setFlipped] = useState(flashcardSide === FLASHCARD_SIDE.TRANSLATION);
+
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const isInitial = useRef(true)
+
+  useEffect(() => {
+    if (isInitial.current) {
+      isInitial.current = false
+      return
+    }
+
+    setFlipped(userPreferences.flashcardSide === FLASHCARD_SIDE.TRANSLATION);
+  }, [userPreferences.flashcardSide]);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -89,6 +103,7 @@ const SessionScreen = () => {
     handleFlashcardBottomSheetRef.current?.dismiss();
     leaveSessionBottomSheetRef.current?.dismiss();
     finishSessionBottomSheetRef.current?.dismiss();
+    sessionSettingsBottomSheetRef.current?.dismiss();
   }
 
   const decrementCurrentIndex = () => {
@@ -154,12 +169,12 @@ const SessionScreen = () => {
   useEffect(() => {
     const word = cards[currentIndex];
     if (!word) return;
-    if ((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) {
+    if (((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) && userPreferences.sessionSpeechSynthesizer) {
       Speech.stop().then(() => {
         Speech.speak(word?.text, { language: word.mainLang });
       });
     }
-  }, [flipped, currentIndex, flippedCards]);
+  }, [flipped, currentIndex, flippedCards, userPreferences.sessionSpeechSynthesizer]);
 
   const handleLevelPress = (level: 1 | 2 | 3) => {
     const now = Date.now();
@@ -234,11 +249,6 @@ const SessionScreen = () => {
     })));
   }
 
-  const handleFlipCards = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-    setFlipped((prev) => !prev);
-  }
-
   const handleWordEdit = (id: string, word: string, translation: string) => {
     setCards((prevCards) =>
       prevCards.map((card) =>
@@ -270,13 +280,18 @@ const SessionScreen = () => {
         startNewSession={startNewSession}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
+      <SessionSettingsBottomSheet
+        ref={sessionSettingsBottomSheetRef}
+        onSettingsSave={() => sessionSettingsBottomSheetRef.current.dismiss()}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
+      />
       <View style={{ backgroundColor: colors.card, paddingBottom: 20 }}>
         <SessionHeader
           length={length}
           cardsSetLength={cards.length}
           progress={progress}
           onSessionExit={() => leaveSessionBottomSheetRef.current?.present()}
-          onFlipCards={handleFlipCards}
+          onSettingsPressed={() => sessionSettingsBottomSheetRef.current?.present()}
         />
         <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
           <ProgressBar

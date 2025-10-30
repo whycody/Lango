@@ -101,5 +101,9 @@
   "empty_search": "Brak wyników",
   "empty_search_desc": "Spróbuj wpisać coś innego.",
   "start_search_desc": "Wpisz coś powyżej, aby wyszukać fiszkę.",
-  "select_level": "Zaznacz odpowiedni kafelek z oceną."
+  "select_level": "Zaznacz odpowiedni kafelek z oceną.",
+  "sessions_settings": "Ustawienia sesji",
+  "speech_synthesizer": "Syntezator mowy",
+  "turned_on": "Włączony",
+  "turned_off": "Wyłączony"
 }

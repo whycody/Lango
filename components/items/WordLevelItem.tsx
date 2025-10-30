@@ -56,7 +56,7 @@ const getStyles = (colors: any, selected: boolean = false, level: number) => Sty
     fontSize: 11,
     marginTop: 8,
     textAlign: 'center',
-    color: colors.primary
+    color: colors.primary300
   },
   subtitle: {
     fontSize: 10,

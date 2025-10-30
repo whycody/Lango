@@ -24,7 +24,6 @@ const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottom
     <BottomSheetModal
       ref={ref}
       index={0}
-      enablePanDownToClose={false}
       onChange={(index: number) => props.onChangeIndex?.(index)}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}

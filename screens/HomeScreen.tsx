@@ -50,7 +50,7 @@ const HomeScreen = () => {
         onScroll={onScroll}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing || words.loading}
+            refreshing={refreshing || suggestions.loading || words.loading || evaluations.loading || sessions.loading}
             onRefresh={onRefresh}
             progressViewOffset={50}
           />

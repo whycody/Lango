@@ -85,18 +85,10 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return await fetchUpdatedEvaluations(latestUpdatedAt);
   };
 
-  const loadEvaluations = async () => {
-    try {
-      await syncEvaluations(initialLoad.evaluations);
-    } catch (error) {
-      console.log('Error loading words from storage:', error);
-    }
-  }
-
   const loadData = async () => {
     try {
       setLoading(true);
-      await loadEvaluations();
+      await syncEvaluations();
     } catch (error) {
       console.log('Error loading evaluations from storage:', error);
     } finally {

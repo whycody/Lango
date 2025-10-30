@@ -36,9 +36,9 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { getAllSuggestions, deleteSuggestions, saveSuggestions } = useSuggestionsRepository();
   const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad.suggestions);
   const [loading, setLoading] = useState(true);
-  const languageContext = useLanguage();
-  const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == languageContext.mainLang &&
-    suggestion.translationLang == languageContext.translationLang && !suggestion.skipped && !suggestion.added)
+  const { translationLang, mainLang } = useLanguage();
+  const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == mainLang &&
+    suggestion.translationLang == translationLang && !suggestion.skipped && !suggestion.added)
     .sort((a, b) => a.displayCount - b.displayCount);
 
   const increaseSuggestionsDisplayCount = async (ids: string[]) => {
@@ -82,7 +82,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const suggestionsList = inputSuggestions ?? (await getAllSuggestions());
       const langSuggestionsList = suggestionsList.filter((suggestion) => suggestion.mainLang ==
-        languageContext.mainLang && suggestion.translationLang == languageContext.translationLang);
+        mainLang && suggestion.translationLang == translationLang);
       const unsyncedSuggestions = getUnsyncedItems<Suggestion>(langSuggestionsList);
       const serverUpdates = await syncInBatches<Suggestion>(unsyncedSuggestions, syncSuggestionsOnServer);
 
@@ -107,21 +107,13 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const fetchNewSuggestions = async (updatedSuggestions: Suggestion[]): Promise<Suggestion[]> => {
     const latestUpdatedAt = findLatestUpdatedAt<Suggestion>(updatedSuggestions);
-    return await fetchUpdatedSuggestions(languageContext.mainLang, languageContext.translationLang, latestUpdatedAt);
+    return await fetchUpdatedSuggestions(mainLang, translationLang, latestUpdatedAt);
   };
-
-  const loadSuggestions = async () => {
-    try {
-      await syncSuggestions(initialLoad.suggestions);
-    } catch (error) {
-      console.log('Error loading words from storage:', error);
-    }
-  }
 
   const loadData = async () => {
     try {
       setLoading(true);
-      await loadSuggestions();
+      await syncSuggestions();
     } catch (error) {
       console.log('Error loading suggestions from storage:', error);
     } finally {
@@ -131,7 +123,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     loadData();
-  }, [languageContext.translationLang, languageContext.mainLang]);
+  }, [mainLang, translationLang]);
 
   return (
     <SuggestionsContext.Provider

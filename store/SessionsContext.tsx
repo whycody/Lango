@@ -97,18 +97,10 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return await fetchUpdatedSessions(latestUpdatedAt);
   };
 
-  const loadSessions = async () => {
-    try {
-      await syncSessions(initialLoad.sessions);
-    } catch (error) {
-      console.log('Error loading sessions from storage:', error);
-    }
-  };
-
   const loadData = async () => {
     try {
       setLoading(true);
-      await loadSessions();
+      await syncSessions();
     } catch (error) {
       console.log('Error loading evaluations from storage:', error);
     } finally {

@@ -41,7 +41,7 @@ const WordsContext = createContext<WordsContextProps>({
 
 export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { initialLoad } = useAppInitializer();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [words, setWords] = useState<Word[]>(initialLoad.words);
   const { mainLang, translationLang } = useLanguage();
   const { saveWords, getAllWords, updateWord } = useWordsRepository();
@@ -98,14 +98,6 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     syncWords(updatedWords);
   };
 
-  const loadWords = async () => {
-    try {
-      await syncWords(initialLoad.words);
-    } catch (error) {
-      console.log('Error loading words from storage:', error);
-    }
-  };
-
   const syncWords = async (inputWords?: Word[]) => {
     try {
       const wordsList = inputWords ?? (await getAllWords());
@@ -135,7 +127,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      await loadWords();
+      await syncWords();
     } catch (error) {
       console.log('Error loading words from storage:', error);
     } finally {
@@ -145,7 +137,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     loadData();
-  }, [translationLang, mainLang]);
+  }, []);
 
   return (
     <WordsContext.Provider

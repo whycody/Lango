@@ -18,6 +18,7 @@ import { FLASHCARD_SIDE } from "../../store/UserPreferencesContext";
 import { useStatistics } from "../../store/StatisticsContext";
 import { useLanguage } from "../../store/LanguageContext";
 import { useWordsHeuristicStates } from "../../store/WordsHeuristicStatesContext";
+import { useWords } from "../../store/WordsContext";
 
 const HeaderCard = () => {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ const HeaderCard = () => {
   const styles = getStyles(colors);
   const navigation = useNavigation();
   const langContext = useLanguage();
+  const { langWords } = useWords();
   const { langWordsHeuristicStates } = useWordsHeuristicStates();
   const statisticsContext = useStatistics();
   const [streak, setStreak] = useState<Streak>({ numberOfDays: 0, active: false });
@@ -32,10 +34,13 @@ const HeaderCard = () => {
   const sessionSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
-  const availableWords = langWordsHeuristicStates.length <= 50 ? langWordsHeuristicStates.length : 50;
-  const lastWellKnownWords = availableWords < 5 ? 1 : Math.round((langWordsHeuristicStates.slice(0, 50).filter(
-    word => word.repetitionsCount > 2 && new Date(word.nextReviewDate) > new Date()).length / availableWords) * 100) / 100;
-  const wellKnownWords = langWordsHeuristicStates.filter(word => word.repetitionsCount > 2).length;
+  const last50Words = langWords.sort((a,b) => new Date(a.addDate).getTime() - new Date(b.addDate).getTime())
+    .slice(0, 50).map((word) => word.id);
+  const langWordsHeuristicStatesFiltered = langWordsHeuristicStates.filter(word => last50Words.includes(word.wordId));
+
+  const lastWellKnownWords = last50Words.length < 5 ? 1 : Math.round((langWordsHeuristicStatesFiltered.filter(
+    word => word.studyCount > 2 && new Date(word.nextReviewDate) > new Date()).length / last50Words.length) * 100) / 100;
+  const wellKnownWords = langWordsHeuristicStates.filter(word => word.studyCount > 2).length;
 
   useEffect(() => {
     const handleBackPress = () => {

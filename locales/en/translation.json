@@ -98,5 +98,6 @@
   "no_items_desc": "Try adding some words to your vocabulary",
   "empty_search": "No results found",
   "empty_search_desc": "Try changing the search term.",
-  "start_search_desc": "Try to type something above to search for a flashcard"
+  "start_search_desc": "Try to type something above to search for a flashcard",
+  "select_level": "Tap the appropriate tile with the grade."
 }

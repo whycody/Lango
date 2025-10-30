@@ -56,7 +56,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   title: {
     fontSize: 15,
     paddingHorizontal: 10,
-    color: colors.primary300,
+    color: colors.primary,
     textAlign: 'center',
     textTransform: 'uppercase',
   },
@@ -74,7 +74,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   icon: {
     paddingHorizontal: MARGIN_HORIZONTAL,
     paddingVertical: 5,
-    height: '100%'
+    height: '100%',
   }
 });
 

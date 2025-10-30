@@ -248,7 +248,7 @@ const SessionScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ height: insets.top, backgroundColor: colors.card }} />
+      <View style={{ height: insets.top, backgroundColor: colors.card }}/>
       <LeaveSessionBottomSheet
         ref={leaveSessionBottomSheetRef}
         leaveSession={handleSessionExit}
@@ -298,9 +298,14 @@ const SessionScreen = () => {
         ))}
       </PagerView>
       <View style={styles.bottomBarContainer}>
-        <CustomText weight="SemiBold" style={styles.headerText}>
-          {t('howWell')}
-        </CustomText>
+        <View style={styles.textContainer}>
+          <CustomText weight="SemiBold" style={styles.headerText}>
+            {t('howWell')}
+          </CustomText>
+          <CustomText weight="Regular" style={styles.descriptionText}>
+            {t('select_level')}
+          </CustomText>
+        </View>
         <View style={{ flexDirection: 'row', marginHorizontal: MARGIN_HORIZONTAL, marginBottom: MARGIN_VERTICAL }}>
           <WordLevelItem
             level={1}
@@ -368,9 +373,16 @@ const getStyles = (colors: any) => {
     },
     headerText: {
       color: colors.primary300,
+      textAlign: 'center'
+    },
+    descriptionText: {
       textAlign: 'center',
-      marginTop: MARGIN_VERTICAL,
-      marginBottom: 20,
+      color: colors.primary600,
+      opacity: 0.8,
+      fontSize: 12,
+    },
+    textContainer: {
+      marginVertical: 18,
     },
     lottieWrapper: {
       top: 0,

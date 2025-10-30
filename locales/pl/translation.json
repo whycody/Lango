@@ -100,5 +100,6 @@
   "no_items_desc": "Spróbuj dodać kilka słówek do swojego słownika.",
   "empty_search": "Brak wyników",
   "empty_search_desc": "Spróbuj wpisać coś innego.",
-  "start_search_desc": "Wpisz coś powyżej, aby wyszukać fiszkę."
+  "start_search_desc": "Wpisz coś powyżej, aby wyszukać fiszkę.",
+  "select_level": "Zaznacz odpowiedni kafelek z oceną."
 }

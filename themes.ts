@@ -17,6 +17,12 @@ export const DarkTheme: CustomTheme = {
     border: '#333333',
     notification: '#ffffff',
 
-    red: '#ff6060'
+    red: '#ff6060',
+    red600: '#e48181',
+    yellow600: '#e3c562',
+    green600: '#73c576',
+    red300: 'rgba(228,129,129,0.03)',
+    yellow300: 'rgba(227,197,98,0.03)',
+    green300: 'rgba(115,197,118,0.03)',
   },
 };

@@ -29,7 +29,7 @@ const Alert = ({ type, title, message, style }: AlertProps) => {
 
 const getStyles = (colors: any, type: 'error' | 'success') => StyleSheet.create({
   root: {
-    backgroundColor: type == 'success' ? '#73c576' : '#e48181',
+    backgroundColor: type == 'success' ? colors.green600 : colors.red600,
     paddingVertical: 12,
     paddingHorizontal: MARGIN_HORIZONTAL / 2,
     marginVertical: 5

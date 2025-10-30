@@ -78,18 +78,15 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       if (!serverUpdates) return;
 
-      const updatedSessions = updateLocalItems<Session>(sessionsList, serverUpdates);
-      const serverSessions = await fetchNewSessions(updatedSessions);
-      const mergedSessions = mergeLocalAndServer<Session>(updatedSessions, serverSessions);
-
+      const serverSessions = await fetchNewSessions(sessionsList);
+      const mergedSessions = mergeLocalAndServer<Session>(sessionsList, serverSessions);
       const changedSessions = findChangedItems<Session>(sessionsList, mergedSessions);
 
       if (changedSessions.length > 0) {
         setSessions(mergedSessions);
         await saveSessions(changedSessions);
+        await auth.getSession();
       }
-
-      await auth.getSession();
     } catch (error) {
       console.log("Error syncing sessions:", error);
     }

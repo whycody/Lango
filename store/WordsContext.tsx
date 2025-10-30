@@ -114,9 +114,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       if (!serverUpdates) return;
 
-      const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
-      const serverWords = await fetchNewWords(updatedWords);
-      const mergedWords = mergeLocalAndServer<Word>(updatedWords, serverWords);
+      const serverWords = await fetchNewWords(wordsList);
+      const mergedWords = mergeLocalAndServer<Word>(wordsList, serverWords);
       const changedWords = findChangedItems<Word>(wordsList, mergedWords);
 
       if (changedWords.length > 0) {

@@ -93,5 +93,10 @@
   "choose_session_mode": "Choose session mode",
   "choose_flashcard_side": "Choose the front of flashcard",
   "word": "Word",
-  "translation": "Translation"
+  "translation": "Translation",
+  "no_items": "There is nothing here yet",
+  "no_items_desc": "Try adding some words to your vocabulary",
+  "empty_search": "No results found",
+  "empty_search_desc": "Try changing the search term.",
+  "start_search_desc": "Try to type something above to search for a flashcard"
 }

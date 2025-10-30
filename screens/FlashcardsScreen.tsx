@@ -17,6 +17,7 @@ import ListFilter from "../components/ListFilter";
 import { WordWithDetails } from "../store/types";
 import { useWordsWithDetails } from "../store/WordsWithDetailsContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import EmptyList from "../components/EmptyList";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -205,7 +206,14 @@ const FlashcardsScreen = () => {
       {searchingMode && ListFilterHeader}
       <FlashList
         data={data}
+        ListEmptyComponent={
+            <EmptyList
+              title={t(searchingMode ? 'empty_search' : 'no_items')}
+              description={t(searchingMode ? filter ? 'empty_search_desc' : 'start_search_desc' : 'no_items_desc')}
+            />
+        }
         renderItem={renderListItem}
+        showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         estimatedItemSize={70}
         stickyHeaderHiddenOnScroll={false}

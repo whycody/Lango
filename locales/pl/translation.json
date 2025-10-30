@@ -95,5 +95,10 @@
   "choose_session_mode": "Wybierz tryb sesji",
   "choose_flashcard_side": "Wybierz przód fiszki",
   "word": "Słówko",
-  "translation": "Tłumaczenie"
+  "translation": "Tłumaczenie",
+  "no_items": "Na razie tu nic nie ma",
+  "no_items_desc": "Spróbuj dodać kilka słówek do swojego słownika.",
+  "empty_search": "Brak wyników",
+  "empty_search_desc": "Spróbuj wpisać coś innego.",
+  "start_search_desc": "Wpisz coś powyżej, aby wyszukać fiszkę."
 }

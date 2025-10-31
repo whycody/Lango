@@ -37,9 +37,41 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
     langWordsIds.includes(wordDetail.wordId));
 
   useEffect(() => {
-    if (!words || !initialized || !evaluations) return;
-    words.forEach((word: Word) => syncWithWordsMLStates(word.id));
-  }, [words?.length, evaluations?.length, initialized]);
+    if (!words?.length || !evaluations?.length || !initialized) return;
+
+    const wordsMLStates = wordsMLStatesRef.current || [];
+    const evalsByWordId = new Map<string, Evaluation[]>();
+    for (const evalItem of evaluations) {
+      const list = evalsByWordId.get(evalItem.wordId);
+      if (list) list.push(evalItem);
+      else evalsByWordId.set(evalItem.wordId, [evalItem]);
+    }
+
+    const wordsToSync = getWordsToSync(words, evaluations, wordsMLStates);
+    syncWordsBatch(wordsToSync, evalsByWordId);
+  }, [words, evaluations, initialized]);
+
+  const getWordsToSync = (words: Word[], evaluations: Evaluation[], wordsMLStates: WordMLState[]): Word[] => {
+    const mlStateByWordId = new Map(wordsMLStates.map(s => [s.wordId, s]));
+    const evalsByWordId = new Map<string, Evaluation[]>();
+
+    for (const evalItem of evaluations) {
+      const list = evalsByWordId.get(evalItem.wordId);
+      if (list) list.push(evalItem);
+      else evalsByWordId.set(evalItem.wordId, [evalItem]);
+    }
+
+    const toSync: Word[] = [];
+    for (const word of words) {
+      const existing = mlStateByWordId.get(word.id);
+      const relatedEvals = evalsByWordId.get(word.id) || [];
+      if (!existing || existing.repetitionsCount !== relatedEvals.length) {
+        toSync.push(word);
+      }
+    }
+
+    return toSync;
+  };
 
   useEffect(() => {
     if (wordsMLStates !== null) {
@@ -58,17 +90,11 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return sum / diffs.length;
   };
 
-  const syncWithWordsMLStates = async (wordId: string) => {
-    const currentWordsMLStates = wordsMLStatesRef.current;
-    if (!currentWordsMLStates) return;
+  const syncWordsBatch = async (wordsToSync: Word[], evalsByWordId: Map<string, Evaluation[]>) => {
+    const updatedStates: WordMLState[] = [];
 
-    const existingMLState = currentWordsMLStates.find(d => d.wordId === wordId);
-    const relatedEvals = evaluations.filter(e => e.wordId === wordId);
-
-    if (!existingMLState || existingMLState.repetitionsCount !== relatedEvals.length) {
-      const word = words?.find(w => w.id === wordId);
-      if (!word) return;
-
+    for (const word of wordsToSync) {
+      const relatedEvals = evalsByWordId.get(word.id) || [];
       const state = computeWordMLState(word, relatedEvals);
 
       const lastEvalDate = relatedEvals.length
@@ -79,7 +105,7 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         )
         : new Date(word.addDate);
 
-      const diffHours = (Date.now() - lastEvalDate.getTime()) / (1000 * 60 * 60);
+      const diffHours = (Date.now() - lastEvalDate.getTime()) / 36e5;
 
       const input = [
         diffHours,
@@ -101,15 +127,14 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
       };
 
       await updateWordMLState(updated);
-
-      setWordsMLStates(prev =>
-        prev
-          ? prev.map(d => (d.wordId === wordId ? updated : d)).concat(
-            prev.find(d => d.wordId === wordId) ? [] : [updated]
-          )
-          : [updated]
-      );
+      updatedStates.push(updated);
     }
+
+    setWordsMLStates(prev => {
+      const map = new Map(prev?.map(s => [s.wordId, s]));
+      for (const u of updatedStates) map.set(u.wordId, u);
+      return Array.from(map.values());
+    });
   };
 
   const computeWordMLState = (word: Word, evaluations: Evaluation[]): WordMLState => {

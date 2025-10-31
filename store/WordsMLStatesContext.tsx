@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, FC, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useEvaluations } from "./EvaluationsContext";
 import { useWords } from "./WordsContext";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
@@ -32,24 +32,26 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const { evaluations } = useEvaluations();
   const { words, langWords } = useWords();
-  const langWordsIds = langWords.map((l) => l.id);
-  const langWordsMLStates = wordsMLStates?.filter((wordDetail: WordMLState) =>
-    langWordsIds.includes(wordDetail.wordId));
+  const langWordsIdsSet = useMemo(() => new Set(langWords.map(l => l.id)), [langWords]);
+  const langWordsMLStates = useMemo(() => wordsMLStates?.filter(wordDetail => langWordsIdsSet.has(wordDetail.wordId)) || [],
+    [wordsMLStates, langWordsIdsSet]);
+
+  const evalsByWordId = useMemo(() => {
+    if (!evaluations?.length) return new Map<string, Evaluation[]>();
+    const map = new Map<string, Evaluation[]>();
+    for (const e of evaluations) {
+      const list = map.get(e.wordId);
+      if (list) list.push(e);
+      else map.set(e.wordId, [e]);
+    }
+    return map;
+  }, [evaluations]);
 
   useEffect(() => {
     if (!words?.length || !evaluations?.length || !initialized) return;
-
-    const wordsMLStates = wordsMLStatesRef.current || [];
-    const evalsByWordId = new Map<string, Evaluation[]>();
-    for (const evalItem of evaluations) {
-      const list = evalsByWordId.get(evalItem.wordId);
-      if (list) list.push(evalItem);
-      else evalsByWordId.set(evalItem.wordId, [evalItem]);
-    }
-
-    const wordsToSync = getWordsToSync(words, wordsMLStates, evalsByWordId);
+    const wordsToSync = getWordsToSync(words, wordsMLStatesRef.current || [], evalsByWordId);
     syncWordsBatch(wordsToSync, evalsByWordId);
-  }, [words, evaluations, initialized]);
+  }, [words, evaluations, initialized, evalsByWordId]);
 
   const getWordsToSync = (
     words: Word[],

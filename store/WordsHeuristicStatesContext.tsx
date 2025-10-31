@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Evaluation, Word, WordHeuristicState } from './types';
 import { useWords } from "./WordsContext";
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
@@ -33,9 +33,10 @@ export const WordsHeuristicProvider: FC<{ children: ReactNode }> = ({ children }
 
     const { evaluations } = useEvaluations();
     const { words, langWords } = useWords();
-    const langWordsIds = langWords.map((l) => l.id);
-    const langWordsHeuristicStates = wordsHeuristicStates.filter((wordDetail: WordHeuristicState) =>
-      langWordsIds.includes(wordDetail.wordId));
+
+    const langWordsIdsSet = useMemo(() => new Set(langWords.map(l => l.id)), [langWords]);
+    const langWordsHeuristicStates = useMemo(() => wordsHeuristicStates?.filter((wordDetail: WordHeuristicState) =>
+        langWordsIdsSet.has(wordDetail.wordId)) || [], [wordsHeuristicStates, langWordsIdsSet]);
 
     useEffect(() => {
       if (!words || !initialized || !evaluations) return;

@@ -23,7 +23,6 @@ import { useEvaluations } from "../store/EvaluationsContext";
 import { SESSION_MODE } from "../store/types";
 import { useWordSet } from "../hooks/useWordSet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { calculateWeightedColor } from "../utils/calculateWeightedColor";
 import SessionSettingsBottomSheet from "../sheets/SessionSettingsBottomSheet";
 
 type WordUpdate = {
@@ -257,8 +256,6 @@ const SessionScreen = () => {
     );
   };
 
-  const statusBarColor = calculateWeightedColor(wordsUpdates.map(w => w.grade), colors)
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ height: insets.top, backgroundColor: colors.card }}/>
@@ -296,7 +293,7 @@ const SessionScreen = () => {
         <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
           <ProgressBar
             animatedValue={progress ? progress / cards.length : 0.000001}
-            color={statusBarColor}
+            color={colors.primary}
             style={styles.progressBar}
           />
         </View>

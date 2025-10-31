@@ -156,6 +156,15 @@ const FlashcardsScreen = () => {
     );
   }, [searchingMode, filter, setFilter]);
 
+  const renderEmptyList = useMemo(() => {
+    return (
+      <EmptyList
+        title={t(searchingMode ? 'empty_search' : 'no_items')}
+        description={t(searchingMode ? filter ? 'empty_search_desc' : 'start_search_desc' : 'no_items_desc')}
+      />
+    )
+  }, [searchingMode, filter]);
+
   const ListFilterHeader = useMemo(() => {
     return (
       <View style={styles.subHeaderContainer}>
@@ -183,14 +192,17 @@ const FlashcardsScreen = () => {
   const renderListItem = ({ item }: { item: { id: string } }) => {
     if (item.id === "header") return renderHeader;
     if (item.id === "subheader") return renderSubheader;
+    if (item.id === 'emptyList') return renderEmptyList;
     return renderFlashcardListItem(item as WordWithDetails);
   };
 
-  const data = searchingMode ? [...flashcards] : [{ id: 'header' }, { id: 'subheader' }, ...flashcards];
+  const data = searchingMode ?
+    [flashcards.length == 0 && { id: 'emptyList' }, ...flashcards] :
+    [{ id: 'header' }, { id: 'subheader' }, flashcards.length == 0 && { id: 'emptyList' }, ...flashcards];
 
   return (
     <SafeAreaView style={[styles.root]}>
-      <View style={{ height: insets.top, backgroundColor: colors.card}} />
+      <View style={{ height: insets.top, backgroundColor: colors.card }}/>
       <RemoveFlashcardBottomSheet
         ref={removeFlashcardBottomSheetRef}
         flashcardId={editFlashcardId}
@@ -205,13 +217,7 @@ const FlashcardsScreen = () => {
       />
       {searchingMode && ListFilterHeader}
       <FlashList
-        data={data}
-        ListEmptyComponent={
-            <EmptyList
-              title={t(searchingMode ? 'empty_search' : 'no_items')}
-              description={t(searchingMode ? filter ? 'empty_search_desc' : 'start_search_desc' : 'no_items_desc')}
-            />
-        }
+        data={data.filter(Boolean)}
         renderItem={renderListItem}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}

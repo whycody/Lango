@@ -67,8 +67,9 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       if (!serverUpdates) return;
 
-      const serverEvaluations = await fetchNewEvaluations(evaluationsList);
-      const mergedEvaluations = mergeLocalAndServer<Evaluation>(evaluationsList, serverEvaluations);
+      const updatedEvaluations = updateLocalItems<Evaluation>(evaluationsList, serverUpdates);
+      const serverEvaluations = await fetchNewEvaluations(updatedEvaluations);
+      const mergedEvaluations = mergeLocalAndServer<Evaluation>(updatedEvaluations, serverEvaluations);
       const changedEvaluations = findChangedItems<Evaluation>(evaluationsList, mergedEvaluations);
 
       if (changedEvaluations.length > 0) {

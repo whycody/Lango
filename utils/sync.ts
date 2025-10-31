@@ -69,7 +69,6 @@ export function updateLocalItems<T extends SyncMetadata & {
       return {
         ...item,
         synced: true,
-        updatedAt: serverUpdatedAt,
         locallyUpdatedAt: serverUpdatedAt,
       };
     }
@@ -83,7 +82,7 @@ export function getUnsyncedItems<T extends SyncMetadata>(items: T[]): T[] {
 
 export function findLatestUpdatedAt<T extends SyncMetadata>(items: T[]): string {
   const timestamps = items.map(item => {
-    const date = new Date(item.updatedAt ?? item.locallyUpdatedAt);
+    const date = new Date(item.updatedAt);
     return isNaN(date.getTime()) ? 0 : date.getTime();
   });
 

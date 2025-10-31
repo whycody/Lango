@@ -47,21 +47,18 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
       else evalsByWordId.set(evalItem.wordId, [evalItem]);
     }
 
-    const wordsToSync = getWordsToSync(words, evaluations, wordsMLStates);
+    const wordsToSync = getWordsToSync(words, wordsMLStates, evalsByWordId);
     syncWordsBatch(wordsToSync, evalsByWordId);
   }, [words, evaluations, initialized]);
 
-  const getWordsToSync = (words: Word[], evaluations: Evaluation[], wordsMLStates: WordMLState[]): Word[] => {
+  const getWordsToSync = (
+    words: Word[],
+    wordsMLStates: WordMLState[],
+    evalsByWordId: Map<string, Evaluation[]>
+  ): Word[] => {
     const mlStateByWordId = new Map(wordsMLStates.map(s => [s.wordId, s]));
-    const evalsByWordId = new Map<string, Evaluation[]>();
-
-    for (const evalItem of evaluations) {
-      const list = evalsByWordId.get(evalItem.wordId);
-      if (list) list.push(evalItem);
-      else evalsByWordId.set(evalItem.wordId, [evalItem]);
-    }
-
     const toSync: Word[] = [];
+
     for (const word of words) {
       const existing = mlStateByWordId.get(word.id);
       const relatedEvals = evalsByWordId.get(word.id) || [];

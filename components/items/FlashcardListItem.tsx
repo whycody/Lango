@@ -52,14 +52,15 @@ const FlashcardListItem: FC<FlashcardListItemProps> =
             />
           }
         </View>
-        <View style={{ width: '100%', height: 4, backgroundColor: colors.card }}/>
       </Pressable>
     );
   }
 
 const getStyles = (colors: any) => StyleSheet.create({
   root: {
-    backgroundColor: colors.background
+    borderTopWidth: 3,
+    backgroundColor: colors.background,
+    borderColor: colors.card
   },
   container: {
     paddingVertical: 15,

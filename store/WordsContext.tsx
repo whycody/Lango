@@ -20,7 +20,7 @@ interface WordsContextProps {
   langWords: Word[];
   addWord: (text: string, translation: string, source?: string) => Word | null;
   getWord: (id: string) => Word | undefined;
-  editWord: (id: string, text: string, translation: string) => void;
+  editWord: (updatedWord: Partial<Word>) => void;
   removeWord: (id: string) => void;
   syncWords: () => Promise<void>;
 }
@@ -63,7 +63,11 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   });
 
   const addWord = (text: string, translation: string, source: string) => {
-    if (words.find((word) => word.text === text && word.translation === translation)) return null;
+    const word = words.find((word) => word.text === text && word.translation === translation);
+    if (word) {
+      editWord({ id: word.id, removed: false });
+      return null;
+    }
     const newWord = createWord(text, translation, source);
     const updatedWords = [newWord, ...words];
     syncWords(updatedWords);
@@ -74,13 +78,13 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
 
-  const editWord = (id: string, text: string, translation: string) => {
+  const editWord = (updatedWord: Partial<Word>) => {
     const updatedAt = new Date().toISOString();
     const updatedWords = words.map(word =>
-      word.id === id ? { ...word, text, translation, synced: false, locallyUpdatedAt: updatedAt } : word
+      word.id === updatedWord.id ? { ...word, ...updatedWord, synced: false, locallyUpdatedAt: updatedAt } : word
     );
 
-    updateWord(updatedWords.find(word => word.id === id)!);
+    updateWord(updatedWords.find(word => word.id === updatedWord.id)!);
     setWords(updatedWords);
     syncWords(updatedWords);
   };

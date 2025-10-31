@@ -86,7 +86,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     if (!validateInputs()) return;
     const word = wordInputRef.current?.getWord().trim();
     const translation = translationInputRef.current?.getWord().trim();
-    wordsContext.editWord(props.flashcardId, word, translation);
+    wordsContext.editWord({ id: props.flashcardId, text: word, translation: translation });
     props.onWordEdit?.(props.flashcardId, word, translation);
     setStatusMessage(t('editWord', { word: word }));
     scheduleDismiss()

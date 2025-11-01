@@ -84,12 +84,12 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
 
   const editFlashcard = () => {
     if (!validateInputs()) return;
+    scheduleDismiss();
     const word = wordInputRef.current?.getWord().trim();
     const translation = translationInputRef.current?.getWord().trim();
     wordsContext.editWord({ id: props.flashcardId, text: word, translation: translation });
     props.onWordEdit?.(props.flashcardId, word, translation);
     setStatusMessage(t('editWord', { word: word }));
-    scheduleDismiss()
   }
 
   const addFlashcard = (multiple: boolean) => {
@@ -111,8 +111,8 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   }
 
   const scheduleDismiss = () => {
-    Keyboard.dismiss();
-    setTimeout(() => setStatus('success'), 50);
+    setStatus('success');
+    setTimeout(() => Keyboard.dismiss(), 950);
     setTimeout(() => ref.current?.dismiss(), 1000);
     setButtonsActive(false);
   }

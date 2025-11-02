@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import uuid from 'react-native-uuid';
@@ -46,6 +46,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { mainLang, translationLang } = useLanguage();
   const { saveWords, getAllWords, updateWord } = useWordsRepository();
   const langWords = words.filter((word) => word.mainLang == mainLang && word.translationLang == translationLang);
+  const syncing = useRef(false);
 
   const createWord = (text: string, translation: string, source: string): Word => ({
     id: uuid.v4(),
@@ -104,6 +105,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const syncWords = async (inputWords?: Word[]) => {
     try {
+      if (syncing.current) return;
+      syncing.current = true;
       const wordsList = inputWords ?? (await getAllWords());
       const unsyncedWords = getUnsyncedItems<Word>(wordsList);
       const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
@@ -121,6 +124,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
     } catch (error) {
       console.log("Error syncing words:", error);
+    } finally {
+      syncing.current = false;
     }
   };
 

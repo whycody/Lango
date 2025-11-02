@@ -42,6 +42,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     .sort((a, b) => a.displayCount - b.displayCount);
   const validLangSuggestionsNumber = langSuggestions.filter((suggestion) => suggestion.displayCount <= 3).length;
   const syncedOnMount = useRef(false);
+  const syncing = useRef(false);
 
   const increaseSuggestionsDisplayCount = async (ids: string[]) => {
     setSuggestions(prevSuggestions => {
@@ -56,7 +57,8 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
         return suggestion;
       });
-      saveSuggestions(updated);
+      const updatedSuggestions = updated.filter(suggestion => ids.includes(suggestion.id));
+      saveSuggestions(updatedSuggestions);
       return updated;
     });
   };
@@ -75,14 +77,17 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
         return suggestion;
       });
-      saveSuggestions(updated);
+      const updatedSuggestions = updated.filter(suggestion => ids.includes(suggestion.id));
+      saveSuggestions(updatedSuggestions);
       return updated;
     });
   };
 
   const syncSuggestions = async (inputSuggestions?: Suggestion[]) => {
     try {
-      const suggestionsList = inputSuggestions ?? (await getAllSuggestions());
+      if (syncing.current) return;
+      syncing.current = true;
+      let suggestionsList = inputSuggestions ?? (await getAllSuggestions());
       const langSuggestionsList = suggestionsList.filter((suggestion) => suggestion.mainLang ==
         mainLang && suggestion.translationLang == translationLang);
       const unsyncedSuggestions = getUnsyncedItems<Suggestion>(langSuggestionsList);
@@ -92,19 +97,22 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       const updatedSuggestions = updateLocalItems<Suggestion>(langSuggestionsList, serverUpdates);
       const serverSuggestions = await fetchNewSuggestions(updatedSuggestions);
+      suggestionsList = inputSuggestions ?? (await getAllSuggestions());
       const mergedSuggestions = mergeLocalAndServer<Suggestion>(suggestionsList, serverSuggestions);
-      const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || (!suggestion.skipped && !suggestion.added));
 
+      const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || (!suggestion.skipped && !suggestion.added));
       const suggestionsToRemove = mergedSuggestions.filter(suggestion => suggestion.synced && (suggestion.skipped || suggestion.added));
       const changedSuggestions = findChangedItems<Suggestion>(suggestionsList, mergedSuggestions);
 
       if (changedSuggestions.length > 0) {
+        setSuggestions(locallyKeptSuggestions);
         await deleteSuggestions(suggestionsToRemove.map(e => e.id));
         await saveSuggestions(changedSuggestions);
-        setSuggestions(locallyKeptSuggestions);
       }
     } catch (error) {
       console.log("Error syncing suggestions:", error);
+    } finally {
+      syncing.current = false;
     }
   };
 
@@ -125,6 +133,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   useEffect(() => {
+    if (syncing.current) return;
     if (validLangSuggestionsNumber >= 20 && syncedOnMount.current) return;
     syncedOnMount.current = true;
     loadData();

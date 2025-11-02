@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
 import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../api/apiClient";
 import uuid from 'react-native-uuid';
@@ -32,6 +32,7 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { getAllEvaluations, saveEvaluations } = useEvaluationsRepository();
   const [evaluations, setEvaluations] = useState<Evaluation[] | null>(initialLoad.evaluations);
   const [loading, setLoading] = useState(true);
+  const syncing = useRef(false);
 
   const createEvaluation = (wordId: string, sessionId: string, grade: 1 | 2 | 3): Evaluation => {
     const now = new Date().toISOString();
@@ -61,6 +62,8 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const syncEvaluations = async (inputEvaluations?: Evaluation[]) => {
     try {
+      if (syncing.current) return;
+      syncing.current = true;
       const evaluationsList = inputEvaluations ?? (await getAllEvaluations());
       const unsyncedEvaluations = getUnsyncedItems<Evaluation>(evaluationsList);
       const serverUpdates = await syncInBatches<Evaluation>(unsyncedEvaluations, syncEvaluationsOnServer);
@@ -78,6 +81,8 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
     } catch (error) {
       console.log("Error syncing evaluations:", error);
+    } finally {
+      syncing.current = false;
     }
   };
 

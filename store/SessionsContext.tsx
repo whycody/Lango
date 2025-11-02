@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
 import uuid from 'react-native-uuid';
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
@@ -44,6 +44,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [sessions, setSessions] = useState<Session[]>(initialLoad.sessions);
   const [loading, setLoading] = useState(true);
   const auth = useAuth();
+  const syncing = useRef(false);
 
   const createSession = (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number, finished: boolean): Session => {
     const now = new Date().toISOString();
@@ -72,6 +73,8 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const syncSessions = async (inputSessions?: Session[]) => {
     try {
+      if (syncing.current) return;
+      syncing.current = true;
       const sessionsList = inputSessions ?? (await getAllSessions());
       const unsyncedSessions = getUnsyncedItems<Session>(sessionsList);
       const serverUpdates = await syncInBatches<Session>(unsyncedSessions, syncSessionsOnServer);
@@ -90,6 +93,8 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
     } catch (error) {
       console.log("Error syncing sessions:", error);
+    } finally {
+      syncing.current = false;
     }
   };
 

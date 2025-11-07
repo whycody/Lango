@@ -34,7 +34,7 @@ const HeaderCard = () => {
   const sessionSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
-  const last50Words = langWords.sort((a,b) => new Date(a.addDate).getTime() - new Date(b.addDate).getTime())
+  const last50Words = langWords.sort((a,b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
     .slice(0, 50).map((word) => word.id);
   const langWordsHeuristicStatesFiltered = langWordsHeuristicStates.filter(word => last50Words.includes(word.wordId));
 

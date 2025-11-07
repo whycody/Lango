@@ -40,7 +40,6 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == mainLang &&
     suggestion.translationLang == translationLang && !suggestion.skipped && !suggestion.added)
     .sort((a, b) => a.displayCount - b.displayCount);
-  const validLangSuggestionsNumber = langSuggestions.filter((suggestion) => suggestion.displayCount <= 3).length;
   const syncedOnMount = useRef(false);
   const syncing = useRef(false);
 
@@ -133,11 +132,10 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   useEffect(() => {
-    if (syncing.current) return;
-    if (validLangSuggestionsNumber >= 20 && syncedOnMount.current) return;
+    if (syncing.current || (langSuggestions.length >= 20 && syncedOnMount.current)) return;
     syncedOnMount.current = true;
     loadData();
-  }, [mainLang, translationLang, validLangSuggestionsNumber]);
+  }, [mainLang, translationLang, langSuggestions.length]);
 
   return (
     <SuggestionsContext.Provider

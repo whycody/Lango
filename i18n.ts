@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import enTranslation from './locales/en/translation.json';
-import plTranslation from './locales/pl/translation.json';
+import enTranslation from './src/locales/en/translation.json';
+import plTranslation from './src/locales/pl/translation.json';
 import 'intl-pluralrules';
 
 i18n

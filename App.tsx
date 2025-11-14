@@ -3,15 +3,15 @@ import { StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import './i18n';
 import * as Font from 'expo-font';
-import { DarkTheme } from "./themes";
+import { DarkTheme } from "./src/ui/themes";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import AuthProvider from "./api/auth/AuthProvider";
-import Root from "./navigation/Root";
-import AppInitializerProvider from "./store/AppInitializerContext";
-import { UserStorageProvider } from "./store/UserStorageContext";
+import AuthProvider from "./src/api/auth/AuthProvider";
+import Root from "./src/navigation/Root";
+import AppInitializerProvider from "./src/store/AppInitializerContext";
+import { UserStorageProvider } from "./src/store/UserStorageContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { checkUpdates } from "./utils/checkUpdates";
+import { checkUpdates } from "./src/utils/checkUpdates";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -22,10 +22,10 @@ export default function App() {
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
-        'Montserrat-Regular': require('./assets/fonts/Montserrat-Regular.ttf'),
-        'Montserrat-SemiBold': require('./assets/fonts/Montserrat-SemiBold.ttf'),
-        'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
-        'Montserrat-Black': require('./assets/fonts/Montserrat-Black.ttf'),
+        'Montserrat-Regular': require('./src/assets/fonts/Montserrat-Regular.ttf'),
+        'Montserrat-SemiBold': require('./src/assets/fonts/Montserrat-SemiBold.ttf'),
+        'Montserrat-Bold': require('./src/assets/fonts/Montserrat-Bold.ttf'),
+        'Montserrat-Black': require('./src/assets/fonts/Montserrat-Black.ttf'),
       });
       setFontsLoaded(true);
     }

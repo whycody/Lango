@@ -5,7 +5,7 @@ export const DarkTheme: CustomTheme = {
   colors: {
     primary: '#DCF2F1',
     primary300: '#A8DAE7',
-    primary600: '#608ada',
+    primary600: '#719cea',
 
     background: '#0f0f30',
     card: '#07071b',

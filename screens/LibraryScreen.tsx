@@ -11,7 +11,7 @@ import { exportData } from "../utils/saveData";
 import CustomText from "../components/CustomText";
 import appBuildNumbers from "../app.json";
 import { useEvaluations } from "../store/EvaluationsContext";
-import { Word } from "../store/types";
+import { LibraryNavProp, Word } from "../store/types";
 import { useLanguage } from "../store/LanguageContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useDynamicStatusBar } from "../hooks/useDynamicStatusBar";
@@ -22,7 +22,7 @@ const LibraryScreen = () => {
   const { colors } = useTheme();
   const words = useWords();
   const { evaluations } = useEvaluations();
-  const navigation = useNavigation();
+  const navigation = useNavigation<LibraryNavProp>();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
@@ -99,7 +99,7 @@ const LibraryScreen = () => {
   const handlePress = (id: number) => {
     switch (id) {
       case LibraryItems.MY_WORDS:
-        navigation.navigate('Flashcards' as never);
+        navigation.navigate('Flashcards');
         break;
       case LibraryItems.EXPORT:
         exportData();
@@ -115,6 +115,9 @@ const LibraryScreen = () => {
         break;
       case LibraryItems.USE_CONDITIONS:
         Linking.openURL(`${process.env['SITE_URL']}/terms_of_service`);
+        break;
+      case LibraryItems.SETTINGS:
+        navigation.navigate('Settings');
         break;
       default:
         break;

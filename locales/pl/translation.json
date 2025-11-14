@@ -82,6 +82,7 @@
   "oldest": "Najstarsze",
   "export": "Wyeksportuj dane",
   "settings_desc": "Dopasuj aplikację do swoich potrzeb",
+  "settings_long_desc": "Dostosuj wygląd, działanie i preferencje aplikacji tak, aby idealnie odpowiadały Twojemu stylowi pracy.",
   "export_desc": "Wyeksportuj {{records_number}} rekordów",
   "words_desc": "Rzuć okiem na {{words_number}} słówek",
   "login_with_google": "Zaloguj się z Google",

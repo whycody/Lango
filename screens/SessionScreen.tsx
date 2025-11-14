@@ -30,7 +30,7 @@ type WordUpdate = {
   grade: 1 | 2 | 3;
 };
 
-type RouteParams = {
+export type SessionScreenParams = {
   length: 1 | 2 | 3;
   mode: SESSION_MODE;
   flashcardSide: FLASHCARD_SIDE
@@ -43,7 +43,7 @@ const SessionScreen = () => {
   const confettiRef = useRef<LottieView>();
 
   const route = useRoute();
-  const params = route.params as RouteParams;
+  const params = route.params as SessionScreenParams;
   const length = params?.length || 1;
   const mode = params?.mode || SESSION_MODE.STUDY;
   const flashcardSide = params?.flashcardSide || FLASHCARD_SIDE.WORD;

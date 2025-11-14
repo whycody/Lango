@@ -10,3 +10,4 @@ export * from './SyncMetadata';
 export * from './WordHeuristicState';
 export * from './SyncResult';
 export * from './InitialLoad';
+export * from './LibraryNavProp';

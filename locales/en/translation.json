@@ -80,6 +80,7 @@
   "oldest": "Oldest",
   "export": "Export data",
   "settings_desc": "Adjust application to your needs",
+  "settings_long_desc": "Customize the appearance, behavior, and preferences of the app so that it perfectly matches your workflow.",
   "export_desc": "Export your {{records_number}} records",
   "words_desc": "Take a look on your {{words_number}} words",
   "login_with_google": "Login with Google",

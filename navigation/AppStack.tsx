@@ -1,5 +1,5 @@
 import FlashcardsScreen from "../screens/FlashcardsScreen";
-import SessionScreen from "../screens/SessionScreen";
+import SessionScreen, { SessionScreenParams } from "../screens/SessionScreen";
 import UserPreferencesProvider from "../store/UserPreferencesContext";
 import LanguageProvider from "../store/LanguageContext";
 import SessionsProvider from "../store/SessionsContext";
@@ -16,8 +16,16 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DarkTheme } from "../themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
+import SettingsScreen from "../screens/SettingsScreen";
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  Tabs: undefined;
+  Settings: undefined;
+  Session: SessionScreenParams;
+  Flashcards: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppStack = () => {
   const { colors } = DarkTheme;
@@ -45,6 +53,10 @@ const AppStack = () => {
                               <Stack.Screen
                                 name='Tabs'
                                 component={TabsNavigator}
+                              />
+                              <Stack.Screen
+                                name='Settings'
+                                component={SettingsScreen}
                               />
                               <Stack.Screen
                                 name='Session'

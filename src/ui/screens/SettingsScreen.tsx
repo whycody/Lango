@@ -162,7 +162,7 @@ const SettingsScreen = () => {
   );
 
   const renderSectionHeader = (title: string) => (
-    <CustomText weight='Bold' style={styles.section}>{title}</CustomText>
+    !title ? <></> : <CustomText weight='Bold' style={styles.section}>{title}</CustomText>
   );
 
   const sections = useMemo(() => {
@@ -171,7 +171,7 @@ const SettingsScreen = () => {
         title: getSectionTitle(section),
         data: settingsItems.filter(item => item.section === section)
       }))
-      .filter(section => section.data.length > 0);
+
   }, [settingsItems, t]);
 
   return (
@@ -185,6 +185,7 @@ const SettingsScreen = () => {
       <View style={styles.root}>
         <SectionList
           sections={sections}
+          showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <>
               <CustomText weight="Bold" style={styles.title}>{t('settings')}</CustomText>

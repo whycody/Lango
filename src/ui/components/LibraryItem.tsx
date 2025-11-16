@@ -1,4 +1,4 @@
-import { FC, memo, useEffect, useState } from "react";
+import { FC, memo } from "react";
 import { Platform, Pressable, StyleSheet, Switch, View, ViewStyle } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTheme } from "@react-navigation/native";
@@ -18,11 +18,6 @@ interface LibraryItemProps {
 const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress, icon, enabled, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, index);
-  const [internalEnabled, setInternalEnabled] = useState(enabled);
-
-  useEffect(() => {
-    setInternalEnabled(enabled);
-  }, [enabled]);
 
   return (
     <Pressable
@@ -38,7 +33,7 @@ const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress,
         {description && <CustomText weight={"Regular"} style={styles.description}>{description}</CustomText>}
       </View>
       {enabled !== undefined &&
-        <Switch value={internalEnabled} thumbColor={colors.primary} onValueChange={onPress}/>
+        <Switch value={enabled} thumbColor={colors.primary} onValueChange={onPress}/>
       }
     </Pressable>
   );

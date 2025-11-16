@@ -155,8 +155,8 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   section: {
     textTransform: 'uppercase',
-    color: colors.primary300,
-    fontSize: 12,
+    color: colors.primary,
+    fontSize: 13,
     marginTop: 20,
     marginBottom: 10,
     marginHorizontal: MARGIN_HORIZONTAL

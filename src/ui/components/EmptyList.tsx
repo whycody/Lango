@@ -20,7 +20,7 @@ const EmptyList: FC<EmptyListProps> = ({ title, description, icon, onPress, styl
 
   return (
     <Pressable style={[styles.emptyViewContainer, style]} onPress={onPress}>
-      <Ionicons name={icon ? icon : 'file-tray-outline'} size={35} color={colors.primary300} style={styles.icon}/>
+      <Ionicons name={icon ? icon : 'file-tray-sharp'} size={35} color={colors.primary300} style={styles.icon}/>
       <Text style={styles.header}>{title}</Text>
       <Text style={styles.text}>{description}</Text>
     </Pressable>

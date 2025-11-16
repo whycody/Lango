@@ -1,9 +1,4 @@
-export enum LanguageCode {
-  ENGLISH = 'en',
-  POLISH = 'pl',
-  SPANISH = 'es',
-  ITALIAN = 'it',
-}
+import { LanguageCode } from "../../constants/LanguageCode";
 
 export type Language = {
   languageCode: LanguageCode;

@@ -9,18 +9,30 @@ import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import LanguageItem from "../components/items/LanguageItem";
 import * as Haptics from "expo-haptics";
-import { Language } from "../../types";
+import { Language, LanguageCode } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
+import { LanguageTypes } from "../../constants/LanguageTypes";
 
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
+  languageType?: LanguageTypes
 }
 
 const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles();
   const { t } = useTranslation();
-  const languageContext = useLanguage();
+  const {
+    languages,
+    mainLang,
+    translationLang,
+    applicationLang,
+    setMainLang,
+    setTranslationLang,
+    setApplicationLang,
+    swapLanguages
+  } = useLanguage();
+  const { onChangeIndex, languageType = LanguageTypes.MAIN } = props;
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -28,32 +40,67 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
   const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
 
+  const pickedLanguage = languageType == LanguageTypes.MAIN ? mainLang :
+    languageType == LanguageTypes.TRANSLATION ? translationLang : applicationLang;
+
   const renderLanguageItem = ({ item, index }: { item: Language, index: number }) =>
     <LanguageItem
       language={item}
       index={index}
-      checked={item.languageCode == languageContext.mainLang}
+      checked={item.languageCode == pickedLanguage}
       onPress={() => handleLanguagePick(item)}
     />;
 
   const handleLanguagePick = (language: Language) => {
-    languageContext.setMainLang(language.languageCode);
+    const shouldSwap =
+      (languageType === LanguageTypes.MAIN && language.languageCode === translationLang) ||
+      (languageType === LanguageTypes.TRANSLATION && language.languageCode === mainLang);
+
+    if (shouldSwap) {
+      swapLanguages();
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+      ref.current?.close();
+      return;
+    }
+
+    const setters: Record<LanguageTypes, (code: string) => void> = {
+      [LanguageTypes.MAIN]: setMainLang,
+      [LanguageTypes.TRANSLATION]: setTranslationLang,
+      [LanguageTypes.APPLICATION]: setApplicationLang,
+    };
+
+    setters[languageType](language.languageCode);
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     ref.current?.close();
-  }
+  };
+
+  const langTypeDesc = languageType == LanguageTypes.MAIN ? 'main' :
+    languageType == LanguageTypes.TRANSLATION ? 'translation' : 'application';
+
+  const languagesData = languageType !== LanguageTypes.APPLICATION ? languages :
+    languages.filter(lang => [LanguageCode.POLISH, LanguageCode.ENGLISH].includes(lang.languageCode));
 
   return (
     <BottomSheetModal
       ref={ref}
-      onChange={(index: number) => props.onChangeIndex?.(index)}
+      onChange={(index: number) => onChangeIndex?.(index)}
       containerComponent={renderContainerComponent}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
     >
       <BottomSheetScrollView>
-        <Header title={t('chooseLanguage')} subtitle={t('chooseLanguageDesc')} style={styles.header}/>
-        <FlatList data={languageContext.languages} renderItem={renderLanguageItem} scrollEnabled={false}/>
+        <Header
+          title={t(`choose_${langTypeDesc}_language`)}
+          subtitle={t(`choose_language_desc`)}
+          style={styles.header}
+        />
+        <FlatList
+          data={languagesData}
+          renderItem={renderLanguageItem}
+          scrollEnabled={false}
+        />
         <ActionButton
           onPress={() => ref.current?.close()}
           label={t('cancel')}

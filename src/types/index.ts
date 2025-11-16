@@ -21,3 +21,4 @@ export * from './utils/LibraryNavProp';
 export * from './utils/SettingItem';
 export * from './utils/WordWithDetails';
 export * from './utils/WordSetStrategy';
+export { LanguageCode } from "../constants/LanguageCode";

@@ -12,10 +12,22 @@ import { UserStorageProvider } from "./src/store/UserStorageContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { checkUpdates } from "./src/utils/checkUpdates";
+import { useTypedMMKV } from "./src/hooks/useTypedMKKV";
+import { LanguageCode } from "./src/constants/LanguageCode";
+import { APPLICATION_LANG } from "./src/store/LanguageContext";
+import { useTranslation } from "react-i18next";
+import { useMMKV } from "react-native-mmkv";
 
 export default function App() {
+  const { i18n } = useTranslation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [applicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, '' as LanguageCode, useMMKV());
   const { colors } = DarkTheme;
+
+  useEffect(() => {
+    if (!applicationLang) return;
+    i18n.changeLanguage(applicationLang);
+  }, [applicationLang]);
 
   checkUpdates();
 

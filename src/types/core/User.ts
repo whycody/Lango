@@ -1,4 +1,4 @@
-import { LanguageCode } from "./Language";
+import { LanguageCode } from "../../constants/LanguageCode";
 
 export enum SESSION_MODEL {
   HEURISTIC = 'heuristic',

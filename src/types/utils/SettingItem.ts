@@ -1,5 +1,5 @@
 export type SettingItem = {
-  id: number;
+  id: string;
   label: string;
   description: string;
   icon: string;

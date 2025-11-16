@@ -10,8 +10,10 @@ import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SettingItem } from "../../types";
-import { SettingsItems, SettingsSections } from "../../constants/SettingsItems";
+import { SettingsItems } from "../../constants/SettingsItems";
 import VersionFooter from "../components/VersionFooter";
+import { SettingsSections } from "../../constants/SettingsSections";
+import { LanguageTypes } from "../../constants/LanguageTypes";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -25,6 +27,8 @@ const SettingsScreen = () => {
   const currentMainLang = languages.filter(lang => lang.languageCode === mainLang)[0].languageName;
   const currentTranslationLang = languages.filter(lang => lang.languageCode === translationLang)[0].languageName;
   const currentApplicationLang = languages.filter(lang => lang.languageCode === applicationLang)[0].languageName;
+
+  const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(LanguageTypes.MAIN);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -69,11 +73,23 @@ const SettingsScreen = () => {
     }
   }
 
-  const handlePress = useCallback((id: number) => {
+  const mapSettingsToLanguageType = (id: SettingsItems): LanguageTypes => {
+    switch (id) {
+      case SettingsItems.MAIN_LANGUAGE:
+        return LanguageTypes.MAIN;
+      case SettingsItems.TRANSLATION_LANGUAGE:
+        return LanguageTypes.TRANSLATION;
+      case SettingsItems.APPLICATION_LANGUAGE:
+        return LanguageTypes.APPLICATION;
+    }
+  }
+
+  const handlePress = useCallback((id: SettingsItems) => {
     switch (id) {
       case SettingsItems.TRANSLATION_LANGUAGE:
       case SettingsItems.APPLICATION_LANGUAGE:
       case SettingsItems.MAIN_LANGUAGE:
+        setPickedLanguageType(mapSettingsToLanguageType(id));
         languageBottomSheetRef.current?.present();
         break;
       default:
@@ -112,6 +128,7 @@ const SettingsScreen = () => {
       <LanguageBottomSheet
         ref={languageBottomSheetRef}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
+        languageType={pickedLanguageType}
       />
       <View style={styles.root}>
         <SectionList

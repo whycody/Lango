@@ -1,5 +1,6 @@
-import { WordSet, WordSetStrategy } from "../../types/WordSet";
+import { WordSet } from "../../types/WordSet";
 import { SESSION_MODEL } from "../../types";
+import { WordSetStrategy } from "../../types/WordSetStrategy";
 
 export const randomStrategy: WordSetStrategy = (size, words): WordSet => {
   const active = words.filter(w => w.active);

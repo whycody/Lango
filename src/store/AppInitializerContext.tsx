@@ -4,7 +4,7 @@ import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
-import { runMigrations } from "../database/utils/migrations";
+import { runMigrations } from "../database/migrations/migrations";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
 import { determineLanguages } from "../database/utils/determineLanguages";

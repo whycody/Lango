@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Evaluation, Session, SESSION_MODE, SESSION_MODEL, Word } from "../../../types";
+import { Evaluation, Session, SESSION_MODE, SESSION_MODEL, Word } from "../../types";
 import uuid from "react-native-uuid";
-import { saveWords } from "../../WordsRepository";
-import { saveSessions } from "../../SessionRepository";
-import { saveEvaluations } from "../../EvaluationsRepository";
+import { saveWords } from "../WordsRepository";
+import { saveSessions } from "../SessionRepository";
+import { saveEvaluations } from "../EvaluationsRepository";
 
 type AsyncStorageWord = {
   id: string;

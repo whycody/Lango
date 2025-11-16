@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View, ViewStyle } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,15 +11,16 @@ interface LibraryItemProps {
   description?: string,
   onPress?: () => void,
   icon?: string,
+  style?: ViewStyle
 }
 
-const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress, icon }) => {
+const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress, icon, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, index);
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.root, pressed && Platform.OS === 'ios' && { opacity: 0.8 }]}
+      style={({ pressed }) => [styles.root, pressed && Platform.OS === 'ios' && { opacity: 0.8 }, style]}
       android_ripple={{ color: index % 2 === 0 ? colors.card : colors.background }}
       onPress={onPress}
     >

@@ -1,5 +1,5 @@
-import { getDb } from "./db";
-import { migrateV0ToV1 } from "./migrations/migrateV0ToV1";
+import { getDb } from "../utils/db";
+import { migrateV0ToV1 } from "./migrateV0ToV1";
 
 export const runMigrations = async (userId: string) => {
   const db = await getDb(userId);

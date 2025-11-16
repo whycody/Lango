@@ -9,17 +9,23 @@ interface LanguageContextProps {
   languages: Language[];
   mainLang: LanguageCode;
   translationLang: LanguageCode;
+  applicationLang: LanguageCode;
   setMainLang: (langCode: LanguageCode) => void;
   setTranslationLang: (langCode: LanguageCode) => void;
+  setApplicationLang: (langCode: LanguageCode) => void;
 }
 
 export const LanguageContext = createContext<LanguageContextProps>({
   languages: [],
   mainLang: LanguageCode.SPANISH,
   translationLang: LanguageCode.POLISH,
+  applicationLang: LanguageCode.POLISH,
   setMainLang: () => {},
   setTranslationLang: () => {},
+  setApplicationLang: () => {},
 });
+
+const APPLICATION_LANG = 'applicationLangCode';
 
 const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
@@ -27,8 +33,10 @@ const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { storage } = useUserStorage();
   const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, initialLoad.mainLang, storage);
   const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(TRANSLATION_LANG, initialLoad.translationLang, storage);
+  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, initialLoad.translationLang, storage);
 
   const languages: Language[] = [
+    { languageCode: LanguageCode.POLISH, languageName: t('polish'), languageInTargetLanguage: 'Polski' },
     { languageCode: LanguageCode.ENGLISH, languageName: t('english'), languageInTargetLanguage: 'English' },
     { languageCode: LanguageCode.SPANISH, languageName: t('spanish'), languageInTargetLanguage: 'Español' },
     { languageCode: LanguageCode.ITALIAN, languageName: t('italian'), languageInTargetLanguage: 'Italiano' },
@@ -39,8 +47,10 @@ const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
       languages,
       mainLang,
       translationLang,
+      applicationLang,
       setMainLang,
-      setTranslationLang
+      setTranslationLang,
+      setApplicationLang,
     }}>
       {children}
     </LanguageContext.Provider>

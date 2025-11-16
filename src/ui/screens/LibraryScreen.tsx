@@ -65,7 +65,7 @@ const LibraryScreen = () => {
     },
     {
       id: LibraryItems.LANGUAGE,
-      label: t('language'),
+      label: t('main_language'),
       description: currentLang,
       icon: 'language-sharp'
     },

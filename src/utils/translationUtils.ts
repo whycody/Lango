@@ -21,7 +21,6 @@ class TranslationUtils {
     ];
 
     try {
-      console.log('1', endpoint)
       const response: AxiosResponse<TranslationResponse[]> = await axios.post(
         endpoint,
         requestBody,
@@ -38,8 +37,6 @@ class TranslationUtils {
           signal: abortController.signal,
         }
       );
-      console.log(response)
-
       return response.data[0].translations[0].text;
     } catch (error) {
       if (axios.isCancel(error)) {

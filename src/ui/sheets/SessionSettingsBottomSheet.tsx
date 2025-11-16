@@ -29,7 +29,6 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
   const saved = useRef(false);
 
   useEffect(() => {
-    console.log('2')
     setFlashcardSide(userPreferences.flashcardSide);
     setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
   }, [userPreferences.flashcardSide, userPreferences.sessionSpeechSynthesizer]);

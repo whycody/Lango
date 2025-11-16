@@ -1,5 +1,5 @@
 import { SESSION_MODEL } from "./User";
-import { SyncMetadata } from "./SyncMetadata";
+import { SyncMetadata } from "../sync/SyncMetadata";
 
 export enum SESSION_MODE {
   STUDY = 'STUDY',

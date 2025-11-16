@@ -24,11 +24,7 @@ import { SESSION_MODE } from "../../types";
 import { useWordSet } from "../../hooks/useWordSet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SessionSettingsBottomSheet from "../sheets/SessionSettingsBottomSheet";
-
-type WordUpdate = {
-  flashcardId: string;
-  grade: 1 | 2 | 3;
-};
+import { WordUpdate } from "../../types/utils/WordUpdate";
 
 export type SessionScreenParams = {
   length: 1 | 2 | 3;
@@ -355,68 +351,66 @@ const SessionScreen = () => {
   );
 };
 
-const getStyles = (colors: any) => {
-  return StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    pagerView: {
-      flex: 1,
-    },
-    pagerViewItem: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'transparent',
-    },
-    card: {
-      height: '100%',
-      marginVertical: MARGIN_VERTICAL,
-      marginHorizontal: MARGIN_HORIZONTAL,
-    },
-    cardContent: {
-      flex: 1,
-      width: '100%',
-    },
-    progressBar: {
-      marginTop: 12,
-      backgroundColor: colors.cardAccent,
-      height: 5,
-    },
-    bottomBarContainer: {
-      backgroundColor: colors.card,
-    },
-    headerText: {
-      color: colors.primary300,
-      textAlign: 'center'
-    },
-    descriptionText: {
-      textAlign: 'center',
-      color: colors.primary600,
-      opacity: 0.8,
-      fontSize: 12,
-    },
-    textContainer: {
-      marginVertical: 18,
-    },
-    lottieWrapper: {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 2,
-      position: 'absolute',
-      pointerEvents: 'none',
-    },
-    lottie: {
-      width: '100%',
-      height: 600,
-      pointerEvents: 'none',
-      position: 'absolute',
-      zIndex: 2,
-      top: 0,
-    },
-  });
-};
+const getStyles = (colors: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  pagerView: {
+    flex: 1,
+  },
+  pagerViewItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  card: {
+    height: '100%',
+    marginVertical: MARGIN_VERTICAL,
+    marginHorizontal: MARGIN_HORIZONTAL,
+  },
+  cardContent: {
+    flex: 1,
+    width: '100%',
+  },
+  progressBar: {
+    marginTop: 12,
+    backgroundColor: colors.cardAccent,
+    height: 5,
+  },
+  bottomBarContainer: {
+    backgroundColor: colors.card,
+  },
+  headerText: {
+    color: colors.primary300,
+    textAlign: 'center'
+  },
+  descriptionText: {
+    textAlign: 'center',
+    color: colors.primary600,
+    opacity: 0.8,
+    fontSize: 12,
+  },
+  textContainer: {
+    marginVertical: 18,
+  },
+  lottieWrapper: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 2,
+    position: 'absolute',
+    pointerEvents: 'none',
+  },
+  lottie: {
+    width: '100%',
+    height: 600,
+    pointerEvents: 'none',
+    position: 'absolute',
+    zIndex: 2,
+    top: 0,
+  },
+});
 
 export default SessionScreen;

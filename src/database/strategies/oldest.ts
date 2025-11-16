@@ -1,6 +1,6 @@
-import { WordSet } from "../../types/WordSet";
+import { WordSet } from "../../types/core/WordSet";
 import { SESSION_MODEL } from "../../types";
-import { WordSetStrategy } from "../../types/WordSetStrategy";
+import { WordSetStrategy } from "../../types/utils/WordSetStrategy";
 
 export const oldestStrategy: WordSetStrategy = (size, words, evaluations): WordSet => {
   const active = words.filter(w => w.active);

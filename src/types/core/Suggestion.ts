@@ -1,4 +1,4 @@
-import { SyncMetadata } from "./SyncMetadata";
+import { SyncMetadata } from "../sync/SyncMetadata";
 
 export type Suggestion = SyncMetadata & {
   id: string;

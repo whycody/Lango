@@ -7,26 +7,11 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useLanguage } from "../../store/LanguageContext";
 import LibraryItem from "../components/LibraryItem";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-
-type SettingItem = {
-  id: number;
-  label: string;
-  description: string;
-  icon: string;
-  section: number;
-}
-
-enum SettingsItems {
-  MAIN_LANGUAGE,
-  TRANSLATION_LANGUAGE,
-  APPLICATION_LANGUAGE
-}
-
-enum SettingsSections {
-  LANGUAGE,
-}
+import { SettingItem } from "../../types";
+import { SettingsItems, SettingsSections } from "../../constants/SettingsItems";
+import VersionFooter from "../components/VersionFooter";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -53,7 +38,7 @@ const SettingsScreen = () => {
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
 
-  const settingsItems: SettingItem[] = [
+  const settingsItems: SettingItem[] = useMemo(() => [
     {
       id: SettingsItems.MAIN_LANGUAGE,
       label: t('main_language'),
@@ -75,7 +60,7 @@ const SettingsScreen = () => {
       icon: 'language-sharp',
       section: SettingsSections.LANGUAGE
     }
-  ];
+  ], [t, currentMainLang, currentTranslationLang, currentApplicationLang]);
 
   const getSectionTitle = (section: number) => {
     switch (section) {
@@ -84,7 +69,7 @@ const SettingsScreen = () => {
     }
   }
 
-  const handlePress = (id: number) => {
+  const handlePress = useCallback((id: number) => {
     switch (id) {
       case SettingsItems.TRANSLATION_LANGUAGE:
       case SettingsItems.APPLICATION_LANGUAGE:
@@ -94,7 +79,7 @@ const SettingsScreen = () => {
       default:
         break;
     }
-  }
+  }, [languageBottomSheetRef]);
 
   const renderSettingsItem = ({ item, index }) => (
     <LibraryItem
@@ -112,13 +97,14 @@ const SettingsScreen = () => {
     <CustomText weight='Bold' style={styles.section}>{title}</CustomText>
   );
 
-  const sections = Object.values(SettingsSections)
-    .map((section: number) => ({
-      title: getSectionTitle(section),
-      data: settingsItems.filter((item) => item.section === section)
-    }))
-    .filter((section) => section.data.length > 0);
-
+  const sections = useMemo(() => {
+    return Object.values(SettingsSections)
+      .map((section: number) => ({
+        title: getSectionTitle(section),
+        data: settingsItems.filter(item => item.section === section)
+      }))
+      .filter(section => section.data.length > 0);
+  }, [settingsItems, t]);
 
   return (
     <>
@@ -136,6 +122,7 @@ const SettingsScreen = () => {
               <CustomText style={styles.subtitle}>{t('settings_long_desc')}</CustomText>
             </>
           }
+          ListFooterComponent={<VersionFooter/>}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderSettingsItem}
           renderSectionHeader={({ section }) => renderSectionHeader(section.title)}

@@ -5,11 +5,11 @@ import { useAuth } from "../api/auth/AuthProvider";
 import { useSessions } from "../store/SessionsContext";
 import { SESSION_MODE, SESSION_MODEL } from "../types";
 import { strategies } from "../database/strategies";
-import { WordSet } from "../types/WordSet";
+import { WordSet } from "../types/core/WordSet";
 import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { shuffle } from "../utils/shuffle";
-import { WordSetStrategy } from "../types/WordSetStrategy";
+import { WordSetStrategy } from "../types/utils/WordSetStrategy";
 
 export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
   const { langWords } = useWords();

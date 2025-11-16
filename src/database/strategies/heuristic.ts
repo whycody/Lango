@@ -1,6 +1,6 @@
 import { SESSION_MODEL } from "../../types";
-import { WordSet } from "../../types/WordSet";
-import { WordSetStrategy } from "../../types/WordSetStrategy";
+import { WordSet } from "../../types/core/WordSet";
+import { WordSetStrategy } from "../../types/utils/WordSetStrategy";
 
 export const heuristicStrategy: WordSetStrategy = (size, words, _wordsMLStates, _evaluations, wordsHeuristicStates): WordSet => {
   const sortedStates = wordsHeuristicStates.sort((a, b) =>

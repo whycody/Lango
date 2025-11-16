@@ -1,33 +1,29 @@
-import { BackHandler, FlatList, Image, Linking, Platform, ScrollView, View } from "react-native";
+import { BackHandler, FlatList, Linking, ScrollView, View } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/LibraryItem";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useWords } from "../../store/WordsContext";
 import { exportData } from "../../utils/saveData";
-import CustomText from "../components/CustomText";
-import appBuildNumbers from "../../../app.json";
 import { useEvaluations } from "../../store/EvaluationsContext";
 import { LibraryNavProp, Word } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LibraryItems } from "../../constants/LibraryItems";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
   const words = useWords();
   const { evaluations } = useEvaluations();
   const navigation = useNavigation<LibraryNavProp>();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
-  const buildNumber = Platform.OS === 'ios' ? appBuildNumbers.expo.ios.buildNumber : appBuildNumbers.expo.android.versionCode;
-  const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
   const { style, onScroll } = useDynamicStatusBar(100, 0.3);
   const insets = useSafeAreaInsets();
   const authContext = useAuth();
@@ -43,16 +39,6 @@ const LibraryScreen = () => {
     const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
-
-  enum LibraryItems {
-    SETTINGS,
-    LANGUAGE,
-    MY_WORDS,
-    LOGOUT,
-    EXPORT,
-    PRIVACY_POLICY,
-    USE_CONDITIONS
-  }
 
   const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.mainLang)[0].languageName;
 
@@ -79,7 +65,7 @@ const LibraryScreen = () => {
       id: LibraryItems.EXPORT,
       label: t('export'),
       description: t('export_desc', { records_number: evaluations.length.toString() }),
-      icon: 'share-outline'
+      icon: 'share-sharp'
     },
     {
       id: LibraryItems.LOGOUT,
@@ -137,35 +123,18 @@ const LibraryScreen = () => {
 
   return (
     <>
-      <View style={style} />
+      <View style={style}/>
       <ScrollView showsHorizontalScrollIndicator={false} onScroll={onScroll}>
         <LanguageBottomSheet
           ref={languageBottomSheetRef}
           onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
         />
-        <View style={{ height: insets.top }} />
+        <View style={{ height: insets.top }}/>
         <ProfileCard/>
         <FlatList
           scrollEnabled={false}
           data={libraryItems}
           renderItem={renderLibraryItem}
-          ListFooterComponent={() => (
-            <>
-              <Image
-                source={require('../../assets/logo.png')}
-                style={{
-                  height: 40,
-                  alignSelf: 'center',
-                  marginTop: 30,
-                }}
-                resizeMode="contain"
-              />
-              <CustomText
-                style={{ color: colors.text, marginTop: 5, fontWeight: 'bold', marginBottom: 20, textAlign: 'center', fontSize: 12 }}>
-                {`${runtimeVersion}.${buildNumber}`}
-              </CustomText>
-            </>
-          )}
         />
       </ScrollView>
     </>

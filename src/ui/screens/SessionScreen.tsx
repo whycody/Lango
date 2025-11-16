@@ -204,6 +204,7 @@ const SessionScreen = () => {
     incrementCurrentIndex();
     confettiRef.current?.play(0);
     saveProgress(true);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Heavy);
     finishSessionBottomSheetRef.current?.present();
   }
 

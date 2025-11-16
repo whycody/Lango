@@ -109,5 +109,11 @@
   "sessions_settings": "Session settings",
   "speech_synthesizer": "Speech synthesizer",
   "turned_on": "Turned on",
-  "turned_off": "Turned off"
+  "turned_off": "Turned off",
+  "turned_on_m": "Turned on",
+  "turned_off_m": "Turned off",
+  "session": "Session",
+  "preferences": "Preferences",
+  "vibrations": "Vibrations",
+  "notifications": "Notifications"
 }

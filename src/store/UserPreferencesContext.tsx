@@ -13,10 +13,14 @@ interface UserPreferencesContext {
   sessionMode: SESSION_MODE;
   sessionLength: 1 | 2 | 3;
   sessionSpeechSynthesizer: boolean;
+  vibrationsEnabled: boolean;
+  notificationsEnabled: boolean;
   setFlashcardSide: (side: FLASHCARD_SIDE) => void;
   setSessionMode: (mode: SESSION_MODE) => void;
   setSessionLength: (length: 1 | 2 | 3) => void;
   setSessionSpeechSynthesizer: (sessionSpeechSynthesizer: boolean) => void;
+  setVibrationsEnabled: (enabled: boolean) => void;
+  setNotificationsEnabled: (enabled: boolean) => void;
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContext>({
@@ -24,16 +28,22 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   sessionMode: SESSION_MODE.STUDY,
   sessionLength: 2,
   sessionSpeechSynthesizer: true,
+  vibrationsEnabled: true,
+  notificationsEnabled: false,
   setFlashcardSide: () => {},
   setSessionMode: () => {},
   setSessionLength: () => {},
   setSessionSpeechSynthesizer: () => {},
+  setVibrationsEnabled: (enabled: boolean) => {},
+  setNotificationsEnabled: (enabled: boolean) => {},
 });
 
 const FLASHCARD_SIDE_KEY = 'flashcardSide';
 const SESSION_MODE_KEY = 'sessionMode';
 const SESSION_LENGTH_KEY = 'sessionLength';
 const SESSION_SPEECH_SYNTHESIZER_KEY = 'sessionSpeechSynthesizer';
+const VIBRATIONS_KEY = 'vibrationsEnabled';
+const NOTIFICATIONS_KEY = 'notificationsEnabled';
 
 const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { storage } = useUserStorage();
@@ -41,6 +51,8 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [sessionMode, setSessionMode] = useTypedMMKV<SESSION_MODE>(SESSION_MODE_KEY, SESSION_MODE.STUDY, storage);
   const [sessionLength, setSessionLength] = useTypedMMKV<1 | 2 | 3>(SESSION_LENGTH_KEY, 2, storage);
   const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV(SESSION_SPEECH_SYNTHESIZER_KEY, true, storage);
+  const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(VIBRATIONS_KEY, true, storage);
+  const [notificationsEnabled, setNotificationsEnabled] = useTypedMMKV(NOTIFICATIONS_KEY, false, storage);
 
   return (
     <UserPreferencesContext.Provider
@@ -49,10 +61,14 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         sessionMode,
         sessionLength,
         sessionSpeechSynthesizer,
+        vibrationsEnabled,
+        notificationsEnabled,
         setFlashcardSide,
         setSessionMode,
         setSessionLength,
-        setSessionSpeechSynthesizer
+        setSessionSpeechSynthesizer,
+        setVibrationsEnabled,
+        setNotificationsEnabled
       }}
     >
       {children}

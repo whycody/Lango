@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { Platform, Pressable, StyleSheet, View, ViewStyle } from "react-native";
+import { FC, useEffect, useState } from "react";
+import { Platform, Pressable, StyleSheet, Switch, View, ViewStyle } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,12 +11,18 @@ interface LibraryItemProps {
   description?: string,
   onPress?: () => void,
   icon?: string,
+  enabled?: boolean,
   style?: ViewStyle
 }
 
-const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress, icon, style }) => {
+const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress, icon, enabled, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, index);
+  const [internalEnabled, setInternalEnabled] = useState(enabled);
+
+  useEffect(() => {
+    setInternalEnabled(enabled);
+  }, [enabled]);
 
   return (
     <Pressable
@@ -27,10 +33,13 @@ const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress,
       {icon &&
         <Ionicons name={icon} color={colors.primary300} size={24} style={styles.icon}/>
       }
-      <View>
+      <View style={styles.textContainer}>
         <CustomText weight={"SemiBold"} style={styles.label}>{label}</CustomText>
         {description && <CustomText weight={"Regular"} style={styles.description}>{description}</CustomText>}
       </View>
+      {enabled !== undefined &&
+        <Switch value={internalEnabled} thumbColor={colors.primary} onValueChange={onPress}/>
+      }
     </Pressable>
   );
 }
@@ -49,6 +58,9 @@ const getStyles = (colors: any, index: number) => StyleSheet.create({
   label: {
     color: colors.primary300,
     fontSize: 14,
+  },
+  textContainer: {
+    flex: 1,
   },
   description: {
     color: colors.primary600,

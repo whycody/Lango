@@ -14,6 +14,7 @@ import { SettingsItems } from "../../constants/SettingsItems";
 import VersionFooter from "../components/VersionFooter";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
+import { useUserPreferences } from "../../store/UserPreferencesContext";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -23,6 +24,7 @@ const SettingsScreen = () => {
   const { languages, mainLang, translationLang, applicationLang } = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>();
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+  const userPreferences = useUserPreferences();
 
   const currentMainLang = languages.filter(lang => lang.languageCode === mainLang)[0].languageName;
   const currentTranslationLang = languages.filter(lang => lang.languageCode === translationLang)[0].languageName;
@@ -48,28 +50,50 @@ const SettingsScreen = () => {
       label: t('main_language'),
       description: currentMainLang,
       icon: 'language-sharp',
-      section: SettingsSections.LANGUAGE
+      section: SettingsSections.LANGUAGE,
     },
     {
       id: SettingsItems.TRANSLATION_LANGUAGE,
       label: t('translation_language'),
       description: currentTranslationLang,
       icon: 'language-sharp',
-      section: SettingsSections.LANGUAGE
+      section: SettingsSections.LANGUAGE,
     },
     {
       id: SettingsItems.APPLICATION_LANGUAGE,
       label: t('application_language'),
       description: currentApplicationLang,
       icon: 'language-sharp',
-      section: SettingsSections.LANGUAGE
+      section: SettingsSections.LANGUAGE,
+    },
+    {
+      id: SettingsItems.VIBRATIONS,
+      label: t('vibrations'),
+      description: t(`turned_${userPreferences.vibrationsEnabled ? 'on' : 'off'}_m`),
+      icon: 'phone-portrait-sharp',
+      enabled: userPreferences.vibrationsEnabled,
+      section: SettingsSections.PREFERENCES,
+    },
+    {
+      id: SettingsItems.NOTIFICATIONS,
+      label: t('notifications'),
+      description: t(`turned_${userPreferences.notificationsEnabled ? 'on' : 'off'}_m`),
+      icon: 'notifications-sharp',
+      enabled: userPreferences.notificationsEnabled,
+      section: SettingsSections.PREFERENCES,
     }
-  ], [t, currentMainLang, currentTranslationLang, currentApplicationLang]);
+  ], [t, userPreferences, currentMainLang, currentTranslationLang, currentApplicationLang]);
 
   const getSectionTitle = (section: number) => {
     switch (section) {
       case SettingsSections.LANGUAGE:
         return t('language');
+      case SettingsSections.PREFERENCES:
+        return t('preferences');
+      case SettingsSections.SESSION:
+        return t('session');
+      default:
+        return '';
     }
   }
 
@@ -92,10 +116,16 @@ const SettingsScreen = () => {
         setPickedLanguageType(mapSettingsToLanguageType(id));
         languageBottomSheetRef.current?.present();
         break;
+      case SettingsItems.VIBRATIONS:
+        userPreferences.setVibrationsEnabled(!userPreferences.vibrationsEnabled);
+        break;
+      case SettingsItems.NOTIFICATIONS:
+        userPreferences.setNotificationsEnabled(!userPreferences.notificationsEnabled);
+        break;
       default:
         break;
     }
-  }, [languageBottomSheetRef]);
+  }, [userPreferences, languageBottomSheetRef]);
 
   const renderSettingsItem = ({ item, index }) => (
     <LibraryItem
@@ -105,6 +135,7 @@ const SettingsScreen = () => {
       description={item.description}
       onPress={() => handlePress(item.id)}
       style={index !== 0 && { borderTopWidth: 3, borderColor: colors.card }}
+      enabled={item.enabled}
       index={0}
     />
   );

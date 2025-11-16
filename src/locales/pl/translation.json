@@ -111,5 +111,11 @@
   "sessions_settings": "Ustawienia sesji",
   "speech_synthesizer": "Syntezator mowy",
   "turned_on": "Włączony",
-  "turned_off": "Wyłączony"
+  "turned_off": "Wyłączony",
+  "turned_on_m": "Włączone",
+  "turned_off_m": "Wyłączone",
+  "session": "Sesja",
+  "preferences": "Preferencje",
+  "vibrations": "Wibracje",
+  "notifications": "Powiadomienia"
 }

@@ -15,6 +15,7 @@ import VersionFooter from "../components/VersionFooter";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
+import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -31,6 +32,7 @@ const SettingsScreen = () => {
   const currentApplicationLang = languages.filter(lang => lang.languageCode === applicationLang)[0].languageName;
 
   const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(LanguageTypes.MAIN);
+  const { style, onScroll } = useDynamicStatusBar(100, 0.5);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -176,19 +178,20 @@ const SettingsScreen = () => {
 
   return (
     <>
-      <View style={[styles.statusBar, { height: insets.top }]}/>
       <LanguageBottomSheet
         ref={languageBottomSheetRef}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
         languageType={pickedLanguageType}
       />
       <View style={styles.root}>
+        <View style={style} />
         <SectionList
           sections={sections}
           showsVerticalScrollIndicator={false}
+          onScroll={onScroll}
           ListHeaderComponent={
             <>
-              <CustomText weight="Bold" style={styles.title}>{t('settings')}</CustomText>
+              <CustomText weight="Bold" style={[styles.title, { paddingTop: insets.top }]}>{t('settings')}</CustomText>
               <CustomText style={styles.subtitle}>{t('settings_long_desc')}</CustomText>
             </>
           }

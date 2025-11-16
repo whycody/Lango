@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, memo, useEffect, useState } from "react";
 import { Platform, Pressable, StyleSheet, Switch, View, ViewStyle } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTheme } from "@react-navigation/native";
@@ -68,4 +68,4 @@ const getStyles = (colors: any, index: number) => StyleSheet.create({
   }
 });
 
-export default LibraryItem;
+export default memo(LibraryItem);

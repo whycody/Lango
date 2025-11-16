@@ -11,6 +11,7 @@ import SquareFlag from "./SquareFlag";
 import { LinearGradient } from "expo-linear-gradient";
 import { Suggestion } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
+import { useHaptics } from "../../hooks/useHaptics";
 
 interface FlashcardProps {
   onFlashcardPress?: (add: boolean) => void;
@@ -28,6 +29,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
   const { t } = useTranslation();
   const wordsContext = useWords();
   const languageContext = useLanguage();
+  const { triggerHaptics } = useHaptics();
 
   useImperativeHandle(ref, () => ({
     flipWithoutAdd: () => handleFlip(false),
@@ -67,7 +69,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
     if (!add) setFlip((prev) => !prev);
     setFlippable(false);
     setNewFlashcardIsReady(false);
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    await triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
     if (add) {
       const addWord = wordsContext.addWord(suggestion.word, suggestion.translation, LANGO);
       if (!addWord) setBackText(t('wordNotAdded'));

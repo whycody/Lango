@@ -25,6 +25,7 @@ import { useWordSet } from "../../hooks/useWordSet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SessionSettingsBottomSheet from "../sheets/SessionSettingsBottomSheet";
 import { WordUpdate } from "../../types/utils/WordUpdate";
+import { useHaptics } from "../../hooks/useHaptics";
 
 export type SessionScreenParams = {
   length: 1 | 2 | 3;
@@ -68,6 +69,7 @@ const SessionScreen = () => {
   const [lastPressTime, setLastPressTime] = useState<number>(0);
 
   const userPreferences = useUserPreferences();
+  const { triggerHaptics } = useHaptics();
   const [flipped, setFlipped] = useState(flashcardSide === FLASHCARD_SIDE.TRANSLATION);
 
   const navigation = useNavigation();
@@ -176,7 +178,7 @@ const SessionScreen = () => {
     if (now - lastPressTime < 300) return;
     setLastPressTime(now);
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
 
     const currentCardId: string = cards[currentIndex].id;
 

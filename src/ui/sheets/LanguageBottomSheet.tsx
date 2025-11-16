@@ -12,6 +12,7 @@ import * as Haptics from "expo-haptics";
 import { Language, LanguageCode } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 import { LanguageTypes } from "../../constants/LanguageTypes";
+import { useHaptics } from "../../hooks/useHaptics";
 
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
@@ -33,6 +34,7 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
     swapLanguages
   } = useLanguage();
   const { onChangeIndex, languageType = LanguageTypes.MAIN } = props;
+  const { triggerHaptics } = useHaptics();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -58,7 +60,7 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
 
     if (shouldSwap) {
       swapLanguages();
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+      triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
       ref.current?.close();
       return;
     }
@@ -71,7 +73,7 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
 
     setters[languageType](language.languageCode);
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
     ref.current?.close();
   };
 

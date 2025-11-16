@@ -11,6 +11,7 @@ import SessionModeItem from "../components/items/SessionModeItem";
 import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useTranslation } from "react-i18next";
 import SessionSpeechSynthesizerItem from "../components/items/SessionSpeechSynthesizerItem";
+import { useHaptics } from "../../hooks/useHaptics";
 
 interface StartSessionBottomSheetProps {
   onSettingsSave: () => void,
@@ -23,8 +24,9 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
   const userPreferences = useUserPreferences();
   const [flashcardSide, setFlashcardSide] = useState<FLASHCARD_SIDE>(userPreferences.flashcardSide);
   const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useState<boolean>(userPreferences.sessionSpeechSynthesizer);
-  const saved = useRef(false);
   const { t } = useTranslation();
+  const { triggerHaptics } = useHaptics();
+  const saved = useRef(false);
 
   useEffect(() => {
     console.log('2')
@@ -48,12 +50,12 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
   const handleFlashcardSideItemPress = (flashcardSide: FLASHCARD_SIDE) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setFlashcardSide(flashcardSide);
   }
 
   const handleSessionSpeechSynthesizerItemPress = (sessionSpeechSynthesizer: boolean) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setSessionSpeechSynthesizer(sessionSpeechSynthesizer);
   }
 

@@ -14,7 +14,7 @@ import { SettingsItems } from "../../constants/SettingsItems";
 import VersionFooter from "../components/VersionFooter";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
-import { useUserPreferences } from "../../store/UserPreferencesContext";
+import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -81,6 +81,21 @@ const SettingsScreen = () => {
       icon: 'notifications-sharp',
       enabled: userPreferences.notificationsEnabled,
       section: SettingsSections.PREFERENCES,
+    },
+    {
+      id: SettingsItems.FLASHCARD_SIDE,
+      label: t('flashcard_side'),
+      description: userPreferences.flashcardSide == FLASHCARD_SIDE.WORD ? t('word') : t('translation'),
+      icon: 'document-text-sharp',
+      section: SettingsSections.SESSION,
+    },
+    {
+      id: SettingsItems.SESSION_SPEECH_SYNTHESIZER,
+      label: t('speech_synthesizer'),
+      description: t(`turned_${userPreferences.sessionSpeechSynthesizer ? 'on' : 'off'}`),
+      icon: 'volume-high-sharp',
+      enabled: userPreferences.sessionSpeechSynthesizer,
+      section: SettingsSections.SESSION
     }
   ], [t, userPreferences, currentMainLang, currentTranslationLang, currentApplicationLang]);
 
@@ -121,6 +136,12 @@ const SettingsScreen = () => {
         break;
       case SettingsItems.NOTIFICATIONS:
         userPreferences.setNotificationsEnabled(!userPreferences.notificationsEnabled);
+        break;
+      case SettingsItems.FLASHCARD_SIDE:
+        userPreferences.setFlashcardSide(userPreferences.flashcardSide === FLASHCARD_SIDE.WORD ? FLASHCARD_SIDE.TRANSLATION : FLASHCARD_SIDE.WORD);
+        break;
+      case SettingsItems.SESSION_SPEECH_SYNTHESIZER:
+        userPreferences.setSessionSpeechSynthesizer(!userPreferences.sessionSpeechSynthesizer);
         break;
       default:
         break;

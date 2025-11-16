@@ -4,6 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { useHaptics } from "../../hooks/useHaptics";
 
 interface ActionButtonProps {
   label: string,
@@ -18,9 +19,10 @@ interface ActionButtonProps {
 const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, icon, onPress, style, loading = false }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, primary, active);
+  const { triggerHaptics } = useHaptics();
 
   const handlePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
     onPress();
   }
 

@@ -12,6 +12,7 @@ import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
 import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
 import { SESSION_MODE } from "../../types";
+import { useHaptics } from "../../hooks/useHaptics";
 
 interface StartSessionBottomSheetProps {
   onSessionStart: (length: 1 | 2 | 3, mode: SESSION_MODE, flashcardSide: FLASHCARD_SIDE) => void,
@@ -25,6 +26,7 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
   const [flashcardSide, setFlashcardSide] = useState<FLASHCARD_SIDE>(userPreferences.flashcardSide);
   const [sessionMode, setSessionMode] = useState<SESSION_MODE>(userPreferences.sessionMode);
   const [sessionLength, setSessionLength] = useState<1 | 2 | 3>(userPreferences.sessionLength);
+  const { triggerHaptics } = useHaptics();
   const { t } = useTranslation();
 
   const renderBackdrop = useCallback((props: any) =>
@@ -37,17 +39,17 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
   }, [userPreferences.flashcardSide, userPreferences.sessionMode, userPreferences.sessionLength]);
 
   const handleFlashcardSideItemPress = (flashcardSide: FLASHCARD_SIDE) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setFlashcardSide(flashcardSide);
   }
 
   const handleSessionModeItemPress = (mode: SESSION_MODE) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setSessionMode(mode);
   }
 
   const handleSessionLengthItemPress = (length: 1 | 2 | 3) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setSessionLength(length);
   }
   

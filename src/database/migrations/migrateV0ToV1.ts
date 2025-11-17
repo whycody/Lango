@@ -4,6 +4,7 @@ import uuid from "react-native-uuid";
 import { saveWords } from "../WordsRepository";
 import { saveSessions } from "../SessionRepository";
 import { saveEvaluations } from "../EvaluationsRepository";
+import { toLocalDateString } from "../../utils/dateUtil";
 
 type AsyncStorageWord = {
   id: string;
@@ -78,6 +79,7 @@ const mapGroupedEvaluationsToSessions = (grouped: Record<string, AsyncStorageEva
     return {
       id: uuid.v4() as string,
       date,
+      localDay: toLocalDateString(new Date(date)),
       mode: SESSION_MODE.UNKNOWN,
       sessionModel: SESSION_MODEL.HEURISTIC,
       averageScore,

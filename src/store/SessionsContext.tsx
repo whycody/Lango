@@ -13,6 +13,7 @@ import {
   updateLocalItems
 } from "../utils/sync";
 import { useAppInitializer } from "./AppInitializerContext";
+import { getTodayDate } from "../utils/dateUtil";
 
 interface SessionsContextProps {
   sessions: Session[];
@@ -27,6 +28,7 @@ const SessionsContext = createContext<SessionsContextProps>({
   addSession: () => ({
     id: '',
     date: '',
+    localDay: '',
     mode: SESSION_MODE.STUDY,
     sessionModel: SESSION_MODEL.HEURISTIC,
     averageScore: 0,
@@ -51,6 +53,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return {
       id: uuid.v4(),
       date: now,
+      localDay: getTodayDate(),
       mode: mode,
       sessionModel: model,
       averageScore,

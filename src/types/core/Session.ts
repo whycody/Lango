@@ -11,6 +11,7 @@ export enum SESSION_MODE {
 export type Session = SyncMetadata & {
   id: string;
   date: string;
+  localDay: string;
   mode: SESSION_MODE;
   sessionModel: SESSION_MODEL;
   averageScore: number;

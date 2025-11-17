@@ -18,17 +18,17 @@ const StatisticsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [daysList, setDaysList] = useState<string[]>(user.stats?.studyDays || []);
   const [serverSessionsCount, setServerSessionsCount] = useState(user.stats?.sessionCount || 0);
 
-  const localUnsyncedSessions = sessions.filter(s => s.finished && !s.synced);
+  const localUnsyncedSessions = sessions.filter(s => !s.synced);
   const localUnsyncedSessionsCount = localUnsyncedSessions.length;
   const numberOfSessions = serverSessionsCount + localUnsyncedSessionsCount;
 
   useEffect(() => {
-    const serverDaysList: string[] = user.stats?.studyDays || [];
-    const unsyncedDaysSet = new Set(localUnsyncedSessions.map(s => s.date.split('T')[0]));
+    const serverDaysLocal = user.stats?.studyDays || [];
+    const unsyncedLocalDays = localUnsyncedSessions.map(s => s.localDay);
 
     const combinedDaysSet = new Set([
-      ...serverDaysList,
-      ...unsyncedDaysSet,
+      ...serverDaysLocal,
+      ...unsyncedLocalDays,
     ]);
 
     const combinedDaysList = Array.from(combinedDaysSet).sort();

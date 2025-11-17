@@ -1,7 +1,7 @@
 import { BackHandler, FlatList, Linking, ScrollView, View } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
-import LibraryItem from "../components/LibraryItem";
+import LibraryItem from "../components/items/LibraryItem";
 import { useNavigation } from "@react-navigation/native";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";

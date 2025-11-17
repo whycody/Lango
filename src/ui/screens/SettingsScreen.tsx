@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useLanguage } from "../../store/LanguageContext";
-import LibraryItem from "../components/LibraryItem";
+import LibraryItem from "../components/items/LibraryItem";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";

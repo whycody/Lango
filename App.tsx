@@ -21,7 +21,7 @@ import { useMMKV } from "react-native-mmkv";
 export default function App() {
   const { i18n } = useTranslation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [applicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, '' as LanguageCode, useMMKV());
+  const [applicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, i18n.language as LanguageCode, useMMKV());
   const { colors } = DarkTheme;
 
   useEffect(() => {

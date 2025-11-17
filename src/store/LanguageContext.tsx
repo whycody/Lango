@@ -31,12 +31,12 @@ export const LanguageContext = createContext<LanguageContextProps>({
 export const APPLICATION_LANG = 'applicationLangCode';
 
 const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { initialLoad } = useAppInitializer();
   const { storage } = useUserStorage();
   const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, initialLoad.mainLang, storage);
   const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(TRANSLATION_LANG, initialLoad.translationLang, storage);
-  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, initialLoad.translationLang, useMMKV());
+  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, i18n.language as LanguageCode, useMMKV());
 
   const languages: Language[] = [
     { languageCode: LanguageCode.POLISH, languageName: t('polish'), languageInTargetLanguage: 'Polski' },

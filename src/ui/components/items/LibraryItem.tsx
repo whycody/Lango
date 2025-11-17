@@ -1,9 +1,11 @@
 import { FC, memo } from "react";
 import { Platform, Pressable, StyleSheet, Switch, View, ViewStyle } from "react-native";
-import { MARGIN_HORIZONTAL } from "../../constants/margins";
+import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import CustomText from "./CustomText";
+import CustomText from "../CustomText";
+import * as Haptics from 'expo-haptics';
+import { useHaptics } from "../../../hooks/useHaptics";
 
 interface LibraryItemProps {
   index: number,
@@ -18,12 +20,18 @@ interface LibraryItemProps {
 const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress, icon, enabled, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, index);
+  const { triggerHaptics } = useHaptics();
+
+  const handlePress = () => {
+    onPress?.();
+    triggerHaptics(Haptics.ImpactFeedbackStyle.Light);
+  }
 
   return (
     <Pressable
       style={({ pressed }) => [styles.root, pressed && Platform.OS === 'ios' && { opacity: 0.8 }, style]}
       android_ripple={{ color: index % 2 === 0 ? colors.card : colors.background }}
-      onPress={onPress}
+      onPress={handlePress}
     >
       {icon &&
         <Ionicons name={icon} color={colors.primary300} size={24} style={styles.icon}/>

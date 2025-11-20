@@ -1,7 +1,7 @@
 import { Session } from "../types";
 import { getDb } from "./utils/db";
 
-const columns: Array<keyof Session> = ['id', 'date', 'mode', 'sessionModel', 'averageScore', 'wordsCount', 'finished',
+const columns: Array<keyof Session> = ['id', 'date', 'localDay', 'mode', 'sessionModel', 'averageScore', 'wordsCount', 'finished',
   'synced', 'updatedAt', 'locallyUpdatedAt'];
 
 export const createTables = async (userId: string) => {
@@ -12,6 +12,7 @@ export const createTables = async (userId: string) => {
         (
             id               TEXT PRIMARY KEY,
             date             TEXT,
+            localDay         TEXT,
             mode             TEXT,
             sessionModel     TEXT,
             averageScore     REAL,
@@ -61,6 +62,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
             sessions.push({
               id: row.id,
               date: row.date,
+              localDay: row.localDay,
               mode: row.mode,
               sessionModel: row.sessionModel,
               averageScore: row.averageScore,

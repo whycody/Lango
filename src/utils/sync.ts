@@ -3,7 +3,7 @@ import { SyncMetadata, SyncResult } from "../types";
 export async function syncInBatches<T>(
   items: T[],
   syncFn: (chunk: T[]) => Promise<SyncResult[] | null>,
-  batchSize: number = 500
+  batchSize: number = 100
 ): Promise<SyncResult[]> {
   if (items.length === 0) return [];
   const results: SyncResult[] = [];

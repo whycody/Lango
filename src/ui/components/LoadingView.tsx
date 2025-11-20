@@ -28,7 +28,7 @@ const LoadingView: FC<LoadingViewProps> = ({}) => {
         </CustomText>
       </View>
       <Image
-        source={require('../../assets/lango-logo.png')}
+        source={require('../../../assets/lango-logo.png')}
         style={styles.image}
         resizeMode="contain"
       />

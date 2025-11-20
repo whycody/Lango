@@ -34,10 +34,10 @@ export default function App() {
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
-        'Montserrat-Regular': require('./src/assets/fonts/Montserrat-Regular.ttf'),
-        'Montserrat-SemiBold': require('./src/assets/fonts/Montserrat-SemiBold.ttf'),
-        'Montserrat-Bold': require('./src/assets/fonts/Montserrat-Bold.ttf'),
-        'Montserrat-Black': require('./src/assets/fonts/Montserrat-Black.ttf'),
+        'Montserrat-Regular': require('./assets/fonts/Montserrat-Regular.ttf'),
+        'Montserrat-SemiBold': require('./assets/fonts/Montserrat-SemiBold.ttf'),
+        'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
+        'Montserrat-Black': require('./assets/fonts/Montserrat-Black.ttf'),
       });
       setFontsLoaded(true);
     }

@@ -344,7 +344,7 @@ const SessionScreen = () => {
       <View style={styles.lottieWrapper}>
         <LottieView
           ref={confettiRef}
-          source={require('../../assets/confetti.json')}
+          source={require('../../../assets/confetti.json')}
           autoPlay={false}
           loop={false}
           style={styles.lottie}

@@ -1,7 +1,7 @@
-import ESFlag from "../../assets/flags/es.svg";
-import PLFlag from "../../assets/flags/pl.svg";
-import ENFlag from "../../assets/flags/eng.svg";
-import ITFlag from "../../assets/flags/it.svg";
+import ESFlag from "../../../assets/flags/es.svg";
+import PLFlag from "../../../assets/flags/pl.svg";
+import ENFlag from "../../../assets/flags/eng.svg";
+import ITFlag from "../../../assets/flags/it.svg";
 import React, { FC } from "react";
 
 const flagMap: Record<string, any> = {

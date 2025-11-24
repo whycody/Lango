@@ -82,6 +82,10 @@ const FlashcardsScreen = () => {
     handleFlashcardBottomSheetRef.current.present();
   }
 
+  const handlePress = useCallback((id: string) => {
+    if(!!flashcards) console.log(flashcards.find((f) => f.id === id));
+  }, [flashcards]);
+
   const handleEditPress = useCallback((id: string) => {
     Keyboard.dismiss();
     setEditFlashcardId(id);
@@ -111,6 +115,7 @@ const FlashcardsScreen = () => {
       text={text}
       level={gradeThreeProb}
       translation={translation}
+      onPress={handlePress}
       onEditPress={handleEditPress}
       onRemovePress={handleRemovePress}
     />

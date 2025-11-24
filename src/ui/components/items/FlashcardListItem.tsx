@@ -12,12 +12,13 @@ type FlashcardListItemProps = {
   level: number;
   translation: string;
   style?: any;
+  onPress?: (id: string) => void;
   onEditPress?: (id: string) => void;
   onRemovePress?: (id: string) => void;
 }
 
 const FlashcardListItem: FC<FlashcardListItemProps> =
-  ({ id, text, level, translation, style, onEditPress, onRemovePress }) => {
+  ({ id, text, level, translation, style, onPress, onEditPress, onRemovePress }) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
 
@@ -26,7 +27,7 @@ const FlashcardListItem: FC<FlashcardListItemProps> =
     }, []);
 
     return (
-      <Pressable style={[styles.root, style]} android_ripple={{ color: colors.card }}>
+      <Pressable style={[styles.root, style]} android_ripple={{ color: colors.card }} onPress={() => onPress?.(id)}>
         <View style={styles.container}>
           <Ionicons name={'reader-sharp'} color={getColor(level)} size={22}/>
           <View style={styles.textContainer}>

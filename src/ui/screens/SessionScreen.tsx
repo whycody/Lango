@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, BackHandler, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useNavigation, useRoute, useTheme } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
@@ -256,7 +256,7 @@ const SessionScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={{ height: insets.top, backgroundColor: colors.card }}/>
       <LeaveSessionBottomSheet
         ref={leaveSessionBottomSheetRef}
@@ -350,7 +350,7 @@ const SessionScreen = () => {
           style={styles.lottie}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

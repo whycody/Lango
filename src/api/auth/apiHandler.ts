@@ -118,19 +118,26 @@ export const apiCall = async <T>(
   }
 
   try {
-    const response: AxiosResponse<T> = await axios({
+    const fullUrl = `${getBaseURL()}${options.url}`;
+
+    const axiosConfig: any = {
       method: options.method,
-      url: `${getBaseURL()}${options.url}`,
+      url: fullUrl,
       headers,
-      data: options.data,
-      timeout,
-    });
-    return response.data;
+    };
+
+    if (options.data && typeof options.data === 'object' && Object.keys(options.data).length > 0) {
+      axiosConfig.data = options.data;
+    } else if (options.data && typeof options.data === 'string') {
+      axiosConfig.data = options.data;
+    }
+
+    return (await axios(axiosConfig)).data;
   } catch (error: any) {
     if (error.response?.status === 401) {
       if (!refreshed) {
         if (isRefreshing) {
-          await new Promise<void>((resolve) => subscribeTokenRefresh(resolve));
+          await subscribeTokenRefresh();
         } else {
           await refreshAccessToken();
         }

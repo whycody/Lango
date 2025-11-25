@@ -1,4 +1,4 @@
-import { BackHandler, Keyboard, Pressable, SafeAreaView, StyleSheet, TextInput, View } from "react-native";
+import { BackHandler, Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
 import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
@@ -206,8 +206,8 @@ const FlashcardsScreen = () => {
     [{ id: 'header' }, { id: 'subheader' }, flashcards.length == 0 && { id: 'emptyList' }, ...flashcards];
 
   return (
-    <SafeAreaView style={[styles.root]}>
-      <View style={{ height: insets.top, backgroundColor: colors.card }}/>
+    <View style={styles.root}>
+      <View style={{ height: Platform.OS === 'ios' ? MARGIN_VERTICAL : insets.top, backgroundColor: colors.card }}/>
       <RemoveFlashcardBottomSheet
         ref={removeFlashcardBottomSheetRef}
         flashcardId={editFlashcardId}
@@ -238,7 +238,7 @@ const FlashcardsScreen = () => {
         <ActionButton label={t('addWord')} primary={true} onPress={handleActionButtonPress}/>
       </View>
       }
-    </SafeAreaView>
+    </View>
   );
 }
 

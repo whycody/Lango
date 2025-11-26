@@ -8,7 +8,7 @@ export const mlStrategy: WordSetStrategy = (size, words, _evaluations, wordsMLSt
     return { word: w, score };
   });
 
-  const sorted = scored.sort((a, b) => b.score - a.score).map(x => x.word);
+  const sorted = scored.sort((a, b) => a.score - b.score).map(x => x.word);
   const selected = sorted.slice(0, size);
   return { words: selected, model: SESSION_MODEL.ML };
 };

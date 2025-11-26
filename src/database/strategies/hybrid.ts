@@ -1,8 +1,6 @@
-import { SESSION_MODEL } from "../../types";
-import { WordSet } from "../../types/core/WordSet";
+import { SESSION_MODEL, WordSet, WordSetStrategy } from "../../types";
 import { mlStrategy } from "./ml";
 import { heuristicStrategy } from "./heuristic";
-import { WordSetStrategy } from "../../types/utils/WordSetStrategy";
 
 export const hybridStrategy: WordSetStrategy = (size, words, evaluations, mlStates, heuristicStates, lastSessionModel): WordSet => {
   if (lastSessionModel === SESSION_MODEL.HEURISTIC) {

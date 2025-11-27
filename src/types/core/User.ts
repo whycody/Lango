@@ -23,5 +23,6 @@ export type User = {
   mainLang: LanguageCode | null;
   translationLang: LanguageCode | null;
   sessionModel: SESSION_MODEL;
+  notificationsEnabled: boolean;
   stats?: UserStats;
 };

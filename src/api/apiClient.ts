@@ -22,10 +22,11 @@ export const getUserInfo: () => Promise<User | null> = async () => {
 export const signInWithGoogle = async (idToken: string) => {
   try {
     const deviceId = await getDeviceId();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     return await apiCall({
       method: 'POST',
       url: '/auth/login/google',
-      data: { idToken, deviceId }
+      data: { idToken, deviceId, timezone }
     }, true);
   } catch (e) {
     console.error('POST /auth/login/google', e);
@@ -36,10 +37,11 @@ export const signInWithGoogle = async (idToken: string) => {
 export const signInWithFacebook = async (accessToken: string) => {
   try {
     const deviceId = await getDeviceId();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     return await apiCall({
       method: 'POST',
       url: '/auth/login/facebook',
-      data: { accessToken, deviceId }
+      data: { accessToken, deviceId, timezone }
     }, true);
   } catch (e) {
     console.error('POST /auth/login/facebook', e);

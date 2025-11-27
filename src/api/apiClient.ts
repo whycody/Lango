@@ -77,6 +77,32 @@ export const signOut = async () => {
   }
 }
 
+export const updateNotificationsEnabled = async (enabled: boolean) => {
+  try {
+    return await apiCall({
+      method: 'PATCH',
+      url: '/notifications',
+      data: { enabled }
+    }, true);
+  } catch (e) {
+    console.error('PATCH /notifications', e);
+    return null;
+  }
+}
+
+export const registerDeviceToken = async (deviceId: string, token: string) => {
+  try {
+    return await apiCall({
+      method: 'POST',
+      url: '/notifications/devices',
+      data: { deviceId, token }
+    }, true);
+  } catch (e) {
+    console.error('POST /notifications/devices', e);
+    return null;
+  }
+}
+
 export const syncWordsOnServer = async (words: Word[]): Promise<SyncResult[]> => {
   try {
     return await apiCall({

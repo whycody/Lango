@@ -16,7 +16,7 @@ const ACCESS_TOKEN = "accessToken";
 const REFRESH_TOKEN = "refreshToken";
 
 const profile = process.env.EAS_BUILD_PROFILE;
-const apiUrl = ['test', 'development'].includes(profile) ? process.env['API_DEV_URL'] : process.env['API_URL'];
+const apiUrl = (!profile || ['test', 'development'].includes(profile)) ? process.env['API_DEV_URL'] : process.env['API_URL'];
 
 export const removeAccessToken = async (): Promise<void> => {
   accessToken = null;

@@ -53,6 +53,7 @@
       "supportsTablet": true,
       "buildNumber": "6",
       "bundleIdentifier": "com.whycody.lango",
+      "googleServicesFile": "./config/GoogleService-Info.plist",
       "infoPlist": {
         "SKAdNetworkItems": [
           {
@@ -74,6 +75,7 @@
         "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#07071b"
       },
+      "googleServicesFile": "./config/google-services.json",
       "edgeToEdgeEnabled": true,
       "package": "com.whycody.lango",
       "versionCode": 6

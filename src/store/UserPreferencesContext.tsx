@@ -57,7 +57,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [sessionLength, setSessionLength] = useTypedMMKV<1 | 2 | 3>(SESSION_LENGTH_KEY, 2, storage);
   const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV(SESSION_SPEECH_SYNTHESIZER_KEY, true, storage);
   const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(VIBRATIONS_KEY, true, storage);
-  const [notificationsEnabled, setNotificationsEnabled] = useTypedMMKV(NOTIFICATIONS_KEY, false, storage);
+  const [notificationsEnabled, setNotificationsEnabled] = useTypedMMKV(NOTIFICATIONS_KEY, true, storage);
   const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(ASK_LATER_NOTIFICATIONS_KEY, 0, storage);
 
   return (

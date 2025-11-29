@@ -13,6 +13,12 @@
     "splash": {
       "backgroundColor": "#0f0f30"
     },
+    "locales": {
+      "en": "./locales/en/notification_permission.json",
+      "pl": "./locales/pl/notification_permission.json",
+      "es": "./locales/es/notification_permission.json",
+      "it": "./locales/it/notification_permission.json"
+    },
     "plugins": [
       [
         "react-native-fbsdk-next",
@@ -63,6 +69,7 @@
             "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
           }
         ],
+        "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
         "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true,

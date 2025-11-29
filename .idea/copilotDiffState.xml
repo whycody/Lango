@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/src/locales/en/notification_permission.json">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/locales/en/notification_permission.json" />
+              <option name="updatedContent" value="&quot;NSUserNotificationUsageDescription&quot;: &quot;This app needs permission to send notifications to remind you to study. We will never send more than two notifications per day.&quot;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/locales/es/notification_permission.json">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/locales/es/notification_permission.json" />
+              <option name="updatedContent" value="&quot;NSUserNotificationUsageDescription&quot;: &quot;Esta aplicación necesita permiso para enviarte notificaciones recordándote el estudio. Nunca enviaremos más de dos notificaciones al día.&quot;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/locales/it/notification_permission.json">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/locales/it/notification_permission.json" />
+              <option name="updatedContent" value="&quot;NSUserNotificationUsageDescription&quot;: &quot;Questa app necessita dell'autorizzazione per inviarti notifiche di promemoria per lo studio. Non invieremo mai più di due notifiche al giorno.&quot;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/locales/pl/notification_permission.json">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/locales/pl/notification_permission.json" />
+              <option name="updatedContent" value="&quot;NSUserNotificationUsageDescription&quot;: &quot;Ta aplikacja potrzebuje pozwolenia na wysyłanie powiadomień, aby przypominać Ci o nauce. Nigdy nie wyślemy więcej niż dwóch powiadomień dziennie.&quot;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

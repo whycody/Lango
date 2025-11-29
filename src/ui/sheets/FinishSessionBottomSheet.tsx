@@ -62,7 +62,7 @@ const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBotto
 
         <ActionButton
           onPress={props.endSession}
-          label={'Zakończ sesję'}
+          label={t('finishingSession')}
           primary={true}
           style={styles.button}
         />

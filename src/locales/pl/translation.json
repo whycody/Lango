@@ -118,5 +118,9 @@
   "session": "Sesja",
   "preferences": "Preferencje",
   "vibrations": "Wibracje",
-  "notifications": "Powiadomienia"
+  "notifications": "Powiadomienia",
+  "turn_on_notifications_title": "Pozwól nam czasami się odezwać \uD83D\uDCAC",
+  "turn_on_notifications_desc": "Włącz powiadomienia, abyśmy mogli przypominać Ci o sesjach nauki, motywować do dalszych postępów i wspierać Cię w budowaniu codziennej rutyny rozwijania języka.",
+  "allow_notifications": "Włącz powiadomienia",
+  "ask_later": "Zapytaj później"
 }

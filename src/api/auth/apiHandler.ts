@@ -15,7 +15,7 @@ const subscribers: {
 const ACCESS_TOKEN = "accessToken";
 const REFRESH_TOKEN = "refreshToken";
 
-const getBaseURL = () => process.env['API_URL'];
+const getBaseURL = () => 'https://dev.lango.ovh';
 
 export const removeAccessToken = async (): Promise<void> => {
   accessToken = null;

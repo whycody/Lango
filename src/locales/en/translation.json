@@ -116,5 +116,9 @@
   "session": "Session",
   "preferences": "Preferences",
   "vibrations": "Vibrations",
-  "notifications": "Notifications"
+  "notifications": "Notifications",
+  "turn_on_notifications_title": "Let us reach out sometimes 💬",
+  "turn_on_notifications_desc": "Enable notifications so we can remind you about study sessions, motivate your progress, and support you in building a consistent language-learning routine.",
+  "allow_notifications": "Enable notifications",
+  "ask_later": "Ask later"
 }

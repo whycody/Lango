@@ -90,8 +90,9 @@ export const updateNotificationsEnabled = async (enabled: boolean) => {
   }
 }
 
-export const registerDeviceToken = async (deviceId: string, token: string) => {
+export const registerDeviceToken = async (token: string) => {
   try {
+    const deviceId = await getDeviceId();
     return await apiCall({
       method: 'POST',
       url: '/notifications/devices',

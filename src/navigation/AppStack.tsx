@@ -54,10 +54,15 @@ const AppStack = () => {
                                 name='Tabs'
                                 component={TabsNavigator}
                               />
-                              <Stack.Screen
-                                name='Settings'
-                                component={SettingsScreen}
-                              />
+                              <Stack.Group screenOptions={{
+                                presentation: "modal",
+                                animationDuration: 100,
+                              }}>
+                                <Stack.Screen
+                                  name='Settings'
+                                  component={SettingsScreen}
+                                />
+                              </Stack.Group>
                               <Stack.Screen
                                 name='Session'
                                 component={SessionScreen}

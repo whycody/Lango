@@ -7,7 +7,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useLanguage } from "../../store/LanguageContext";
 import LibraryItem from "../components/items/LibraryItem";
 import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SettingItem } from "../../types";
 import { SettingsItems } from "../../constants/SettingsItems";
@@ -16,6 +16,9 @@ import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
+import * as Notifications from "expo-notifications";
+import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
+import { updateNotificationsEnabled } from "../../api/apiClient";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -31,8 +34,10 @@ const SettingsScreen = () => {
   const currentTranslationLang = languages.filter(lang => lang.languageCode === translationLang)[0].languageName;
   const currentApplicationLang = languages.filter(lang => lang.languageCode === applicationLang)[0].languageName;
 
+  const [notificationsStatus, setNotificationsStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
   const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(LanguageTypes.MAIN);
   const { style, onScroll } = useDynamicStatusBar(100, 0.5);
+  const notificationsEnabled = notificationsStatus == 'granted' && userPreferences.notificationsEnabled;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -45,6 +50,33 @@ const SettingsScreen = () => {
     const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
+
+  useLayoutEffect(() => {
+    const checkPermissions = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      setNotificationsStatus(status);
+    }
+
+    checkPermissions();
+  }, []);
+
+  const checkNotifications = async () => {
+    let { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') status = (await Notifications.requestPermissionsAsync()).status;
+    if (status !== 'granted') return;
+    await registerNotificationsToken();
+    const update = await updateNotificationsEnabled(true);
+    if (!!update) userPreferences.setNotificationsEnabled(true);
+  }
+
+  const handleNotificationsSettingItemPress = async () => {
+    if (!notificationsEnabled) {
+      await checkNotifications();
+    } else {
+      const update = await updateNotificationsEnabled(false);
+      if (!!update) userPreferences.setNotificationsEnabled(!userPreferences.notificationsEnabled);
+    }
+  }
 
   const settingsItems: SettingItem[] = useMemo(() => [
     {
@@ -81,7 +113,7 @@ const SettingsScreen = () => {
       label: t('notifications'),
       description: t(`turned_${userPreferences.notificationsEnabled ? 'on' : 'off'}_m`),
       icon: 'notifications-sharp',
-      enabled: userPreferences.notificationsEnabled,
+      enabled: notificationsEnabled,
       section: SettingsSections.PREFERENCES,
     },
     {
@@ -137,7 +169,7 @@ const SettingsScreen = () => {
         userPreferences.setVibrationsEnabled(!userPreferences.vibrationsEnabled);
         break;
       case SettingsItems.NOTIFICATIONS:
-        userPreferences.setNotificationsEnabled(!userPreferences.notificationsEnabled);
+        handleNotificationsSettingItemPress();
         break;
       case SettingsItems.FLASHCARD_SIDE:
         userPreferences.setFlashcardSide(userPreferences.flashcardSide === FLASHCARD_SIDE.WORD ? FLASHCARD_SIDE.TRANSLATION : FLASHCARD_SIDE.WORD);
@@ -184,7 +216,7 @@ const SettingsScreen = () => {
         languageType={pickedLanguageType}
       />
       <View style={styles.root}>
-        <View style={style} />
+        <View style={style}/>
         <SectionList
           sections={sections}
           showsVerticalScrollIndicator={false}

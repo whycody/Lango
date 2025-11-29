@@ -1,5 +1,5 @@
-import { RefreshControl, ScrollView, View } from "react-native";
-import { useCallback, useState } from "react";
+import { BackHandler, RefreshControl, ScrollView, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
 import StatisticsCard from "../cards/home/StatisticsCard";
@@ -11,6 +11,11 @@ import { useAuth } from "../../api/auth/AuthProvider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { checkUpdates } from "../../utils/checkUpdates";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import EnableNotificationsBottomSheet from "../sheets/EnableNotificationsBottomSheet";
+import { useUserPreferences } from "../../store/UserPreferencesContext";
+import * as Notifications from "expo-notifications";
+import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 
 const HomeScreen = () => {
   const auth = useAuth();
@@ -21,6 +26,10 @@ const HomeScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const { style, onScroll } = useDynamicStatusBar(100, 0.5);
   const insets = useSafeAreaInsets();
+
+  const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+  const enableNotificationsRef = useRef<BottomSheetModal>(null);
+  const { askLaterNotifications, notificationsEnabled } = useUserPreferences();
 
   const tryToRefreshData = async () => {
     try {
@@ -38,13 +47,40 @@ const HomeScreen = () => {
     }
   }
 
+  useEffect(() => {
+    const checkNotifications = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status == 'granted' && notificationsEnabled) registerNotificationsToken();
+      if ((askLaterNotifications && Date.now() < askLaterNotifications) || ['granted', 'denied'].includes(status)) return;
+      enableNotificationsRef.current?.present();
+    }
+
+    checkNotifications();
+  }, [askLaterNotifications]);
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (bottomSheetIsShown) {
+        enableNotificationsRef.current?.dismiss();
+        return true;
+      }
+    };
+
+    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => subscription.remove();
+  }, [bottomSheetIsShown]);
+
   const onRefresh = useCallback(async () => {
     tryToRefreshData();
   }, [words, sessions, suggestions, evaluations, auth]);
 
   return (
     <>
-      <View style={style} />
+      <EnableNotificationsBottomSheet
+        ref={enableNotificationsRef}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
+      />
+      <View style={style}/>
       <ScrollView
         showsVerticalScrollIndicator={false}
         onScroll={onScroll}

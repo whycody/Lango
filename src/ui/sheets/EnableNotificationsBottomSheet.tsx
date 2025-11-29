@@ -1,12 +1,14 @@
 import React, { forwardRef, useCallback } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
 import * as Notifications from 'expo-notifications';
+import { useUserPreferences } from "../../store/UserPreferencesContext";
+import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 
 type EnableNotificationsBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
@@ -16,29 +18,23 @@ const EnableNotificationsBottomSheet = forwardRef<BottomSheetModal, EnableNotifi
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
+  const { setAskLaterNotifications } = useUserPreferences();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
   const askForNotificationPermission = async () => {
-    let status;
-    if (Platform.OS === 'ios') {
-      const settings = await Notifications.getPermissionsAsync();
-      status = settings.status;
-      if (status !== 'granted') {
-        const { status: newStatus } = await Notifications.requestPermissionsAsync();
-        status = newStatus;
-      }
-    } else {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      status = existingStatus;
-      if (status !== 'granted') {
-        const { status: newStatus } = await Notifications.requestPermissionsAsync();
-        status = newStatus;
-      }
-    }
-    if (status === 'granted') {
-      // Możesz tutaj dodać logikę po uzyskaniu zgody
+    let { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') status = (await Notifications.requestPermissionsAsync()).status;
+    if (status !== 'granted') return;
+    await registerNotificationsToken();
+  }
+
+  const handleAskLater = () => {
+    const askLaterUntil = Date.now() + 48 * 60 * 60 * 1000;
+    setAskLaterNotifications(askLaterUntil);
+    if (ref && (ref as React.RefObject<BottomSheetModal>).current) {
+      (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
     }
   }
 
@@ -65,7 +61,7 @@ const EnableNotificationsBottomSheet = forwardRef<BottomSheetModal, EnableNotifi
         <CustomText
           style={styles.actionText}
           weight={'SemiBold'}
-          onPress={() => ref && (ref as React.RefObject<BottomSheetModal>).current?.dismiss()}
+          onPress={handleAskLater}
         >
           {t('ask_later')}
         </CustomText>

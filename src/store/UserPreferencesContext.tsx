@@ -37,9 +37,9 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   setSessionMode: () => {},
   setSessionLength: () => {},
   setSessionSpeechSynthesizer: () => {},
-  setVibrationsEnabled: (enabled: boolean) => {},
-  setNotificationsEnabled: (enabled: boolean) => {},
-  setAskLaterNotifications: (timestamp: number) => {},
+  setVibrationsEnabled: () => {},
+  setNotificationsEnabled: () => {},
+  setAskLaterNotifications: () => {},
 });
 
 const FLASHCARD_SIDE_KEY = 'flashcardSide';

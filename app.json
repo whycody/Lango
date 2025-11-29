@@ -49,6 +49,9 @@
         }
       ],
       [
+        "expo-notifications"
+      ],
+      [
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.646452848631-asffmff5od6hdqcq08n9a6rgbug9irrm"

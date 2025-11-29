@@ -29,7 +29,8 @@ const HomeScreen = () => {
 
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const enableNotificationsRef = useRef<BottomSheetModal>(null);
-  const { askLaterNotifications, notificationsEnabled } = useUserPreferences();
+  const { askLaterNotifications } = useUserPreferences();
+  const { user } = useAuth();
 
   const tryToRefreshData = async () => {
     try {
@@ -50,7 +51,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const checkNotifications = async () => {
       const { status } = await Notifications.getPermissionsAsync();
-      if (status == 'granted' && notificationsEnabled) registerNotificationsToken();
+      if (status == 'granted' && user.notificationsEnabled) registerNotificationsToken();
       if ((askLaterNotifications && Date.now() < askLaterNotifications) || status == 'granted') return;
       enableNotificationsRef.current?.present();
     }

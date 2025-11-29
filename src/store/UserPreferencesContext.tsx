@@ -14,14 +14,12 @@ interface UserPreferencesContext {
   sessionLength: 1 | 2 | 3;
   sessionSpeechSynthesizer: boolean;
   vibrationsEnabled: boolean;
-  notificationsEnabled: boolean;
   askLaterNotifications: number | null;
   setFlashcardSide: (side: FLASHCARD_SIDE) => void;
   setSessionMode: (mode: SESSION_MODE) => void;
   setSessionLength: (length: 1 | 2 | 3) => void;
   setSessionSpeechSynthesizer: (sessionSpeechSynthesizer: boolean) => void;
   setVibrationsEnabled: (enabled: boolean) => void;
-  setNotificationsEnabled: (enabled: boolean) => void;
   setAskLaterNotifications: (timestamp: number) => void;
 }
 
@@ -31,14 +29,12 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   sessionLength: 2,
   sessionSpeechSynthesizer: true,
   vibrationsEnabled: true,
-  notificationsEnabled: false,
   askLaterNotifications: null,
   setFlashcardSide: () => {},
   setSessionMode: () => {},
   setSessionLength: () => {},
   setSessionSpeechSynthesizer: () => {},
   setVibrationsEnabled: () => {},
-  setNotificationsEnabled: () => {},
   setAskLaterNotifications: () => {},
 });
 
@@ -47,7 +43,6 @@ const SESSION_MODE_KEY = 'sessionMode';
 const SESSION_LENGTH_KEY = 'sessionLength';
 const SESSION_SPEECH_SYNTHESIZER_KEY = 'sessionSpeechSynthesizer';
 const VIBRATIONS_KEY = 'vibrationsEnabled';
-const NOTIFICATIONS_KEY = 'notificationsEnabled';
 const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
 
 const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
@@ -57,7 +52,6 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [sessionLength, setSessionLength] = useTypedMMKV<1 | 2 | 3>(SESSION_LENGTH_KEY, 2, storage);
   const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV(SESSION_SPEECH_SYNTHESIZER_KEY, true, storage);
   const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(VIBRATIONS_KEY, true, storage);
-  const [notificationsEnabled, setNotificationsEnabled] = useTypedMMKV(NOTIFICATIONS_KEY, true, storage);
   const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(ASK_LATER_NOTIFICATIONS_KEY, 0, storage);
 
   return (
@@ -68,14 +62,12 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         sessionLength,
         sessionSpeechSynthesizer,
         vibrationsEnabled,
-        notificationsEnabled,
         askLaterNotifications,
         setFlashcardSide,
         setSessionMode,
         setSessionLength,
         setSessionSpeechSynthesizer,
         setVibrationsEnabled,
-        setNotificationsEnabled,
         setAskLaterNotifications,
       }}
     >

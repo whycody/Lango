@@ -20,6 +20,7 @@ import * as Notifications from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { updateNotificationsEnabled } from "../../api/apiClient";
 import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
+import { useAuth } from "../../api/auth/AuthProvider";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -27,6 +28,7 @@ const SettingsScreen = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { languages, mainLang, translationLang, applicationLang } = useLanguage();
+  const { user, getSession } = useAuth();
   const languageBottomSheetRef = useRef<BottomSheetModal>();
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const userPreferences = useUserPreferences();
@@ -38,7 +40,7 @@ const SettingsScreen = () => {
   const [notificationsStatus, setNotificationsStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
   const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(LanguageTypes.MAIN);
   const { style, onScroll } = useDynamicStatusBar(100, 0.5);
-  const notificationsEnabled = notificationsStatus == 'granted' && userPreferences.notificationsEnabled;
+  const notificationsEnabled = notificationsStatus == 'granted' && user.notificationsEnabled;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -67,17 +69,16 @@ const SettingsScreen = () => {
 
     setNotificationsStatus('granted');
     await registerNotificationsToken();
-    const update = await updateNotificationsEnabled(true);
-    if (!update) return;
-    userPreferences.setNotificationsEnabled(true);
+    await updateNotificationsEnabled(true);
+    await getSession();
   };
 
   const handleNotificationsSettingItemPress = async () => {
     if (!notificationsEnabled) {
       await checkNotifications();
     } else {
-      const update = await updateNotificationsEnabled(false);
-      if (!!update) userPreferences.setNotificationsEnabled(!userPreferences.notificationsEnabled);
+      await updateNotificationsEnabled(false);
+      await getSession();
     }
   }
 
@@ -114,7 +115,7 @@ const SettingsScreen = () => {
     {
       id: SettingsItems.NOTIFICATIONS,
       label: t('notifications'),
-      description: t(`turned_${userPreferences.notificationsEnabled ? 'on' : 'off'}_m`),
+      description: t(`turned_${notificationsEnabled ? 'on' : 'off'}_m`),
       icon: 'notifications-sharp',
       enabled: notificationsEnabled,
       section: SettingsSections.PREFERENCES,

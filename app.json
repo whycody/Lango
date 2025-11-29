@@ -14,10 +14,10 @@
       "backgroundColor": "#0f0f30"
     },
     "locales": {
-      "en": "./locales/en/notification_permission.json",
-      "pl": "./locales/pl/notification_permission.json",
-      "es": "./locales/es/notification_permission.json",
-      "it": "./locales/it/notification_permission.json"
+      "en": "./languages/en.json",
+      "pl": "./languages/pl.json",
+      "es": "./languages/es.json",
+      "it": "./languages/it.json"
     },
     "plugins": [
       [

@@ -119,8 +119,11 @@
   "preferences": "Preferencje",
   "vibrations": "Wibracje",
   "notifications": "Powiadomienia",
-  "turn_on_notifications_title": "Pozwól nam czasami się odezwać \uD83D\uDCAC",
+  "turn_on_notifications_title": "Pozwól nam się odezwać \uD83D\uDD14",
   "turn_on_notifications_desc": "Włącz powiadomienia, abyśmy mogli przypominać Ci o sesjach nauki, motywować do dalszych postępów i wspierać Cię w budowaniu codziennej rutyny rozwijania języka.",
   "allow_notifications": "Włącz powiadomienia",
-  "ask_later": "Zapytaj później"
+  "ask_later": "Zapytaj później",
+  "notifications_disabled_title": "Powiadomienia wyłączone",
+  "notifications_disabled_message": "Aby włączyć powiadomienia, musisz zmienić ustawienia aplikacji w systemie.",
+  "notifications_open_settings": "Otwórz ustawienia",
 }

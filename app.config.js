@@ -7,13 +7,12 @@ export default ({config}) => {
     name: isTest ? "LangoTest" : isDev ? "LangoDev" : "Lango",
     android: {
       ...config.android,
-      package: isTest ? "com.whycody.lango.test" : "com.whycody.lango",
-      googleServicesFile: isTest ? "./config/google-services-test.json" : "./config/google-services.json"
+      package: isTest ? "com.whycody.lango.test" : isDev ? "com.whycody.lango.dev" : "com.whycody.lango",
     },
     ios: {
       ...config.ios,
-      bundleIdentifier: isTest ? "com.whycody.lango.test" : "com.whycody.lango",
-      googleServicesFile: isTest ? "./config/GoogleService-Info-Test.plist" : "./config/GoogleService-Info.plist"
+      bundleIdentifier: isTest ? "com.whycody.lango.test" : isDev ? "com.whycody.lango.dev" : "com.whycody.lango",
+      googleServicesFile: isTest ? "./config/GoogleService-Info-Test.plist" : isDev ? "./config/GoogleService-Info-Dev.plist" : "./config/GoogleService-Info.plist"
     }
   };
 };

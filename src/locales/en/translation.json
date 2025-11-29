@@ -117,8 +117,11 @@
   "preferences": "Preferences",
   "vibrations": "Vibrations",
   "notifications": "Notifications",
-  "turn_on_notifications_title": "Let us reach out sometimes 💬",
+  "turn_on_notifications_title": "Let us reach out \uD83D\uDD14",
   "turn_on_notifications_desc": "Enable notifications so we can remind you about study sessions, motivate your progress, and support you in building a consistent language-learning routine.",
   "allow_notifications": "Enable notifications",
-  "ask_later": "Ask later"
+  "ask_later": "Ask later",
+  "notifications_disabled_title": "Notifications disabled",
+  "notifications_disabled_message": "To enable notifications, you need to change the app settings in your system.",
+  "notifications_open_settings": "Open settings"
 }

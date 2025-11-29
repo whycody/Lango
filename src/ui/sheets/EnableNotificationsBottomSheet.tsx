@@ -6,9 +6,9 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import * as Notifications from 'expo-notifications';
 import { useUserPreferences } from "../../store/UserPreferencesContext";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
+import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
 
 type EnableNotificationsBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
@@ -24,18 +24,17 @@ const EnableNotificationsBottomSheet = forwardRef<BottomSheetModal, EnableNotifi
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
   const askForNotificationPermission = async () => {
-    let { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') status = (await Notifications.requestPermissionsAsync()).status;
-    if (status !== 'granted') return;
+    const granted = await ensureNotificationsPermission();
+    if (!granted) return;
+
     await registerNotificationsToken();
-  }
+    ref.current?.dismiss();
+  };
 
   const handleAskLater = () => {
     const askLaterUntil = Date.now() + 48 * 60 * 60 * 1000;
     setAskLaterNotifications(askLaterUntil);
-    if (ref && (ref as React.RefObject<BottomSheetModal>).current) {
-      (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
-    }
+    ref.current?.dismiss();
   }
 
   return (
@@ -82,7 +81,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   subtitle: {
     color: colors.primary600,
     fontSize: 15,
-    marginTop: MARGIN_VERTICAL,
+    marginTop: MARGIN_VERTICAL / 2,
   },
   actionText: {
     color: colors.primary,

@@ -19,6 +19,7 @@ import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import * as Notifications from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { updateNotificationsEnabled } from "../../api/apiClient";
+import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -61,13 +62,15 @@ const SettingsScreen = () => {
   }, []);
 
   const checkNotifications = async () => {
-    let { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') status = (await Notifications.requestPermissionsAsync()).status;
-    if (status !== 'granted') return;
+    const granted = await ensureNotificationsPermission();
+    if (!granted) return;
+
+    setNotificationsStatus('granted');
     await registerNotificationsToken();
     const update = await updateNotificationsEnabled(true);
-    if (!!update) userPreferences.setNotificationsEnabled(true);
-  }
+    if (!update) return;
+    userPreferences.setNotificationsEnabled(true);
+  };
 
   const handleNotificationsSettingItemPress = async () => {
     if (!notificationsEnabled) {

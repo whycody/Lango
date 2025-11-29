@@ -51,7 +51,7 @@ const HomeScreen = () => {
     const checkNotifications = async () => {
       const { status } = await Notifications.getPermissionsAsync();
       if (status == 'granted' && notificationsEnabled) registerNotificationsToken();
-      if ((askLaterNotifications && Date.now() < askLaterNotifications) || ['granted', 'denied'].includes(status)) return;
+      if ((askLaterNotifications && Date.now() < askLaterNotifications) || status == 'granted') return;
       enableNotificationsRef.current?.present();
     }
 

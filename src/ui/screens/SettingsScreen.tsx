@@ -134,7 +134,7 @@ const SettingsScreen = () => {
       enabled: userPreferences.sessionSpeechSynthesizer,
       section: SettingsSections.SESSION
     }
-  ], [t, userPreferences, currentMainLang, currentTranslationLang, currentApplicationLang]);
+  ], [t, notificationsEnabled, userPreferences, currentMainLang, currentTranslationLang, currentApplicationLang]);
 
   const getSectionTitle = (section: number) => {
     switch (section) {
@@ -183,7 +183,7 @@ const SettingsScreen = () => {
       default:
         break;
     }
-  }, [userPreferences, languageBottomSheetRef]);
+  }, [userPreferences, notificationsEnabled, languageBottomSheetRef]);
 
   const renderSettingsItem = ({ item, index }) => (
     <LibraryItem

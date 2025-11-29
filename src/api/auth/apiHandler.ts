@@ -15,7 +15,8 @@ const subscribers: {
 const ACCESS_TOKEN = "accessToken";
 const REFRESH_TOKEN = "refreshToken";
 
-const getBaseURL = () => 'https://dev.lango.ovh';
+const profile = process.env.EAS_BUILD_PROFILE;
+const apiUrl = ['test', 'development'].includes(profile) ? process.env['API_DEV_URL'] : process.env['API_URL'];
 
 export const removeAccessToken = async (): Promise<void> => {
   accessToken = null;
@@ -118,7 +119,7 @@ export const apiCall = async <T>(
   }
 
   try {
-    const fullUrl = `${getBaseURL()}${options.url}`;
+    const fullUrl = `${apiUrl}${options.url}`;
 
     const axiosConfig: any = {
       method: options.method,

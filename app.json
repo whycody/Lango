@@ -61,6 +61,7 @@
       "bundleIdentifier": "com.whycody.lango",
       "googleServicesFile": "./config/GoogleService-Info.plist",
       "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
         "SKAdNetworkItems": [
           {
             "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"

@@ -1,6 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import axios from "axios";
 import { refreshTokens } from "../apiClient";
+import * as Updates from 'expo-updates';
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -15,7 +16,7 @@ const subscribers: {
 const ACCESS_TOKEN = "accessToken";
 const REFRESH_TOKEN = "refreshToken";
 
-const profile = process.env.EAS_BUILD_PROFILE;
+const profile = Updates.channel;
 const apiUrl = (!profile || ['test', 'development'].includes(profile)) ? process.env['API_DEV_URL'] : process.env['API_URL'];
 
 export const removeAccessToken = async (): Promise<void> => {

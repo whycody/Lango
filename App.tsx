@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar, View } from 'react-native';
+import { AppState, StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import './i18n';
 import * as Font from 'expo-font';
@@ -17,6 +17,7 @@ import { LanguageCode } from "./src/constants/LanguageCode";
 import { APPLICATION_LANG } from "./src/store/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { useMMKV } from "react-native-mmkv";
+import * as Notifications from 'expo-notifications';
 
 export default function App() {
   const { i18n } = useTranslation();
@@ -30,6 +31,12 @@ export default function App() {
   }, [applicationLang]);
 
   checkUpdates();
+
+  AppState.addEventListener('change', state => {
+    if (state === 'active') {
+      Notifications.dismissAllNotificationsAsync();
+    }
+  });
 
   useEffect(() => {
     async function loadFonts() {

@@ -1,9 +1,10 @@
 import { Session } from "../types";
 import { getDb } from "./utils/db";
 
-const columns: Array<keyof Session> = ['id', 'date', 'localDay', 'mode', 'sessionModel', 'averageScore', 'wordsCount', 'finished',
-  'synced', 'updatedAt', 'locallyUpdatedAt'];
+const columns: Array<keyof Session> = ['id', 'date', 'localDay', 'mode', 'mainLang', 'translationLang', 'sessionModel',
+  'averageScore', 'wordsCount', 'finished', 'synced', 'updatedAt', 'locallyUpdatedAt'];
 
+/* First version of Session table, now it includes a few more fields */
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
   await db.transaction(tx => {
@@ -64,6 +65,8 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
               date: row.date,
               localDay: row.localDay,
               mode: row.mode,
+              mainLang: row.mainLang,
+              translationLang: row.translationLang,
               sessionModel: row.sessionModel,
               averageScore: row.averageScore,
               wordsCount: row.wordsCount,

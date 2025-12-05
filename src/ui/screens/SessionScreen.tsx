@@ -239,7 +239,8 @@ const SessionScreen = () => {
   const saveProgress = (finished: boolean) => {
     if (wordsUpdates.length == 0) return;
     const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
-    const session = sessionsContext.addSession(mode, model, avgGrade, length * 10, finished);
+    const { mainLang, translationLang } = wordSet.words[0];
+    const session = sessionsContext.addSession(mode, model, avgGrade, length * 10, mainLang, translationLang, finished);
     evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
       wordId: update.flashcardId,
       sessionId: session.id,

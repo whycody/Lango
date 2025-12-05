@@ -8,11 +8,11 @@ export enum SESSION_MODEL {
 }
 
 export type UserStats = {
-  sessionCount: number;
-  averageScore: number;
-  evaluationCount: number;
   studyDays: string[];
-};
+  sessionCount: number;
+  evaluationCount: number;
+  averageScore: number;
+}
 
 export type User = {
   userId: string;
@@ -24,5 +24,5 @@ export type User = {
   translationLang: LanguageCode | null;
   sessionModel: SESSION_MODEL;
   notificationsEnabled: boolean;
-  stats?: UserStats;
+  stats: UserStats;
 };

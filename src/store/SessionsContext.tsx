@@ -2,7 +2,7 @@ import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, use
 import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
 import uuid from 'react-native-uuid';
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
-import { Session, SESSION_MODE, SESSION_MODEL } from '../types';
+import { LanguageCode, Session, SESSION_MODE, SESSION_MODEL } from '../types';
 import { useAuth } from "../api/auth/AuthProvider";
 import {
   findChangedItems,
@@ -18,7 +18,8 @@ import { getTodayDate } from "../utils/dateUtil";
 interface SessionsContextProps {
   sessions: Session[];
   loading: boolean;
-  addSession: (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number, finished: boolean) => Session;
+  addSession: (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number,
+               mainLang: LanguageCode, translationLang: LanguageCode, finished: boolean) => Session;
   syncSessions: () => Promise<void>;
 }
 
@@ -33,6 +34,8 @@ const SessionsContext = createContext<SessionsContextProps>({
     sessionModel: SESSION_MODEL.HEURISTIC,
     averageScore: 0,
     wordsCount: 0,
+    mainLang: LanguageCode.SPANISH,
+    translationLang: LanguageCode.ITALIAN,
     finished: false,
     synced: false,
     locallyUpdatedAt: ''
@@ -48,13 +51,16 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const auth = useAuth();
   const syncing = useRef(false);
 
-  const createSession = (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number, finished: boolean): Session => {
+  const createSession = (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number,
+                         mainLang: LanguageCode, translationLang: LanguageCode, finished: boolean): Session => {
     const now = new Date().toISOString();
     return {
       id: uuid.v4(),
       date: now,
       localDay: getTodayDate(),
-      mode: mode,
+      mode,
+      mainLang,
+      translationLang,
       sessionModel: model,
       averageScore,
       wordsCount,
@@ -65,8 +71,9 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   };
 
-  const addSession = (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number, finished: boolean) => {
-    const newSession = createSession(mode, model, averageScore, wordsCount, finished);
+  const addSession = (mode: SESSION_MODE, model: SESSION_MODEL, averageScore: number, wordsCount: number,
+                      mainLang: LanguageCode, translationLang: LanguageCode, finished: boolean) => {
+    const newSession = createSession(mode, model, averageScore, wordsCount, mainLang, translationLang, finished);
     const updatedSessions = [newSession, ...sessions];
     setSessions(updatedSessions);
     saveSessions([newSession]);

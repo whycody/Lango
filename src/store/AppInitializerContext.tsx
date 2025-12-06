@@ -72,8 +72,8 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         if ((!mainLang || !translationLang) && !!words && !!evaluations) {
           const earliestEvaluation = evaluations.reduce((earliest, current) => {
-            const earliestDate = new Date(earliest.locallyUpdatedAt);
-            const currentDate = new Date(current.locallyUpdatedAt);
+            const earliestDate = new Date(earliest.date);
+            const currentDate = new Date(current.date);
             return currentDate > earliestDate ? current : earliest;
           }, evaluations[0]);
 

@@ -60,7 +60,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "7",
+      "buildNumber": "8",
       "bundleIdentifier": "com.whycody.lango",
       "googleServicesFile": "./config/GoogleService-Info.plist",
       "infoPlist": {
@@ -77,7 +77,7 @@
       "googleServicesFile": "./config/google-services.json",
       "edgeToEdgeEnabled": true,
       "package": "com.whycody.lango",
-      "versionCode": 7
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/favicon.png"

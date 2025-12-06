@@ -16,7 +16,7 @@ const WordsSuggestionsCard = () => {
   const styles = getStyles(colors);
 
   const suggestionsContext = useSuggestions();
-  const { mainLang } = useLanguage();
+  const { mainLang, translationLang } = useLanguage();
   const [firstFlashcard, setFirstFlashcard] = useState<Suggestion>();
   const [secondFlashcard, setSecondFlashcard] = useState<Suggestion>();
   const firstFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
@@ -24,8 +24,8 @@ const WordsSuggestionsCard = () => {
 
   useEffect(() => {
     if (suggestionsContext.suggestions.length == 0 ||
-      (firstFlashcard && firstFlashcard.mainLang == mainLang &&
-        secondFlashcard && secondFlashcard.mainLang == mainLang)
+      (firstFlashcard && firstFlashcard.mainLang == mainLang && secondFlashcard && secondFlashcard.mainLang == mainLang
+        && firstFlashcard.translationLang == translationLang && secondFlashcard.translationLang == translationLang)
     ) return;
     const sortedSuggestions = suggestionsContext.langSuggestions.slice().sort((a, b) => a.displayCount - b.displayCount);
     const [firstSuggestion, secondSuggestion] = sortedSuggestions.slice(0, 2);

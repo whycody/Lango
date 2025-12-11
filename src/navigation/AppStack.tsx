@@ -54,7 +54,7 @@ const AppStack = () => {
                                 navigationBarColor: colors.card,
                                 statusBarTranslucent: true,
                               }}>
-                              {!(!user.mainLang || !user.translationLang) &&
+                              {(!user.mainLang || !user.translationLang) &&
                                 <Stack.Screen
                                   name='Onboarding'
                                   component={OnboardingScreen}

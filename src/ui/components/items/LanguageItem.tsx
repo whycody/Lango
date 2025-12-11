@@ -12,25 +12,23 @@ type LanguageItemProps = {
   language: Language,
   checked: boolean,
   onPress: () => void;
-  darkStyle?: boolean;
   style?: any;
 }
 
 const LanguageItem: FC<LanguageItemProps> =
-  ({ index, language, checked, onPress, darkStyle = true, style }) => {
+  ({ index, language, checked, onPress, style }) => {
     const { colors } = useTheme();
-    const styles = getStyles(colors, darkStyle);
-    const backgroundColor = darkStyle ? colors.background : colors.card;
+    const styles = getStyles(colors);
 
     return (
       <Pressable
         key={language.languageCode}
         style={[styles.root, style]}
         onPress={onPress}
-        android_ripple={{ color: backgroundColor }}
+        android_ripple={{ color: colors.background }}
       >
-        {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: backgroundColor }}/>}
-        <View style={[styles.container, checked && { backgroundColor: colors.card }]}>
+        {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
+        <View style={[styles.container, checked && { backgroundColor: colors.background }]}>
           <Ionicons name={'language-sharp'} color={colors.primary600} size={22}/>
           <View style={styles.textContainer}>
             <CustomText weight={'SemiBold'} style={styles.text}>{language.languageName}</CustomText>
@@ -42,9 +40,9 @@ const LanguageItem: FC<LanguageItemProps> =
     );
   }
 
-const getStyles = (colors: any, darkStyle: boolean) => StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   root: {
-    backgroundColor: darkStyle ? colors.card : colors.backgroundColor,
+    backgroundColor: colors.card,
   },
   container: {
     paddingVertical: 15,

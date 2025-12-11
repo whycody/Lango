@@ -86,7 +86,7 @@ const WelcomeScreen = () => {
   }, [displayedText.length, fullText.length, subtitleFadeAnim, subtitleSlideAnim]);
 
   return (
-    <>
+    <View style={styles.root}>
       <Text style={[styles.title, { marginBottom: titleMarginAnim }]}>
         {displayedText}
         <Text style={!showCursor && { color: 'transparent' }}>|</Text>
@@ -109,18 +109,15 @@ const WelcomeScreen = () => {
           style={styles.lottie}
         />
       </View>
-    </>
+    </View>
   );
 };
 
 const getStyles = (colors: any) => StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  screenContent: {
-    flex: 1,
+  root: {
+    paddingBottom: 20,
     justifyContent: 'center',
-    alignItems: 'center',
+    height: '100%'
   },
   title: {
     color: colors.primary300,

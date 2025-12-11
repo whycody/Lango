@@ -27,7 +27,7 @@ const OnboardingScreen = () => {
   const pulseAnim = useRef(new Animated.Value(0)).current;
 
   const scrollToScreen = useCallback((screenIndex: number) => {
-    const offsetY = screenIndex * screenHeight;
+    const offsetY = screenIndex * (screenHeight + insets.top + insets.bottom);
     scrollViewRef.current?.scrollTo({
       y: offsetY,
       animated: true,
@@ -130,7 +130,6 @@ const OnboardingScreen = () => {
           <LanguagePicker
             languageType={LanguageTypes.MAIN}
             onLanguagePicked={handleMainLangPick}
-            darkStyle={false}
             style={styles.languagePicker}
           />
         </OnboardingScreenContainer>
@@ -139,7 +138,6 @@ const OnboardingScreen = () => {
           <LanguagePicker
             languageType={LanguageTypes.TRANSLATION}
             onLanguagePicked={handleTranslationLangPick}
-            darkStyle={false}
             style={styles.languagePicker}
           />
         </OnboardingScreenContainer>
@@ -181,9 +179,16 @@ const getStyles = (colors: any, insets: any) => StyleSheet.create({
   },
   languagePicker: {
     flex: 1,
-    width: '100%'
+        paddingTop: insets.top + MARGIN_VERTICAL,
+    height: screenHeight + insets.top + insets.bottom,
+    width: '100%',
+    backgroundColor: colors.card
   },
   buttonContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     paddingHorizontal: MARGIN_HORIZONTAL,
     paddingBottom: insets.bottom + MARGIN_VERTICAL,
   },

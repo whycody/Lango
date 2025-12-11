@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Dimensions, Animated, Easing } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MARGIN_VERTICAL } from "../../constants/margins";
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -16,12 +15,10 @@ const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({ c
 
   const fadeAnim = useRef(new Animated.Value(0.5)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
-  const contentScaleAnim = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
     fadeAnim.setValue(0);
     slideAnim.setValue(30);
-    contentScaleAnim.setValue(0.9);
 
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -36,14 +33,8 @@ const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({ c
         easing: Easing.out(Easing.quad),
         useNativeDriver: true,
       }),
-      Animated.timing(contentScaleAnim, {
-        toValue: 1,
-        duration: 400,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      })
     ]).start();
-  }, [currentStep, fadeAnim, slideAnim, contentScaleAnim]);
+  }, [currentStep, fadeAnim, slideAnim]);
 
   return (
     <View style={styles.screen}>
@@ -51,7 +42,6 @@ const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({ c
         opacity: fadeAnim,
         transform: [
           { translateY: slideAnim },
-          { scale: contentScaleAnim }
         ],
       }]}>
         {children}
@@ -63,9 +53,7 @@ const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({ c
 const getStyles = (insets: any) => StyleSheet.create({
   screen: {
     flex: 1,
-    height: screenHeight,
-    paddingTop: insets.top + MARGIN_VERTICAL,
-    paddingBottom: insets.bottom + MARGIN_VERTICAL,
+    height: screenHeight + insets.top + insets.bottom,
   },
   screenContent: {
     flex: 1,

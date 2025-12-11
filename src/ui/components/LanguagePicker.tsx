@@ -13,11 +13,10 @@ import LanguageItem from "./items/LanguageItem";
 interface LanguagePickerProps {
   languageType?: LanguageTypes;
   onLanguagePicked?: (langCode: LanguageCode) => void;
-  darkStyle?: boolean;
   style?: ViewStyle;
 }
 
-const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, darkStyle = true, style }: LanguagePickerProps) => {
+const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, style }: LanguagePickerProps) => {
   const styles = getStyles();
   const { t } = useTranslation();
   const {
@@ -69,7 +68,6 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, d
     <LanguageItem
       language={item}
       index={index}
-      darkStyle={darkStyle}
       checked={item.languageCode === pickedLanguage}
       onPress={() => handleLanguagePick(item)}
     />, [pickedLanguage, handleLanguagePick]);

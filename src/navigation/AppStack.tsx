@@ -17,9 +17,12 @@ import { DarkTheme } from "../ui/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
 import SettingsScreen from "../ui/screens/SettingsScreen";
+import { useAuth } from "../api/auth/AuthProvider";
+import OnboardingScreen from "../ui/screens/OnboardingScreen";
 
 export type RootStackParamList = {
   Tabs: undefined;
+  Onboarding: undefined;
   Settings: undefined;
   Session: SessionScreenParams;
   Flashcards: undefined;
@@ -30,6 +33,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppStack = () => {
   const { colors } = DarkTheme;
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
 
   return (
     <View style={{ marginBottom: insets.bottom, flex: 1 }}>
@@ -50,6 +54,12 @@ const AppStack = () => {
                                 navigationBarColor: colors.card,
                                 statusBarTranslucent: true,
                               }}>
+                              {!(!user.mainLang || !user.translationLang) &&
+                                <Stack.Screen
+                                  name='Onboarding'
+                                  component={OnboardingScreen}
+                                />
+                              }
                               <Stack.Screen
                                 name='Tabs'
                                 component={TabsNavigator}

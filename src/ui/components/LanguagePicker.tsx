@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, View, ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import { Language, LanguageCode } from "../../types";
@@ -9,14 +9,15 @@ import { useHaptics } from "../../hooks/useHaptics";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import Header from "./Header";
 import LanguageItem from "./items/LanguageItem";
-import ActionButton from "./ActionButton";
 
 interface LanguagePickerProps {
   languageType?: LanguageTypes;
-  onLanguagePicked?: () => void;
+  onLanguagePicked?: (langCode: LanguageCode) => void;
+  darkStyle?: boolean;
+  style?: ViewStyle;
 }
 
-const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked }: LanguagePickerProps) => {
+const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, darkStyle = true, style }: LanguagePickerProps) => {
   const styles = getStyles();
   const { t } = useTranslation();
   const {
@@ -48,7 +49,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked }:
     if (shouldSwap) {
       swapLanguages();
       triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-      onLanguagePicked?.();
+      onLanguagePicked?.(language.languageCode);
       return;
     }
 
@@ -61,19 +62,20 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked }:
     setters[languageType](language.languageCode);
 
     triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-    onLanguagePicked?.();
+    onLanguagePicked?.(language.languageCode);
   }, [languageType, translationLang, mainLang, swapLanguages, setMainLang, setTranslationLang, setApplicationLang, triggerHaptics, onLanguagePicked]);
 
   const renderLanguageItem = useCallback(({ item, index }: { item: Language, index: number }) =>
     <LanguageItem
       language={item}
       index={index}
+      darkStyle={darkStyle}
       checked={item.languageCode === pickedLanguage}
       onPress={() => handleLanguagePick(item)}
     />, [pickedLanguage, handleLanguagePick]);
 
   return (
-    <>
+    <View style={style}>
       <Header
         title={t(`choose_${langTypeDesc}_language`)}
         subtitle={t(`choose_language_desc`)}
@@ -84,13 +86,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked }:
         renderItem={renderLanguageItem}
         scrollEnabled={false}
       />
-      <ActionButton
-        onPress={onLanguagePicked}
-        label={t('cancel')}
-        primary={true}
-        style={styles.button}
-      />
-    </>
+    </View>
   );
 };
 
@@ -99,10 +95,6 @@ const getStyles = () => StyleSheet.create({
     paddingVertical: MARGIN_VERTICAL / 2,
     paddingHorizontal: MARGIN_HORIZONTAL,
   },
-  button: {
-    marginVertical: MARGIN_VERTICAL,
-    marginHorizontal: MARGIN_HORIZONTAL,
-  }
 });
 
 export default LanguagePicker;

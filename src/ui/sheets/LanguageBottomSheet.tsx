@@ -1,10 +1,13 @@
 import React, { forwardRef, useCallback } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
-import { Platform } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import { FullWindowOverlay } from "react-native-screens";
 import LanguagePicker from "../components/LanguagePicker";
 import { LanguageTypes } from "../../constants/LanguageTypes";
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
+import ActionButton from "../components/ActionButton";
+import { useTranslation } from "react-i18next";
 
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
@@ -14,6 +17,7 @@ type LanguageBottomSheetProps = {
 const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const { onChangeIndex, languageType = LanguageTypes.MAIN } = props;
+  const { t } = useTranslation();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -38,11 +42,27 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
         <LanguagePicker
           languageType={languageType}
           onLanguagePicked={handleLanguagePicked}
+          style={styles.languagePicker}
+        />
+        <ActionButton
+          onPress={handleLanguagePicked}
+          label={t('cancel')}
+          primary={true}
+          style={styles.button}
         />
       </BottomSheetScrollView>
     </BottomSheetModal>
   );
 });
 
+const styles = StyleSheet.create({
+  languagePicker: {
+    marginBottom: MARGIN_VERTICAL
+  },
+  button: {
+    marginTop: MARGIN_VERTICAL,
+    marginHorizontal: MARGIN_HORIZONTAL,
+  }
+})
 
 export default LanguageBottomSheet;

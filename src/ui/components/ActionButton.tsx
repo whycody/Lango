@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import { ActivityIndicator, Platform, Pressable, StyleSheet } from "react-native";
+import React, { FC, useRef } from "react";
+import { ActivityIndicator, Pressable, StyleSheet, Animated, Easing } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,27 +20,78 @@ const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, ic
   const { colors } = useTheme();
   const styles = getStyles(colors, primary, active);
   const { triggerHaptics } = useHaptics();
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
 
   const handlePress = () => {
     triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-    onPress();
+    onPress?.();
+  }
+
+  const handlePressIn = () => {
+    scaleAnim.setValue(1);
+    opacityAnim.setValue(1);
+
+    Animated.parallel([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 0.7,
+        duration: 100,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      })
+    ]).start();
+  }
+
+  const handlePressOut = () => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      })
+    ]).start();
   }
 
   return (
-    <Pressable
-      style={({ pressed }) => [styles.root, style, pressed && Platform.OS === 'ios' && { opacity: 0.8 }]}
-      android_ripple={{ color: primary ? 'white' : colors.card }}
-      onPress={active && !loading ? handlePress : undefined}
+    <Animated.View
+      style={[
+        {
+          transform: [{ scale: scaleAnim }],
+          opacity: opacityAnim,
+        }
+      ]}
     >
-      {loading ? (
-        <ActivityIndicator size="small" color={primary ? colors.card : colors.primary} />
-      ) : (
-        <>
-          <CustomText weight={"Bold"} style={styles.label}>{label}</CustomText>
-          {icon && <Ionicons name={icon} color={primary ? colors.card : colors.primary} size={14} style={styles.icon}/>}
-        </>
-      )}
-    </Pressable>
+      <Pressable
+        style={[styles.root, style]}
+        android_ripple={{ color: primary ? 'white' : colors.card }}
+        onPress={active && !loading ? handlePress : undefined}
+        onPressIn={active && !loading ? handlePressIn : undefined}
+        onPressOut={active && !loading ? handlePressOut : undefined}
+      >
+        {loading ? (
+          <ActivityIndicator size="small" color={primary ? colors.card : colors.primary}/>
+        ) : (
+          <>
+            <CustomText weight={"Bold"} style={styles.label}>{label}</CustomText>
+            {icon &&
+              <Ionicons name={icon} color={primary ? colors.card : colors.primary} size={14} style={styles.icon}/>}
+          </>
+        )}
+      </Pressable>
+    </Animated.View>
   );
 }
 

@@ -13,7 +13,7 @@ const CustomText: FC<CustomTextProps> = ({ weight = 'Regular', style, children, 
       if (part.startsWith('*') && part.endsWith('*')) {
         const boldText = part.slice(1, -1);
         return (
-          <Text key={index} style={{ fontFamily: `Montserrat-Bold` }}>
+          <Text key={index} style={{ fontFamily: weight == `Bold` ? `Montserrat-Black` : `Montserrat-Bold` }}>
             {boldText}
           </Text>
         );

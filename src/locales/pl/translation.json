@@ -126,4 +126,5 @@
   "notifications_disabled_title": "Powiadomienia wyłączone",
   "notifications_disabled_message": "Aby włączyć powiadomienia, musisz zmienić ustawienia aplikacji w systemie.",
   "notifications_open_settings": "Otwórz ustawienia",
+  "back": 'Wróć'
 }

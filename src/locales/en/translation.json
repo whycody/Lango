@@ -123,5 +123,6 @@
   "ask_later": "Ask later",
   "notifications_disabled_title": "Notifications disabled",
   "notifications_disabled_message": "To enable notifications, you need to change the app settings in your system.",
-  "notifications_open_settings": "Open settings"
+  "notifications_open_settings": "Open settings",
+  "back": 'Go back',
 }

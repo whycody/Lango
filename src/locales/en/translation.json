@@ -124,5 +124,7 @@
   "notifications_disabled_title": "Notifications disabled",
   "notifications_disabled_message": "To enable notifications, you need to change the app settings in your system.",
   "notifications_open_settings": "Open settings",
-  "back": 'Go back',
+  "back": "Go back",
+  "welcome": "{{name}},\n welcome to Lango! ",
+  "welcome_onboarding_desc": "We’re thrilled that you’ve joined our community! Answer a few questions so we can tailor the app to your needs."
 }

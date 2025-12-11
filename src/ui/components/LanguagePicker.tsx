@@ -92,7 +92,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, d
 
 const getStyles = () => StyleSheet.create({
   header: {
-    paddingVertical: MARGIN_VERTICAL / 2,
+    paddingVertical: MARGIN_VERTICAL,
     paddingHorizontal: MARGIN_HORIZONTAL,
   },
 });

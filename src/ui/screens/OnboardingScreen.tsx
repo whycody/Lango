@@ -10,21 +10,30 @@ import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
 import { View, ScrollView, StyleSheet, Dimensions, Animated, Easing } from "react-native";
 import WelcomeScreen from "./WelcomeScreen";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLanguage } from "../../store/LanguageContext";
+import { updateUserLanguages } from "../../api/apiClient";
 
 const screenHeight = Dimensions.get('window').height;
 
 const OnboardingScreen = () => {
   const { colors } = useTheme();
-  const { user } = useAuth();
+  const { getSession } = useAuth();
   const insets = useSafeAreaInsets();
-  const styles = getStyles(colors, insets);
+  const styles = getStyles(insets);
   const { t } = useTranslation();
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const backSlideAnim = useRef(new Animated.Value(30)).current;
   const backOpacityAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(0)).current;
+
+  const { mainLang, translationLang } = useLanguage();
+  const [welcomeScreenIsReady, setWelcomeScreenIsReady] = useState(false);
+  const buttonEnabled = currentStep === 0 && welcomeScreenIsReady || currentStep === 1 && !!mainLang ||
+    currentStep === 2 && !!translationLang;
 
   const scrollToScreen = useCallback((screenIndex: number) => {
     const offsetY = screenIndex * (screenHeight + insets.top + insets.bottom);
@@ -53,14 +62,6 @@ const OnboardingScreen = () => {
     ]).start();
   }, [pulseAnim]);
 
-  const handleMainLangPick = useCallback(() => {
-    scrollToScreen(1);
-  }, [scrollToScreen]);
-
-  const handleTranslationLangPick = useCallback(() => {
-    scrollToScreen(2);
-  }, [scrollToScreen]);
-
   const handleBackPress = useCallback(() => {
     if (currentStep > 0) {
       triggerPulse();
@@ -68,11 +69,19 @@ const OnboardingScreen = () => {
     }
   }, [currentStep, scrollToScreen, triggerPulse]);
 
-  const handleContinuePress = useCallback(() => {
-    triggerPulse();
-    scrollToScreen(currentStep + 1);
-  }, [currentStep, scrollToScreen, triggerPulse]);
+  const updateUserData = useCallback(async () => {
+    setLoading(true);
+    const res = await updateUserLanguages(mainLang, translationLang);
+    if (!!res) await getSession();
+    setLoading(false);
+  }, [mainLang, translationLang]);
 
+  const handleContinuePress = useCallback(() => {
+    if (currentStep < 2) {
+      triggerPulse();
+      scrollToScreen(currentStep + 1);
+    } else updateUserData();
+  }, [currentStep, scrollToScreen, triggerPulse, updateUserData]);
 
   useEffect(() => {
     if (currentStep > 0) {
@@ -114,6 +123,8 @@ const OnboardingScreen = () => {
     }
   }, [currentStep === 0, backSlideAnim, backOpacityAnim]);
 
+  const languages = [LanguageTypes.MAIN, LanguageTypes.TRANSLATION];
+
   return (
     <>
       <ScrollView
@@ -123,39 +134,38 @@ const OnboardingScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <OnboardingScreenContainer currentStep={currentStep}>
-          <WelcomeScreen/>
+          <WelcomeScreen onAnimationEnd={() => setWelcomeScreenIsReady(true)}/>
         </OnboardingScreenContainer>
 
-        <OnboardingScreenContainer currentStep={currentStep}>
-          <LanguagePicker
-            languageType={LanguageTypes.MAIN}
-            onLanguagePicked={handleMainLangPick}
-            style={styles.languagePicker}
-          />
-        </OnboardingScreenContainer>
-
-        <OnboardingScreenContainer currentStep={currentStep}>
-          <LanguagePicker
-            languageType={LanguageTypes.TRANSLATION}
-            onLanguagePicked={handleTranslationLangPick}
-            style={styles.languagePicker}
-          />
-        </OnboardingScreenContainer>
+        {languages.map((type, index) => (
+          <LinearGradient
+            key={type}
+            colors={[colors.background, colors.card]}
+            start={{ x: index, y: index }}
+            end={{ x: 1 - index, y: 1 - index }}
+          >
+            <OnboardingScreenContainer currentStep={currentStep}>
+              <LanguagePicker
+                languageType={type}
+                style={styles.languagePicker}
+              />
+            </OnboardingScreenContainer>
+          </LinearGradient>
+        ))}
       </ScrollView>
 
       <View style={styles.buttonContainer}>
         {currentStep > 0 && (
           <Animated.View style={[
             {
-              transform: [
-                { translateY: backSlideAnim }
-              ],
+              transform: [{ translateY: backSlideAnim }],
               opacity: backOpacityAnim,
             }
           ]}>
             <ActionButton
               label={t('back')}
               primary={false}
+              active={!loading}
               style={styles.backButton}
               icon={'arrow-back-outline'}
               onPress={handleBackPress}
@@ -167,22 +177,23 @@ const OnboardingScreen = () => {
           primary={true}
           icon={'arrow-forward-outline'}
           onPress={handleContinuePress}
+          loading={loading}
+          active={buttonEnabled}
         />
       </View>
     </>
   );
 }
 
-const getStyles = (colors: any, insets: any) => StyleSheet.create({
+const getStyles = (insets: any) => StyleSheet.create({
   root: {
     flex: 1,
   },
   languagePicker: {
     flex: 1,
-        paddingTop: insets.top + MARGIN_VERTICAL,
+    paddingTop: insets.top + MARGIN_VERTICAL,
     height: screenHeight + insets.top + insets.bottom,
     width: '100%',
-    backgroundColor: colors.card
   },
   buttonContainer: {
     position: 'absolute',
@@ -190,7 +201,7 @@ const getStyles = (colors: any, insets: any) => StyleSheet.create({
     right: 0,
     bottom: 0,
     paddingHorizontal: MARGIN_HORIZONTAL,
-    paddingBottom: insets.bottom + MARGIN_VERTICAL,
+    paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
   },
   backButton: {
     marginBottom: MARGIN_VERTICAL / 2,

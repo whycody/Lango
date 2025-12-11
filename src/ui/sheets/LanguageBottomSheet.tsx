@@ -41,7 +41,7 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
       <BottomSheetScrollView>
         <LanguagePicker
           languageType={languageType}
-          onLanguagePicked={handleLanguagePicked}
+          onLanguagePick={handleLanguagePicked}
           style={styles.languagePicker}
         />
         <ActionButton

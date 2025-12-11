@@ -1,6 +1,6 @@
 import { apiCall } from "./auth/apiHandler";
 import DeviceInfo from 'react-native-device-info';
-import { Evaluation, Session, Suggestion, SyncResult, User, Word } from "../types";
+import { Evaluation, LanguageCode, Session, Suggestion, SyncResult, User, Word } from "../types";
 
 const getDeviceId = async () => {
   try {
@@ -17,6 +17,19 @@ export const getUserInfo: () => Promise<User | null> = async () => {
     url: '/users/users',
     data: {}
   });
+}
+
+export const updateUserLanguages = async (mainLang: LanguageCode, translationLang: LanguageCode) => {
+  try {
+    return await apiCall({
+      method: 'PUT',
+      url: '/users/languages',
+      data: { mainLang, translationLang },
+    });
+  } catch (e) {
+    console.error('PUT /users/languages', e);
+    return null;
+  }
 }
 
 export const signInWithGoogle = async (idToken: string) => {

@@ -1,10 +1,11 @@
 import { createContext, FC, ReactNode, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Language, LanguageCode } from "../types";
-import { MAIN_LANG, TRANSLATION_LANG, useAppInitializer } from "./AppInitializerContext";
+import { MAIN_LANG, TRANSLATION_LANG } from "./AppInitializerContext";
 import { useTypedMMKV } from "../hooks/useTypedMKKV";
 import { useUserStorage } from "./UserStorageContext";
 import { useMMKV } from "react-native-mmkv";
+import { useAuth } from "../api/auth/AuthProvider";
 
 interface LanguageContextProps {
   languages: Language[];
@@ -31,12 +32,12 @@ export const LanguageContext = createContext<LanguageContextProps>({
 export const APPLICATION_LANG = 'applicationLangCode';
 
 const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const { t, i18n } = useTranslation();
-  const { initialLoad } = useAppInitializer();
+  const { t } = useTranslation();
+  const { user } = useAuth();
   const { storage } = useUserStorage();
-  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, initialLoad.mainLang, storage);
-  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(TRANSLATION_LANG, initialLoad.translationLang, storage);
-  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, i18n.language as LanguageCode, useMMKV());
+  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, user.mainLang, storage);
+  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(TRANSLATION_LANG, user.mainLang, storage);
+  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, user.translationLang, useMMKV());
 
   const languages: Language[] = [
     { languageCode: LanguageCode.POLISH, languageName: t('polish'), languageInTargetLanguage: 'Polski' },

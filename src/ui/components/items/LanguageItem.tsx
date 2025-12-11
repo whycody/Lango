@@ -6,6 +6,7 @@ import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import SquareFlag from "../SquareFlag";
 import { Language } from "../../../types";
+import { LinearGradient } from "expo-linear-gradient";
 
 type LanguageItemProps = {
   index: number;
@@ -28,22 +29,26 @@ const LanguageItem: FC<LanguageItemProps> =
         android_ripple={{ color: colors.background }}
       >
         {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
-        <View style={[styles.container, checked && { backgroundColor: colors.background }]}>
-          <Ionicons name={'language-sharp'} color={colors.primary600} size={22}/>
-          <View style={styles.textContainer}>
-            <CustomText weight={'SemiBold'} style={styles.text}>{language.languageName}</CustomText>
-            <CustomText style={styles.translation}>{language.languageInTargetLanguage}</CustomText>
+        <LinearGradient
+          colors={['transparent', checked ? colors.cardAccent600 : 'transparent']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.container}>
+            <Ionicons name={'language-sharp'} color={colors.primary600} size={22}/>
+            <View style={styles.textContainer}>
+              <CustomText weight={'SemiBold'} style={styles.text}>{language.languageName}</CustomText>
+              <CustomText style={styles.translation}>{language.languageInTargetLanguage}</CustomText>
+            </View>
+            <SquareFlag languageCode={language.languageCode}/>
           </View>
-          <SquareFlag languageCode={language.languageCode}/>
-        </View>
+        </LinearGradient>
       </Pressable>
     );
   }
 
 const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    backgroundColor: colors.card,
-  },
+  root: {},
   container: {
     paddingVertical: 15,
     paddingHorizontal: MARGIN_HORIZONTAL,

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, FC } from "react";
 import { View, StyleSheet, Animated, Easing, Text } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useAuth } from "../../api/auth/AuthProvider";
@@ -7,7 +7,11 @@ import LottieView from "lottie-react-native";
 import { MARGIN_HORIZONTAL, } from "../../constants/margins";
 import { useTranslation } from "react-i18next";
 
-const WelcomeScreen = () => {
+interface WelcomeScreenProps {
+  onAnimationEnd?: () => void;
+}
+
+const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
   const { colors } = useTheme();
   const { user } = useAuth();
   const styles = getStyles(colors);
@@ -39,6 +43,7 @@ const WelcomeScreen = () => {
           setDisplayedText(fullText.substring(0, currentIndex));
           currentIndex++;
         } else {
+          onAnimationEnd?.();
           setDisplayedText((text) => text + '\uD83C\uDF89')
           clearInterval(typeInterval);
           showConfetti();

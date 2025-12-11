@@ -12,11 +12,11 @@ import LanguageItem from "./items/LanguageItem";
 
 interface LanguagePickerProps {
   languageType?: LanguageTypes;
-  onLanguagePicked?: (langCode: LanguageCode) => void;
+  onLanguagePick?: () => void;
   style?: ViewStyle;
 }
 
-const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, style }: LanguagePickerProps) => {
+const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, style }: LanguagePickerProps) => {
   const styles = getStyles();
   const { t } = useTranslation();
   const {
@@ -48,7 +48,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, s
     if (shouldSwap) {
       swapLanguages();
       triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-      onLanguagePicked?.(language.languageCode);
+      onLanguagePick?.();
       return;
     }
 
@@ -61,8 +61,8 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePicked, s
     setters[languageType](language.languageCode);
 
     triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-    onLanguagePicked?.(language.languageCode);
-  }, [languageType, translationLang, mainLang, swapLanguages, setMainLang, setTranslationLang, setApplicationLang, triggerHaptics, onLanguagePicked]);
+    onLanguagePick?.();
+  }, [languageType, translationLang, mainLang, swapLanguages, setMainLang, setTranslationLang, setApplicationLang, triggerHaptics, onLanguagePick]);
 
   const renderLanguageItem = useCallback(({ item, index }: { item: Language, index: number }) =>
     <LanguageItem

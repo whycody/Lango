@@ -7,10 +7,7 @@ import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository
 import { runMigrations } from "../database/migrations/migrations";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
-import { determineLanguages } from "../database/utils/determineLanguages";
-import { InitialLoad, LanguageCode } from "../types";
-import { useTypedMMKV } from "../hooks/useTypedMKKV";
-import { useUserStorage } from "./UserStorageContext";
+import { InitialLoad } from "../types";
 
 interface AppInitializerContextProps {
   initialLoad: InitialLoad | null;
@@ -39,9 +36,6 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
     createTables: createWordsHeuristicStatesTables,
     getAllWordsStates: getAllWordsHeuristicStates
   } = useWordsHeuristicStatesRepository();
-  const { storage } = useUserStorage();
-  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode | ''>(MAIN_LANG, '', storage);
-  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode | ''>(TRANSLATION_LANG, '', storage);
 
   const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,45 +62,13 @@ const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
           getAllWordsHeuristicStates(),
         ]);
 
-        let [currentMainLang, currentTranslationLang] = [mainLang, translationLang]
-
-        if ((!mainLang || !translationLang) && !!words && !!evaluations) {
-          const earliestEvaluation = evaluations.reduce((earliest, current) => {
-            const earliestDate = new Date(earliest.date);
-            const currentDate = new Date(current.date);
-            return currentDate > earliestDate ? current : earliest;
-          }, evaluations[0]);
-
-          if (earliestEvaluation) {
-            const word = words.find(w => w.id === earliestEvaluation.wordId);
-
-            if (word) {
-              currentMainLang = word.mainLang as LanguageCode;
-              currentTranslationLang = word.translationLang as LanguageCode;
-              setMainLang(word.mainLang as LanguageCode);
-              setTranslationLang(word.translationLang as LanguageCode);
-            }
-          }
-        }
-
-        if (!currentMainLang || !currentTranslationLang) {
-          const determined = await determineLanguages(user);
-          currentMainLang = determined.mainLang;
-          currentTranslationLang = determined.translationLang;
-
-          setMainLang(currentMainLang);
-          setTranslationLang(currentTranslationLang);
-        }
-
         setInitialLoad({
           sessions,
           words,
           evaluations,
           suggestions,
           wordsMLStates,
-          wordsHeuristicStates,
-          mainLang: mainLang as LanguageCode,
-          translationLang: translationLang as LanguageCode
+          wordsHeuristicStates
         });
       } catch
         (e) {

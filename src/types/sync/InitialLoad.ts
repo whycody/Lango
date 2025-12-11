@@ -14,6 +14,4 @@ export type InitialLoad = {
   suggestions: Suggestion[];
   wordsMLStates: WordMLState[];
   wordsHeuristicStates: WordHeuristicState[];
-  mainLang: LanguageCode;
-  translationLang: LanguageCode;
 };

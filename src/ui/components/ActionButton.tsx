@@ -1,5 +1,5 @@
 import React, { FC, useRef } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Animated, Easing } from "react-native";
+import { ActivityIndicator, Animated, Easing, Pressable, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";

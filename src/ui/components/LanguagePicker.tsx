@@ -11,12 +11,13 @@ import Header from "./Header";
 import LanguageItem from "./items/LanguageItem";
 
 interface LanguagePickerProps {
+  allLanguages?: boolean;
   languageType?: LanguageTypes;
   onLanguagePick?: () => void;
   style?: ViewStyle;
 }
 
-const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, style }: LanguagePickerProps) => {
+const LanguagePicker = ({ allLanguages, languageType = LanguageTypes.MAIN, onLanguagePick, style }: LanguagePickerProps) => {
   const styles = getStyles();
   const { t } = useTranslation();
   const {
@@ -37,7 +38,8 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, sty
   const langTypeDesc = languageType === LanguageTypes.MAIN ? 'main' :
     languageType === LanguageTypes.TRANSLATION ? 'translation' : 'application';
 
-  const languagesData = languageType !== LanguageTypes.APPLICATION ? languages :
+  const languagesData = languageType !== LanguageTypes.APPLICATION ? languages.filter((lang) => allLanguages ||
+      lang.languageCode !== (languageType === LanguageTypes.MAIN ? translationLang : mainLang)) :
     languages.filter(lang => [LanguageCode.POLISH, LanguageCode.ENGLISH].includes(lang.languageCode));
 
   const handleLanguagePick = useCallback((language: Language) => {
@@ -90,7 +92,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, sty
 
 const getStyles = () => StyleSheet.create({
   header: {
-    paddingVertical: MARGIN_VERTICAL,
+    paddingVertical: MARGIN_VERTICAL / 2,
     paddingHorizontal: MARGIN_HORIZONTAL,
   },
 });

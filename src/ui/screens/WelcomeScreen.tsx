@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, FC } from "react";
-import { View, StyleSheet, Animated, Easing, Text } from "react-native";
+import React, { FC, useEffect, useRef, useState } from "react";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useAuth } from "../../api/auth/AuthProvider";
 import CustomText from "../components/CustomText";
@@ -122,7 +122,8 @@ const getStyles = (colors: any) => StyleSheet.create({
   root: {
     paddingBottom: 20,
     justifyContent: 'center',
-    height: '100%'
+    height: '100%',
+    backgroundColor: colors.background,
   },
   title: {
     color: colors.primary300,

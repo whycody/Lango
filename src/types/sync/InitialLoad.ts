@@ -5,8 +5,6 @@ import { Suggestion } from "../core/Suggestion";
 import { WordMLState } from "../states/WordMLState";
 import { WordHeuristicState } from "../states/WordHeuristicState";
 
-import { LanguageCode } from "../../constants/LanguageCode";
-
 export type InitialLoad = {
   sessions: Session[];
   words: Word[];

@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, Platform } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { FullWindowOverlay } from "react-native-screens";
 import LanguagePicker from "../components/LanguagePicker";
 import { LanguageTypes } from "../../constants/LanguageTypes";
@@ -11,12 +11,13 @@ import { useTranslation } from "react-i18next";
 
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
+  allLanguages?: boolean;
   languageType?: LanguageTypes
 }
 
 const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
-  const { onChangeIndex, languageType = LanguageTypes.MAIN } = props;
+  const { onChangeIndex, allLanguages, languageType = LanguageTypes.MAIN } = props;
   const { t } = useTranslation();
 
   const renderBackdrop = useCallback((props: any) =>
@@ -40,6 +41,7 @@ const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProp
     >
       <BottomSheetScrollView>
         <LanguagePicker
+          allLanguages={allLanguages}
           languageType={languageType}
           onLanguagePick={handleLanguagePicked}
           style={styles.languagePicker}
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
     marginBottom: MARGIN_VERTICAL
   },
   button: {
-    marginTop: MARGIN_VERTICAL,
+    marginVertical: MARGIN_VERTICAL,
     marginHorizontal: MARGIN_HORIZONTAL,
   }
 })

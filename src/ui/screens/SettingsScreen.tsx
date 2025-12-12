@@ -216,6 +216,7 @@ const SettingsScreen = () => {
     <>
       <LanguageBottomSheet
         ref={languageBottomSheetRef}
+        allLanguages={true}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
         languageType={pickedLanguageType}
       />

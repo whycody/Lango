@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
     marginBottom: MARGIN_VERTICAL
   },
   button: {
-    marginVertical: MARGIN_VERTICAL,
+    marginBottom: MARGIN_VERTICAL,
+    marginTop: MARGIN_VERTICAL / 2,
     marginHorizontal: MARGIN_HORIZONTAL,
   }
 })

@@ -16,7 +16,7 @@ import { LibraryItems } from "../../constants/LibraryItems";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
-  const words = useWords();
+  const { langWords } = useWords();
   const navigation = useNavigation<LibraryNavProp>();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
@@ -39,6 +39,18 @@ const LibraryScreen = () => {
 
   const currentLang = langContext.languages.filter(lang => lang.languageCode === langContext.mainLang)[0].languageName;
 
+  const getMyWordsDesc = () => {
+    const langWordsCount = langWords.filter((w) => !w.removed).length;
+    switch (langWordsCount) {
+      case 0:
+        return t('words_desc_empty');
+      case 1:
+        return t('words_desc_s');
+      default:
+        return t('words_desc', { words_number: `${langWordsCount}` });
+    }
+  }
+
   const libraryItems = [
     {
       id: LibraryItems.SETTINGS,
@@ -55,12 +67,13 @@ const LibraryScreen = () => {
     {
       id: LibraryItems.MY_WORDS,
       label: t('myWords'),
-      description: t('words_desc', { words_number: words.words.filter((word: Word) => !word.removed).length.toString() }),
+      description: getMyWordsDesc(),
       icon: 'albums-sharp'
     },
     {
       id: LibraryItems.LOGOUT,
       label: t('logout'),
+      description: t('logout_desc'),
       icon: 'log-out-sharp'
     },
     {

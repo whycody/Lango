@@ -9,9 +9,9 @@ import { useAuth } from "../api/auth/AuthProvider";
 
 interface LanguageContextProps {
   languages: Language[];
-  mainLang: LanguageCode | '';
-  translationLang: LanguageCode | '';
-  applicationLang: LanguageCode | '';
+  mainLang: LanguageCode;
+  translationLang: LanguageCode;
+  applicationLang: LanguageCode;
   setMainLang: (langCode: LanguageCode) => void;
   setTranslationLang: (langCode: LanguageCode) => void;
   setApplicationLang: (langCode: LanguageCode) => void;
@@ -35,9 +35,11 @@ const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { storage } = useUserStorage();
-  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode | ''>(MAIN_LANG, user.mainLang ?? '', storage);
-  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode | ''>(TRANSLATION_LANG, user.translationLang ?? '', storage);
-  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode | ''>(APPLICATION_LANG, i18n.language as LanguageCode, useMMKV());
+  const userMainLang = user.mainLang ?? '' as LanguageCode;
+  const userTranslationLang = user.translationLang ?? '' as LanguageCode;
+  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, userMainLang, storage);
+  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(TRANSLATION_LANG, userTranslationLang, storage);
+  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, i18n.language as LanguageCode, useMMKV());
 
   const languages: Language[] = [
     { languageCode: LanguageCode.POLISH, languageName: t('polish'), languageInTargetLanguage: 'Polski' },

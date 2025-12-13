@@ -127,6 +127,6 @@
   "notifications_disabled_message": "Aby włączyć powiadomienia, musisz zmienić ustawienia aplikacji w systemie.",
   "notifications_open_settings": "Otwórz ustawienia",
   "back": "Wróć",
-  "welcome_onboarding": "{{name}},\n witaj w Lango! ",
-  "welcome_onboarding_desc": "Niezwykle się cieszymy, że do dołączyłeś do naszej społeczności! Odpowiedz na kilka pytań, abyśmy mogli dostosować aplikację do Twoich potrzeb."
+  "welcome_onboarding": " {{name}}, \n witaj w Lango!",
+  "welcome_onboarding_desc": "Bardzo się cieszymy, że do dołączyłeś do naszej społeczności! Odpowiedz na kilka pytań, abyśmy mogli lepiej dostosować aplikację do Twoich potrzeb."
 }

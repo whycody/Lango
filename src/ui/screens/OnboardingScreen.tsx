@@ -133,16 +133,23 @@ const OnboardingScreen = () => {
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
       >
-        <OnboardingScreenContainer currentStep={currentStep}>
-          <WelcomeScreen onAnimationEnd={() => setWelcomeScreenIsReady(true)}/>
-        </OnboardingScreenContainer>
+        <LinearGradient
+          colors={[colors.background, colors.card]}
+          start={{ x: 0.5, y: 0.5 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1 }}
+        >
+          <OnboardingScreenContainer currentStep={currentStep}>
+            <WelcomeScreen onAnimationEnd={() => setWelcomeScreenIsReady(true)}/>
+          </OnboardingScreenContainer>
+        </LinearGradient>
 
         {languages.map((type, index) => (
           <LinearGradient
             key={type}
             colors={[colors.background, colors.card]}
-            start={{ x: index, y: index }}
-            end={{ x: 1 - index, y: 1 - index }}
+            start={{ x: 1 - index, y: 1 - index }}
+            end={{ x: index, y: index }}
           >
             <OnboardingScreenContainer currentStep={currentStep}>
               <LanguagePicker

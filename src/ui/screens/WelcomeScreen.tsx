@@ -6,6 +6,8 @@ import CustomText from "../components/CustomText";
 import LottieView from "lottie-react-native";
 import { MARGIN_HORIZONTAL, } from "../../constants/margins";
 import { useTranslation } from "react-i18next";
+import { useHaptics } from "../../hooks/useHaptics";
+import { ImpactFeedbackStyle } from "expo-haptics";
 
 interface WelcomeScreenProps {
   onAnimationEnd?: () => void;
@@ -24,6 +26,7 @@ const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
   const titleMarginAnim = useRef(new Animated.Value(0)).current;
   const confettiRef = useRef<LottieView>();
 
+  const nameLength = user.name ? user.name.split(' ')[0].length : 0;
   const fullText = t('welcome_onboarding', { name: user.name.split(' ')[0] });
 
   const showConfetti = () => {
@@ -31,6 +34,8 @@ const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
       confettiRef.current?.play(0);
     }, 300);
   }
+
+  const haptics = useHaptics();
 
   useEffect(() => {
     setDisplayedText('');
@@ -41,14 +46,15 @@ const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
       typeInterval = setInterval(() => {
         if (currentIndex <= fullText.length) {
           setDisplayedText(fullText.substring(0, currentIndex));
+          haptics.triggerHaptics(ImpactFeedbackStyle.Light);
           currentIndex++;
         } else {
           onAnimationEnd?.();
-          setDisplayedText((text) => text + '\uD83C\uDF89')
+          setDisplayedText((text) => text + ' \uD83C\uDF89')
           clearInterval(typeInterval);
           showConfetti();
         }
-      }, 110);
+      }, 130);
     };
 
     const delayTimeout = setTimeout(startTyping, 500);
@@ -73,28 +79,34 @@ const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
       subtitleFadeAnim.setValue(0);
       subtitleSlideAnim.setValue(20);
 
-      Animated.parallel([
-        Animated.timing(subtitleFadeAnim, {
-          toValue: 1,
-          duration: animationDuration,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(subtitleSlideAnim, {
-          toValue: 0,
-          duration: animationDuration,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        })
+      Animated.sequence([
+        Animated.delay(500),
+        Animated.parallel([
+          Animated.timing(subtitleFadeAnim, {
+            toValue: 1,
+            duration: animationDuration,
+            easing: Easing.out(Easing.quad),
+            useNativeDriver: true,
+          }),
+          Animated.timing(subtitleSlideAnim, {
+            toValue: 0,
+            duration: animationDuration,
+            easing: Easing.out(Easing.quad),
+            useNativeDriver: true,
+          })
+        ])
       ]).start();
     }
   }, [displayedText.length, fullText.length, subtitleFadeAnim, subtitleSlideAnim]);
 
   return (
     <View style={styles.root}>
-      <Text style={[styles.title, { marginBottom: titleMarginAnim }]}>
-        {displayedText}
-        <Text style={!showCursor && { color: 'transparent' }}>|</Text>
+      <Text style={[styles.title, { marginBottom: titleMarginAnim, }]}>
+        <Text style={styles.name}>{displayedText.slice(0, nameLength + 1)}</Text>
+        <Text style={styles.text}>
+          {displayedText.slice(nameLength + 1)}
+          <Text style={!showCursor && { color: 'transparent' }}>|</Text>
+        </Text>
       </Text>
       <Animated.View style={[{
         opacity: subtitleFadeAnim,
@@ -123,14 +135,20 @@ const getStyles = (colors: any) => StyleSheet.create({
     paddingBottom: 20,
     justifyContent: 'center',
     height: '100%',
-    backgroundColor: colors.background,
   },
   title: {
     color: colors.primary300,
-    fontSize: 24,
+    fontSize: 26,
     fontFamily: 'Montserrat-Bold',
     textAlign: 'center',
     marginBottom: 40,
+  },
+  name: {
+    fontFamily: 'Montserrat-Black',
+    backgroundColor: colors.card
+  },
+  text: {
+    backgroundColor: colors.card
   },
   subtitle: {
     color: colors.primary600,

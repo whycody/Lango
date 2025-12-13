@@ -7,7 +7,7 @@ import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useWords } from "../../store/WordsContext";
-import { LibraryNavProp, Word } from "../../types";
+import { LibraryNavProp } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";

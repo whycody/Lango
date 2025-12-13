@@ -35,13 +35,13 @@ const HomeScreen = () => {
   const tryToRefreshData = async () => {
     try {
       setRefreshing(true);
+      await checkUpdates();
       await words.syncWords();
       await Promise.all([
         sessions.syncSessions(),
         suggestions.syncSuggestions(),
         evaluations.syncEvaluations(),
       ]);
-      await checkUpdates();
     } finally {
       await auth.getSession();
       setRefreshing(false);

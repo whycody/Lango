@@ -48,7 +48,7 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [evaluations]);
 
   useEffect(() => {
-    if (!words?.length || !evaluations?.length || !initialized) return;
+    if (!words?.length || !initialized) return;
     const wordsToSync = getWordsToSync(words, wordsMLStatesRef.current || [], evalsByWordId);
     syncWordsBatch(wordsToSync, evalsByWordId);
   }, [words, evaluations, initialized, evalsByWordId]);

@@ -7,8 +7,6 @@ import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useWords } from "../../store/WordsContext";
-import { exportData } from "../../utils/saveData";
-import { useEvaluations } from "../../store/EvaluationsContext";
 import { LibraryNavProp, Word } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 import { useAuth } from "../../api/auth/AuthProvider";
@@ -19,7 +17,6 @@ import { LibraryItems } from "../../constants/LibraryItems";
 const LibraryScreen = () => {
   const { t } = useTranslation();
   const words = useWords();
-  const { evaluations } = useEvaluations();
   const navigation = useNavigation<LibraryNavProp>();
   const langContext = useLanguage();
   const languageBottomSheetRef = useRef<BottomSheetModal>()
@@ -62,12 +59,6 @@ const LibraryScreen = () => {
       icon: 'albums-sharp'
     },
     {
-      id: LibraryItems.EXPORT,
-      label: t('export'),
-      description: t('export_desc', { records_number: evaluations.length.toString() }),
-      icon: 'share-sharp'
-    },
-    {
       id: LibraryItems.LOGOUT,
       label: t('logout'),
       icon: 'log-out-sharp'
@@ -86,9 +77,6 @@ const LibraryScreen = () => {
     switch (id) {
       case LibraryItems.MY_WORDS:
         navigation.navigate('Flashcards');
-        break;
-      case LibraryItems.EXPORT:
-        exportData();
         break;
       case LibraryItems.LANGUAGE:
         languageBottomSheetRef.current?.present();

@@ -23,7 +23,7 @@ const CustomText: FC<CustomTextProps> = ({ weight = 'Regular', style, children, 
     return content.split(/(\*[^*]+\*)/g).map((part, index) => {
       if (part.startsWith('*') && part.endsWith('*')) {
         return (
-          <Text key={index} style={[styles.text, styles.bold]}>
+          <Text key={index} style={[styles.text, style, styles.bold]}>
             {part.slice(1, -1)}
           </Text>
         );

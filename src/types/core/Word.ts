@@ -1,5 +1,6 @@
 import { SyncMetadata } from "../sync/SyncMetadata";
 import { LanguageCode } from "../../constants/LanguageCode";
+import { WordSource } from "../../store/WordsContext";
 
 export type Word = SyncMetadata & {
   id: string;
@@ -7,7 +8,7 @@ export type Word = SyncMetadata & {
   translation: string;
   mainLang: LanguageCode;
   translationLang: LanguageCode;
-  source: string;
+  source: WordSource;
   addDate: string;
   active: boolean;
   removed: boolean;

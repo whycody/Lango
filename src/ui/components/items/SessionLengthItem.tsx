@@ -5,9 +5,10 @@ import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { MARGIN_VERTICAL } from "../../../constants/margins";
 import { LinearGradient } from "expo-linear-gradient";
+import { SessionLength } from "../../../store/UserPreferencesContext";
 
 interface SessionLengthItemProps {
-  length: 1 | 2 | 3;
+  length: SessionLength;
   selected: boolean;
   onPress?: () => void,
   style?: any;
@@ -38,7 +39,7 @@ const SessionLengthItem: FC<SessionLengthItemProps> = ({ length, selected, onPre
           <View style={styles.square}/>
         </View>
         <CustomText weight={"Bold"} style={styles.title}>
-          {t(length === 1 ? 'shortSession' : length === 2 ? 'mediumSession' : 'longSession')}
+          {t(length === SessionLength.SHORT ? 'shortSession' : length === SessionLength.MEDIUM ? 'mediumSession' : 'longSession')}
         </CustomText>
         <CustomText style={styles.subtitle}>
           {(length * 10 + ` ${t('repetitions')}`).toUpperCase()}

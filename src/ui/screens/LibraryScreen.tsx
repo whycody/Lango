@@ -13,6 +13,7 @@ import { useAuth } from "../../api/auth/AuthProvider";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LibraryItems } from "../../constants/LibraryItems";
+import { ScreenName } from "../../navigation/AppStack";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -89,7 +90,7 @@ const LibraryScreen = () => {
   const handlePress = (id: number) => {
     switch (id) {
       case LibraryItems.MY_WORDS:
-        navigation.navigate('Flashcards');
+        navigation.navigate(ScreenName.Flashcards);
         break;
       case LibraryItems.LANGUAGE:
         languageBottomSheetRef.current?.present();
@@ -104,7 +105,7 @@ const LibraryScreen = () => {
         Linking.openURL(`${process.env['SITE_URL']}/terms_of_service`);
         break;
       case LibraryItems.SETTINGS:
-        navigation.navigate('Settings');
+        navigation.navigate(ScreenName.Settings);
         break;
       default:
         break;

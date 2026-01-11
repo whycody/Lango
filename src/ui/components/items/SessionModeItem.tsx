@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { FLASHCARD_SIDE } from "../../../store/UserPreferencesContext";
-import { SESSION_MODE } from "../../../types";
+import { FlashcardSide } from "../../../store/UserPreferencesContext";
+import { SessionMode } from "../../../types";
 
 interface SessionModeItemProps {
-  mode: SESSION_MODE | FLASHCARD_SIDE,
+  mode: SessionMode | FlashcardSide,
   selected: boolean;
   onPress?: () => void,
   style?: any;
@@ -22,19 +22,19 @@ const SessionModeItem: FC<SessionModeItemProps> = ({ mode, selected, onPress, st
 
   let iconName = '';
   switch (mode) {
-    case SESSION_MODE.STUDY:
+    case SessionMode.STUDY:
       iconName = 'school-outline';
       break;
-    case SESSION_MODE.RANDOM:
+    case SessionMode.RANDOM:
       iconName = 'dice-outline';
       break;
-    case SESSION_MODE.OLDEST:
+    case SessionMode.OLDEST:
       iconName = 'time-outline';
       break;
-    case FLASHCARD_SIDE.WORD:
+    case FlashcardSide.WORD:
       iconName = 'chatbubbles-outline';
       break;
-    case FLASHCARD_SIDE.TRANSLATION:
+    case FlashcardSide.TRANSLATION:
       iconName = 'language-outline';
       break;
   }

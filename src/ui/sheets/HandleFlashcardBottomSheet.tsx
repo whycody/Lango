@@ -1,12 +1,12 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { Keyboard, Platform, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { USER, useWords } from "../../store/WordsContext";
+import { useWords, WordSource } from "../../store/WordsContext";
 import WordInput from "../components/WordInput";
 import Alert from "../components/Alert";
 import Header from "../components/Header";
@@ -96,7 +96,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     if (!validateInputs()) return;
     const word = wordInputRef.current?.getWord().trim();
     const translation = translationInputRef.current?.getWord().trim();
-    wordsContext.addWord(word, translation, USER);
+    wordsContext.addWord(word, translation, WordSource.USER);
     setStatusMessage(t('addNewWord', { word: word }));
     if (!multiple) {
       scheduleDismiss();
@@ -165,7 +165,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
       keyboardBlurBehavior={'restore'}
       onDismiss={handleSheetDismiss}
     >
-      <BottomSheetView style={styles.root}>
+      <BottomSheetScrollView style={styles.root} keyboardShouldPersistTaps="always">
         <Header
           title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
           subtitle={t('wordAndTranslation')}
@@ -185,6 +185,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           onWordChange={setCurrentWord}
           languageCode={languageContext.mainLang}
           style={{ marginTop: 15 }}
+          pointerEvents="box-only"
         />
         <WordInput
           ref={translationInputRef}
@@ -193,6 +194,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           onWordCommit={setTranslation}
           languageCode={languageContext.translationLang}
           style={{ marginTop: 15 }}
+          pointerEvents="box-only"
         />
         <ActionButton
           onPress={() => props.flashcardId ? editFlashcard() : addFlashcard(false)}
@@ -212,7 +214,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           >
             {t('addAnother')}
           </CustomText>}
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheetModal>
   );
 });

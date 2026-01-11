@@ -5,9 +5,10 @@ import CustomText from "../CustomText";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { useTranslation } from "react-i18next";
+import { SessionLength } from "../../../store/UserPreferencesContext";
 
 type SessionHeaderProps = {
-  length: 1 | 2 | 3;
+  length: SessionLength;
   cardsSetLength: number;
   progress: number;
   onSessionExit: () => void;

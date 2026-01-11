@@ -25,6 +25,13 @@ export type RootStackParamList = {
   Flashcards: undefined;
 };
 
+export enum ScreenName {
+  Tabs = 'Tabs',
+  Settings = 'Settings',
+  Session = 'Session',
+  Flashcards = 'Flashcards',
+}
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppStack = () => {
@@ -51,7 +58,7 @@ const AppStack = () => {
                                 statusBarTranslucent: true,
                               }}>
                               <Stack.Screen
-                                name='Tabs'
+                                name={ScreenName.Tabs}
                                 component={TabsNavigator}
                               />
                               <Stack.Group screenOptions={{
@@ -59,19 +66,19 @@ const AppStack = () => {
                                 animationDuration: 100,
                               }}>
                                 <Stack.Screen
-                                  name='Settings'
+                                  name={ScreenName.Settings}
                                   component={SettingsScreen}
                                 />
                               </Stack.Group>
                               <Stack.Screen
-                                name='Session'
+                                name={ScreenName.Session}
                                 component={SessionScreen}
                               />
                               <Stack.Group screenOptions={{
                                 presentation: "modal",
                                 animationDuration: 100,
                               }}>
-                                <Stack.Screen name='Flashcards' component={FlashcardsScreen}/>
+                                <Stack.Screen name={ScreenName.Flashcards} component={FlashcardsScreen}/>
                               </Stack.Group>
                             </Stack.Navigator>
                           </BottomSheetModalProvider>

@@ -1,4 +1,4 @@
-import { SESSION_MODEL, WordSet, WordSetStrategy } from "../../types";
+import { SessionModel, WordSet, WordSetStrategy } from "../../types";
 
 export const oldestStrategy: WordSetStrategy = (size, words, evaluations): WordSet => {
   const active = words.filter(w => w.active);
@@ -16,5 +16,5 @@ export const oldestStrategy: WordSetStrategy = (size, words, evaluations): WordS
     return aDate - bDate;
   });
 
-  return { words: sorted.slice(0, size), model: SESSION_MODEL.NONE };
+  return { words: sorted.slice(0, size), model: SessionModel.NONE };
 };

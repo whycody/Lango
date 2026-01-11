@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import { useNavigation, useRoute, useTheme } from '@react-navigation/native';
+import { useRoute, useTheme } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import CustomText from '../components/CustomText';
@@ -17,23 +17,24 @@ import SessionHeader from "../components/session/SessionHeader";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
-import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
+import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useSessions } from "../../store/SessionsContext";
 import { useEvaluations } from "../../store/EvaluationsContext";
-import { SESSION_MODE } from "../../types";
+import { EvaluationGrade, SessionMode } from "../../types";
 import { useWordSet } from "../../hooks/useWordSet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SessionSettingsBottomSheet from "../sheets/SessionSettingsBottomSheet";
 import { WordUpdate } from "../../types/utils/WordUpdate";
 import { useHaptics } from "../../hooks/useHaptics";
+import { ScreenName } from "../../navigation/AppStack";
 
 export type SessionScreenParams = {
-  length: 1 | 2 | 3;
-  mode: SESSION_MODE;
-  flashcardSide: FLASHCARD_SIDE
+  length: SessionLength;
+  mode: SessionMode;
+  flashcardSide: FlashcardSide
 };
 
-const SessionScreen = () => {
+const SessionScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
@@ -42,8 +43,8 @@ const SessionScreen = () => {
   const route = useRoute();
   const params = route.params as SessionScreenParams;
   const length = params?.length || 1;
-  const mode = params?.mode || SESSION_MODE.STUDY;
-  const flashcardSide = params?.flashcardSide || FLASHCARD_SIDE.WORD;
+  const mode = params?.mode || SessionMode.STUDY;
+  const flashcardSide = params?.flashcardSide || FlashcardSide.WORD;
   const sessionsContext = useSessions();
   const evaluationsContext = useEvaluations();
 
@@ -70,9 +71,8 @@ const SessionScreen = () => {
 
   const userPreferences = useUserPreferences();
   const { triggerHaptics } = useHaptics();
-  const [flipped, setFlipped] = useState(flashcardSide === FLASHCARD_SIDE.TRANSLATION);
+  const [flipped, setFlipped] = useState(flashcardSide === FlashcardSide.TRANSLATION);
 
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const isInitial = useRef(true)
 
@@ -82,7 +82,7 @@ const SessionScreen = () => {
       return
     }
 
-    setFlipped(userPreferences.flashcardSide === FLASHCARD_SIDE.TRANSLATION);
+    setFlipped(userPreferences.flashcardSide === FlashcardSide.TRANSLATION);
   }, [userPreferences.flashcardSide]);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ const SessionScreen = () => {
     }
   }, [flipped, currentIndex, flippedCards, userPreferences.sessionSpeechSynthesizer]);
 
-  const handleLevelPress = (level: 1 | 2 | 3) => {
+  const handleLevelPress = (level: EvaluationGrade) => {
     const now = Date.now();
     if (now - lastPressTime < 300) return;
     setLastPressTime(now);
@@ -216,7 +216,7 @@ const SessionScreen = () => {
   const endSession = () => {
     if (wordsUpdates.length !== cards.length) return;
     finishSessionBottomSheetRef.current?.dismiss();
-    navigation.navigate('Tabs' as never);
+    navigation.navigate(ScreenName.Tabs);
   }
 
   const startNewSession = () => {
@@ -233,7 +233,7 @@ const SessionScreen = () => {
 
   const handleSessionExit = () => {
     saveProgress(false);
-    navigation.navigate('Tabs' as never);
+    navigation.navigate(ScreenName.Tabs);
   }
 
   const saveProgress = (finished: boolean) => {

@@ -13,11 +13,13 @@ import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { checkUpdates } from "../../utils/checkUpdates";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import EnableNotificationsBottomSheet from "../sheets/EnableNotificationsBottomSheet";
-import { useUserPreferences } from "../../store/UserPreferencesContext";
+import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
 import * as Notifications from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
+import { ScreenName } from "../../navigation/AppStack";
+import { SessionMode } from "../../types";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const auth = useAuth();
   const words = useWords();
   const sessions = useSessions();
@@ -75,6 +77,10 @@ const HomeScreen = () => {
     tryToRefreshData();
   }, [words, sessions, suggestions, evaluations, auth]);
 
+  const navigateToSessionScreen = (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {
+    navigation.navigate(ScreenName.Session, { length: length, mode: mode, flashcardSide: flashcardSide });
+  }
+
   return (
     <>
       <EnableNotificationsBottomSheet
@@ -94,7 +100,7 @@ const HomeScreen = () => {
         }
       >
         <View style={{ height: insets.top }}/>
-        <HeaderCard/>
+        <HeaderCard navigateToSessionScreen={navigateToSessionScreen} />
         <WordsSuggestionsCard/>
         <StatisticsCard/>
       </ScrollView>

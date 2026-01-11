@@ -2,7 +2,7 @@ import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, use
 import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
 import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../api/apiClient";
 import uuid from 'react-native-uuid';
-import { Evaluation } from "../types";
+import { Evaluation, EvaluationGrade } from "../types";
 import {
   findChangedItems,
   findLatestUpdatedAt,
@@ -34,7 +34,7 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const syncing = useRef(false);
 
-  const createEvaluation = (wordId: string, sessionId: string, grade: 1 | 2 | 3): Evaluation => {
+  const createEvaluation = (wordId: string, sessionId: string, grade: EvaluationGrade): Evaluation => {
     const now = new Date().toISOString();
     return {
       id: uuid.v4(),
@@ -48,7 +48,7 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   };
 
-  const addEvaluations = (evaluationsData: { wordId: string, sessionId: string, grade: 1 | 2 | 3 }[]) => {
+  const addEvaluations = (evaluationsData: { wordId: string, sessionId: string, grade: EvaluationGrade }[]) => {
     const newEvaluations = evaluationsData.map(({ wordId, sessionId, grade }) =>
       createEvaluation(wordId, sessionId, grade)
     );

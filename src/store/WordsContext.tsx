@@ -25,8 +25,10 @@ interface WordsContextProps {
   syncWords: () => Promise<void>;
 }
 
-export const USER = 'user';
-export const LANGO = 'lango';
+export enum WordSource {
+  USER = 'user',
+  LANGO = 'lango',
+}
 
 const WordsContext = createContext<WordsContextProps>({
   words: [],
@@ -54,7 +56,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     translation,
     mainLang,
     translationLang,
-    source: source,
+    source,
     addDate: new Date().toISOString(),
     active: true,
     removed: false,

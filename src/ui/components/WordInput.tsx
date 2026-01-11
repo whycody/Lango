@@ -15,7 +15,14 @@ type WordInputProps = {
   style?: any;
 };
 
-const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordCommit, onWordChange, languageCode, suggestions, style }, ref) => {
+const WordInput: FC<WordInputProps> = forwardRef(({
+                                                    word,
+                                                    onWordCommit,
+                                                    onWordChange,
+                                                    languageCode,
+                                                    suggestions,
+                                                    style
+                                                  }, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const [focused, setFocused] = useState(false);
@@ -69,7 +76,9 @@ const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordCommit, onWordCh
           autoCapitalize={'none'}
           textContentType={'none'}
           autoCorrect={true}
+          multiline={true}
           value={internalWord}
+          scrollEnabled={true}
           onFocus={setFocused}
           onChangeText={handleTextChange}
           onBlur={handleBlur}
@@ -78,6 +87,7 @@ const WordInput: FC<WordInputProps> = forwardRef(({ word, onWordCommit, onWordCh
       {currentSuggestions.length > 0 && focused && (
         <FlatList
           data={currentSuggestions}
+          scrollEnabled={false}
           keyboardShouldPersistTaps={'always'}
           keyExtractor={(index) => index.toString()}
           renderItem={({ item }) => (
@@ -103,10 +113,11 @@ const getStyles = (colors: any) => StyleSheet.create({
     flex: 1,
     fontFamily: `Montserrat-Regular`,
     color: colors.primary300,
-    paddingLeft: MARGIN_HORIZONTAL,
+    paddingHorizontal: MARGIN_HORIZONTAL,
     backgroundColor: colors.background,
     fontSize: 16,
-    height: 42,
+    minHeight: 42,
+    lineHeight: 30,
   },
   suggestionsList: {
     marginTop: 10,

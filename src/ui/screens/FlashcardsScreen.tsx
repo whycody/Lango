@@ -3,7 +3,7 @@ import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import StatisticItem from "../components/items/StatisticItem";
-import { LANGO, useWords } from "../../store/WordsContext";
+import { useWords, WordSource } from "../../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
@@ -26,7 +26,7 @@ const FlashcardsScreen = () => {
   const wordsContext = useWords();
   const wordWithDetailsContext = useWordsWithDetails();
   const numberOfWords = wordsContext.langWords.filter((word) => !word.removed).length;
-  const langoWords = wordsContext.langWords.filter((word) => word.source == LANGO && !word.removed).length;
+  const langoWords = wordsContext.langWords.filter((word) => word.source == WordSource.LANGO && !word.removed).length;
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);

@@ -3,7 +3,7 @@ import { useEvaluations } from "./EvaluationsContext";
 import { useWords } from "./WordsContext";
 import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
 import { score } from "../utils/model";
-import { Evaluation, Word, WordMLState } from "../types";
+import { Evaluation, EvaluationGrade, Word, WordMLState } from "../types";
 import { useAppInitializer } from "./AppInitializerContext";
 
 interface WordsMLStatesContextProps {
@@ -116,7 +116,7 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
       ];
 
       const [p1, p2, p3] = score(input);
-      const predictedGrade = ([p1, p2, p3].indexOf(Math.max(p1, p2, p3)) + 1) as 1 | 2 | 3;
+      const predictedGrade = ([p1, p2, p3].indexOf(Math.max(p1, p2, p3)) + 1) as EvaluationGrade;
 
       const updated: WordMLState = {
         ...state,
@@ -245,7 +245,7 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         const [p1, p2, p3] = score(input);
         const maxIndex = [p1, p2, p3].indexOf(Math.max(p1, p2, p3));
-        const predictedGrade = (maxIndex + 1) as 1 | 2 | 3;
+        const predictedGrade = (maxIndex + 1) as EvaluationGrade;
 
         updatedStates.push({
           ...wordDetail,

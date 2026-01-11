@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import { MARGIN_HORIZONTAL } from "../../constants/margins";
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface CardProps {
@@ -24,11 +24,9 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
       end={{ x: 1, y: 1 }}
       style={styles.root}
     >
-      <View style={{ flex: 1.45 }}/>
-      <CustomText weight={"SemiBold"} style={styles.text}>
+      <CustomText weight={"SemiBold"} style={styles.text} adjustsFontSizeToFit>
         {text}
       </CustomText>
-      <View style={{ flex: 1 }}/>
       <View style={styles.cardIconsContainer}>
         <Ionicons
           name={'arrow-back-outline'}
@@ -58,8 +56,11 @@ const getStyles = (colors: any) => StyleSheet.create({
   text: {
     color: colors.primary,
     fontSize: 24,
+    flex: 1,
     textAlign: 'center',
-    paddingHorizontal: MARGIN_HORIZONTAL * 2
+    textAlignVertical: 'center',
+    marginHorizontal: MARGIN_HORIZONTAL * 2,
+    marginTop: MARGIN_VERTICAL * 2,
   },
   cardIconsContainer: {
     width: '100%',

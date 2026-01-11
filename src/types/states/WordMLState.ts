@@ -1,3 +1,5 @@
+import { EvaluationGrade } from "../core/Evaluation";
+
 export type WordMLState = {
   wordId: string;
   hoursSinceLastRepetition: number;
@@ -6,6 +8,6 @@ export type WordMLState = {
   gradesAverage: number;
   repetitionsCount: number;
   gradesTrend: number;
-  predictedGrade: 1 | 2 | 3;
+  predictedGrade: EvaluationGrade;
   gradeThreeProb: number;
 }

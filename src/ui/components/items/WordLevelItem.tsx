@@ -4,9 +4,10 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
+import { SessionLength } from "../../../store/UserPreferencesContext";
 
 interface SessionLengthItemProps {
-  level: 1 | 2 | 3;
+  level: SessionLength;
   active: boolean;
   onPress?: () => void,
   style?: any;
@@ -19,16 +20,16 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
 
   return (
     <Pressable
-      style={({pressed}) => [getStyles(colors, pressed, level).root, style]}
+      style={({ pressed }) => [getStyles(colors, pressed, level).root, style]}
       onPress={active ? onPress : undefined}
     >
       <View style={styles.rectanglesContainer}>
-        <View style={[styles.rectangle, { opacity: level > 2 ? 1 : 0.2 }]}/>
-        <View style={[styles.rectangle, { opacity: level > 1 ? 1 : 0.2 }]}/>
+        <View style={[styles.rectangle, { opacity: level > SessionLength.MEDIUM ? 1 : 0.2 }]}/>
+        <View style={[styles.rectangle, { opacity: level > SessionLength.SHORT ? 1 : 0.2 }]}/>
         <View style={[styles.rectangle, { opacity: 1, }]}/>
       </View>
       <CustomText weight={"Bold"} style={styles.title}>
-        {t(level === 1 ? 'poorly' : level === 2 ? 'moderately' : 'good')}
+        {t(level === SessionLength.SHORT ? 'poorly' : level === SessionLength.MEDIUM ? 'moderately' : 'good')}
       </CustomText>
     </Pressable>
   );
@@ -50,7 +51,7 @@ const getStyles = (colors: any, selected: boolean = false, level: number) => Sty
     width: 40,
     height: 13,
     marginTop: 2,
-    backgroundColor: level > 2 ? colors.green600 : level > 1 ? colors.yellow600 : colors.red600,
+    backgroundColor: level > SessionLength.MEDIUM ? colors.green600 : level > SessionLength.SHORT ? colors.yellow600 : colors.red600,
   },
   title: {
     fontSize: 11,

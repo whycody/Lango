@@ -10,12 +10,12 @@ import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
-import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
-import { SESSION_MODE } from "../../types";
+import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
+import { SessionMode } from "../../types";
 import { useHaptics } from "../../hooks/useHaptics";
 
 interface StartSessionBottomSheetProps {
-  onSessionStart: (length: 1 | 2 | 3, mode: SESSION_MODE, flashcardSide: FLASHCARD_SIDE) => void,
+  onSessionStart: (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => void,
   onChangeIndex?: (index: number) => void;
 }
 
@@ -23,9 +23,9 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const userPreferences = useUserPreferences();
-  const [flashcardSide, setFlashcardSide] = useState<FLASHCARD_SIDE>(userPreferences.flashcardSide);
-  const [sessionMode, setSessionMode] = useState<SESSION_MODE>(userPreferences.sessionMode);
-  const [sessionLength, setSessionLength] = useState<1 | 2 | 3>(userPreferences.sessionLength);
+  const [flashcardSide, setFlashcardSide] = useState<FlashcardSide>(userPreferences.flashcardSide);
+  const [sessionMode, setSessionMode] = useState<SessionMode>(userPreferences.sessionMode);
+  const [sessionLength, setSessionLength] = useState<SessionLength>(userPreferences.sessionLength);
   const { triggerHaptics } = useHaptics();
   const { t } = useTranslation();
 
@@ -38,21 +38,21 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
     setSessionLength(userPreferences.sessionLength);
   }, [userPreferences.flashcardSide, userPreferences.sessionMode, userPreferences.sessionLength]);
 
-  const handleFlashcardSideItemPress = (flashcardSide: FLASHCARD_SIDE) => {
+  const handleFlashcardSideItemPress = (flashcardSide: FlashcardSide) => {
     triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setFlashcardSide(flashcardSide);
   }
 
-  const handleSessionModeItemPress = (mode: SESSION_MODE) => {
+  const handleSessionModeItemPress = (mode: SessionMode) => {
     triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setSessionMode(mode);
   }
 
-  const handleSessionLengthItemPress = (length: 1 | 2 | 3) => {
+  const handleSessionLengthItemPress = (length: SessionLength) => {
     triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setSessionLength(length);
   }
-  
+
   const handleActionButtonPress = async () => {
     userPreferences.setFlashcardSide(flashcardSide);
     userPreferences.setSessionMode(sessionMode);
@@ -74,49 +74,49 @@ const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomS
         <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
         <View style={styles.sessionItemsContainer}>
           <SessionModeItem
-            mode={FLASHCARD_SIDE.WORD}
-            selected={flashcardSide === FLASHCARD_SIDE.WORD}
-            onPress={() => handleFlashcardSideItemPress(FLASHCARD_SIDE.WORD)}
+            mode={FlashcardSide.WORD}
+            selected={flashcardSide === FlashcardSide.WORD}
+            onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
           />
           <SessionModeItem
-            mode={FLASHCARD_SIDE.TRANSLATION}
-            selected={flashcardSide === FLASHCARD_SIDE.TRANSLATION}
-            onPress={() => handleFlashcardSideItemPress(FLASHCARD_SIDE.TRANSLATION)}
+            mode={FlashcardSide.TRANSLATION}
+            selected={flashcardSide === FlashcardSide.TRANSLATION}
+            onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
           />
         </View>
         <CustomText style={styles.subtitle}>{t('choose_session_mode')}</CustomText>
         <View style={styles.sessionItemsContainer}>
           <SessionModeItem
-            mode={SESSION_MODE.STUDY}
-            selected={sessionMode === SESSION_MODE.STUDY}
-            onPress={() => handleSessionModeItemPress(SESSION_MODE.STUDY)}
+            mode={SessionMode.STUDY}
+            selected={sessionMode === SessionMode.STUDY}
+            onPress={() => handleSessionModeItemPress(SessionMode.STUDY)}
           />
           <SessionModeItem
-            mode={SESSION_MODE.RANDOM}
-            selected={sessionMode === SESSION_MODE.RANDOM}
-            onPress={() => handleSessionModeItemPress(SESSION_MODE.RANDOM)}
+            mode={SessionMode.RANDOM}
+            selected={sessionMode === SessionMode.RANDOM}
+            onPress={() => handleSessionModeItemPress(SessionMode.RANDOM)}
           />
           <SessionModeItem
-            mode={SESSION_MODE.OLDEST}
-            selected={sessionMode === SESSION_MODE.OLDEST}
-            onPress={() => handleSessionModeItemPress(SESSION_MODE.OLDEST)}
+            mode={SessionMode.OLDEST}
+            selected={sessionMode === SessionMode.OLDEST}
+            onPress={() => handleSessionModeItemPress(SessionMode.OLDEST)}
           />
         </View>
         <CustomText style={styles.subtitle}>{t('sessionLength')}</CustomText>
         <View style={styles.sessionItemsContainer}>
           <SessionLengthItem
-            length={1}
-            selected={sessionLength === 1}
+            length={SessionLength.SHORT}
+            selected={sessionLength === SessionLength.SHORT}
             onPress={() => handleSessionLengthItemPress(1)}
           />
           <SessionLengthItem
-            length={2}
-            selected={sessionLength === 2}
+            length={SessionLength.MEDIUM}
+            selected={sessionLength === SessionLength.MEDIUM}
             onPress={() => handleSessionLengthItemPress(2)}
           />
           <SessionLengthItem
-            length={3}
-            selected={sessionLength === 3}
+            length={SessionLength.LONG}
+            selected={sessionLength === SessionLength.LONG}
             onPress={() => handleSessionLengthItemPress(3)}
           />
         </View>

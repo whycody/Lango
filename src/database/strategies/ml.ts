@@ -1,4 +1,4 @@
-import { SESSION_MODEL, WordSet, WordSetStrategy } from "../../types";
+import { SessionModel, WordSet, WordSetStrategy } from "../../types";
 
 export const mlStrategy: WordSetStrategy = (size, words, _evaluations, wordsMLStates): WordSet => {
   const activeWords = words.filter(w => w.active);
@@ -10,5 +10,5 @@ export const mlStrategy: WordSetStrategy = (size, words, _evaluations, wordsMLSt
 
   const sorted = scored.sort((a, b) => a.score - b.score).map(x => x.word);
   const selected = sorted.slice(0, size);
-  return { words: selected, model: SESSION_MODEL.ML };
+  return { words: selected, model: SessionModel.ML };
 };

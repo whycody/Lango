@@ -8,7 +8,7 @@ import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
-import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
+import { FlashcardSide, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useTranslation } from "react-i18next";
 import SessionSpeechSynthesizerItem from "../components/items/SessionSpeechSynthesizerItem";
 import { useHaptics } from "../../hooks/useHaptics";
@@ -22,7 +22,7 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const userPreferences = useUserPreferences();
-  const [flashcardSide, setFlashcardSide] = useState<FLASHCARD_SIDE>(userPreferences.flashcardSide);
+  const [flashcardSide, setFlashcardSide] = useState<FlashcardSide>(userPreferences.flashcardSide);
   const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useState<boolean>(userPreferences.sessionSpeechSynthesizer);
   const { t } = useTranslation();
   const { triggerHaptics } = useHaptics();
@@ -48,7 +48,7 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
-  const handleFlashcardSideItemPress = (flashcardSide: FLASHCARD_SIDE) => {
+  const handleFlashcardSideItemPress = (flashcardSide: FlashcardSide) => {
     triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
     setFlashcardSide(flashcardSide);
   }
@@ -79,14 +79,14 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
         <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
         <View style={styles.sessionItemsContainer}>
           <SessionModeItem
-            mode={FLASHCARD_SIDE.WORD}
-            selected={flashcardSide === FLASHCARD_SIDE.WORD}
-            onPress={() => handleFlashcardSideItemPress(FLASHCARD_SIDE.WORD)}
+            mode={FlashcardSide.WORD}
+            selected={flashcardSide === FlashcardSide.WORD}
+            onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
           />
           <SessionModeItem
-            mode={FLASHCARD_SIDE.TRANSLATION}
-            selected={flashcardSide === FLASHCARD_SIDE.TRANSLATION}
-            onPress={() => handleFlashcardSideItemPress(FLASHCARD_SIDE.TRANSLATION)}
+            mode={FlashcardSide.TRANSLATION}
+            selected={flashcardSide === FlashcardSide.TRANSLATION}
+            onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
           />
         </View>
         <CustomText style={styles.subtitle}>{t('speech_synthesizer')}</CustomText>

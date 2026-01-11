@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Evaluation, LanguageCode, Session, SESSION_MODE, SESSION_MODEL, Word } from "../../types";
+import { Evaluation, EvaluationGrade, LanguageCode, Session, SessionMode, SessionModel, Word } from "../../types";
 import uuid from "react-native-uuid";
 import { saveWords } from "../WordsRepository";
 import { saveSessions } from "../SessionRepository";
@@ -24,7 +24,7 @@ type AsyncStorageWord = {
 type AsyncStorageEvaluation = {
   id: string;
   wordId: string;
-  grade: 1 | 2 | 3;
+  grade: EvaluationGrade;
   date: string;
 }
 
@@ -80,8 +80,8 @@ const mapGroupedEvaluationsToSessions = (grouped: Record<string, AsyncStorageEva
       id: uuid.v4() as string,
       date,
       localDay: toLocalDateString(new Date(date)),
-      mode: SESSION_MODE.UNKNOWN,
-      sessionModel: SESSION_MODEL.HEURISTIC,
+      mode: SessionMode.UNKNOWN,
+      sessionModel: SessionModel.HEURISTIC,
       averageScore,
       wordsCount: evaluations.length,
       finished: evaluations.length % 10 === 0,

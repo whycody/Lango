@@ -14,7 +14,7 @@ import { SettingsItems } from "../../constants/SettingsItems";
 import VersionFooter from "../components/VersionFooter";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
-import { FLASHCARD_SIDE, useUserPreferences } from "../../store/UserPreferencesContext";
+import { FlashcardSide, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import * as Notifications from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
@@ -123,7 +123,7 @@ const SettingsScreen = () => {
     {
       id: SettingsItems.FLASHCARD_SIDE,
       label: t('flashcard_side'),
-      description: userPreferences.flashcardSide == FLASHCARD_SIDE.WORD ? t('word') : t('translation'),
+      description: userPreferences.flashcardSide == FlashcardSide.WORD ? t('word') : t('translation'),
       icon: 'document-text-sharp',
       section: SettingsSections.SESSION,
     },
@@ -176,7 +176,7 @@ const SettingsScreen = () => {
         handleNotificationsSettingItemPress();
         break;
       case SettingsItems.FLASHCARD_SIDE:
-        userPreferences.setFlashcardSide(userPreferences.flashcardSide === FLASHCARD_SIDE.WORD ? FLASHCARD_SIDE.TRANSLATION : FLASHCARD_SIDE.WORD);
+        userPreferences.setFlashcardSide(userPreferences.flashcardSide === FlashcardSide.WORD ? FlashcardSide.TRANSLATION : FlashcardSide.WORD);
         break;
       case SettingsItems.SESSION_SPEECH_SYNTHESIZER:
         userPreferences.setSessionSpeechSynthesizer(!userPreferences.sessionSpeechSynthesizer);

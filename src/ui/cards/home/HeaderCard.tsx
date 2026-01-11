@@ -1,6 +1,6 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BackHandler, Pressable, StyleSheet, View } from "react-native";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import { expo } from '../../../../app.json'
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
 import CustomText from "../../components/CustomText";
@@ -13,18 +13,21 @@ import SquareFlag from "../../components/SquareFlag";
 import LanguageBottomSheet from "../../sheets/LanguageBottomSheet";
 import { getCurrentStreak, Streak } from "../../../utils/streakUtils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { SESSION_MODE } from "../../../types";
-import { FLASHCARD_SIDE } from "../../../store/UserPreferencesContext";
+import { SessionMode } from "../../../types";
+import { FlashcardSide, SessionLength } from "../../../store/UserPreferencesContext";
 import { useStatistics } from "../../../store/StatisticsContext";
 import { useLanguage } from "../../../store/LanguageContext";
 import { useWordsHeuristicStates } from "../../../store/WordsHeuristicStatesContext";
 import { useWords } from "../../../store/WordsContext";
 
-const HeaderCard = () => {
+type HeaderCardProps = {
+  navigateToSessionScreen(length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide): void;
+}
+
+const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const navigation = useNavigation();
   const langContext = useLanguage();
   const { langWords } = useWords();
   const { langWordsHeuristicStates } = useWordsHeuristicStates();
@@ -34,7 +37,7 @@ const HeaderCard = () => {
   const sessionSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
-  const last50Words = langWords.sort((a,b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
+  const last50Words = langWords.sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
     .slice(0, 50).map((word) => word.id);
   const langWordsHeuristicStatesFiltered = langWordsHeuristicStates.filter(word => last50Words.includes(word.wordId));
 
@@ -63,9 +66,9 @@ const HeaderCard = () => {
     sessionSheetRef.current.present();
   }
 
-  const handleSessionStart = (length: 1 | 2 | 3, mode: SESSION_MODE, flashcardSide: FLASHCARD_SIDE) => {
+  const handleSessionStart = (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {
     sessionSheetRef.current.close();
-    navigation.navigate('Session', { length: length, mode: mode, flashcardSide: flashcardSide });
+    navigateToSessionScreen(length, mode, flashcardSide);
   }
 
   const getReportMessage = () => {
@@ -100,7 +103,8 @@ const HeaderCard = () => {
           <SquareFlag languageCode={langContext.mainLang} size={24}/>
         </Pressable>
       </View>
-      <ProgressBar animatedValue={lastWellKnownWords ? lastWellKnownWords : 0.000001} color={colors.primary300} style={styles.progressBar}/>
+      <ProgressBar animatedValue={lastWellKnownWords ? lastWellKnownWords : 0.000001} color={colors.primary300}
+                   style={styles.progressBar}/>
       <CustomText style={styles.descText}>{getReportMessage()}</CustomText>
       <ActionButton
         label={t('startLearning')}

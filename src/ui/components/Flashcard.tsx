@@ -6,7 +6,7 @@ import CustomText from "./CustomText";
 import * as Haptics from 'expo-haptics';
 import FlipCard from 'react-native-flip-card'
 import { Foundation } from "@expo/vector-icons";
-import { LANGO, useWords } from "../../store/WordsContext";
+import { useWords, WordSource } from "../../store/WordsContext";
 import SquareFlag from "./SquareFlag";
 import { LinearGradient } from "expo-linear-gradient";
 import { Suggestion } from "../../types";
@@ -71,7 +71,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
     setNewFlashcardIsReady(false);
     await triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
     if (add) {
-      const addWord = wordsContext.addWord(suggestion.word, suggestion.translation, LANGO);
+      const addWord = wordsContext.addWord(suggestion.word, suggestion.translation, WordSource.LANGO);
       if (!addWord) setBackText(t('wordNotAdded'));
     } else setBackText(t('change_flashcard'));
     setTimeout(() => onFlashcardPress(add), 150);

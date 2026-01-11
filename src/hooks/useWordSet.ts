@@ -3,13 +3,13 @@ import { useWords } from "../store/WordsContext";
 import { useWordsMLStatesContext } from "../store/WordsMLStatesContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSessions } from "../store/SessionsContext";
-import { SESSION_MODE, SESSION_MODEL, WordSet, WordSetStrategy } from "../types";
+import { SessionMode, SessionModel, WordSet, WordSetStrategy } from "../types";
 import { strategies } from "../database/strategies";
 import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { shuffle } from "../utils/shuffle";
 
-export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
+export const useWordSet = (size: number, mode: SessionMode): WordSet => {
   const { langWords } = useWords();
   const { evaluations } = useEvaluations();
   const { langWordsMLStates } = useWordsMLStatesContext();
@@ -19,27 +19,27 @@ export const useWordSet = (size: number, mode: SESSION_MODE): WordSet => {
 
   return useMemo(() => {
     if (!langWords || !langWordsMLStates || !langWordsHeuristicStates) {
-      return { words: [], model: SESSION_MODEL.NONE };
+      return { words: [], model: SessionModel.NONE };
     }
 
     const lastSession = sessions
-      ?.filter(s => s.mode === SESSION_MODE.STUDY)
+      ?.filter(s => s.mode === SessionMode.STUDY)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
     const lastSessionModel = lastSession?.sessionModel;
 
-    const currentModel = user.sessionModel || SESSION_MODEL.HYBRID;
+    const currentModel = user.sessionModel || SessionModel.HYBRID;
 
     const getStrategy: WordSetStrategy = (() => {
-      if (mode == SESSION_MODE.OLDEST)
+      if (mode == SessionMode.OLDEST)
         return strategies.OLDEST;
-      else if (mode == SESSION_MODE.RANDOM)
+      else if (mode == SessionMode.RANDOM)
         return strategies.RANDOM;
       switch (currentModel) {
-        case SESSION_MODEL.HEURISTIC:
+        case SessionModel.HEURISTIC:
           return strategies.HEURISTIC;
-        case SESSION_MODEL.ML:
+        case SessionModel.ML:
           return strategies.ML;
-        case SESSION_MODEL.HYBRID:
+        case SessionModel.HYBRID:
         default:
           return strategies.HYBRID;
       }

@@ -1,6 +1,6 @@
 import { LanguageCode } from "../../constants/LanguageCode";
 
-export enum SESSION_MODEL {
+export enum SessionModel {
   HEURISTIC = 'heuristic',
   ML = 'ml',
   HYBRID = 'hybrid',
@@ -22,7 +22,7 @@ export type User = {
   provider: 'google' | 'facebook';
   mainLang: LanguageCode | null;
   translationLang: LanguageCode | null;
-  sessionModel: SESSION_MODEL;
+  sessionModel: SessionModel;
   notificationsEnabled: boolean;
   stats: UserStats;
 };

@@ -1,8 +1,8 @@
-import { SESSION_MODEL } from "./User";
+import { SessionModel } from "./User";
 import { SyncMetadata } from "../sync/SyncMetadata";
 import { LanguageCode } from "../../constants/LanguageCode";
 
-export enum SESSION_MODE {
+export enum SessionMode {
   STUDY = 'STUDY',
   RANDOM = 'RANDOM',
   OLDEST = 'OLDEST',
@@ -15,8 +15,8 @@ export type Session = SyncMetadata & {
   localDay: string;
   mainLang: LanguageCode;
   translationLang: LanguageCode;
-  mode: SESSION_MODE;
-  sessionModel: SESSION_MODEL;
+  mode: SessionMode;
+  sessionModel: SessionModel;
   averageScore: number;
   wordsCount: number;
   finished: boolean;

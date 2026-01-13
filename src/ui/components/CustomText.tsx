@@ -23,7 +23,7 @@ const CustomText: FC<CustomTextProps> = ({ weight = 'Regular', style, children, 
     return content.split(/(\*[^*]+\*)/g).map((part, index) => {
       if (part.startsWith('*') && part.endsWith('*')) {
         return (
-          <Text key={index} style={[styles.text, style, styles.bold]}>
+          <Text key={index} style={[styles.text, style, weight == 'Bold' ? styles.extraBold : styles.bold]}>
             {part.slice(1, -1)}
           </Text>
         );
@@ -42,6 +42,9 @@ const CustomText: FC<CustomTextProps> = ({ weight = 'Regular', style, children, 
 const styles = StyleSheet.create({
   text: {
     fontSize: 16,
+  },
+  extraBold: {
+    fontFamily: FONT_MAP.Black,
   },
   bold: {
     fontFamily: FONT_MAP.Bold,

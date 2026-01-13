@@ -122,6 +122,8 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const loadData = async () => {
+    if (mainLang == translationLang) return;
+
     try {
       setLoading(true);
       await syncSuggestions();

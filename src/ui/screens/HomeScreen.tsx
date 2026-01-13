@@ -1,4 +1,4 @@
-import { BackHandler, RefreshControl, ScrollView, View } from "react-native";
+import { BackHandler, RefreshControl, StyleSheet, ScrollView, View } from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
@@ -18,6 +18,8 @@ import * as Notifications from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { ScreenName } from "../../navigation/AppStack";
 import { SessionMode } from "../../types";
+import { useLanguage } from "../../store/LanguageContext";
+import { useTheme } from "@react-navigation/native";
 
 const HomeScreen = ({ navigation }) => {
   const auth = useAuth();
@@ -28,10 +30,13 @@ const HomeScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const { style, onScroll } = useDynamicStatusBar(100, 0.5);
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
 
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const enableNotificationsRef = useRef<BottomSheetModal>(null);
   const { askLaterNotifications } = useUserPreferences();
+  const { mainLang, translationLang } = useLanguage();
   const { user } = useAuth();
 
   const tryToRefreshData = async () => {
@@ -41,7 +46,7 @@ const HomeScreen = ({ navigation }) => {
       await words.syncWords();
       await Promise.all([
         sessions.syncSessions(),
-        suggestions.syncSuggestions(),
+        mainLang !== translationLang ? suggestions.syncSuggestions() : Promise.resolve(),
         evaluations.syncEvaluations(),
       ]);
     } finally {
@@ -81,6 +86,8 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate(ScreenName.Session, { length: length, mode: mode, flashcardSide: flashcardSide });
   }
 
+  const languagesAreTheSame = mainLang === translationLang;
+
   return (
     <>
       <EnableNotificationsBottomSheet
@@ -100,12 +107,20 @@ const HomeScreen = ({ navigation }) => {
         }
       >
         <View style={{ height: insets.top }}/>
-        <HeaderCard navigateToSessionScreen={navigateToSessionScreen} />
-        <WordsSuggestionsCard/>
-        <StatisticsCard/>
+        <HeaderCard navigateToSessionScreen={navigateToSessionScreen}/>
+        {!languagesAreTheSame &&
+          <WordsSuggestionsCard/>
+        }
+        <StatisticsCard style={languagesAreTheSame && styles.darkBackground}/>
       </ScrollView>
     </>
   );
 };
+
+const getStyles = (colors: any) => StyleSheet.create({
+  darkBackground: {
+    backgroundColor: colors.card
+  }
+})
 
 export default HomeScreen;

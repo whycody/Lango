@@ -12,6 +12,7 @@ import { FlashcardSide, useUserPreferences } from "../../store/UserPreferencesCo
 import { useTranslation } from "react-i18next";
 import SessionSpeechSynthesizerItem from "../components/items/SessionSpeechSynthesizerItem";
 import { useHaptics } from "../../hooks/useHaptics";
+import { useLanguage } from "../../store/LanguageContext";
 
 interface StartSessionBottomSheetProps {
   onSettingsSave: () => void,
@@ -26,6 +27,7 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
   const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useState<boolean>(userPreferences.sessionSpeechSynthesizer);
   const { t } = useTranslation();
   const { triggerHaptics } = useHaptics();
+  const { mainLang, translationLang } = useLanguage();
   const saved = useRef(false);
 
   useEffect(() => {
@@ -89,19 +91,24 @@ const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBott
             onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
           />
         </View>
-        <CustomText style={styles.subtitle}>{t('speech_synthesizer')}</CustomText>
-        <View style={styles.sessionItemsContainer}>
-          <SessionSpeechSynthesizerItem
-            synthesizerOn={true}
-            selected={sessionSpeechSynthesizer}
-            onPress={() => handleSessionSpeechSynthesizerItemPress(true)}
-          />
-          <SessionSpeechSynthesizerItem
-            synthesizerOn={false}
-            selected={!sessionSpeechSynthesizer}
-            onPress={() => handleSessionSpeechSynthesizerItemPress(false)}
-          />
-        </View>
+
+        {mainLang !== translationLang &&
+          <>
+            <CustomText style={styles.subtitle}>{t('speech_synthesizer')}</CustomText>
+            <View style={styles.sessionItemsContainer}>
+              <SessionSpeechSynthesizerItem
+                synthesizerOn={true}
+                selected={sessionSpeechSynthesizer}
+                onPress={() => handleSessionSpeechSynthesizerItemPress(true)}
+              />
+              <SessionSpeechSynthesizerItem
+                synthesizerOn={false}
+                selected={!sessionSpeechSynthesizer}
+                onPress={() => handleSessionSpeechSynthesizerItemPress(false)}
+              />
+            </View>
+          </>
+        }
         <ActionButton
           onPress={handleActionButtonPress}
           label={t('save')}

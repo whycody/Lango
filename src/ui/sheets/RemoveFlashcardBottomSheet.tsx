@@ -9,7 +9,6 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import FlashcardListItem from "../components/items/FlashcardListItem";
-import { useWords } from "../../store/WordsContext";
 import { useWordsWithDetails } from "../../store/WordsWithDetailsContext";
 
 type AcceptationBottomSheetProps = {
@@ -23,7 +22,6 @@ const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBotto
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
-  const wordsContext = useWords();
   const wordsWithDetailsContext = useWordsWithDetails();
 
   const flashcard = wordsWithDetailsContext.wordsWithDetails.find((word) => word.id === props.flashcardId);

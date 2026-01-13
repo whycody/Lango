@@ -15,7 +15,6 @@ interface LanguageContextProps {
   setMainLang: (langCode: LanguageCode) => void;
   setTranslationLang: (langCode: LanguageCode) => void;
   setApplicationLang: (langCode: LanguageCode) => void;
-  swapLanguages: () => void;
 }
 
 export const LanguageContext = createContext<LanguageContextProps>({
@@ -26,7 +25,6 @@ export const LanguageContext = createContext<LanguageContextProps>({
   setMainLang: () => {},
   setTranslationLang: () => {},
   setApplicationLang: () => {},
-  swapLanguages: () => {},
 });
 
 export const APPLICATION_LANG = 'applicationLangCode';
@@ -48,11 +46,6 @@ const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
     { languageCode: LanguageCode.ITALIAN, languageName: t('italian'), languageInTargetLanguage: 'Italiano' },
   ];
 
-  const swapLanguages = () => {
-    setMainLang(translationLang);
-    setTranslationLang(mainLang);
-  }
-
   return (
     <LanguageContext.Provider value={{
       languages,
@@ -62,7 +55,6 @@ const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setMainLang,
       setTranslationLang,
       setApplicationLang,
-      swapLanguages
     }}>
       {children}
     </LanguageContext.Provider>

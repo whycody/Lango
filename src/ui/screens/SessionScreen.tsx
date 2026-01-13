@@ -27,6 +27,7 @@ import SessionSettingsBottomSheet from "../sheets/SessionSettingsBottomSheet";
 import { WordUpdate } from "../../types/utils/WordUpdate";
 import { useHaptics } from "../../hooks/useHaptics";
 import { ScreenName } from "../../navigation/AppStack";
+import { useLanguage } from "../../store/LanguageContext";
 
 export type SessionScreenParams = {
   length: SessionLength;
@@ -70,6 +71,7 @@ const SessionScreen = ({ navigation }) => {
   const [lastPressTime, setLastPressTime] = useState<number>(0);
 
   const userPreferences = useUserPreferences();
+  const { mainLang, translationLang } = useLanguage();
   const { triggerHaptics } = useHaptics();
   const [flipped, setFlipped] = useState(flashcardSide === FlashcardSide.TRANSLATION);
 
@@ -166,12 +168,13 @@ const SessionScreen = ({ navigation }) => {
   useEffect(() => {
     const word = cards[currentIndex];
     if (!word) return;
-    if (((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) && userPreferences.sessionSpeechSynthesizer) {
+    const speechSynthesizer = userPreferences.setSessionSpeechSynthesizer && mainLang !== translationLang;
+    if (((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) && speechSynthesizer) {
       Speech.stop().then(() => {
         Speech.speak(word?.text, { language: word.mainLang });
       });
     }
-  }, [flipped, currentIndex, flippedCards, userPreferences.sessionSpeechSynthesizer]);
+  }, [flipped, currentIndex, flippedCards, mainLang, translationLang, userPreferences.sessionSpeechSynthesizer]);
 
   const handleLevelPress = (level: EvaluationGrade) => {
     const now = Date.now();

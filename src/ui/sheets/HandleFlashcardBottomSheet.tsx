@@ -46,7 +46,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const [status, setStatus] = useState<'error' | 'success' | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [buttonsActive, setButtonsActive] = useState(true);
-  const languageContext = useLanguage();
+  const { mainLang, translationLang } = useLanguage();
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -125,7 +125,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
 
   const abortControllerRef = useRef(new AbortController());
 
-  const translateWord = async (text, from = languageContext.mainLang, to = languageContext.translationLang) => {
+  const translateWord = async (text, from = mainLang, to = translationLang) => {
     abortControllerRef.current && abortControllerRef.current.abort();
     abortControllerRef.current = new AbortController();
 
@@ -144,9 +144,9 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   };
 
   useEffect(() => {
-    if (!word || word.trim().length === 0) return;
+    if (!word || word.trim().length === 0 || mainLang == translationLang) return;
     translateWord(word);
-  }, [word]);
+  }, [word, mainLang, translationLang]);
 
   const suggestions = wordTranslations && currentWord == wordTranslations.word ? wordTranslations.translations : [];
 
@@ -183,7 +183,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           word={word}
           onWordCommit={setWord}
           onWordChange={setCurrentWord}
-          languageCode={languageContext.mainLang}
+          languageCode={mainLang}
           style={{ marginTop: 15 }}
           pointerEvents="box-only"
         />
@@ -192,7 +192,7 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
           word={translation}
           suggestions={suggestions}
           onWordCommit={setTranslation}
-          languageCode={languageContext.translationLang}
+          languageCode={translationLang}
           style={{ marginTop: 15 }}
           pointerEvents="box-only"
         />

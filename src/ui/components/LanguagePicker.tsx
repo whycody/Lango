@@ -17,7 +17,7 @@ interface LanguagePickerProps {
   style?: ViewStyle;
 }
 
-const LanguagePicker = ({ allLanguages, languageType = LanguageTypes.MAIN, onLanguagePick, style }: LanguagePickerProps) => {
+const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, style }: LanguagePickerProps) => {
   const styles = getStyles();
   const { t } = useTranslation();
   const {
@@ -28,7 +28,6 @@ const LanguagePicker = ({ allLanguages, languageType = LanguageTypes.MAIN, onLan
     setMainLang,
     setTranslationLang,
     setApplicationLang,
-    swapLanguages
   } = useLanguage();
   const { triggerHaptics } = useHaptics();
 
@@ -38,22 +37,10 @@ const LanguagePicker = ({ allLanguages, languageType = LanguageTypes.MAIN, onLan
   const langTypeDesc = languageType === LanguageTypes.MAIN ? 'main' :
     languageType === LanguageTypes.TRANSLATION ? 'translation' : 'application';
 
-  const languagesData = languageType !== LanguageTypes.APPLICATION ? languages.filter((lang) => allLanguages ||
-      lang.languageCode !== (languageType === LanguageTypes.MAIN ? translationLang : mainLang)) :
+  const languagesData = languageType !== LanguageTypes.APPLICATION ? languages :
     languages.filter(lang => [LanguageCode.POLISH, LanguageCode.ENGLISH].includes(lang.languageCode));
 
   const handleLanguagePick = useCallback((language: Language) => {
-    const shouldSwap =
-      (languageType === LanguageTypes.MAIN && language.languageCode === translationLang) ||
-      (languageType === LanguageTypes.TRANSLATION && language.languageCode === mainLang);
-
-    if (shouldSwap) {
-      swapLanguages();
-      triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-      onLanguagePick?.();
-      return;
-    }
-
     const setters: Record<LanguageTypes, (code: string) => void> = {
       [LanguageTypes.MAIN]: setMainLang,
       [LanguageTypes.TRANSLATION]: setTranslationLang,
@@ -64,7 +51,7 @@ const LanguagePicker = ({ allLanguages, languageType = LanguageTypes.MAIN, onLan
 
     triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
     onLanguagePick?.();
-  }, [languageType, translationLang, mainLang, swapLanguages, setMainLang, setTranslationLang, setApplicationLang, triggerHaptics, onLanguagePick]);
+  }, [languageType, translationLang, mainLang, setMainLang, setTranslationLang, setApplicationLang, triggerHaptics, onLanguagePick]);
 
   const renderLanguageItem = useCallback(({ item, index }: { item: Language, index: number }) =>
     <LanguageItem

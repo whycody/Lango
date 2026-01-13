@@ -1,16 +1,20 @@
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
 import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
-import { useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useDebouncedSyncSuggestions, useSuggestions } from "../../../store/SuggestionsContext";
 import { Suggestion } from "../../../types";
 import { useLanguage } from "../../../store/LanguageContext";
 
-const WordsSuggestionsCard = () => {
+type WordsSuggestionsCardProps = {
+  style?: StyleProp<ViewStyle>;
+}
+
+const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
@@ -58,7 +62,7 @@ const WordsSuggestionsCard = () => {
   }
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, style]}>
       <Header title={t('wordsSuggestion')} subtitle={t('wordSuggestionDesc')}/>
       <View style={styles.flashcardsContainer}>
         <Flashcard

@@ -1,6 +1,6 @@
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/items/StatisticItem";
@@ -9,7 +9,11 @@ import { useSessions } from "../../../store/SessionsContext";
 import { Word } from "../../../types";
 import { useStatistics } from "../../../store/StatisticsContext";
 
-const StatisticsCard = () => {
+type StatisticsCardProps = {
+  style?: StyleProp<ViewStyle>
+}
+
+const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
   const { t } = useTranslation();
   const { langWords } = useWords();
   const statsContext = useStatistics();
@@ -37,7 +41,7 @@ const StatisticsCard = () => {
   }, [langWords, statsContext.studyDaysList, sessions]);
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, style]}>
       <Header title={t('statistics')} subtitle={t('statisticsDesc')}/>
       <View style={styles.statisticsRow}>
         <StatisticItem
@@ -73,8 +77,9 @@ const StatisticsCard = () => {
 
 const styles = StyleSheet.create({
   root: {
-    marginHorizontal: MARGIN_HORIZONTAL,
-    marginVertical: MARGIN_VERTICAL,
+    paddingHorizontal: MARGIN_HORIZONTAL,
+    paddingTop: MARGIN_VERTICAL,
+    paddingBottom: MARGIN_VERTICAL + MARGIN_HORIZONTAL / 2,
   },
   statisticsRow: {
     flexDirection: 'row',

@@ -3,7 +3,7 @@ import { useWords } from "../store/WordsContext";
 import { useWordsMLStatesContext } from "../store/WordsMLStatesContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSessions } from "../store/SessionsContext";
-import { SessionMode, SessionModel, WordSet, WordSetStrategy } from "../types";
+import { SessionMode, SessionModel, SessionModelVersion, WordSet, WordSetStrategy } from "../types";
 import { strategies } from "../database/strategies";
 import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
 import { useEvaluations } from "../store/EvaluationsContext";
@@ -19,7 +19,7 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
 
   return useMemo(() => {
     if (!langWords || !langWordsMLStates || !langWordsHeuristicStates) {
-      return { words: [], model: SessionModel.NONE };
+      return { words: [], model: SessionModel.NONE, version: SessionModelVersion.NONE };
     }
 
     const lastSession = sessions
@@ -49,7 +49,8 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
 
     return {
       words: shuffle(strategy.words),
-      model: strategy.model
+      model: strategy.model,
+      version: strategy.version
     }
   }, [user.sessionModel, langWords, evaluations.length, langWordsMLStates, langWordsHeuristicStates, sessions, size, mode]);
 };

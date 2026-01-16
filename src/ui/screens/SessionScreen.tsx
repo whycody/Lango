@@ -52,6 +52,7 @@ const SessionScreen = ({ navigation }) => {
   const pagerRef = useRef(null);
   const wordSet = useWordSet(length * 10, mode);
 
+  const [version, setVersion] = useState(wordSet.version);
   const [model, setModel] = useState(wordSet.model);
   const [cards, setCards] = useState(wordSet.words);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -227,6 +228,7 @@ const SessionScreen = ({ navigation }) => {
     setNumberOfSession((prev) => prev + 1);
     setWordsUpdates([]);
     setModel(wordSet.model);
+    setVersion(wordSet.version);
     setCards(wordSet.words);
     setTimeout(() => {
       setCurrentIndex(0);
@@ -243,7 +245,7 @@ const SessionScreen = ({ navigation }) => {
     if (wordsUpdates.length == 0) return;
     const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
     const { mainLang, translationLang } = wordSet.words[0];
-    const session = sessionsContext.addSession(mode, model, avgGrade, length * 10, mainLang, translationLang, finished);
+    const session = sessionsContext.addSession(mode, model, version, avgGrade, length * 10, mainLang, translationLang, finished);
     evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
       wordId: update.flashcardId,
       sessionId: session.id,

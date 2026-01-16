@@ -154,6 +154,7 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
     let startTime: Date | null = null;
     let endTime: Date | null = null;
     let currentSeriesType: 'learned' | 'unlearned' | null = null;
+    let firstAppearance = true;
 
     for (let i = grades.length - 1; i >= 0; i--) {
       const g = grades[i];
@@ -181,6 +182,9 @@ const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         } else if (currentSeriesType === 'unlearned' && (g === 1 || g === 2)) {
           studyDuration += 1;
           studyStreak -= 1;
+          startTime = d;
+        } else if (firstAppearance) {
+          firstAppearance = false;
           startTime = d;
         } else {
           break;

@@ -7,6 +7,15 @@ export enum SessionModel {
   NONE = 'none',
 }
 
+export enum SessionModelVersion {
+  NONE = 'none',
+  H1 = 'h1',
+  ML1 = 'ml1',
+  ML2 = 'ml2',
+  O1 = 'o1',
+  R1 = 'r1',
+}
+
 export type UserStats = {
   studyDays: string[];
   sessionCount: number;

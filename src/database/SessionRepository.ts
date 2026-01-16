@@ -68,6 +68,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
               mainLang: row.mainLang,
               translationLang: row.translationLang,
               sessionModel: row.sessionModel,
+              sessionModelVersion: row.sessionModelVersion,
               averageScore: row.averageScore,
               wordsCount: row.wordsCount,
               finished: row.finished === 1,

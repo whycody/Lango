@@ -55,6 +55,7 @@ const loadAndClear = async <T>(key: string, parser: (raw: any) => T[]): Promise<
 
 const mapStoredWordsToWords = (stored: AsyncStorageWord[]): Word[] => {
   const timestamp = now();
+  // @ts-ignore
   return stored.map(word => ({
     id: word.id,
     text: word.text,

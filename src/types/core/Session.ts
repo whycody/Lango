@@ -1,4 +1,4 @@
-import { SessionModel } from "./User";
+import { SessionModel, SessionModelVersion } from "./User";
 import { SyncMetadata } from "../sync/SyncMetadata";
 import { LanguageCode } from "../../constants/LanguageCode";
 
@@ -17,6 +17,7 @@ export type Session = SyncMetadata & {
   translationLang: LanguageCode;
   mode: SessionMode;
   sessionModel: SessionModel;
+  sessionModelVersion: SessionModelVersion;
   averageScore: number;
   wordsCount: number;
   finished: boolean;

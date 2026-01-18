@@ -43,7 +43,7 @@ const FlashcardsScreen = () => {
         !word.removed && (!searchingMode || (filter.trim() && (
           word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
           word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
-      ).sort((a, b) => new Date(b.locallyUpdatedAt).getTime() - new Date(a.locallyUpdatedAt).getTime()),
+      ).sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime()),
     [searchingMode, filter, wordWithDetailsContext.langWordsWithDetails]);
 
   useEffect(() => {

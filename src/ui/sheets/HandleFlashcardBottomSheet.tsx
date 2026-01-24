@@ -13,12 +13,14 @@ import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import axios from "axios";
 import TranslationUtils from "../../utils/translationUtils";
-import { Word } from "../../types";
+import { LanguageCode, Word } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 
 type WordTranslations = {
   word: string;
   translations: string[];
+  from: LanguageCode,
+  to: LanguageCode
 }
 
 interface HandleFlashcardBottomSheetProps {
@@ -40,8 +42,9 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const [word, setWord] = useState(flashcard?.text);
   const [translation, setTranslation] = useState(flashcard?.translation);
 
-  const [currentWord, setCurrentWord] = useState<string | null>('');
-  const [wordTranslations, setWordTranslations] = useState<WordTranslations | null>(null);
+  const [currentWord, setCurrentWord] = useState<string>('');
+  const [currentTranslation, setCurrentTranslation] = useState<string>('');
+  const [wordTranslations, setWordTranslations] = useState<WordTranslations[]>([]);
 
   const [status, setStatus] = useState<'error' | 'success' | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -54,6 +57,8 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   const clearInputs = () => {
     setWord('');
     setTranslation('');
+    setCurrentWord('');
+    setCurrentTranslation('');
     wordInputRef.current?.clearWord();
     translationInputRef.current?.clearWord();
   }
@@ -101,7 +106,8 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     if (!multiple) {
       scheduleDismiss();
     } else {
-      setWordTranslations(null);
+      setCurrentTranslation('');
+      setCurrentWord('');
       setTimeout(() => {
         clearInputs();
         setStatus('success');
@@ -130,11 +136,16 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
     abortControllerRef.current = new AbortController();
 
     try {
-      setWordTranslations(
-        {
-          word: text,
-          translations: [(await TranslationUtils.translateText(text, from, to, abortControllerRef.current)).toLowerCase()]
-        }
+      const translations = await TranslationUtils.translateText(text, from, to, abortControllerRef.current);
+      setWordTranslations((prev) =>
+        [...prev,
+          {
+            word: text,
+            translations: [translations.toLowerCase()],
+            from,
+            to,
+          }
+        ]
       );
     } catch (error) {
       if (!axios.isCancel(error)) {
@@ -144,11 +155,18 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
   };
 
   useEffect(() => {
-    if (!word || word.trim().length === 0 || mainLang == translationLang) return;
-    translateWord(word);
-  }, [word, mainLang, translationLang]);
+    if (mainLang == translationLang) return;
+    if (!!word && !translation) translateWord(word);
+    if (!!translation && !word) translateWord(translation, translationLang, mainLang);
+  }, [word, translation, mainLang, translationLang]);
 
-  const suggestions = wordTranslations && currentWord == wordTranslations.word ? wordTranslations.translations : [];
+  const translationsOfWord = wordTranslations && wordTranslations
+    .find(wt => wt.word.toLowerCase() === currentWord.toLowerCase() && wt.from == mainLang && wt.to == translationLang)
+  const translationsOfTranslation = wordTranslations && wordTranslations
+    .find(wt => wt.word.toLowerCase() === currentTranslation.toLowerCase() && wt.from == translationLang && wt.to == mainLang)
+
+  const translationSuggestions = translationsOfWord ? translationsOfWord.translations : [];
+  const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
 
   const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
@@ -181,8 +199,11 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
         <WordInput
           ref={wordInputRef}
           word={word}
+          suggestions={wordSuggestions}
           onWordCommit={setWord}
           onWordChange={setCurrentWord}
+          active={buttonsActive}
+          cursorColor={!buttonsActive ? 'transparent' : colors.primary}
           languageCode={mainLang}
           style={{ marginTop: 15 }}
           pointerEvents="box-only"
@@ -190,8 +211,10 @@ const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardB
         <WordInput
           ref={translationInputRef}
           word={translation}
-          suggestions={suggestions}
+          suggestions={translationSuggestions}
           onWordCommit={setTranslation}
+          onWordChange={setCurrentTranslation}
+          active={buttonsActive}
           languageCode={translationLang}
           style={{ marginTop: 15 }}
           pointerEvents="box-only"

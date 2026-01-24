@@ -21,6 +21,7 @@ import EmptyList from "../components/EmptyList";
 import { ProgressBar } from "react-native-paper";
 import { useUserPreferences } from "../../store/UserPreferencesContext";
 import { getSortingMethod, getSortingMethodLabel } from "../../utils/sortingUtil";
+import SortingMethodBottomSheet from "../sheets/SortingMethodBottomSheet";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -34,6 +35,7 @@ const FlashcardsScreen = () => {
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
+  const sortingMethodBottomSheetRef = useRef<BottomSheetModal>(null);
   const [editFlashcardId, setEditFlashcardId] = useState<string | null>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const [filter, setFilter] = useState('');
@@ -65,6 +67,7 @@ const FlashcardsScreen = () => {
       if (bottomSheetIsShown) {
         handleFlashcardBottomSheetRef.current?.dismiss();
         removeFlashcardBottomSheetRef.current?.dismiss();
+        sortingMethodBottomSheetRef.current?.dismiss();
         return true;
       }
       return false;
@@ -187,7 +190,7 @@ const FlashcardsScreen = () => {
             placeholderTextColor={colors.primary600}
           />
         </Pressable>
-        <View style={styles.sortingHeader}>
+        <Pressable style={styles.sortingHeader} onPress={() => sortingMethodBottomSheetRef.current.present()}>
           <MaterialCommunityIcons name={'sort-variant'} color={colors.primary} size={18}/>
           <CustomText
             weight={'SemiBold'}
@@ -195,10 +198,10 @@ const FlashcardsScreen = () => {
           >
             {getSortingMethodLabel(flashcardsSortingMethod)}
           </CustomText>
-        </View>
+        </Pressable>
       </View>
     );
-  }, [searchingMode, filter, setFilter]);
+  }, [searchingMode, flashcardsSortingMethod, filter, setFilter]);
 
   const renderEmptyList = useMemo(() => {
     return (
@@ -257,6 +260,10 @@ const FlashcardsScreen = () => {
       <HandleFlashcardBottomSheet
         ref={handleFlashcardBottomSheetRef}
         flashcardId={editFlashcardId}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
+      />
+      <SortingMethodBottomSheet
+        ref={sortingMethodBottomSheetRef}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       {searchingMode && ListFilterHeader}

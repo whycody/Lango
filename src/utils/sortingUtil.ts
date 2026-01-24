@@ -5,17 +5,17 @@ import { WordWithDetails } from "../types";
 export const getSortingMethodLabel = (method: FlashcardSortingMethod) => {
   switch (method) {
     case FlashcardSortingMethod.ADD_DATE_ASC:
-      return t('sorting.addDateAsc');
+      return t('sorting.add_date_asc');
     case FlashcardSortingMethod.ADD_DATE_DESC:
       return t('sorting.add_date_desc');
     case FlashcardSortingMethod.GRADE_THREE_PROB_ASC:
-      return t('sorting.gradeThreeProbAsc');
+      return t('sorting.grade_three_asc');
     case FlashcardSortingMethod.GRADE_THREE_PROB_DESC:
-      return t('sorting.gradeThreeProbDesc');
+      return t('sorting.grade_three_desc');
     case FlashcardSortingMethod.REPETITIONS_COUNT_ASC:
-      return t('sorting.repetitionsCountAsc');
+      return t('sorting.repetitions_count_asc');
     case FlashcardSortingMethod.REPETITIONS_COUNT_DESC:
-      return t('sorting.repetitionsCountDesc');
+      return t('sorting.repetitions_count_desc');
   }
 }
 

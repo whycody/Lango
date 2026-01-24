@@ -1,4 +1,4 @@
-import { BackHandler, RefreshControl, StyleSheet, ScrollView, View } from "react-native";
+import { BackHandler, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";

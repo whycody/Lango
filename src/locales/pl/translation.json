@@ -134,5 +134,15 @@
   "notifications_open_settings": "Otwórz ustawienia",
   "back": "Wróć",
   "welcome_onboarding": " {{name}}, \n witaj w Lango!",
-  "welcome_onboarding_desc": "Bardzo się cieszymy, że do dołączyłeś do naszej społeczności! Odpowiedz na kilka pytań, abyśmy mogli lepiej dostosować aplikację do Twoich potrzeb."
+  "welcome_onboarding_desc": "Bardzo się cieszymy, że do dołączyłeś do naszej społeczności! Odpowiedz na kilka pytań, abyśmy mogli lepiej dostosować aplikację do Twoich potrzeb.",
+  "sorting": {
+    "title": "Sposób sortowania",
+    "desc": "Wybierz sposób sortowania fiszek w Twojej bibliotece.",
+    "add_date_desc": "Od najnowszych",
+    "add_date_asc": "Od najstarszych",
+    "grade_three_desc": "Od najlepiej opanowanych",
+    "grade_three_asc": "Od najsłabiej opanowanych",
+    "repetitions_count_desc": "Od najczęściej powtarzanych",
+    "repetitions_count_asc": "Od najrzadziej powtarzanych"
+  }
 }

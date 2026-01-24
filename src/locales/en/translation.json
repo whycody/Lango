@@ -132,5 +132,15 @@
   "notifications_open_settings": "Open settings",
   "back": "Go back",
   "welcome": "{{name}},\n welcome to Lango! ",
-  "welcome_onboarding_desc": "We are very pleased that you have joined our community! Answer a few questions so we can better tailor the app to your needs."
+  "welcome_onboarding_desc": "We are very pleased that you have joined our community! Answer a few questions so we can better tailor the app to your needs.",
+  "sorting": {
+    "title": "Sorting order",
+    "desc": "Choose how flashcards are sorted in your library.",
+    "add_date_desc": "From newest",
+    "add_date_asc": "From oldest",
+    "grade_three_desc": "From best mastered",
+    "grade_three_asc": "From least mastered",
+    "repetitions_count_desc": "From most repeated",
+    "repetitions_count_asc": "From least repeated"
+  }
 }

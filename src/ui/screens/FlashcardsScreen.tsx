@@ -12,13 +12,15 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FlashcardListItem from "../components/items/FlashcardListItem";
 import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
 import { FlashList } from "@shopify/flash-list";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import ListFilter from "../components/ListFilter";
 import { WordWithDetails } from "../../types";
 import { useWordsWithDetails } from "../../store/WordsWithDetailsContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import EmptyList from "../components/EmptyList";
 import { ProgressBar } from "react-native-paper";
+import { useUserPreferences } from "../../store/UserPreferencesContext";
+import { getSortingMethod, getSortingMethodLabel } from "../../utils/sortingUtil";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -28,6 +30,7 @@ const FlashcardsScreen = () => {
   const wordWithDetailsContext = useWordsWithDetails();
   const numberOfWords = wordsContext.langWords.filter((word) => !word.removed).length;
   const langoWords = wordsContext.langWords.filter((word) => word.source == WordSource.LANGO && !word.removed).length;
+  const { flashcardsSortingMethod } = useUserPreferences();
 
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
@@ -44,8 +47,8 @@ const FlashcardsScreen = () => {
         !word.removed && (!searchingMode || (filter.trim() && (
           word.text.trim().toLowerCase().includes(filter.trim().toLowerCase()) ||
           word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
-      ).sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime()),
-    [searchingMode, filter, wordWithDetailsContext.langWordsWithDetails]);
+      ).sort(getSortingMethod(flashcardsSortingMethod)),
+    [searchingMode, flashcardsSortingMethod, filter, wordWithDetailsContext.langWordsWithDetails]);
 
   const avgGradeThreeProb = useMemo(() => (
     flashcards.length > 0
@@ -174,15 +177,26 @@ const FlashcardsScreen = () => {
 
   const renderSubheader = useMemo(() => {
     return (
-      <Pressable style={styles.subHeaderContainer} onPress={turnOnSearchingMode}>
-        <ListFilter
-          isSearching={searchingMode}
-          editable={false}
-          onClear={() => setFilter("")}
-          placeholder={t("searchFlashcard")}
-          placeholderTextColor={colors.primary600}
-        />
-      </Pressable>
+      <View style={styles.subHeaderContainer}>
+        <Pressable onPress={turnOnSearchingMode}>
+          <ListFilter
+            isSearching={searchingMode}
+            editable={false}
+            onClear={() => setFilter("")}
+            placeholder={t("searchFlashcard")}
+            placeholderTextColor={colors.primary600}
+          />
+        </Pressable>
+        <View style={styles.sortingHeader}>
+          <MaterialCommunityIcons name={'sort-variant'} color={colors.primary} size={18}/>
+          <CustomText
+            weight={'SemiBold'}
+            style={styles.sortingLabel}
+          >
+            {getSortingMethodLabel(flashcardsSortingMethod)}
+          </CustomText>
+        </View>
+      </View>
     );
   }, [searchingMode, filter, setFilter]);
 
@@ -197,7 +211,7 @@ const FlashcardsScreen = () => {
 
   const ListFilterHeader = useMemo(() => {
     return (
-      <View style={styles.subHeaderContainer}>
+      <View style={[styles.row, styles.subHeaderContainer]}>
         <Ionicons
           name={'arrow-back-sharp'}
           size={24}
@@ -287,6 +301,8 @@ const getStyles = (colors: any) => StyleSheet.create({
   subHeaderContainer: {
     backgroundColor: colors.card,
     paddingHorizontal: MARGIN_HORIZONTAL,
+  },
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -321,6 +337,16 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: 16,
     marginBottom: 6,
     marginHorizontal: MARGIN_HORIZONTAL,
+  },
+  sortingHeader: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingBottom: 8,
+    alignItems: 'center',
+  },
+  sortingLabel: {
+    color: colors.primary,
+    fontSize: 13
   }
 });
 

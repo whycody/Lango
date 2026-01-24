@@ -14,6 +14,15 @@ export enum SessionLength {
   LONG = 3,
 }
 
+export enum FlashcardSortingMethod {
+  ADD_DATE_ASC,
+  ADD_DATE_DESC,
+  GRADE_THREE_PROB_ASC,
+  GRADE_THREE_PROB_DESC,
+  REPETITIONS_COUNT_ASC,
+  REPETITIONS_COUNT_DESC,
+}
+
 interface UserPreferencesContext {
   flashcardSide: FlashcardSide;
   sessionMode: SessionMode;
@@ -21,12 +30,14 @@ interface UserPreferencesContext {
   sessionSpeechSynthesizer: boolean;
   vibrationsEnabled: boolean;
   askLaterNotifications: number | null;
+  flashcardsSortingMethod: FlashcardSortingMethod;
   setFlashcardSide: (side: FlashcardSide) => void;
   setSessionMode: (mode: SessionMode) => void;
   setSessionLength: (length: SessionLength) => void;
   setSessionSpeechSynthesizer: (sessionSpeechSynthesizer: boolean) => void;
   setVibrationsEnabled: (enabled: boolean) => void;
   setAskLaterNotifications: (timestamp: number) => void;
+  setFlashcardsSortingMethod: (method: FlashcardSortingMethod) => void;
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContext>({
@@ -36,12 +47,14 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   sessionSpeechSynthesizer: true,
   vibrationsEnabled: true,
   askLaterNotifications: null,
+  flashcardsSortingMethod: FlashcardSortingMethod.ADD_DATE_DESC,
   setFlashcardSide: () => {},
   setSessionMode: () => {},
   setSessionLength: () => {},
   setSessionSpeechSynthesizer: () => {},
   setVibrationsEnabled: () => {},
   setAskLaterNotifications: () => {},
+  setFlashcardsSortingMethod: () => {},
 });
 
 const FLASHCARD_SIDE_KEY = 'flashcardSide';
@@ -50,6 +63,7 @@ const SESSION_LENGTH_KEY = 'sessionLength';
 const SESSION_SPEECH_SYNTHESIZER_KEY = 'sessionSpeechSynthesizer';
 const VIBRATIONS_KEY = 'vibrationsEnabled';
 const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
+const FLASHCARDS_SORTING_METHOD = 'flashcardsSortingMethod';
 
 const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { storage } = useUserStorage();
@@ -59,6 +73,8 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV(SESSION_SPEECH_SYNTHESIZER_KEY, true, storage);
   const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(VIBRATIONS_KEY, true, storage);
   const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(ASK_LATER_NOTIFICATIONS_KEY, 0, storage);
+  const [flashcardsSortingMethod, setFlashcardsSortingMethod] = useTypedMMKV<FlashcardSortingMethod>(FLASHCARDS_SORTING_METHOD,
+    FlashcardSortingMethod.ADD_DATE_DESC, storage)
 
   return (
     <UserPreferencesContext.Provider
@@ -69,12 +85,14 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         sessionSpeechSynthesizer,
         vibrationsEnabled,
         askLaterNotifications,
+        flashcardsSortingMethod,
         setFlashcardSide,
         setSessionMode,
         setSessionLength,
         setSessionSpeechSynthesizer,
         setVibrationsEnabled,
         setAskLaterNotifications,
+        setFlashcardsSortingMethod,
       }}
     >
       {children}

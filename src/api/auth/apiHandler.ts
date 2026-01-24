@@ -17,7 +17,7 @@ const ACCESS_TOKEN = "accessToken";
 const REFRESH_TOKEN = "refreshToken";
 
 const profile = Updates.channel;
-const apiUrl = 'http:192.168.1.15:3000'
+const apiUrl = (!profile || ['test', 'development'].includes(profile)) ? process.env['API_DEV_URL'] : process.env['API_URL'];
 
 export const removeAccessToken = async (): Promise<void> => {
   accessToken = null;

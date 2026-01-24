@@ -7,7 +7,7 @@ import { useWords, WordSource } from "../../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FlashcardListItem from "../components/items/FlashcardListItem";
 import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
@@ -18,6 +18,7 @@ import { WordWithDetails } from "../../types";
 import { useWordsWithDetails } from "../../store/WordsWithDetailsContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import EmptyList from "../components/EmptyList";
+import { ProgressBar } from "react-native-paper";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -45,6 +46,10 @@ const FlashcardsScreen = () => {
           word.translation.trim().toLowerCase().includes(filter.trim().toLowerCase()))))
       ).sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime()),
     [searchingMode, filter, wordWithDetailsContext.langWordsWithDetails]);
+
+  const avgGradeThreeProb = flashcards.length > 0
+    ? flashcards.reduce((sum, card) => sum + (card.gradeThreeProb || 0), 0) / flashcards.length
+    : 0;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -83,7 +88,7 @@ const FlashcardsScreen = () => {
   }
 
   const handlePress = useCallback((id: string) => {
-    if(!!flashcards) console.log(flashcards.find((f) => f.id === id));
+    if (!!flashcards) console.log(flashcards.find((f) => f.id === id));
   }, [flashcards]);
 
   const handleEditPress = useCallback((id: string) => {
@@ -122,30 +127,46 @@ const FlashcardsScreen = () => {
   ), [handleEditPress, handleRemovePress]);
 
   const renderHeader = useMemo(() => {
-    return (
-      <View style={{ backgroundColor: colors.card }}>
-        <CustomText weight="Bold" style={styles.title}>{t('flashcards')}</CustomText>
-        <CustomText style={styles.subtitle}>
-          {t('soFar', { wordsCount: numberOfWords }) + ' ' +
-            (langoWords > 0 ? t('brag', { langoWords: langoWords }) : t('nextTime'))}
-        </CustomText>
-        <View style={styles.statsContainer}>
-          <StatisticItem
-            icon={'layers-outline'}
-            label={`${numberOfWords}`}
-            description={t('words')}
-            style={{ flex: 1 }}
-          />
-          <StatisticItem
-            icon={'layers-outline'}
-            label={`${langoWords}`}
-            description={t('langoWords')}
-            style={{ flex: 1 }}
-          />
-        </View>
-      </View>
-    );
-  }, [numberOfWords, langoWords]);
+        return (
+          <View style={{ backgroundColor: colors.card }}>
+            <CustomText weight="Bold" style={styles.title}>{t('flashcards')}</CustomText>
+            <CustomText style={styles.subtitle}>
+              {t('soFar', { wordsCount: numberOfWords }) + ' ' +
+                (langoWords > 0 ? t('brag', { langoWords: langoWords }) : t('nextTime'))}
+            </CustomText>
+            <View style={styles.statsContainer}>
+              <StatisticItem
+                icon={'layers-outline'}
+                label={`${numberOfWords}`}
+                description={t('words')}
+                style={{ flex: 1 }}
+              />
+              <StatisticItem
+                icon={'layers-outline'}
+                label={`${langoWords}`}
+                description={t('langoWords')}
+                style={{ flex: 1 }}
+              />
+            </View>
+            {flashcards.length > 0 &&
+              <>
+                <CustomText style={styles.subtitle}>
+                  {(t('avgGradeThree', { avgGrade: (avgGradeThreeProb * 100).toFixed(0) }) + ' ' +
+                    (avgGradeThreeProb >= 0.5 ? t('goodJob') : t('badJob')))}
+                </CustomText>
+                <ProgressBar
+                  animatedValue={avgGradeThreeProb}
+                  color={colors.primary}
+                  style={styles.progressBar}
+                />
+              </>
+            }
+          </View>
+        )
+          ;
+      }, [flashcards.length, numberOfWords, langoWords]
+    )
+  ;
 
   const renderSubheader = useMemo(() => {
     return (
@@ -276,7 +297,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: MARGIN_HORIZONTAL,
     marginTop: MARGIN_VERTICAL,
-    marginBottom: 5,
+    marginBottom: 12,
     gap: 12,
   },
   buttonContainer: {
@@ -287,7 +308,14 @@ const getStyles = (colors: any) => StyleSheet.create({
   statisticItem: {
     flex: 1,
     backgroundColor: colors.background
-  }
+  },
+  progressBar: {
+    marginTop: 16,
+    marginBottom: 6,
+    marginHorizontal: MARGIN_HORIZONTAL,
+    backgroundColor: colors.cardAccent,
+    height: 6,
+  },
 });
 
 export default FlashcardsScreen;

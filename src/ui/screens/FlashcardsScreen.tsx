@@ -156,11 +156,13 @@ const FlashcardsScreen = () => {
                   {(t('avgGradeThree', { avgGrade: (avgGradeThreeProb * 100).toFixed(0) }) + ' ' +
                     (avgGradeThreeProb >= 0.5 ? t('goodJob') : t('badJob')))}
                 </CustomText>
-                <ProgressBar
-                  animatedValue={avgGradeThreeProb}
-                  color={colors.primary}
-                  style={styles.progressBar}
-                />
+                <View style={styles.progressBarContainer}>
+                  <ProgressBar
+                    animatedValue={avgGradeThreeProb}
+                    color={colors.primary}
+                    style={styles.progressBar}
+                  />
+                </View>
               </>
             }
           </View>
@@ -312,12 +314,14 @@ const getStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.background
   },
   progressBar: {
+    backgroundColor: colors.cardAccent300,
+    height: 6,
+  },
+  progressBarContainer: {
     marginTop: 16,
     marginBottom: 6,
     marginHorizontal: MARGIN_HORIZONTAL,
-    backgroundColor: colors.cardAccent,
-    height: 6,
-  },
+  }
 });
 
 export default FlashcardsScreen;

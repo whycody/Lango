@@ -47,9 +47,11 @@ const FlashcardsScreen = () => {
       ).sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime()),
     [searchingMode, filter, wordWithDetailsContext.langWordsWithDetails]);
 
-  const avgGradeThreeProb = flashcards.length > 0
-    ? flashcards.reduce((sum, card) => sum + (card.gradeThreeProb || 0), 0) / flashcards.length
-    : 0;
+  const avgGradeThreeProb = useMemo(() => (
+    flashcards.length > 0
+      ? flashcards.reduce((sum, card) => sum + (card.gradeThreeProb || 0), 0) / flashcards.length
+      : 0
+  ), [flashcards]);
 
   useEffect(() => {
     const handleBackPress = () => {

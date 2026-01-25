@@ -24,7 +24,11 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
       end={{ x: 1, y: 1 }}
       style={styles.root}
     >
-      <CustomText weight={"SemiBold"} style={styles.text} adjustsFontSizeToFit>
+      <CustomText
+        weight={"SemiBold"}
+        style={[styles.text, text.length > 300 && styles.longText]}
+        adjustsFontSizeToFit
+      >
         {text}
       </CustomText>
       <View style={styles.cardIconsContainer}>
@@ -61,6 +65,10 @@ const getStyles = (colors: any) => StyleSheet.create({
     textAlignVertical: 'center',
     marginHorizontal: MARGIN_HORIZONTAL * 2,
     marginTop: MARGIN_VERTICAL * 2,
+  },
+  longText: {
+    textAlign: 'left',
+    marginTop: MARGIN_VERTICAL,
   },
   cardIconsContainer: {
     width: '100%',

@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useMemo } from "react";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
+import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTranslation } from "react-i18next";
 import Header from "../components/Header";
 import { FlashList } from "@shopify/flash-list";

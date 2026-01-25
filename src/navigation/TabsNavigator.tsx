@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../ui/screens/HomeScreen";
 import LibraryScreen from "../ui/screens/LibraryScreen";
-import { Foundation, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Foundation, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BackHandler, StyleSheet, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 import CustomText from "../ui/components/CustomText";
@@ -9,9 +9,11 @@ import HandleFlashcardBottomSheet from "../ui/sheets/HandleFlashcardBottomSheet"
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
+import ResourcesScreen from "../ui/screens/ResourcesScreen";
 
 export type TabsParamList = {
   Home: undefined;
+  Resources: undefined;
   Add: undefined;
   Library: undefined;
 };
@@ -46,8 +48,9 @@ const TabsNavigator = () => {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color }) => {
             const iconSize = route.name === 'Home' ? 28 : 26;
-            let iconName = route.name === 'Home' ? 'home' : route.name == 'Add' ? 'plus' : 'view-grid';
-            const IconFamily = route.name === 'Add' ? Foundation : MaterialCommunityIcons;
+            let iconName = route.name === 'Home' ? 'home' : route.name == 'Add' ? 'plus' : route.name == 'Resources' ?
+              'folder-open-sharp' : 'view-grid';
+            const IconFamily = route.name === 'Add' ? Foundation : route.name === 'Resources' ? Ionicons : MaterialCommunityIcons;
             return <IconFamily
               name={iconName}
               size={iconSize}
@@ -67,6 +70,7 @@ const TabsNavigator = () => {
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
+        <Tab.Screen name="Resources" component={ResourcesScreen} options={{ headerShown: false }}/>
         <Tab.Screen name="Add" component={View} listeners={() => ({
           tabPress: (e) => {
             e.preventDefault();

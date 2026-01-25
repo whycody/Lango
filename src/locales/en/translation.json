@@ -1,6 +1,7 @@
 {
   "home": "Home",
   "library": "Library",
+  "resources": "Resources",
   "report1": "Your dictionary is still quite empty.. *Add a few words* to start learning and track your progress \uD83D\uDCDA Every new word brings you closer to mastering the language!",
   "report2": "It's time to study ⏰ Click the button below to start your session 👇",
   "report3": "You already know *{{wellKnownWords}}* words well, but it's not time to rest. Click the button below to continue learning 👇",
@@ -142,5 +143,11 @@
     "grade_three_asc": "From least mastered",
     "repetitions_count_desc": "From most repeated",
     "repetitions_count_asc": "From least repeated"
+  },
+  "res": {
+    "title": "Words sets",
+    "desc": "Create smaller, themed flashcard sets (e.g. by topic, level, or learning goal) to better organize your study materials. You can choose to add each set to your main vocabulary collection or keep it as a separate, independent set.",
+    "add_new_set": "Add new set +",
+    "join_set": "Add a new set using a code"
   }
 }

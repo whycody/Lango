@@ -1,6 +1,7 @@
 {
   "home": "Główna",
   "library": "Biblioteka",
+  "resources": "Zestawy",
   "report1": "W Twoim słowniku ciężko jest coś znaleźć. *Dodaj kilka słówek*, aby rozpocząć naukę i śledzić swoje postępy \uD83D\uDCDA Każde nowe słowo przybliża Cię do lepszej znajomości języka!",
   "report2": "Nadszedł czas na naukę ⏰ Kliknij w przycisk poniżej, aby rozpocząć sesję \uD83D\uDC47",
   "report3": "Dobrze umiesz już aż *{{wellKnownWords}}* słówek, jednak to nie czas na odpoczynek. Kliknij w przycisk poniżej, aby kontynuować naukę \uD83D\uDC47",
@@ -144,5 +145,11 @@
     "grade_three_asc": "Od najsłabiej opanowanych",
     "repetitions_count_desc": "Od najczęściej powtarzanych",
     "repetitions_count_asc": "Od najrzadziej powtarzanych"
+  },
+  "res": {
+    "title": "Zestawy nauki",
+    "desc": "Twórz mniejsze, tematyczne zestawy fiszek (np. według tematu, poziomu lub celu nauki), aby lepiej porządkować materiał. Każdy zestaw możesz samodzielnie dodać do głównej kolekcji słówek albo pozostawić jako osobny i niezależny.",
+    "add_new_set": "Dodaj nowy zestaw +",
+    "join_set": "Dodaj zestaw za pomocą kodu"
   }
 }

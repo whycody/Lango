@@ -6,6 +6,7 @@ import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../a
 import { User } from '../../types';
 import LoadingView from "../../ui/components/LoadingView";
 import { useMMKVObject } from "react-native-mmkv";
+import axios, { AxiosError } from "axios";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -53,7 +54,10 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setIsAuthenticated(false);
       }
     } catch (error) {
-      console.log('Received error during session loading:', error);
+      if (axios.isAxiosError(error) && error.code === AxiosError.ERR_NETWORK && user) {
+        setUser(user);
+        setIsAuthenticated(true);
+      }
       if (error.response?.status !== 401) return;
       console.log("Error loading session: ", error);
       await removeData();

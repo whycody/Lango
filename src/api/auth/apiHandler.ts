@@ -150,6 +150,6 @@ export const apiCall = async <T>(
       }
     }
 
-    throw new Error(`API error: ${error.response?.status || error.message}`);
+    throw error;
   }
 };

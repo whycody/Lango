@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { refreshTokens } from "../apiClient";
 import * as Updates from 'expo-updates';
 
@@ -103,7 +103,7 @@ export const apiCall = async <T>(
     data?: object | string;
   },
   refreshed: boolean = false,
-  timeout: number = 15000
+  timeout?: number
 ): Promise<T> => {
   // console.log("Calling API:", options.method, `${getBaseURL()}${options.url}`, options.data);
 
@@ -122,10 +122,11 @@ export const apiCall = async <T>(
   try {
     const fullUrl = `${apiUrl}${options.url}`;
 
-    const axiosConfig: any = {
+    const axiosConfig: AxiosRequestConfig = {
       method: options.method,
       url: fullUrl,
       headers,
+      timeout
     };
 
     if (options.data && typeof options.data === 'object' && Object.keys(options.data).length > 0) {

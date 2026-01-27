@@ -53,6 +53,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setIsAuthenticated(false);
       }
     } catch (error) {
+      console.log('Received error during session loading:', error);
       if (error.response?.status !== 401) return;
       console.log("Error loading session: ", error);
       await removeData();

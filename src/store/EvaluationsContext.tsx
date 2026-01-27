@@ -68,8 +68,6 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const unsyncedEvaluations = getUnsyncedItems<Evaluation>(evaluationsList);
       const serverUpdates = await syncInBatches<Evaluation>(unsyncedEvaluations, syncEvaluationsOnServer);
 
-      if (!serverUpdates) return;
-
       const updatedEvaluations = updateLocalItems<Evaluation>(evaluationsList, serverUpdates);
       const serverEvaluations = await fetchNewEvaluations(updatedEvaluations);
       const mergedEvaluations = mergeLocalAndServer<Evaluation>(updatedEvaluations, serverEvaluations);

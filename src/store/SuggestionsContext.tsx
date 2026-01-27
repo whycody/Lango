@@ -93,8 +93,6 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const unsyncedSuggestions = getUnsyncedItems<Suggestion>(langSuggestionsList);
       const serverUpdates = await syncInBatches<Suggestion>(unsyncedSuggestions, syncSuggestionsOnServer);
 
-      if (!serverUpdates) return;
-
       const updatedSuggestions = updateLocalItems<Suggestion>(langSuggestionsList, serverUpdates);
       const serverSuggestions = await fetchNewSuggestions(updatedSuggestions);
       suggestionsList = inputSuggestions ?? (await getAllSuggestions());

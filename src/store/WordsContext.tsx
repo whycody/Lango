@@ -113,8 +113,6 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const unsyncedWords = getUnsyncedItems<Word>(wordsList);
       const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
 
-      if (!serverUpdates) return;
-
       const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
       const serverWords = await fetchNewWords(updatedWords);
       const mergedWords = mergeLocalAndServer<Word>(updatedWords, serverWords);

@@ -93,8 +93,6 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const unsyncedSessions = getUnsyncedItems<Session>(sessionsList);
       const serverUpdates = await syncInBatches<Session>(unsyncedSessions, syncSessionsOnServer);
 
-      if (!serverUpdates) return;
-
       const updatedSessions = updateLocalItems<Session>(sessionsList, serverUpdates);
       const serverSessions = await fetchNewSessions(updatedSessions);
       const mergedSessions = mergeLocalAndServer<Session>(updatedSessions, serverSessions);

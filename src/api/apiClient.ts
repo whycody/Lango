@@ -16,7 +16,7 @@ export const getUserInfo: () => Promise<User | null> = async () => {
     method: 'GET',
     url: '/users/users',
     data: {}
-  });
+  }, false, 10000);
 }
 
 export const updateUserLanguages = async (mainLang: LanguageCode, translationLang: LanguageCode) => {

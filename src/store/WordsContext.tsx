@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
 import uuid from 'react-native-uuid';
@@ -18,7 +18,7 @@ interface WordsContextProps {
   words: Word[];
   loading: boolean;
   langWords: Word[];
-  addWord: (text: string, translation: string, source?: string) => Word | null;
+  addWord: (text: string, translation: string, source?: WordSource) => Word | null;
   getWord: (id: string) => Word | undefined;
   editWord: (updatedWord: Partial<Word>) => void;
   removeWord: (id: string) => void;
@@ -47,10 +47,13 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [words, setWords] = useState<Word[]>(initialLoad.words);
   const { mainLang, translationLang } = useLanguage();
   const { saveWords, getAllWords, updateWord } = useWordsRepository();
-  const langWords = words.filter((word) => word.mainLang == mainLang && word.translationLang == translationLang);
   const syncing = useRef(false);
 
-  const createWord = (text: string, translation: string, source: string): Word => ({
+  const langWords = useMemo(() => words.filter((word) =>
+    !word.removed && word.mainLang == mainLang && word.translationLang == translationLang
+  ), [words, mainLang, translationLang]);
+
+  const createWord = (text: string, translation: string, source: WordSource): Word => ({
     id: uuid.v4(),
     text,
     translation,
@@ -65,7 +68,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     locallyUpdatedAt: new Date().toISOString(),
   });
 
-  const addWord = (text: string, translation: string, source: string) => {
+  const addWord = (text: string, translation: string, source: WordSource) => {
     const word = words.find((word) => word.text === text && word.translation === translation);
     if (word) {
       editWord({ id: word.id, removed: false });

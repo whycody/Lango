@@ -75,7 +75,6 @@
         "backgroundColor": "#07071b"
       },
       "googleServicesFile": "./config/google-services.json",
-      "edgeToEdgeEnabled": true,
       "package": "com.whycody.lango",
       "versionCode": 13
     },

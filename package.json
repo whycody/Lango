@@ -23,7 +23,7 @@
     "@types/react": "~18.3.12",
     "axios": "1.12.0",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
-    "expo": "~52.0.47",
+    "expo": "~52.0.49",
     "expo-dev-client": "~5.0.19",
     "expo-haptics": "~14.0.1",
     "expo-linear-gradient": "~14.0.2",
@@ -33,7 +33,7 @@
     "expo-speech": "~13.0.1",
     "expo-splash-screen": "~0.29.24",
     "expo-status-bar": "~2.0.1",
-    "expo-updates": "~0.27.4",
+    "expo-updates": "~0.27.5",
     "i18next": "^23.16.2",
     "intl-pluralrules": "~2.0.1",
     "lodash.debounce": "^4.0.8",
@@ -75,7 +75,8 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
-          "react-native-flip-card"
+          "react-native-flip-card",
+          "react-native-sqlite-storage"
         ],
         "listUnknownPackages": false
       }

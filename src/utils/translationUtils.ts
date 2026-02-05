@@ -7,8 +7,8 @@ interface TranslationResponse {
   }[];
 }
 
-const key = process.env["AZURE_TRANSLATOR_API_KEY"];
-const region = process.env["AZURE_TRANSLATOR_REGION"];
+const key = process.env.AZURE_TRANSLATOR_KEY;
+const region = process.env.AZURE_TRANSLATOR_REGION;
 const endpoint = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0'
 
 class TranslationUtils {

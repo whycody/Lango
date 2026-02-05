@@ -19,8 +19,8 @@ interface AuthContextType {
 }
 
 GoogleSignin.configure({
-  webClientId: process.env["GOOGLE_WEB_CLIENT_ID"],
-  iosClientId: process.env["GOOGLE_IOS_CLIENT_ID"],
+  webClientId: process.env.GOOGLE_WEB_CLIENT_ID,
+  iosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
   scopes: ['profile', 'email'],
 });
 

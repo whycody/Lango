@@ -99,10 +99,10 @@ const LibraryScreen = () => {
         authContext.logout();
         break;
       case LibraryItems.PRIVACY_POLICY:
-        Linking.openURL(`${process.env['SITE_URL']}/privacy_policy`);
+        Linking.openURL(`${process.env.SITE_URL}/privacy_policy`);
         break;
       case LibraryItems.USE_CONDITIONS:
-        Linking.openURL(`${process.env['SITE_URL']}/terms_of_service`);
+        Linking.openURL(`${process.env.SITE_URL}/terms_of_service`);
         break;
       case LibraryItems.SETTINGS:
         navigation.navigate(ScreenName.Settings);

@@ -100,9 +100,16 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
+      console.log('LangoEnv RESPONSE: ', response);
       const res = await signInWithGoogle(response.data.idToken);
+      console.log('LangoEnv RES: ', response);
       if (res) await handleReceivedTokens(res);
     } catch (apiError) {
+      console.log('LangoEnv ERROR1: ', apiError);
+      console.log('LangoEnv ERROR2: ', apiError?.response);
+      console.log('LangoEnv ERROR3: ', apiError?.response?.data);
+      console.log('LangoEnv ERROR4: ', apiError?.response?.data?.error);
+      console.log('LangoEnv ERROR5: ', apiError?.response?.data?.error?.message);
       setAuthError(apiError?.response?.data?.error?.message || 'Something went wrong');
     } finally {
       setLoading(false);

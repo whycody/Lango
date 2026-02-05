@@ -62,7 +62,6 @@
       "supportsTablet": true,
       "buildNumber": "14",
       "bundleIdentifier": "com.whycody.lango",
-      "googleServicesFile": "./config/GoogleService-Info.plist",
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
@@ -74,7 +73,6 @@
         "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#07071b"
       },
-      "googleServicesFile": "./config/google-services.json",
       "package": "com.whycody.lango",
       "versionCode": 14
     },

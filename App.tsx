@@ -20,6 +20,10 @@ import { useMMKV } from "react-native-mmkv";
 import * as Notifications from 'expo-notifications';
 
 export default function App() {
+  console.log('LangoEnv GOOGLE_WEB_CLIENT_ID: ', process.env.GOOGLE_WEB_CLIENT_ID);
+  console.log('LangoEnv GOOGLE_SERVICES_JSON: ', process.env.GOOGLE_SERVICES_JSON);
+  console.log('LangoEnv API_URL: ', process.env.API_URL);
+  console.log('LangoEnv API_DEV_URL: ', process.env.API_DEV_URL);
   const { i18n } = useTranslation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [applicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, i18n.language as LanguageCode, useMMKV());

@@ -8,11 +8,12 @@ export default ({config}) => {
     android: {
       ...config.android,
       package: isTest ? "com.whycody.lango.test" : isDev ? "com.whycody.lango.dev" : "com.whycody.lango",
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON
     },
     ios: {
       ...config.ios,
       bundleIdentifier: isTest ? "com.whycody.lango.test" : isDev ? "com.whycody.lango.dev" : "com.whycody.lango",
-      googleServicesFile: isTest ? "./config/GoogleService-Info-Test.plist" : isDev ? "./config/GoogleService-Info-Dev.plist" : "./config/GoogleService-Info.plist"
+      googleServicesFile: isTest ? process.env.GOOGLE_SERVICES_IOS_TEST : isDev ? process.env.GOOGLE_SERVICES_IOS_DEV : process.env.GOOGLE_SERVICES_IOS
     }
   };
 };

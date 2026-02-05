@@ -14,19 +14,22 @@
       "android": {
         "buildType": "apk"
       },
-      "channel": "preview"
+      "channel": "preview",
+      "environment": "preview"
     },
     "test": {
       "android": {
         "buildType": "apk"
       },
-      "channel": "test"
+      "channel": "test",
+      "environment": "development"
     },
     "production": {
       "channel": "production",
       "android": {
         "buildType": "apk"
-      }
+      },
+      "environment": "production"
     }
   },
   "submit": {

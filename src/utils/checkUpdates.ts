@@ -5,10 +5,11 @@ export async function checkUpdates() {
   try {
     const update = await Updates.checkForUpdateAsync();
     if (update.isAvailable) {
+      await SplashScreen.preventAutoHideAsync()
       await Updates.fetchUpdateAsync();
       await Updates.reloadAsync();
     }
-  } catch {
+  } finally {
     await SplashScreen.hideAsync()
   }
 }

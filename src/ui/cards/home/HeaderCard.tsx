@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { BackHandler, Pressable, StyleSheet, View } from "react-native";
+import { AppState, BackHandler, Pressable, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { expo } from '../../../../app.json'
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
@@ -60,6 +60,15 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
 
   useLayoutEffect(() => {
     setStreak(getCurrentStreak(statisticsContext.studyDaysList));
+  }, [statisticsContext.studyDaysList]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      setStreak(getCurrentStreak(statisticsContext.studyDaysList));
+    });
+
+    return () => subscription.remove();
   }, [statisticsContext.studyDaysList]);
 
   const handleActinButtonPress = () => {

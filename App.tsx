@@ -18,6 +18,9 @@ import { APPLICATION_LANG } from "./src/store/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { useMMKV } from "react-native-mmkv";
 import * as Notifications from 'expo-notifications';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync()
 
 export default function App() {
   const { i18n } = useTranslation();
@@ -30,7 +33,12 @@ export default function App() {
     i18n.changeLanguage(applicationLang);
   }, [applicationLang]);
 
-  checkUpdates();
+  const checkForUpdates = async () => {
+    await checkUpdates();
+    await SplashScreen.hideAsync();
+  }
+
+  checkForUpdates()
 
   AppState.addEventListener('change', state => {
     if (state === 'active') {

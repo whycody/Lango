@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { FC } from "react";
@@ -10,8 +10,8 @@ import MarqueeRow from "../components/login/MovingWordsGrid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type LoginProps = {
-  login: (method: "Google" | "Facebook") => Promise<void>;
-  loading: "Google" | "Facebook" | false;
+  login: (method: "Google" | "Facebook" | "Apple") => Promise<void>;
+  loading: "Google" | "Facebook" | "Apple" | false;
   authError: string | null;
 }
 
@@ -51,6 +51,16 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
           onPress={() => login('Facebook')}
           loading={loading === 'Facebook'}
         />
+        {Platform.OS == 'ios' && (
+          <ActionButton
+            label={t('login_with_apple')}
+            primary={true}
+            style={styles.button}
+            icon={'logo-apple'}
+            onPress={() => login('Apple')}
+            loading={loading === 'Apple'}
+          />
+        )}
       </View>
     </View>
   );

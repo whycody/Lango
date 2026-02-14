@@ -2,16 +2,17 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './apiHandler';
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
-import { getUserInfo, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
+import { getUserInfo, signInWithApple, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
 import { User } from '../../types';
 import LoadingView from "../../ui/components/LoadingView";
 import { useMMKVObject } from "react-native-mmkv";
 import axios, { AxiosError } from "axios";
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  loading: "Google" | "Facebook" | false;
-  login: (method: 'Google' | 'Facebook') => Promise<void>;
+  loading: "Google" | "Facebook" | "Apple" | false;
+  login: (method: 'Google' | 'Facebook' | 'Apple') => Promise<void>;
   authError: string | null;
   user: User | null;
   getSession: () => Promise<void>;
@@ -29,7 +30,7 @@ const USER_PROFILE_INFO = "@user_info";
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState<"Google" | "Facebook" | false>(false);
+  const [loading, setLoading] = useState<"Google" | "Facebook" | "Apple" | false>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
@@ -71,10 +72,20 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setUser(null);
   }
 
-  const login = async (method: 'Google' | 'Facebook') => {
+  const login = async (method: 'Google' | 'Facebook' | 'Apple') => {
     setLoading(method);
-    if (method == 'Google') await loginWithGoogle();
-    else await loginWithFacebook();
+
+    if (method == 'Google') {
+      await loginWithGoogle();
+      return
+    }
+
+    if (method == 'Facebook') {
+      await loginWithFacebook();
+      return;
+    }
+
+    await loginWithApple();
   };
 
   const loginWithFacebook = async () => {
@@ -108,6 +119,36 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(false);
     }
   }
+
+  const loginWithApple = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      const fullName = [
+        credential.fullName?.givenName,
+        credential.fullName?.middleName,
+        credential.fullName?.familyName,
+      ].filter(Boolean).join(' ');
+
+      const res = await signInWithApple(credential.identityToken, fullName);
+      if (res) await handleReceivedTokens(res);
+    } catch (e: any) {
+      if (e.code === 'ERR_CANCELED') return;
+
+      setAuthError(
+        e?.response?.data?.error?.message ||
+        e?.message ||
+        'Something went wrong'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleReceivedTokens = async (res) => {
     await setAccessToken(res.accessToken);

@@ -62,6 +62,21 @@ export const signInWithFacebook = async (accessToken: string) => {
   }
 }
 
+export const signInWithApple = async (accessToken: string, fullName: string) => {
+  try {
+    const deviceId = await getDeviceId();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return await apiCall({
+      method: 'POST',
+      url: '/auth/login/apple',
+      data: { accessToken, deviceId, timezone, fullName }
+    }, true);
+  } catch (e) {
+    console.error('POST /auth/login/facebook', e);
+    return null;
+  }
+}
+
 export const refreshTokens = async (refreshToken: string) => {
   try {
     const deviceId = await getDeviceId();

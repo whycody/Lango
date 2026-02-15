@@ -101,7 +101,7 @@ const getStyles = (colors: any, primary: boolean, active: boolean) => StyleSheet
     backgroundColor: primary ? colors.primary : undefined,
     borderWidth: primary ? 0 : 2,
     borderColor: colors.cardAccent,
-    paddingVertical: 14,
+    paddingVertical: primary ? 14 : 12,
     paddingHorizontal: 24,
     flexDirection: 'row',
     justifyContent: 'center',

@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import MarqueeRow from "../components/login/MovingWordsGrid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserProvider } from "../../types";
+import * as Updates from "expo-updates";
 
 type LoginProps = {
   login: (method: UserProvider) => Promise<void>;
@@ -21,6 +22,9 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
   const { t } = useTranslation();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
+
+  const profile = Updates.channel;
+  const isTest = (!profile || ['test', 'development'].includes(profile))
 
   return (
     <View style={[styles.root, { paddingTop: MARGIN_VERTICAL * 2 + insets.top, paddingBottom: MARGIN_VERTICAL * 2 + insets.bottom }]}>
@@ -56,7 +60,8 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
         />
         <ActionButton
           label={t('login_with_facebook')}
-          primary={true}
+          primary={Platform.OS !== 'ios'}
+          active={isTest}
           style={styles.button}
           icon={'logo-facebook'}
           onPress={() => login(UserProvider.FACEBOOK)}

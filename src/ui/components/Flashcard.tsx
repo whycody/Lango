@@ -12,6 +12,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Suggestion } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 import { useHaptics } from "../../hooks/useHaptics";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 interface FlashcardProps {
   onFlashcardPress?: (add: boolean) => void;
@@ -72,6 +74,7 @@ const Flashcard = forwardRef(({ onFlashcardPress, suggestion, style }: Flashcard
     await triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
     if (add) {
       const addWord = wordsContext.addWord(suggestion.word, suggestion.translation, WordSource.LANGO);
+      trackEvent(AnalyticsEventName.SUGGESTION_ADD, { suggestionId: suggestion.id, successfully: !!addWord })
       if (!addWord) setBackText(t('wordNotAdded'));
     } else setBackText(t('change_flashcard'));
     setTimeout(() => onFlashcardPress(add), 150);

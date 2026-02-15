@@ -14,6 +14,8 @@ import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LibraryItems } from "../../constants/LibraryItems";
 import { ScreenName } from "../../navigation/AppStack";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();
@@ -93,18 +95,22 @@ const LibraryScreen = () => {
         navigation.navigate(ScreenName.Flashcards);
         break;
       case LibraryItems.LANGUAGE:
+        trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, { source: 'library_screen', type: 'main' })
         languageBottomSheetRef.current?.present();
         break;
       case LibraryItems.LOGOUT:
         authContext.logout();
         break;
       case LibraryItems.PRIVACY_POLICY:
+        trackEvent(AnalyticsEventName.OPEN_PRIVACY_POLICY)
         Linking.openURL(`${process.env.SITE_URL}/privacy_policy`);
         break;
       case LibraryItems.USE_CONDITIONS:
+        trackEvent(AnalyticsEventName.OPEN_USE_CONDITIONS)
         Linking.openURL(`${process.env.SITE_URL}/terms_of_service`);
         break;
       case LibraryItems.SETTINGS:
+        trackEvent(AnalyticsEventName.NAVIGATE_SETTINGS)
         navigation.navigate(ScreenName.Settings);
         break;
       default:

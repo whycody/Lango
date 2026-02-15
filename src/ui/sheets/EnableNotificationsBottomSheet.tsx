@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { useUserPreferences } from "../../store/UserPreferencesContext";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 type EnableNotificationsBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
@@ -25,8 +27,13 @@ const EnableNotificationsBottomSheet = forwardRef<BottomSheetModal, EnableNotifi
 
   const askForNotificationPermission = async () => {
     const granted = await ensureNotificationsPermission();
-    if (!granted) return;
 
+    if (!granted) {
+      trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_FAILURE, { reason: 'Permissions not granted' });
+      return;
+    }
+
+    trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS)
     await registerNotificationsToken();
     ref.current?.dismiss();
   };

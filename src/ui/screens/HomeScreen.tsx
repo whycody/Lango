@@ -20,6 +20,8 @@ import { ScreenName } from "../../navigation/AppStack";
 import { SessionMode } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 import { useTheme } from "@react-navigation/native";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 const HomeScreen = ({ navigation }) => {
   const auth = useAuth();
@@ -38,6 +40,10 @@ const HomeScreen = ({ navigation }) => {
   const { askLaterNotifications } = useUserPreferences();
   const { mainLang, translationLang } = useLanguage();
   const { user } = useAuth();
+
+  useEffect(() => {
+    trackEvent(AnalyticsEventName.NAVIGATE_HOME)
+  }, []);
 
   const tryToRefreshData = async () => {
     try {
@@ -60,6 +66,7 @@ const HomeScreen = ({ navigation }) => {
       const { status } = await Notifications.getPermissionsAsync();
       if (status == 'granted' && user.notificationsEnabled) registerNotificationsToken();
       if ((askLaterNotifications && Date.now() < askLaterNotifications) || status == 'granted') return;
+      trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN)
       enableNotificationsRef.current?.present();
     }
 
@@ -83,7 +90,9 @@ const HomeScreen = ({ navigation }) => {
   }, [words, sessions, suggestions, evaluations, auth]);
 
   const navigateToSessionScreen = (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {
-    navigation.navigate(ScreenName.Session, { length: length, mode: mode, flashcardSide: flashcardSide });
+    const props = { length, mode, flashcardSide, restarted: false };
+    trackEvent(AnalyticsEventName.SESSION_STARTED, props);
+    navigation.navigate(ScreenName.Session, props);
   }
 
   const languagesAreTheSame = mainLang === translationLang;

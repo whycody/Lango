@@ -21,6 +21,8 @@ import { registerNotificationsToken } from "../../utils/registerNotificationsTok
 import { updateNotificationsEnabled } from "../../api/apiClient";
 import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
 import { useAuth } from "../../api/auth/AuthProvider";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();
@@ -65,8 +67,13 @@ const SettingsScreen = () => {
 
   const checkNotifications = async () => {
     const granted = await ensureNotificationsPermission();
-    if (!granted) return;
 
+    if (!granted) {
+      trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_FAILURE, { reason: 'Permissions not granted' });
+      return;
+    }
+
+    trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS)
     setNotificationsStatus('granted');
     await registerNotificationsToken();
     await updateNotificationsEnabled(true);
@@ -77,6 +84,7 @@ const SettingsScreen = () => {
     if (!notificationsEnabled) {
       await checkNotifications();
     } else {
+      trackEvent(AnalyticsEventName.NOTIFICATIONS_DISABLE)
       await updateNotificationsEnabled(false);
       await getSession();
     }
@@ -166,7 +174,12 @@ const SettingsScreen = () => {
       case SettingsItems.TRANSLATION_LANGUAGE:
       case SettingsItems.APPLICATION_LANGUAGE:
       case SettingsItems.MAIN_LANGUAGE:
-        setPickedLanguageType(mapSettingsToLanguageType(id));
+        const languageType = mapSettingsToLanguageType(id);
+        trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
+          source: 'settings_screen',
+          type: languageType == LanguageTypes.MAIN ? 'main' : languageType === LanguageTypes.TRANSLATION ? 'translation' : 'app'
+        });
+        setPickedLanguageType(languageType);
         languageBottomSheetRef.current?.present();
         break;
       case SettingsItems.VIBRATIONS:

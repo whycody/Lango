@@ -22,6 +22,8 @@ import { ProgressBar } from "react-native-paper";
 import { useUserPreferences } from "../../store/UserPreferencesContext";
 import { getSortingMethod, getSortingMethodLabel } from "../../utils/sortingUtil";
 import SortingMethodBottomSheet from "../sheets/SortingMethodBottomSheet";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();
@@ -92,6 +94,7 @@ const FlashcardsScreen = () => {
 
   const handleActionButtonPress = () => {
     setEditFlashcardId(null);
+    trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, { mode: 'add', source: 'flashcards_screen' });
     handleFlashcardBottomSheetRef.current.present();
   }
 
@@ -102,6 +105,7 @@ const FlashcardsScreen = () => {
   const handleEditPress = useCallback((id: string) => {
     Keyboard.dismiss();
     setEditFlashcardId(id);
+    trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, { mode: 'edit', source: 'flashcards_screen' });
     handleFlashcardBottomSheetRef.current.present();
   }, []);
 

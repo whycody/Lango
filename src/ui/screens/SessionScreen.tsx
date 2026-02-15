@@ -28,6 +28,8 @@ import { WordUpdate } from "../../types/utils/WordUpdate";
 import { useHaptics } from "../../hooks/useHaptics";
 import { ScreenName } from "../../navigation/AppStack";
 import { useLanguage } from "../../store/LanguageContext";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 export type SessionScreenParams = {
   length: SessionLength;
@@ -90,8 +92,13 @@ const SessionScreen = ({ navigation }) => {
 
   useEffect(() => {
     const handleBackPress = () => {
-      if (bottomSheetIsShown) hideBottomSheets();
-      else leaveSessionBottomSheetRef.current?.present();
+      if (bottomSheetIsShown) {
+        hideBottomSheets();
+        return true;
+      }
+
+      trackEvent(AnalyticsEventName.LEAVE_SESSION_SHEET_OPEN)
+      leaveSessionBottomSheetRef.current?.present();
       return true;
     };
 
@@ -209,6 +216,7 @@ const SessionScreen = ({ navigation }) => {
     confettiRef.current?.play(0);
     saveProgress(true);
     triggerHaptics(Haptics.ImpactFeedbackStyle.Heavy);
+    trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN)
     finishSessionBottomSheetRef.current?.present();
   }
 
@@ -224,6 +232,7 @@ const SessionScreen = ({ navigation }) => {
   }
 
   const startNewSession = () => {
+    trackEvent(AnalyticsEventName.SESSION_STARTED, { length, mode, flashcardSide, restarted: true });
     setFlippedCards(Array(length * 10).fill(false));
     setNumberOfSession((prev) => prev + 1);
     setWordsUpdates([]);
@@ -238,12 +247,19 @@ const SessionScreen = ({ navigation }) => {
 
   const handleSessionExit = () => {
     saveProgress(false);
+    trackEvent(AnalyticsEventName.SESSION_SKIPPED, {
+      length,
+      mode,
+      flashcardSide,
+      evaluatedCount: wordsUpdates.length
+    });
     navigation.navigate(ScreenName.Tabs);
   }
 
   const saveProgress = (finished: boolean) => {
     if (wordsUpdates.length == 0) return;
     const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
+    if (finished) trackEvent(AnalyticsEventName.SESSION_COMPLETED, { length, mode, flashcardSide, avgGrade });
     const { mainLang, translationLang } = wordSet.words[0];
     const session = sessionsContext.addSession(mode, model, version, avgGrade, length * 10, mainLang, translationLang, finished);
     evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
@@ -260,6 +276,16 @@ const SessionScreen = ({ navigation }) => {
       )
     );
   };
+
+  const handleSessionExitPress = () => {
+    trackEvent(AnalyticsEventName.LEAVE_SESSION_SHEET_OPEN)
+    leaveSessionBottomSheetRef.current?.present();
+  }
+
+  const handleSessionSettingsPress = () => {
+    trackEvent(AnalyticsEventName.SESSION_SETTINGS_SHEET_OPEN)
+    sessionSettingsBottomSheetRef.current?.present();
+  }
 
   return (
     <View style={styles.container}>
@@ -292,8 +318,8 @@ const SessionScreen = ({ navigation }) => {
           length={length}
           cardsSetLength={cards.length}
           progress={progress}
-          onSessionExit={() => leaveSessionBottomSheetRef.current?.present()}
-          onSettingsPressed={() => sessionSettingsBottomSheetRef.current?.present()}
+          onSessionExit={handleSessionExitPress}
+          onSettingsPressed={handleSessionSettingsPress}
         />
         <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
           <ProgressBar

@@ -13,6 +13,8 @@ import WelcomeScreen from "./WelcomeScreen";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLanguage } from "../../store/LanguageContext";
 import { updateUserLanguages } from "../../api/apiClient";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -34,6 +36,10 @@ const OnboardingScreen = () => {
   const [welcomeScreenIsReady, setWelcomeScreenIsReady] = useState(false);
   const buttonEnabled = currentStep === 0 && welcomeScreenIsReady || currentStep === 1 && !!mainLang ||
     currentStep === 2 && !!translationLang;
+
+  useEffect(() => {
+    trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED)
+  }, []);
 
   const scrollToScreen = useCallback((screenIndex: number) => {
     const offsetY = screenIndex * (screenHeight + insets.top + insets.bottom);
@@ -72,7 +78,10 @@ const OnboardingScreen = () => {
   const updateUserData = useCallback(async () => {
     setLoading(true);
     const res = await updateUserLanguages(mainLang, translationLang);
-    if (!!res) await getSession();
+    if (!!res) {
+      trackEvent(AnalyticsEventName.ONBOARDING_FINISHED)
+      await getSession();
+    }
     setLoading(false);
   }, [mainLang, translationLang]);
 

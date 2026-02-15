@@ -16,6 +16,8 @@ export enum SessionModelVersion {
   R1 = 'r1',
 }
 
+export const PICKED_SESSION_MODEL_VERSION = SessionModelVersion.ML2;
+
 export type UserStats = {
   studyDays: string[];
   sessionCount: number;

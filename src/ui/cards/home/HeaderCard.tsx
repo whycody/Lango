@@ -19,6 +19,8 @@ import { useStatistics } from "../../../store/StatisticsContext";
 import { useLanguage } from "../../../store/LanguageContext";
 import { useWordsHeuristicStates } from "../../../store/WordsHeuristicStatesContext";
 import { useWords } from "../../../store/WordsContext";
+import { trackEvent } from "../../../utils/analytics";
+import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
 
 type HeaderCardProps = {
   navigateToSessionScreen(length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide): void;
@@ -71,7 +73,8 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
     return () => subscription.remove();
   }, [statisticsContext.studyDaysList]);
 
-  const handleActinButtonPress = () => {
+  const handleActionButtonPress = () => {
+    trackEvent(AnalyticsEventName.START_SESSION_SHEET_OPEN)
     sessionSheetRef.current.present();
   }
 
@@ -91,6 +94,11 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
     return t('report6', { percentage, wellKnownWords });
   }
 
+  const handleLanguageSheetOpen = () => {
+    trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, { source: 'main_screen', type: 'main' });
+    languageSheetRef.current.present();
+  }
+
   return (
     <View style={styles.root}>
       <StartSessionBottomSheet
@@ -102,26 +110,31 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
         ref={languageSheetRef}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={styles.container}>
         <CustomText weight={"Bold"} style={styles.mainText}>{expo.name}</CustomText>
         <MaterialCommunityIcons name={'fire'} size={30} color={streak.active ? colors.red : colors.primary600}/>
         <CustomText weight={"Bold"} style={[styles.streakText, !streak.active && { color: colors.primary600 }]}>
           {streak.numberOfDays.toString()}
         </CustomText>
-        <Pressable onPress={() => languageSheetRef.current?.present()} style={{ paddingVertical: 5, paddingLeft: 5 }}>
+        <Pressable onPress={handleLanguageSheetOpen} style={styles.flag}>
           <SquareFlag languageCode={langContext.mainLang} size={24}/>
         </Pressable>
       </View>
-      <ProgressBar animatedValue={lastWellKnownWords ? lastWellKnownWords : 0.000001} color={colors.primary300}
-                   style={styles.progressBar}/>
+
+      <ProgressBar
+        animatedValue={lastWellKnownWords ? lastWellKnownWords : 0.000001}
+        color={colors.primary300}
+        style={styles.progressBar}
+      />
       <CustomText style={styles.descText}>{getReportMessage()}</CustomText>
+
       <ActionButton
         label={t('startLearning')}
         primary={true}
         icon={'play'}
         active={langWordsHeuristicStates.length >= 5}
         style={styles.actionButton}
-        onPress={handleActinButtonPress}
+        onPress={handleActionButtonPress}
       />
     </View>
   );
@@ -131,6 +144,10 @@ const getStyles = (colors: any) => StyleSheet.create({
   root: {
     paddingHorizontal: MARGIN_HORIZONTAL,
     paddingVertical: MARGIN_VERTICAL,
+  },
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   mainText: {
     color: colors.primary,
@@ -154,6 +171,10 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   actionButton: {
     marginTop: 32,
+  },
+  flag: {
+    paddingVertical: 5,
+    paddingLeft: 5
   }
 });
 

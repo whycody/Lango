@@ -45,14 +45,14 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       const loggedUser = await getUserInfo();
       if (loggedUser) {
         setUser(loggedUser);
-        await setAnalyticsUserData(user);
+        await setAnalyticsUserData(user, true);
         setIsAuthenticated(true);
         return;
       }
 
       if (user) {
         setUser(user);
-        await setAnalyticsUserData(user);
+        await setAnalyticsUserData(user, false);
         setIsAuthenticated(true);
         return;
       }

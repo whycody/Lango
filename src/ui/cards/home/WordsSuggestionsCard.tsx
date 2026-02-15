@@ -9,6 +9,8 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useDebouncedSyncSuggestions, useSuggestions } from "../../../store/SuggestionsContext";
 import { Suggestion } from "../../../types";
 import { useLanguage } from "../../../store/LanguageContext";
+import { trackEvent } from "../../../utils/analytics";
+import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
 
 type WordsSuggestionsCardProps = {
   style?: StyleProp<ViewStyle>;
@@ -45,13 +47,15 @@ const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
   const debouncedSyncSuggestions = useDebouncedSyncSuggestions(suggestionsContext.syncSuggestions, 3000);
 
   const flipFlashcards = () => {
+    trackEvent(AnalyticsEventName.SUGGESTIONS_SKIPPED)
     if (firstFlashcard) firstFlashcardRef.current?.flipWithoutAdd();
     if (secondFlashcard) secondFlashcardRef.current?.flipWithoutAdd();
     debouncedSyncSuggestions();
   }
 
   const handleFlashcardPress = async (first: boolean, add: boolean) => {
-    await suggestionsContext.skipSuggestions(first ? [firstFlashcard?.id] : [secondFlashcard?.id], add ? 'added' : 'skipped');
+    const suggestionId = first ? firstFlashcard?.id : secondFlashcard?.id;
+    await suggestionsContext.skipSuggestions([suggestionId], add ? 'added' : 'skipped');
     const currentFlashcards = [firstFlashcard, secondFlashcard].filter(Boolean);
     const filteredSuggestions = suggestionsContext.langSuggestions.filter((suggestion) =>
       !currentFlashcards.map((flashcard) => flashcard.id).includes(suggestion.id))

@@ -1,23 +1,32 @@
 import analytics from '@react-native-firebase/analytics';
-import { User } from "../types";
+import { PICKED_SESSION_MODEL_VERSION, User } from "../types";
 import { getCurrentStreak } from "./streakUtils";
-import { AnalyticsEventName } from "../constants/AnalyticsEventName";
+import { AnalyticsEventName, AnalyticsEventPayloadMap } from "../constants/AnalyticsEventName";
 
-export const trackEvent = async (eventName: AnalyticsEventName, payload?: object) => {
+export const trackEvent = async <T extends AnalyticsEventName>(
+  eventName: T,
+  ...payload: AnalyticsEventPayloadMap[T] extends undefined ? [] : [AnalyticsEventPayloadMap[T]]
+) => {
   try {
-    await analytics().logEvent(eventName, payload);
+    await analytics().logEvent(
+      eventName,
+      (payload[0] ?? {}) as object
+    );
   } catch {
-  }
-}
 
-export const setAnalyticsUserData = async (user: User) => {
+  }
+};
+
+export const setAnalyticsUserData = async (user: User, online: boolean) => {
   const { setUserId, setUserProperty } = analytics();
-  await setUserId(user.userId);
   await Promise.all([
+    trackEvent(AnalyticsEventName.USER_SET, { online }),
+    setUserId(user.userId),
     setUserProperty('main_language', user.mainLang ?? 'none'),
     setUserProperty('translation_language', user.translationLang ?? 'none'),
     setUserProperty('provider', user.provider),
     setUserProperty('notifications_enabled', user.notificationsEnabled.toString()),
-    setUserProperty('current_streak', getCurrentStreak(user.stats.studyDays).toString())
+    setUserProperty('current_streak', getCurrentStreak(user.stats.studyDays).toString()),
+    setUserProperty('picked_session_model_version', PICKED_SESSION_MODEL_VERSION)
   ])
 }

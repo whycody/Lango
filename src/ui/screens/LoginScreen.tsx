@@ -35,6 +35,16 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
         <CustomText weight={'Bold'} style={styles.headerText}>{expo.name}</CustomText>
         <CustomText style={styles.text}>{t('welcome_desc')}</CustomText>
         <View style={{ flex: 1 }} />
+        {Platform.OS == 'ios' && (
+          <ActionButton
+            label={t('login_with_apple')}
+            primary={true}
+            style={styles.button}
+            icon={'logo-apple'}
+            onPress={() => login('Apple')}
+            loading={loading === 'Apple'}
+          />
+        )}
         <ActionButton
           label={t('login_with_google')}
           primary={true}
@@ -51,16 +61,6 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
           onPress={() => login('Facebook')}
           loading={loading === 'Facebook'}
         />
-        {Platform.OS == 'ios' && (
-          <ActionButton
-            label={t('login_with_apple')}
-            primary={true}
-            style={styles.button}
-            icon={'logo-apple'}
-            onPress={() => login('Apple')}
-            loading={loading === 'Apple'}
-          />
-        )}
       </View>
     </View>
   );

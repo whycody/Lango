@@ -1,32 +1,43 @@
-import analytics from '@react-native-firebase/analytics';
+import {
+  getAnalytics,
+  logEvent as logAnalyticsEvent,
+  setUserId,
+  setUserProperties
+} from '@react-native-firebase/analytics';
+import { getApp } from '@react-native-firebase/app';
 import { PICKED_SESSION_MODEL_VERSION, User } from "../types";
 import { getCurrentStreak } from "./streakUtils";
 import { AnalyticsEventName, AnalyticsEventPayloadMap } from "../constants/AnalyticsEventName";
+
+const analyticsInstance = getAnalytics(getApp());
 
 export const trackEvent = async <T extends AnalyticsEventName>(
   eventName: T,
   ...payload: AnalyticsEventPayloadMap[T] extends undefined ? [] : [AnalyticsEventPayloadMap[T]]
 ) => {
   try {
-    await analytics().logEvent(
-      eventName,
+    await logAnalyticsEvent(
+      analyticsInstance,
+      eventName as string,
       (payload[0] ?? {}) as object
     );
-  } catch {
-
+  } catch (error) {
   }
 };
 
 export const setAnalyticsUserData = async (user: User, online: boolean) => {
-  const { setUserId, setUserProperty } = analytics();
-  await Promise.all([
-    trackEvent(AnalyticsEventName.USER_SET, { online }),
-    setUserId(user.userId),
-    setUserProperty('main_language', user.mainLang ?? 'none'),
-    setUserProperty('translation_language', user.translationLang ?? 'none'),
-    setUserProperty('provider', user.provider),
-    setUserProperty('notifications_enabled', user.notificationsEnabled.toString()),
-    setUserProperty('current_streak', getCurrentStreak(user.stats.studyDays).toString()),
-    setUserProperty('picked_session_model_version', PICKED_SESSION_MODEL_VERSION)
-  ])
-}
+  try {
+    await setUserId(analyticsInstance, user.userId);
+    await setUserProperties(analyticsInstance, {
+      main_language: user.mainLang ?? 'none',
+      translation_language: user.translationLang ?? 'none',
+      provider: user.provider,
+      notifications_enabled: user.notificationsEnabled.toString(),
+      current_streak: getCurrentStreak(user.stats.studyDays).numberOfDays.toString(),
+      picked_session_model_version: PICKED_SESSION_MODEL_VERSION,
+    })
+    await trackEvent(AnalyticsEventName.USER_SET, { online });
+  } catch (error) {
+    console.log('Analytics setup error:', error);
+  }
+};

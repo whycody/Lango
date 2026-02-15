@@ -22,6 +22,7 @@ export const trackEvent = async <T extends AnalyticsEventName>(
       (payload[0] ?? {}) as object
     );
   } catch (error) {
+    console.log('Analytics event error:', error);
   }
 };
 

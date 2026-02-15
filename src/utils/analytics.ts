@@ -2,11 +2,16 @@ import analytics from '@react-native-firebase/analytics';
 import { PICKED_SESSION_MODEL_VERSION, User } from "../types";
 import { getCurrentStreak } from "./streakUtils";
 import { AnalyticsEventName, AnalyticsEventPayloadMap } from "../constants/AnalyticsEventName";
+import * as Updates from "expo-updates";
+
+const isTest = (!Updates.channel || ['test', 'development'].includes(Updates.channel))
 
 export const trackEvent = async <T extends AnalyticsEventName>(
   eventName: T,
   ...payload: AnalyticsEventPayloadMap[T] extends undefined ? [] : [AnalyticsEventPayloadMap[T]]
 ) => {
+  if (isTest) return;
+
   try {
     await analytics().logEvent(
       eventName,
@@ -18,6 +23,8 @@ export const trackEvent = async <T extends AnalyticsEventName>(
 };
 
 export const setAnalyticsUserData = async (user: User, online: boolean) => {
+  if (isTest) return;
+
   const { setUserId, setUserProperty } = analytics();
   await Promise.all([
     trackEvent(AnalyticsEventName.USER_SET, { online }),

@@ -4,12 +4,12 @@
     "jsEngine": "hermes",
     "name": "Lango",
     "slug": "lango",
-    "version": "1.1.2",
+    "version": "1.1.1",
     "orientation": "portrait",
     "newArchEnabled": true,
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
-    "runtimeVersion": "1.1.2",
+    "runtimeVersion": "1.1.1",
     "splash": {
       "backgroundColor": "#0f0f30"
     },
@@ -56,12 +56,21 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.646452848631-asffmff5od6hdqcq08n9a6rgbug9irrm"
         }
+      ],
+      [
+        "expo-apple-authentication"
       ]
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "14",
+      "buildNumber": "12",
       "bundleIdentifier": "com.whycody.lango",
+      "googleServicesFile": "./config/GoogleService-Info.plist",
+      "entitlements": {
+        "com.apple.developer.applesignin": [
+          "Default"
+        ]
+      },
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
@@ -73,8 +82,10 @@
         "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#07071b"
       },
+      "googleServicesFile": "./config/google-services.json",
+      "edgeToEdgeEnabled": true,
       "package": "com.whycody.lango",
-      "versionCode": 14
+      "versionCode": 12
     },
     "web": {
       "favicon": "./assets/favicon.png"

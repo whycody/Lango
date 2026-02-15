@@ -3,16 +3,18 @@ import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 import { getUserInfo, signInWithApple, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
-import { User } from '../../types';
+import { User, UserProvider } from '../../types';
 import LoadingView from "../../ui/components/LoadingView";
 import { useMMKVObject } from "react-native-mmkv";
 import axios, { AxiosError } from "axios";
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { setAnalyticsUserData, trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  loading: "Google" | "Facebook" | "Apple" | false;
-  login: (method: 'Google' | 'Facebook' | 'Apple') => Promise<void>;
+  loading: UserProvider | false;
+  login: (method: UserProvider) => Promise<void>;
   authError: string | null;
   user: User | null;
   getSession: () => Promise<void>;
@@ -30,7 +32,7 @@ const USER_PROFILE_INFO = "@user_info";
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState<"Google" | "Facebook" | "Apple" | false>(false);
+  const [loading, setLoading] = useState<UserProvider | false>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
@@ -43,17 +45,19 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       const loggedUser = await getUserInfo();
       if (loggedUser) {
         setUser(loggedUser);
-        setUser(loggedUser);
+        await setAnalyticsUserData(user);
         setIsAuthenticated(true);
         return;
       }
 
       if (user) {
         setUser(user);
+        await setAnalyticsUserData(user);
         setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
+        return;
       }
+
+      setIsAuthenticated(false);
     } catch (error) {
       if (axios.isAxiosError(error) && error.code === AxiosError.ERR_NETWORK && user) {
         setUser(user);
@@ -72,15 +76,15 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setUser(null);
   }
 
-  const login = async (method: 'Google' | 'Facebook' | 'Apple') => {
+  const login = async (method: UserProvider) => {
     setLoading(method);
 
-    if (method == 'Google') {
+    if (method == UserProvider.GOOGLE) {
       await loginWithGoogle();
       return
     }
 
-    if (method == 'Facebook') {
+    if (method == UserProvider.FACEBOOK) {
       await loginWithFacebook();
       return;
     }
@@ -94,14 +98,27 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
       if (result.isCancelled) {
         console.log('Login cancelled');
+        await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
+          provider: UserProvider.FACEBOOK,
+          reason: 'User cancelled the login process'
+        })
         return;
       }
 
       const data = await AccessToken.getCurrentAccessToken();
       const res = await signInWithFacebook(data.accessToken);
-      if (res) await handleReceivedTokens(res);
+
+      if (!res) return;
+
+      await handleReceivedTokens(res);
+      await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, { provider: UserProvider.FACEBOOK })
     } catch (apiError) {
-      setAuthError(apiError?.response?.data?.error?.message || 'Something went wrong');
+      const errorMessage = apiError?.response?.data?.error?.message || 'Something went wrong'
+      await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
+        provider: UserProvider.FACEBOOK,
+        reason: errorMessage
+      });
+      setAuthError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -112,9 +129,18 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
       const res = await signInWithGoogle(response.data.idToken);
-      if (res) await handleReceivedTokens(res);
+
+      if (!res) return;
+
+      await handleReceivedTokens(res);
+      await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, { provider: UserProvider.GOOGLE });
     } catch (apiError) {
-      setAuthError(apiError?.response?.data?.error?.message || 'Something went wrong');
+      const errorMessage = apiError?.response?.data?.error?.message || 'Something went wrong';
+      await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
+        provider: UserProvider.GOOGLE,
+        reason: errorMessage
+      })
+      setAuthError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -136,15 +162,21 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       ].filter(Boolean).join(' ');
 
       const res = await signInWithApple(credential.identityToken, fullName);
-      if (res) await handleReceivedTokens(res);
-    } catch (e: any) {
-      if (e.code === 'ERR_CANCELED') return;
 
-      setAuthError(
-        e?.response?.data?.error?.message ||
-        e?.message ||
-        'Something went wrong'
-      );
+      if (!res) return;
+
+      await handleReceivedTokens(res);
+      await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, { provider: UserProvider.APPLE });
+    } catch (e: any) {
+      const errorMessage = e?.response?.data?.error?.message || e?.message || 'Something went wrong';
+
+      await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
+        provider: UserProvider.APPLE,
+        reason: e.code === 'ERR_CANCELED' ? 'User cancelled the login process' : errorMessage
+      });
+
+      if (e.code === 'ERR_CANCELED') return;
+      setAuthError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -157,12 +189,16 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }
 
   async function logout() {
+    const { provider } = user;
     try {
       const res = await signOut();
       if (!res) return;
       await removeData();
+      await trackEvent(AnalyticsEventName.LOGOUT_SUCCESS, { provider });
     } catch (error) {
-      console.log('Sign-Out Error: ', error);
+      const errorMessage = error?.response?.data?.error?.message || 'Something went wrong';
+      await trackEvent(AnalyticsEventName.LOGOUT_FAILURE, { provider, reason: errorMessage });
+      console.log('Sign-Out Error: ', errorMessage);
     }
   }
 

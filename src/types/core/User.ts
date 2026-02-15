@@ -23,12 +23,18 @@ export type UserStats = {
   averageScore: number;
 }
 
+export enum UserProvider {
+  GOOGLE = 'google',
+  FACEBOOK = 'facebook',
+  APPLE = 'apple',
+}
+
 export type User = {
   userId: string;
   name: string;
   email: string;
   picture: string;
-  provider: 'google' | 'facebook';
+  provider: UserProvider;
   mainLang: LanguageCode | null;
   translationLang: LanguageCode | null;
   sessionModel: SessionModel;

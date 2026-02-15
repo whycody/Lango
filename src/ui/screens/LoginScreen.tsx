@@ -8,10 +8,11 @@ import { expo } from '../../../app.json'
 import { useTranslation } from "react-i18next";
 import MarqueeRow from "../components/login/MovingWordsGrid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { UserProvider } from "../../types";
 
 type LoginProps = {
-  login: (method: "Google" | "Facebook" | "Apple") => Promise<void>;
-  loading: "Google" | "Facebook" | "Apple" | false;
+  login: (method: UserProvider) => Promise<void>;
+  loading: UserProvider | false;
   authError: string | null;
 }
 
@@ -41,8 +42,8 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
             primary={true}
             style={styles.button}
             icon={'logo-apple'}
-            onPress={() => login('Apple')}
-            loading={loading === 'Apple'}
+            onPress={() => login(UserProvider.APPLE)}
+            loading={loading === UserProvider.APPLE}
           />
         )}
         <ActionButton
@@ -50,16 +51,16 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
           primary={true}
           style={styles.button}
           icon={'logo-google'}
-          onPress={() => login('Google')}
-          loading={loading === 'Google'}
+          onPress={() => login(UserProvider.GOOGLE)}
+          loading={loading === UserProvider.GOOGLE}
         />
         <ActionButton
           label={t('login_with_facebook')}
           primary={true}
           style={styles.button}
           icon={'logo-facebook'}
-          onPress={() => login('Facebook')}
-          loading={loading === 'Facebook'}
+          onPress={() => login(UserProvider.FACEBOOK)}
+          loading={loading === UserProvider.FACEBOOK}
         />
       </View>
     </View>

@@ -1,6 +1,6 @@
 import {
   getAnalytics,
-  logEvent as logAnalyticsEvent,
+  logEvent,
   setUserId,
   setUserProperties
 } from '@react-native-firebase/analytics';
@@ -16,7 +16,7 @@ export const trackEvent = async <T extends AnalyticsEventName>(
   ...payload: AnalyticsEventPayloadMap[T] extends undefined ? [] : [AnalyticsEventPayloadMap[T]]
 ) => {
   try {
-    await logAnalyticsEvent(
+    await logEvent(
       analyticsInstance,
       eventName as string,
       (payload[0] ?? {}) as object

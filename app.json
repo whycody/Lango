@@ -51,8 +51,7 @@
       "expo-notifications",
       "@react-native-google-signin/google-signin",
       "expo-apple-authentication",
-      "@react-native-firebase/app",
-      "@react-native-firebase/crashlytics"
+      "@react-native-firebase/app"
     ],
     "ios": {
       "supportsTablet": true,

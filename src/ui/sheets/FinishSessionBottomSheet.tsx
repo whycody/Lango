@@ -6,7 +6,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { WordUpdate } from "../../store/WordsContext";
+import { WordUpdate } from "../../types/utils/WordUpdate";
 
 type FinishSessionBottomSheetProps = {
   flashcardUpdates: WordUpdate[];
@@ -15,7 +15,7 @@ type FinishSessionBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
 }
 
-const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottomSheetProps>((props, ref) => {
+export const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -124,5 +124,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: MARGIN_VERTICAL
   }
 });
-
-export default FinishSessionBottomSheet;

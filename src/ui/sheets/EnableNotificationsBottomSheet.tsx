@@ -16,7 +16,7 @@ type EnableNotificationsBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
 }
 
-const EnableNotificationsBottomSheet = forwardRef<BottomSheetModal, EnableNotificationsBottomSheetProps>((props, ref) => {
+export const EnableNotificationsBottomSheet = forwardRef<BottomSheetModal, EnableNotificationsBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -100,5 +100,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: MARGIN_VERTICAL
   }
 });
-
-export default EnableNotificationsBottomSheet;

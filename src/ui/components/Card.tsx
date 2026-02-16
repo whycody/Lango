@@ -9,8 +9,8 @@ import { LinearGradient } from "expo-linear-gradient";
 interface CardProps {
   text: string;
   wordIndex: number;
-  onBackPress: () => void;
-  onEditPress: () => void;
+  onBackPress?: () => void;
+  onEditPress?: () => void;
 }
 
 const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
@@ -39,11 +39,10 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
           style={[styles.icon, { opacity: wordIndex != 0 ? 1 : 0.4 }]}
           onPress={() => wordIndex != 0 && onBackPress()}
         />
-        <View style={{ flex: 1 }}/>
         <Ionicons
           name={'pencil-outline'}
           size={24}
-          style={styles.icon}
+          style={[styles.icon, { opacity: onEditPress ? 1 : 0.4 }]}
           color={colors.primary300}
           onPress={onEditPress}
         />

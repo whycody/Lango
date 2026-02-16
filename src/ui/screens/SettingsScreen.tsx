@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useLanguage } from "../../store/LanguageContext";
 import LibraryItem from "../components/items/LibraryItem";
-import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SettingItem } from "../../types";
@@ -23,6 +22,7 @@ import { ensureNotificationsPermission } from "../../utils/ensureNotificationPer
 import { useAuth } from "../../api/auth/AuthProvider";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
+import { LanguageBottomSheet } from "../sheets";
 
 const SettingsScreen = () => {
   const { colors } = useTheme();

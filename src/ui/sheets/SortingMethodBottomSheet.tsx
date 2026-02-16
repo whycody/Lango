@@ -14,7 +14,7 @@ type SortingMethodBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
 }
 
-const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMethodBottomSheetProps>((props, ref) => {
+export const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMethodBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -80,5 +80,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     borderRadius: 0
   }
 });
-
-export default SortingMethodBottomSheet;

@@ -3,7 +3,6 @@ import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
 import LibraryItem from "../components/items/LibraryItem";
 import { useNavigation } from "@react-navigation/native";
-import LanguageBottomSheet from "../sheets/LanguageBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useWords } from "../../store/WordsContext";
@@ -16,6 +15,7 @@ import { LibraryItems } from "../../constants/LibraryItems";
 import { ScreenName } from "../../navigation/AppStack";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
+import { LanguageBottomSheet } from "../sheets";
 
 const LibraryScreen = () => {
   const { t } = useTranslation();

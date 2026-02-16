@@ -19,7 +19,7 @@ interface StartSessionBottomSheetProps {
   onChangeIndex?: (index: number) => void;
 }
 
-const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
+export const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const userPreferences = useUserPreferences();
@@ -155,5 +155,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginVertical: MARGIN_VERTICAL
   }
 });
-
-export default StartSessionBottomSheet;

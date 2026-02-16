@@ -5,12 +5,12 @@ import { Foundation, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BackHandler, StyleSheet, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 import CustomText from "../ui/components/CustomText";
-import HandleFlashcardBottomSheet from "../ui/sheets/HandleFlashcardBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RouteProp, useTheme } from "@react-navigation/native";
 import { trackEvent } from "../utils/analytics";
 import { AnalyticsEventName } from "../constants/AnalyticsEventName";
+import { HandleFlashcardBottomSheet } from "../ui/sheets";
 
 export type TabsParamList = {
   Home: undefined;

@@ -19,7 +19,7 @@ interface StartSessionBottomSheetProps {
   onChangeIndex?: (index: number) => void;
 }
 
-const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
+export const SessionSettingsBottomSheet = forwardRef<BottomSheetModal, StartSessionBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const userPreferences = useUserPreferences();
@@ -157,5 +157,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     paddingVertical: MARGIN_VERTICAL
   },
 });
-
-export default SessionSettingsBottomSheet;

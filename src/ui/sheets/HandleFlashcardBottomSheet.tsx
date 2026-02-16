@@ -29,7 +29,7 @@ interface HandleFlashcardBottomSheetProps {
   onChangeIndex?: (index: number) => void;
 }
 
-const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardBottomSheetProps>((props, ref) => {
+export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -264,5 +264,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     paddingVertical: MARGIN_VERTICAL
   },
 });
-
-export default HandleFlashcardBottomSheet;

@@ -143,5 +143,12 @@
     "grade_three_asc": "From least mastered",
     "repetitions_count_desc": "From most repeated",
     "repetitions_count_asc": "From least repeated"
+  },
+  "hit_flashcard_bottom_sheet": {
+    "title": "Tap the flashcard to flip it 🤏",
+    "desc": "First, try to recall the meaning of the displayed word, then tap to check the correct answer.",
+    "got_it": "Got it",
+    "word": "Word",
+    "translation": "Translation"
   }
 }

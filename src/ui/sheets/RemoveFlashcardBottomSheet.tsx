@@ -18,7 +18,7 @@ type AcceptationBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
 }
 
-const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomSheetProps>((props, ref) => {
+export const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -88,5 +88,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     paddingHorizontal: MARGIN_HORIZONTAL,
   },
 });
-
-export default RemoveFlashcardBottomSheet;

@@ -145,5 +145,12 @@
     "grade_three_asc": "Od najsłabiej opanowanych",
     "repetitions_count_desc": "Od najczęściej powtarzanych",
     "repetitions_count_asc": "Od najrzadziej powtarzanych"
+  },
+  "hit_flashcard_bottom_sheet": {
+    "title": "Tapnij w fiszkę aby ją obrócić \uD83E\uDD0F",
+    "desc": "Najpierw spróbuj przypomnieć sobie tłumaczenie wyświetlonego słówka, a potem tapnij, aby sprawdzić prawidłową odpowiedź.",
+    "got_it": "Rozumiem",
+    "word": "Słówko",
+    "translation": "Tłumaczenie"
   }
 }

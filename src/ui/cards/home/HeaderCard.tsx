@@ -7,10 +7,8 @@ import CustomText from "../../components/CustomText";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../../components/ActionButton";
-import StartSessionBottomSheet from "../../sheets/StartSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SquareFlag from "../../components/SquareFlag";
-import LanguageBottomSheet from "../../sheets/LanguageBottomSheet";
 import { getCurrentStreak, Streak } from "../../../utils/streakUtils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SessionMode } from "../../../types";
@@ -21,6 +19,7 @@ import { useWordsHeuristicStates } from "../../../store/WordsHeuristicStatesCont
 import { useWords } from "../../../store/WordsContext";
 import { trackEvent } from "../../../utils/analytics";
 import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
+import { LanguageBottomSheet, StartSessionBottomSheet } from "../../sheets";
 
 type HeaderCardProps = {
   navigateToSessionScreen(length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide): void;

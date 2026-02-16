@@ -15,7 +15,7 @@ type LanguageBottomSheetProps = {
   languageType?: LanguageTypes
 }
 
-const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>((props, ref) => {
+export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const { onChangeIndex, allLanguages, languageType = LanguageTypes.MAIN } = props;
   const { t } = useTranslation();
@@ -67,5 +67,3 @@ const styles = StyleSheet.create({
     marginHorizontal: MARGIN_HORIZONTAL,
   }
 })
-
-export default LanguageBottomSheet;

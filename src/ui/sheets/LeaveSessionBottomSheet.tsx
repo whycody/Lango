@@ -12,7 +12,7 @@ type FinishSessionBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
 }
 
-const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottomSheetProps>((props, ref) => {
+export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottomSheetProps>((props, ref) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -78,5 +78,3 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: MARGIN_VERTICAL
   }
 });
-
-export default LeaveSessionBottomSheet;

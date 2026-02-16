@@ -12,7 +12,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { checkUpdates } from "../../utils/checkUpdates";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import EnableNotificationsBottomSheet from "../sheets/EnableNotificationsBottomSheet";
 import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
 import * as Notifications from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
@@ -22,6 +21,7 @@ import { useLanguage } from "../../store/LanguageContext";
 import { useTheme } from "@react-navigation/native";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
+import { EnableNotificationsBottomSheet } from "../sheets";
 
 const HomeScreen = ({ navigation }) => {
   const auth = useAuth();

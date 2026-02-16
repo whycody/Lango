@@ -6,11 +6,9 @@ import StatisticItem from "../components/items/StatisticItem";
 import { useWords, WordSource } from "../../store/WordsContext";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
-import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FlashcardListItem from "../components/items/FlashcardListItem";
-import RemoveFlashcardBottomSheet from "../sheets/RemoveFlashcardBottomSheet";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import ListFilter from "../components/ListFilter";
@@ -21,9 +19,9 @@ import EmptyList from "../components/EmptyList";
 import { ProgressBar } from "react-native-paper";
 import { useUserPreferences } from "../../store/UserPreferencesContext";
 import { getSortingMethod, getSortingMethodLabel } from "../../utils/sortingUtil";
-import SortingMethodBottomSheet from "../sheets/SortingMethodBottomSheet";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
+import { HandleFlashcardBottomSheet, RemoveFlashcardBottomSheet, SortingMethodBottomSheet } from "../sheets";
 
 const FlashcardsScreen = () => {
   const { t } = useTranslation();

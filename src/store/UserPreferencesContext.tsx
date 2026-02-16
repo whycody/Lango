@@ -31,6 +31,7 @@ interface UserPreferencesContext {
   vibrationsEnabled: boolean;
   askLaterNotifications: number | null;
   flashcardsSortingMethod: FlashcardSortingMethod;
+  userHasEverHitFlashcard: boolean;
   setFlashcardSide: (side: FlashcardSide) => void;
   setSessionMode: (mode: SessionMode) => void;
   setSessionLength: (length: SessionLength) => void;
@@ -38,6 +39,7 @@ interface UserPreferencesContext {
   setVibrationsEnabled: (enabled: boolean) => void;
   setAskLaterNotifications: (timestamp: number) => void;
   setFlashcardsSortingMethod: (method: FlashcardSortingMethod) => void;
+  setUserHasEverHitFlashcard: (hasEverHit: boolean) => void;
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContext>({
@@ -48,6 +50,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   vibrationsEnabled: true,
   askLaterNotifications: null,
   flashcardsSortingMethod: FlashcardSortingMethod.ADD_DATE_DESC,
+  userHasEverHitFlashcard: false,
   setFlashcardSide: () => {},
   setSessionMode: () => {},
   setSessionLength: () => {},
@@ -55,6 +58,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   setVibrationsEnabled: () => {},
   setAskLaterNotifications: () => {},
   setFlashcardsSortingMethod: () => {},
+  setUserHasEverHitFlashcard: () => {},
 });
 
 const FLASHCARD_SIDE_KEY = 'flashcardSide';
@@ -64,6 +68,7 @@ const SESSION_SPEECH_SYNTHESIZER_KEY = 'sessionSpeechSynthesizer';
 const VIBRATIONS_KEY = 'vibrationsEnabled';
 const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
 const FLASHCARDS_SORTING_METHOD = 'flashcardsSortingMethod';
+const USER_HAS_EVER_HIT_FLASHCARD = 'userHasEverHitFlashcard';
 
 const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { storage } = useUserStorage();
@@ -75,6 +80,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(ASK_LATER_NOTIFICATIONS_KEY, 0, storage);
   const [flashcardsSortingMethod, setFlashcardsSortingMethod] = useTypedMMKV<FlashcardSortingMethod>(FLASHCARDS_SORTING_METHOD,
     FlashcardSortingMethod.ADD_DATE_DESC, storage)
+  const [userHasEverHitFlashcard, setUserHasEverHitFlashcard] = useTypedMMKV(USER_HAS_EVER_HIT_FLASHCARD, false, storage);
 
   return (
     <UserPreferencesContext.Provider
@@ -86,6 +92,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         vibrationsEnabled,
         askLaterNotifications,
         flashcardsSortingMethod,
+        userHasEverHitFlashcard,
         setFlashcardSide,
         setSessionMode,
         setSessionLength,
@@ -93,6 +100,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setVibrationsEnabled,
         setAskLaterNotifications,
         setFlashcardsSortingMethod,
+        setUserHasEverHitFlashcard,
       }}
     >
       {children}

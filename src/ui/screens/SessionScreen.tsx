@@ -11,11 +11,8 @@ import FlipCard from "react-native-flip-card";
 import Card from "../components/Card";
 import * as Haptics from "expo-haptics";
 import LottieView from "lottie-react-native";
-import FinishSessionBottomSheet from "../sheets/FinishSessionBottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SessionHeader from "../components/session/SessionHeader";
-import HandleFlashcardBottomSheet from "../sheets/HandleFlashcardBottomSheet";
-import LeaveSessionBottomSheet from "../sheets/LeaveSessionBottomSheet";
 import * as Speech from 'expo-speech';
 import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useSessions } from "../../store/SessionsContext";
@@ -23,13 +20,19 @@ import { useEvaluations } from "../../store/EvaluationsContext";
 import { EvaluationGrade, SessionMode } from "../../types";
 import { useWordSet } from "../../hooks/useWordSet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import SessionSettingsBottomSheet from "../sheets/SessionSettingsBottomSheet";
 import { WordUpdate } from "../../types/utils/WordUpdate";
 import { useHaptics } from "../../hooks/useHaptics";
 import { ScreenName } from "../../navigation/AppStack";
 import { useLanguage } from "../../store/LanguageContext";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
+import {
+  FinishSessionBottomSheet,
+  HandleFlashcardBottomSheet,
+  HitFlashcardBottomSheet,
+  LeaveSessionBottomSheet,
+  SessionSettingsBottomSheet
+} from "../sheets";
 
 export type SessionScreenParams = {
   length: SessionLength;
@@ -65,6 +68,7 @@ const SessionScreen = ({ navigation }) => {
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const sessionSettingsBottomSheetRef = useRef<BottomSheetModal>(null);
+  const genericBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
@@ -111,6 +115,7 @@ const SessionScreen = ({ navigation }) => {
     leaveSessionBottomSheetRef.current?.dismiss();
     finishSessionBottomSheetRef.current?.dismiss();
     sessionSettingsBottomSheetRef.current?.dismiss();
+    genericBottomSheetRef.current?.dismiss();
   }
 
   const decrementCurrentIndex = () => {
@@ -129,6 +134,10 @@ const SessionScreen = ({ navigation }) => {
 
   const handleFlipPress = (index: number, isFlipped: boolean) => {
     trackEvent(AnalyticsEventName.FLIP_FLASHCARD)
+    if (!userPreferences.userHasEverHitFlashcard) {
+      userPreferences.setUserHasEverHitFlashcard(true)
+    }
+
     setFlippedCards(prev => {
       const updated = [...prev];
       updated[index] = isFlipped;
@@ -187,6 +196,11 @@ const SessionScreen = ({ navigation }) => {
   }, [flipped, currentIndex, flippedCards, mainLang, translationLang, userPreferences.sessionSpeechSynthesizer]);
 
   const handleLevelPress = (level: EvaluationGrade) => {
+    if (!userPreferences.userHasEverHitFlashcard) {
+      genericBottomSheetRef.current?.present()
+      return;
+    }
+
     const now = Date.now();
     if (now - lastPressTime < 300) return;
     setLastPressTime(now);
@@ -313,6 +327,10 @@ const SessionScreen = ({ navigation }) => {
       <SessionSettingsBottomSheet
         ref={sessionSettingsBottomSheetRef}
         onSettingsSave={() => sessionSettingsBottomSheetRef.current.dismiss()}
+        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
+      />
+      <HitFlashcardBottomSheet
+        ref={genericBottomSheetRef}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <View style={{ backgroundColor: colors.card, paddingBottom: 20 }}>

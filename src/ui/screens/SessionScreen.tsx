@@ -123,10 +123,12 @@ const SessionScreen = ({ navigation }) => {
 
   const handleEditPress = (id: string) => {
     setEditId(id);
+    trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, { mode: 'edit', source: 'session_screen' })
     handleFlashcardBottomSheetRef.current.present();
   }
 
   const handleFlipPress = (index: number, isFlipped: boolean) => {
+    trackEvent(AnalyticsEventName.FLIP_FLASHCARD)
     setFlippedCards(prev => {
       const updated = [...prev];
       updated[index] = isFlipped;

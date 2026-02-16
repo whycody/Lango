@@ -6,7 +6,10 @@ export const AnalyticsEventName = {
   LOGIN_FAILURE: 'login_failure',
   LOGOUT_SUCCESS: 'logout_success',
   LOGOUT_FAILURE: 'logout_failure',
+
   USER_SET: 'user_set',
+  HOME_REFRESH: 'home_refresh',
+  SEARCH_FLASHCARD: 'search_flashcard',
 
   CHECK_UPDATES: 'check_updates',
   UPDATE_SUCCESS: 'update_success',
@@ -26,6 +29,7 @@ export const AnalyticsEventName = {
   REMOVE_FLASHCARD_SHEET_OPEN: 'remove_flashcard_sheet_open',
   SORTING_METHODS_SHEET_OPEN: 'sorting_methods_sheet_open',
 
+  FLIP_FLASHCARD: 'flip_flashcard',
   SESSION_STARTED: 'session_started',
   SESSION_COMPLETED: 'session_completed',
   SESSION_SKIPPED: 'session_skipped',
@@ -54,7 +58,9 @@ export type AnalyticsEventPayloadMap = {
   login_failure: { provider: UserProvider; reason: string };
   logout_success: { provider: UserProvider };
   logout_failure: { provider: UserProvider; reason: string };
+
   user_set: { online: boolean };
+  home_refresh?: undefined;
 
   check_updates?: undefined;
   update_success?: undefined;
@@ -66,7 +72,7 @@ export type AnalyticsEventPayloadMap = {
 
   enable_notifications_sheet_open?: undefined;
   start_session_sheet_open?: undefined;
-  handle_flashcard_sheet_open: { mode: 'add' | 'edit', source: 'main_screen' | 'flashcards_screen' };
+  handle_flashcard_sheet_open: { mode: 'add' | 'edit', source: 'main_screen' | 'flashcards_screen' | 'session_screen' };
   language_sheet_open?: {
     source: 'main_screen' | 'library_screen' | 'settings_screen',
     type: 'main' | 'translation' | 'app'
@@ -77,6 +83,7 @@ export type AnalyticsEventPayloadMap = {
   remove_flashcard_sheet_open?: undefined;
   sorting_methods_sheet_open?: undefined;
 
+  flip_flashcard?: undefined;
   session_started: { length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide, restarted: boolean };
   session_completed: { length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide, avgGrade: number };
   session_skipped: { length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide, evaluatedCount: number };

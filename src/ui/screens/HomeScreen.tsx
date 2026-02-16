@@ -86,7 +86,8 @@ const HomeScreen = ({ navigation }) => {
   }, [bottomSheetIsShown]);
 
   const onRefresh = useCallback(async () => {
-    tryToRefreshData();
+    trackEvent(AnalyticsEventName.HOME_REFRESH)
+    await tryToRefreshData();
   }, [words, sessions, suggestions, evaluations, auth]);
 
   const navigateToSessionScreen = (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {

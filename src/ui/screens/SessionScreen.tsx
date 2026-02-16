@@ -68,7 +68,7 @@ const SessionScreen = ({ navigation }) => {
   const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
   const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
   const sessionSettingsBottomSheetRef = useRef<BottomSheetModal>(null);
-  const genericBottomSheetRef = useRef<BottomSheetModal>(null);
+  const hitFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
@@ -115,7 +115,7 @@ const SessionScreen = ({ navigation }) => {
     leaveSessionBottomSheetRef.current?.dismiss();
     finishSessionBottomSheetRef.current?.dismiss();
     sessionSettingsBottomSheetRef.current?.dismiss();
-    genericBottomSheetRef.current?.dismiss();
+    hitFlashcardBottomSheetRef.current?.dismiss();
   }
 
   const decrementCurrentIndex = () => {
@@ -197,7 +197,7 @@ const SessionScreen = ({ navigation }) => {
 
   const handleLevelPress = (level: EvaluationGrade) => {
     if (!userPreferences.userHasEverHitFlashcard) {
-      genericBottomSheetRef.current?.present()
+      hitFlashcardBottomSheetRef.current?.present()
       return;
     }
 
@@ -330,7 +330,7 @@ const SessionScreen = ({ navigation }) => {
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <HitFlashcardBottomSheet
-        ref={genericBottomSheetRef}
+        ref={hitFlashcardBottomSheetRef}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
       <View style={{ backgroundColor: colors.card, paddingBottom: 20 }}>

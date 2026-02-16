@@ -25,6 +25,11 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, {
     };
   }, [flip, isVisible]);
 
+  const onFlipStart = () => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
+  }
+
   const handleChangeIndex = (index?: number) => {
     setIsVisible(index !== undefined && index >= 0);
     if (props.onChangeIndex) props.onChangeIndex(index);
@@ -41,20 +46,15 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, {
     >
       <FlipCard
         style={styles.exampleCard}
+        onFlipStart={onFlipStart}
         flipVertical={false}
         flip={flip}
         flipHorizontal
         alignHeight
         alignWidth
       >
-        <Card
-          wordIndex={0}
-          text={t('hit_flashcard_bottom_sheet.word')}
-        />
-        <Card
-          wordIndex={0}
-          text={t('hit_flashcard_bottom_sheet.translation')}
-        />
+        <Card text={t('hit_flashcard_bottom_sheet.word')}/>
+        <Card text={t('hit_flashcard_bottom_sheet.translation')}/>
       </FlipCard>
     </GenericBottomSheet>
   );

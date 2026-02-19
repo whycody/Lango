@@ -86,8 +86,7 @@
       },
       "googleServicesFile": "./config/google-services.json",
       "edgeToEdgeEnabled": true,
-      "package": "com.whycody.lango",
-      "versionCode": 3
+      "package": "com.whycody.lango"
     },
     "web": {
       "favicon": "./assets/favicon.png"

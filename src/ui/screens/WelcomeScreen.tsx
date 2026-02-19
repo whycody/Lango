@@ -6,8 +6,6 @@ import CustomText from "../components/CustomText";
 import LottieView from "lottie-react-native";
 import { MARGIN_HORIZONTAL, } from "../../constants/margins";
 import { useTranslation } from "react-i18next";
-import { useHaptics } from "../../hooks/useHaptics";
-import { ImpactFeedbackStyle } from "expo-haptics";
 
 interface WelcomeScreenProps {
   onAnimationEnd?: () => void;
@@ -35,8 +33,6 @@ const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
     }, 300);
   }
 
-  const haptics = useHaptics();
-
   useEffect(() => {
     setDisplayedText('');
     let currentIndex = 0;
@@ -46,7 +42,6 @@ const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
       typeInterval = setInterval(() => {
         if (currentIndex <= fullText.length) {
           setDisplayedText(fullText.substring(0, currentIndex));
-          haptics.triggerHaptics(ImpactFeedbackStyle.Light);
           currentIndex++;
         } else {
           onAnimationEnd?.();

@@ -13,13 +13,13 @@ const MarqueeRow = ({ loading, words, reverse }: { loading: boolean, words: stri
       frameRate={10}
     >
       <View style={{ flexDirection: 'row' }}>
-        {[...Array(words.length).keys()].map((i) => {
-          return (
-            <View key={i} style={styles.wordBox}>
-              <CustomText weight={"Bold"} style={styles.wordText}>{words[i]}</CustomText>
-            </View>
-          );
-        })});
+        {words.map((word, i) => (
+          <View key={i} style={styles.wordBox}>
+            <CustomText weight={"Bold"} style={styles.wordText}>
+              {word}
+            </CustomText>
+          </View>
+        ))}
       </View>
     </Marquee>
   );

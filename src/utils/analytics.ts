@@ -1,9 +1,4 @@
-import {
-  getAnalytics,
-  logEvent,
-  setUserId,
-  setUserProperties
-} from '@react-native-firebase/analytics';
+import { getAnalytics, logEvent, setUserId, setUserProperties } from '@react-native-firebase/analytics';
 import { getApp } from '@react-native-firebase/app';
 import { PICKED_SESSION_MODEL_VERSION, User } from "../types";
 import { getCurrentStreak } from "./streakUtils";
@@ -11,7 +6,7 @@ import { AnalyticsEventName, AnalyticsEventPayloadMap } from "../constants/Analy
 
 const analyticsInstance = getAnalytics(getApp());
 
-export const trackEvent = async <T extends AnalyticsEventName>(
+export const trackEvent = async <T extends keyof AnalyticsEventPayloadMap>(
   eventName: T,
   ...payload: AnalyticsEventPayloadMap[T] extends undefined ? [] : [AnalyticsEventPayloadMap[T]]
 ) => {
@@ -27,6 +22,7 @@ export const trackEvent = async <T extends AnalyticsEventName>(
 };
 
 export const setAnalyticsUserData = async (user: User, online: boolean) => {
+  if (!user.userId) return;
   try {
     await setUserId(analyticsInstance, user.userId);
     await setUserProperties(analyticsInstance, {

@@ -1,6 +1,6 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './apiHandler';
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 import { getUserInfo, signInWithApple, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
 import { User, UserProvider } from '../../types';
@@ -30,7 +30,7 @@ GoogleSignin.configure({
 export const AuthContext = createContext<AuthContextType | null>(null);
 const USER_PROFILE_INFO = "@user_info";
 
-const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<UserProvider | false>(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -45,7 +45,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       const loggedUser = await getUserInfo();
       if (loggedUser) {
         setUser(loggedUser);
-        await setAnalyticsUserData(user, true);
+        await setAnalyticsUserData(loggedUser, true);
         setIsAuthenticated(true);
         return;
       }
@@ -64,7 +64,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setIsAuthenticated(true);
       }
       if (error.response?.status !== 401) return;
-      console.log("Error loading session: ", error);
       await removeData();
     }
   }
@@ -78,6 +77,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const login = async (method: UserProvider) => {
     setLoading(method);
+    setAuthError(null);
 
     if (method == UserProvider.GOOGLE) {
       await loginWithGoogle();
@@ -124,10 +124,48 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }
 
+  const handleGoogleSignInError = async (error) => {
+    let errorMessage = 'Unknown error';
+
+    if (error.code) {
+      switch (error.code) {
+        case statusCodes.SIGN_IN_CANCELLED:
+          errorMessage = 'User cancelled login';
+          break;
+
+        case statusCodes.IN_PROGRESS:
+          errorMessage = 'Login already in progress';
+          break;
+
+        case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+          errorMessage = 'Google Play Services not available or outdated';
+          break;
+
+        default:
+          errorMessage = `Google error: ${error.code}`;
+      }
+    } else if (error?.response?.data?.error?.message) {
+      errorMessage = error.response.data.error.message;
+    } else if (error?.message) {
+      errorMessage = error.message;
+    }
+
+    await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
+      provider: UserProvider.GOOGLE,
+      reason: errorMessage,
+      raw: error,
+    });
+
+    setAuthError(errorMessage);
+  }
+
   const loginWithGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
+
+      if (!response.data) return;
+
       const res = await signInWithGoogle(response.data.idToken);
 
       if (!res) return;
@@ -135,12 +173,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       await handleReceivedTokens(res);
       await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, { provider: UserProvider.GOOGLE });
     } catch (apiError) {
-      const errorMessage = apiError?.response?.data?.error?.message || 'Something went wrong';
-      await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
-        provider: UserProvider.GOOGLE,
-        reason: errorMessage
-      })
-      setAuthError(errorMessage);
+      await handleGoogleSignInError(apiError);
     } finally {
       setLoading(false);
     }

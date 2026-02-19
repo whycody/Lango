@@ -55,7 +55,7 @@ export type AnalyticsEventName = typeof AnalyticsEventName[keyof typeof Analytic
 
 export type AnalyticsEventPayloadMap = {
   login_success: { provider: UserProvider };
-  login_failure: { provider: UserProvider; reason: string };
+  login_failure: { provider: UserProvider; reason: string; raw?: string };
   logout_success: { provider: UserProvider };
   logout_failure: { provider: UserProvider; reason: string };
 

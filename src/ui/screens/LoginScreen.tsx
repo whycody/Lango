@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import MarqueeRow from "../components/login/MovingWordsGrid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserProvider } from "../../types";
-import * as Updates from "expo-updates";
+import VersionFooter from "../components/VersionFooter";
 
 type LoginProps = {
   login: (method: UserProvider) => Promise<void>;
@@ -23,11 +23,11 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
 
-  const profile = Updates.channel;
-  const isTest = (!profile || ['test', 'development'].includes(profile))
-
   return (
-    <View style={[styles.root, { paddingTop: MARGIN_VERTICAL * 2 + insets.top, paddingBottom: MARGIN_VERTICAL * 2 + insets.bottom }]}>
+    <View style={[styles.root, {
+      paddingTop: MARGIN_VERTICAL * 2 + insets.top,
+      paddingBottom: MARGIN_VERTICAL + insets.bottom
+    }]}>
       <View style={{ flex: 3 }}>
         <MarqueeRow loading={!!loading} words={['taal', 'ቋንቋ', 'jezik', 'lingua', 'sprooch', 'lingwa']} reverse={false}/>
         <MarqueeRow loading={!!loading} words={['keel', 'jazyk', 'nyelv', 'язык', 'језик', 'ژبه']} reverse={true}/>
@@ -39,7 +39,7 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
         <CustomText weight={'Bold'} style={styles.subheaderText}>{t('welcome_to').toUpperCase()}</CustomText>
         <CustomText weight={'Bold'} style={styles.headerText}>{expo.name}</CustomText>
         <CustomText style={styles.text}>{t('welcome_desc')}</CustomText>
-        <View style={{ flex: 1 }} />
+        <View style={{ flex: 1 }}/>
         {Platform.OS == 'ios' && (
           <ActionButton
             label={t('login_with_apple')}
@@ -61,12 +61,13 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
         <ActionButton
           label={t('login_with_facebook')}
           primary={Platform.OS !== 'ios'}
-          active={isTest}
           style={styles.button}
           icon={'logo-facebook'}
           onPress={() => login(UserProvider.FACEBOOK)}
           loading={loading === UserProvider.FACEBOOK}
         />
+        {authError && <CustomText weight={'Regular'} style={styles.errorText}>{authError}</CustomText>}
+        <VersionFooter small={true} />
       </View>
     </View>
   );
@@ -102,9 +103,14 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginVertical: 20,
   },
   button: {
-    marginTop: 15,
+    marginBottom: 15,
     height: 45,
-  }
+  },
+  errorText: {
+    fontSize: 13,
+    marginBottom: 15,
+    color: colors.red,
+  },
 });
 
 export default LoginScreen;

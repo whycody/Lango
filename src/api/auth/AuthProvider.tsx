@@ -142,7 +142,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
           break;
 
         default:
-          errorMessage = `Google error: ${error.code}`;
+          errorMessage = `Google error: ${error}`;
       }
     } else if (error?.response?.data?.error?.message) {
       errorMessage = error.response.data.error.message;
@@ -153,7 +153,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
       provider: UserProvider.GOOGLE,
       reason: errorMessage,
-      raw: error,
+      raw: JSON.stringify(error),
     });
 
     setAuthError(errorMessage);

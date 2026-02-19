@@ -66,8 +66,8 @@ const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
           onPress={() => login(UserProvider.FACEBOOK)}
           loading={loading === UserProvider.FACEBOOK}
         />
-        {authError && <CustomText weight={'Regular'} style={styles.errorText}>{authError}</CustomText>}
-        <VersionFooter small={true} />
+        <CustomText weight={'Regular'} style={styles.errorText}>{authError}</CustomText>
+        <VersionFooter small={true}/>
       </View>
     </View>
   );
@@ -107,8 +107,8 @@ const getStyles = (colors: any) => StyleSheet.create({
     height: 45,
   },
   errorText: {
-    fontSize: 13,
-    marginBottom: 15,
+    fontSize: 12,
+    height: 50,
     color: colors.red,
   },
 });

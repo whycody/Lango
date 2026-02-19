@@ -25,7 +25,7 @@ const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
         />
       }
       <CustomText style={[styles.version, small && styles.smallVersion]}>
-        {`${runtimeVersion}.${buildNumber}`}
+        {`${runtimeVersion}`}
       </CustomText>
     </View>
   );
@@ -39,9 +39,7 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   version: {
     color: colors.text,
-    marginTop: 10,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
     fontSize: 14
   },

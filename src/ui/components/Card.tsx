@@ -33,14 +33,14 @@ const Card: FC<CardProps> = ({ wordIndex, text, onBackPress, onEditPress }) => {
       </CustomText>
       <View style={styles.cardIconsContainer}>
         <Ionicons
-          name={'arrow-back-outline'}
+          name={'arrow-back-sharp'}
           size={24}
           color={colors.primary300}
           style={[styles.icon, { opacity: wordIndex != 0 && onBackPress ? 1 : 0.4 }]}
           onPress={() => wordIndex != 0 && onBackPress && onBackPress()}
         />
         <Ionicons
-          name={'pencil-outline'}
+          name={'pencil-sharp'}
           size={24}
           style={[styles.icon, { opacity: onEditPress ? 1 : 0.4 }]}
           color={colors.primary300}

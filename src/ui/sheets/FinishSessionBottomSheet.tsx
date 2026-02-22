@@ -37,7 +37,7 @@ export const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessi
   }
 
   const renderBackdrop = useCallback((props: any) =>
-    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior={'none'} {...props} />, [])
 
   return (
     <BottomSheetModal

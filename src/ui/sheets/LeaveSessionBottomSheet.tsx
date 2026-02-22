@@ -35,7 +35,7 @@ export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessio
 
         <ActionButton
           onPress={props.leaveSession}
-          label={t('continue')}
+          label={t('finish')}
           primary={true}
           style={styles.button}
         />

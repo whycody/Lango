@@ -187,7 +187,7 @@ const SessionScreen = ({ navigation }) => {
   useEffect(() => {
     const word = cards[currentIndex];
     if (!word) return;
-    const speechSynthesizer = userPreferences.setSessionSpeechSynthesizer && mainLang !== translationLang;
+    const speechSynthesizer = userPreferences.sessionSpeechSynthesizer && mainLang !== translationLang;
     if (((flipped && !flippedCards[currentIndex]) || (!flipped && flippedCards[currentIndex])) && speechSynthesizer) {
       Speech.stop().then(() => {
         Speech.speak(word?.text, { language: word.mainLang });
@@ -372,23 +372,23 @@ const SessionScreen = ({ navigation }) => {
             {t('select_level')}
           </CustomText>
         </View>
-        <View style={{ flexDirection: 'row', marginHorizontal: MARGIN_HORIZONTAL, marginBottom: MARGIN_VERTICAL }}>
+        <View style={styles.levelsItemsContainer}>
           <WordLevelItem
             level={1}
             active={currentIndex < cards.length}
-            style={{ flex: 1, marginRight: 6 }}
+            style={styles.levelItem}
             onPress={() => handleLevelPress(1)}
           />
           <WordLevelItem
             level={2}
             active={currentIndex < cards.length}
-            style={{ flex: 1, marginLeft: 3, marginRight: 3 }}
+            style={styles.levelItem}
             onPress={() => handleLevelPress(2)}
           />
           <WordLevelItem
             level={3}
             active={currentIndex < cards.length}
-            style={{ flex: 1, marginLeft: 6 }}
+            style={styles.levelItem}
             onPress={() => handleLevelPress(3)}
           />
         </View>
@@ -448,6 +448,15 @@ const getStyles = (colors: any) => StyleSheet.create({
   },
   textContainer: {
     marginVertical: 18,
+  },
+  levelItem: {
+    flex: 1
+  },
+  levelsItemsContainer: {
+    flexDirection: 'row',
+    marginHorizontal: MARGIN_HORIZONTAL,
+    marginBottom: MARGIN_VERTICAL,
+    gap: 6,
   },
   lottieWrapper: {
     top: 0,

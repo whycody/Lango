@@ -1,4 +1,4 @@
-import { Image, Platform, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { Image, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import CustomText from "./CustomText";
 import { useTheme } from "@react-navigation/native";
 import appBuildNumbers from "../../../app.json";
@@ -12,11 +12,10 @@ type VersionFooterProps = {
 const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const buildNumber = Platform.OS === 'ios' ? appBuildNumbers.expo.ios.buildNumber : appBuildNumbers.expo.android.versionCode;
   const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
 
   return (
-    <View style={style}>
+    <View>
       {!small &&
         <Image
           source={require('../../../assets/logo.png')}
@@ -24,7 +23,7 @@ const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
           resizeMode="contain"
         />
       }
-      <CustomText style={[styles.version, small && styles.smallVersion]}>
+      <CustomText style={[style, styles.version, small && styles.smallVersion]}>
         {`${runtimeVersion}`}
       </CustomText>
     </View>
@@ -38,10 +37,10 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: 30,
   },
   version: {
-    color: colors.text,
+    color: colors.primary300,
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 14
+    fontSize: 13
   },
   smallVersion: {
     fontSize: 12,

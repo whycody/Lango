@@ -245,7 +245,7 @@ const SettingsScreen = () => {
               <CustomText style={styles.subtitle}>{t('settings_long_desc')}</CustomText>
             </>
           }
-          ListFooterComponent={<VersionFooter/>}
+          ListFooterComponent={<VersionFooter style={styles.footer}/>}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderSettingsItem}
           renderSectionHeader={({ section }) => renderSectionHeader(section.title)}
@@ -283,6 +283,9 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
     marginHorizontal: MARGIN_HORIZONTAL
+  },
+  footer: {
+    marginVertical: MARGIN_VERTICAL / 2,
   }
 });
 

@@ -41,7 +41,7 @@ const LibraryItem: FC<LibraryItemProps> = ({ index, label, description, onPress,
         {description && <CustomText weight={"Regular"} style={styles.description}>{description}</CustomText>}
       </View>
       {enabled !== undefined &&
-        <Switch value={enabled} thumbColor={colors.primary} onValueChange={onPress}/>
+        <Switch value={enabled} thumbColor={colors.primary} onValueChange={handlePress}/>
       }
     </Pressable>
   );

@@ -12,7 +12,7 @@ type VersionFooterProps = {
 const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const runtimeVersion = appBuildNumbers.expo.runtimeVersion;
+  const version = appBuildNumbers.expo.version;
 
   return (
     <View>
@@ -24,7 +24,7 @@ const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
         />
       }
       <CustomText style={[style, styles.version, small && styles.smallVersion]}>
-        {`${runtimeVersion}`}
+        {`${version}`}
       </CustomText>
     </View>
   );

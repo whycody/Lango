@@ -5,19 +5,23 @@ import { FlatList, Pressable, StyleSheet, TextInputProps, View } from "react-nat
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import CustomText from "./CustomText";
+import { Ionicons } from "@expo/vector-icons";
+import { useVoiceInput } from "../../hooks/useVoiceInput";
+import { LanguageCode } from "../../constants/LanguageCode";
 
 type WordInputProps = TextInputProps & {
+  id: string;
   word: string;
   active: boolean;
   onWordCommit?: (word: string) => void;
   onWordChange?: (word: string) => void;
-  languageCode: string;
+  languageCode: LanguageCode;
   suggestions?: string[];
   style?: any;
 };
 
 const WordInput: FC<WordInputProps> =
-  forwardRef(({ word, active, onWordCommit, onWordChange, languageCode, suggestions, style, ...rest }, ref) => {
+  forwardRef(({ id, word, active, onWordCommit, onWordChange, languageCode, suggestions, style, ...rest }, ref) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const [focused, setFocused] = useState(false);
@@ -29,6 +33,18 @@ const WordInput: FC<WordInputProps> =
     useEffect(() => {
       setInternalWord(word);
     }, [word]);
+
+    const voice = useVoiceInput({
+      id,
+      languageCode,
+      onResult: (text) => {
+        const word = internalWord + text;
+        setInternalWord(word);
+        onWordChange?.(word);
+      },
+      onPermissionDenied: () => {
+      },
+    });
 
     useImperativeHandle(ref, () => ({
       focus: () => inputRef.current?.focus(),
@@ -64,23 +80,32 @@ const WordInput: FC<WordInputProps> =
 
     return (
       <View>
-        <View style={[styles.inputContainer, style]}>
+        <View style={[styles.root, style]}>
           <SquareFlag size={30} style={{ marginRight: 10 }} languageCode={languageCode}/>
-          <BottomSheetTextInput
-            ref={inputRef}
-            style={styles.input}
-            cursorColor={active ? colors.primary : 'transparent'}
-            autoCapitalize={'none'}
-            textContentType={'none'}
-            autoCorrect={true}
-            multiline={true}
-            value={internalWord}
-            scrollEnabled={true}
-            onFocus={setFocused}
-            onChangeText={handleTextChange}
-            onBlur={handleBlur}
-            {...rest}
-          />
+          <View style={styles.inputContainer}>
+            <BottomSheetTextInput
+              ref={inputRef}
+              style={styles.input}
+              cursorColor={active ? colors.primary : 'transparent'}
+              autoCapitalize={'none'}
+              textContentType={'none'}
+              autoCorrect={true}
+              multiline={true}
+              value={internalWord}
+              scrollEnabled={true}
+              onFocus={setFocused}
+              onChangeText={handleTextChange}
+              onBlur={handleBlur}
+              {...rest}
+            />
+            <Ionicons
+              name={'mic-sharp'}
+              color={colors.primary600}
+              size={24}
+              style={styles.icon}
+              onPress={voice.toggle}
+            />
+          </View>
         </View>
         {currentSuggestions.length > 0 && focused && (
           <FlatList
@@ -103,7 +128,7 @@ const WordInput: FC<WordInputProps> =
   });
 
 const getStyles = (colors: any) => StyleSheet.create({
-  inputContainer: {
+  root: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -111,11 +136,21 @@ const getStyles = (colors: any) => StyleSheet.create({
     flex: 1,
     fontFamily: `Montserrat-Regular`,
     color: colors.primary300,
-    paddingHorizontal: MARGIN_HORIZONTAL,
+    paddingHorizontal: MARGIN_HORIZONTAL / 2,
     backgroundColor: colors.background,
     fontSize: 16,
     minHeight: 42,
     lineHeight: 30,
+  },
+  inputContainer: {
+    backgroundColor: colors.background,
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    paddingRight: MARGIN_HORIZONTAL / 2
+  },
+  icon: {
+    padding: 6.5,
   },
   suggestionsList: {
     marginTop: 10,

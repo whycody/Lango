@@ -15,6 +15,7 @@ import axios from "axios";
 import TranslationUtils from "../../utils/translationUtils";
 import { LanguageCode, Word } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
+import { useVoiceInput } from "../../hooks/useVoiceInput";
 
 type WordTranslations = {
   word: string;
@@ -50,6 +51,7 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [buttonsActive, setButtonsActive] = useState(true);
   const { mainLang, translationLang } = useLanguage();
+  const voice = useVoiceInput({});
 
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
@@ -154,6 +156,14 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
     }
   };
 
+  const handleChangeIndex = (index: number) => {
+    if (index === -1) {
+      voice.stop()
+    }
+
+    props.onChangeIndex?.(index);
+  }
+
   useEffect(() => {
     if (mainLang == translationLang) return;
     if (!!word && !translation) translateWord(word);
@@ -176,7 +186,7 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
       ref={ref}
       index={0}
       backdropComponent={renderBackdrop}
-      onChange={(index: number) => props.onChangeIndex?.(index)}
+      onChange={handleChangeIndex}
       containerComponent={renderContainerComponent}
       backgroundStyle={{ backgroundColor: colors.card }}
       handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
@@ -198,6 +208,7 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
         }
         <WordInput
           ref={wordInputRef}
+          id={'main-input'}
           word={word}
           suggestions={wordSuggestions}
           onWordCommit={setWord}
@@ -210,6 +221,7 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
         />
         <WordInput
           ref={translationInputRef}
+          id={'translation-input'}
           word={translation}
           suggestions={translationSuggestions}
           onWordCommit={setTranslation}

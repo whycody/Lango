@@ -16,6 +16,7 @@ import TranslationUtils from "../../utils/translationUtils";
 import { LanguageCode, Word } from "../../types";
 import { useLanguage } from "../../store/LanguageContext";
 import { useVoiceInput } from "../../hooks/useVoiceInput";
+import { MicrophonePermissionBottomSheet } from "./MicrophonePermissionBottomSheet";
 
 type WordTranslations = {
   word: string;
@@ -38,6 +39,7 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
 
   const wordInputRef = useRef<any>(null);
   const translationInputRef = useRef<any>(null);
+  const microphonePermissionSheetRef = useRef<BottomSheetModal>(null);
 
   const flashcard: Word | null = props.flashcardId ? wordsContext.getWord(props.flashcardId) : null;
   const [word, setWord] = useState(flashcard?.text);
@@ -191,75 +193,82 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
 
   return (
-    <BottomSheetModal
-      ref={ref}
-      index={0}
-      backdropComponent={renderBackdrop}
-      onChange={handleChangeIndex}
-      containerComponent={renderContainerComponent}
-      backgroundStyle={{ backgroundColor: colors.card }}
-      handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
-      keyboardBlurBehavior={'restore'}
-      onDismiss={handleSheetDismiss}
-    >
-      <BottomSheetScrollView style={styles.root} keyboardShouldPersistTaps="always">
-        <Header
-          title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
-          subtitle={t('wordAndTranslation')}
-          style={{ marginVertical: 10 }}
-        />
-        {status && statusMessage &&
-          <Alert
-            title={status == 'success' ? t('success') : t('invalidData')}
-            message={statusMessage}
-            type={status}
+    <>
+      <MicrophonePermissionBottomSheet
+        ref={microphonePermissionSheetRef}
+      />
+      <BottomSheetModal
+        ref={ref}
+        index={0}
+        backdropComponent={renderBackdrop}
+        onChange={handleChangeIndex}
+        containerComponent={renderContainerComponent}
+        backgroundStyle={{ backgroundColor: colors.card }}
+        handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
+        keyboardBlurBehavior={'restore'}
+        onDismiss={handleSheetDismiss}
+      >
+        <BottomSheetScrollView style={styles.root} keyboardShouldPersistTaps="always">
+          <Header
+            title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
+            subtitle={t('wordAndTranslation')}
+            style={{ marginVertical: 10 }}
           />
-        }
-        <WordInput
-          ref={wordInputRef}
-          id={'main-input'}
-          word={word}
-          suggestions={wordSuggestions}
-          onWordCommit={setWord}
-          onWordChange={setCurrentWord}
-          active={buttonsActive}
-          cursorColor={!buttonsActive ? 'transparent' : colors.primary}
-          languageCode={mainLang}
-          style={{ marginTop: 15 }}
-          pointerEvents="box-only"
-        />
-        <WordInput
-          ref={translationInputRef}
-          id={'translation-input'}
-          word={translation}
-          suggestions={translationSuggestions}
-          onWordCommit={setTranslation}
-          onWordChange={setCurrentTranslation}
-          active={buttonsActive}
-          languageCode={translationLang}
-          style={{ marginTop: 15 }}
-          pointerEvents="box-only"
-        />
-        <ActionButton
-          onPress={() => props.flashcardId ? editFlashcard() : addFlashcard(false)}
-          label={props.flashcardId ? t('edit') : t('add_1')}
-          primary={true}
-          active={buttonsActive}
-          style={styles.button}
-          icon={props.flashcardId ? 'save-sharp' : undefined}
-        />
-        {props.flashcardId ? <View style={{ height: MARGIN_VERTICAL }}/> :
-          <CustomText
-            style={styles.actionText}
-            weight={'SemiBold'}
-            onPress={() => {
-              if (buttonsActive) addFlashcard(true);
-            }}
-          >
-            {t('addAnother')}
-          </CustomText>}
-      </BottomSheetScrollView>
-    </BottomSheetModal>
+          {status && statusMessage &&
+            <Alert
+              title={status == 'success' ? t('success') : t('invalidData')}
+              message={statusMessage}
+              type={status}
+            />
+          }
+          <WordInput
+            ref={wordInputRef}
+            id={'main-input'}
+            word={word}
+            suggestions={wordSuggestions}
+            onWordCommit={setWord}
+            onWordChange={setCurrentWord}
+            active={buttonsActive}
+            cursorColor={!buttonsActive ? 'transparent' : colors.primary}
+            languageCode={mainLang}
+            style={styles.wordInput}
+            pointerEvents="box-only"
+            onMicrophonePermissionsNotGranted={() => microphonePermissionSheetRef.current.present()}
+          />
+          <WordInput
+            ref={translationInputRef}
+            id={'translation-input'}
+            word={translation}
+            suggestions={translationSuggestions}
+            onWordCommit={setTranslation}
+            onWordChange={setCurrentTranslation}
+            active={buttonsActive}
+            languageCode={translationLang}
+            style={styles.wordInput}
+            pointerEvents="box-only"
+            onMicrophonePermissionsNotGranted={() => microphonePermissionSheetRef.current.present()}
+          />
+          <ActionButton
+            onPress={() => props.flashcardId ? editFlashcard() : addFlashcard(false)}
+            label={props.flashcardId ? t('edit') : t('add_1')}
+            primary={true}
+            active={buttonsActive}
+            style={styles.button}
+            icon={props.flashcardId ? 'save-sharp' : undefined}
+          />
+          {props.flashcardId ? <View style={{ height: MARGIN_VERTICAL }}/> :
+            <CustomText
+              style={styles.actionText}
+              weight={'SemiBold'}
+              onPress={() => {
+                if (buttonsActive) addFlashcard(true);
+              }}
+            >
+              {t('addAnother')}
+            </CustomText>}
+        </BottomSheetScrollView>
+      </BottomSheetModal>
+    </>
   );
 });
 
@@ -284,4 +293,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     textAlign: 'center',
     paddingVertical: MARGIN_VERTICAL
   },
+  wordInput: {
+    marginTop: 15
+  }
 });

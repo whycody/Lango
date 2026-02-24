@@ -2,13 +2,13 @@ import { Alert } from "react-native";
 import { openAppSettings } from "./openAppSettings";
 import { t } from "i18next";
 
-export const alertOpenSettings = () => {
+export const alertOpenSettings = (type: 'notifications' | 'microphone') => {
   Alert.alert(
-    t("notifications_disabled_title"),
-    t("notifications_disabled_message"),
+    t(type == 'notifications' ? "notifications_disabled_title" : "microphone.disabled_title"),
+    t(type == 'notifications' ? "notifications_disabled_message" : "microphone.disabled_message"),
     [
       { text: t("cancel"), style: "cancel" },
-      { text: t("notifications_open_settings"), onPress: openAppSettings }
+      { text: t("general.open_settings"), onPress: openAppSettings }
     ]
   );
 };

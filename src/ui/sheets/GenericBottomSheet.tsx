@@ -41,16 +41,6 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
       []
     );
 
-    const handlePrimaryPress = () => {
-      onPrimaryButtonPress?.();
-      ref && typeof ref !== "function" && ref.current?.dismiss();
-    };
-
-    const handleSecondaryPress = () => {
-      onSecondaryButtonPress?.();
-      ref && typeof ref !== "function" && ref.current?.dismiss();
-    };
-
     return (
       <BottomSheetModal
         ref={ref}
@@ -77,7 +67,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
 
           {primaryActionLabel && (
             <ActionButton
-              onPress={handlePrimaryPress}
+              onPress={() => onPrimaryButtonPress?.()}
               label={primaryActionLabel}
               primary={true}
               style={styles.button}
@@ -88,7 +78,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
             <CustomText
               style={styles.actionText}
               weight="SemiBold"
-              onPress={handleSecondaryPress}
+              onPress={() => onSecondaryButtonPress?.()}
             >
               {secondaryActionLabel}
             </CustomText>
@@ -119,7 +109,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     color: colors.primary,
     fontSize: 13,
     textAlign: "center",
-    paddingVertical: MARGIN_VERTICAL,
+    paddingTop: MARGIN_VERTICAL,
   },
   button: {
     marginTop: MARGIN_VERTICAL,

@@ -37,7 +37,6 @@
   "poorly": "Słabo",
   "moderately": "Średnio",
   "good": "Dobrze",
-  "repeated": "Powtórzyłeś {{count}} słówek.",
   "sessionSummary": "Podsumowanie sesji \uD83D\uDCC8",
   "perfect": "Rewelacja! Wszystkie {{grade3Count}} słówek zostały opanowane perfekcyjnie. Możesz być z siebie dumny! Czyżby nauka szła jak z płatka?",
   "goodProgress": "Gratulacje! Znasz aż {{grade3Count}} słówek perfekcyjnie. Świetna robota! Jeszcze {{grade1Count}} słówek wymaga uwagi, ale idziesz w dobrym kierunku!",
@@ -133,10 +132,13 @@
   "ask_later": "Zapytaj później",
   "notifications_disabled_title": "Powiadomienia wyłączone",
   "notifications_disabled_message": "Aby włączyć powiadomienia, musisz zmienić ustawienia aplikacji w systemie.",
-  "notifications_open_settings": "Otwórz ustawienia",
   "back": "Wróć",
   "welcome_onboarding": " {{name}}, \n witaj w Lango!",
   "welcome_onboarding_desc": "Bardzo się cieszymy, że do dołączyłeś do naszej społeczności! Odpowiedz na kilka pytań, abyśmy mogli lepiej dostosować aplikację do Twoich potrzeb.",
+  "general": {
+    "open_settings": "Otwórz ustawienia",
+    "cancel": "Anuluj"
+  },
   "sorting": {
     "title": "Sposób sortowania",
     "desc": "Wybierz sposób sortowania fiszek w Twojej bibliotece.",
@@ -153,5 +155,11 @@
     "got_it": "Rozumiem",
     "word": "Słówko",
     "translation": "Tłumaczenie"
+  },
+  "microphone": {
+    "no_permission": "Brak uprawnień do mikrofonu \uD83C\uDFA4",
+    "desc": "Aby korzystać z tej funkcji, musisz udzielić aplikacji dostępu do mikrofonu. Możesz to zrobić w ustawieniach swojego urządzenia.",
+    "disabled_title": "Mikrofon wyłączony",
+    "disabled_message": "Aby włączyć mikrofon, musisz zmienić ustawienia aplikacji w systemie."
   }
 }

@@ -1,5 +1,5 @@
 import { FC, useRef, useState } from "react";
-import { Pressable, StyleSheet, View, Animated, Easing } from "react-native";
+import { Animated, Easing, Pressable, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";

@@ -1,3 +1,4 @@
 {
-  "NSUserNotificationUsageDescription": "Esta aplicación necesita permiso para enviarte notificaciones recordándote el estudio. Nunca enviaremos más de dos notificaciones al día."
+  "NSUserNotificationUsageDescription": "Esta aplicación necesita permiso para enviarte notificaciones recordándote el estudio. Nunca enviaremos más de dos notificaciones al día.",
+  "NSMicrophoneUsageDescription": "Esta aplicación necesita acceso al micrófono para permitirte ingresar palabras mediante la voz."
 }

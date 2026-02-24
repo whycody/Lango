@@ -11,7 +11,7 @@ export const ensureNotificationsPermission = async (): Promise<boolean> => {
   }
 
   if (status !== "granted" && !canAskAgain) {
-    alertOpenSettings();
+    alertOpenSettings('notifications');
     return false;
   }
 

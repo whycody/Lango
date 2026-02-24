@@ -47,6 +47,7 @@
   "editFlashcard": "Edit flashcard",
   "save": "Save",
   "add": "Add",
+  "add_1": "Add +",
   "edit": "Edit",
   "wordAndTranslation": "Enter words and its translation",
   "addAnother": "Add this and another one",
@@ -131,10 +132,13 @@
   "ask_later": "Ask later",
   "notifications_disabled_title": "Notifications disabled",
   "notifications_disabled_message": "To enable notifications, you need to change the app settings in your system.",
-  "notifications_open_settings": "Open settings",
   "back": "Go back",
   "welcome": "{{name}},\n welcome to Lango! ",
   "welcome_onboarding_desc": "We are very pleased that you have joined our community! Answer a few questions so we can better tailor the app to your needs.",
+  "general": {
+    "open_settings": "Open settings",
+    "cancel": "Cancel"
+  },
   "sorting": {
     "title": "Sorting order",
     "desc": "Choose how flashcards are sorted in your library.",
@@ -151,5 +155,11 @@
     "got_it": "Got it",
     "word": "Word",
     "translation": "Translation"
+  },
+  "microphone": {
+    "no_permission": "No permission to use the microphone 🎤",
+    "desc": "To use this feature, you need to grant the app access to your microphone. You can do this in your device settings.",
+    "disabled_title": "Microphone disabled",
+    "disabled_message": "To enable the microphone, you need to change the app settings in your system."
   }
 }

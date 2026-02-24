@@ -39,8 +39,7 @@ export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, 
   });
 
   const start = useCallback(async () => {
-    const permission =
-      await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+    const permission = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
 
     if (!permission.granted) {
       onPermissionDenied?.();

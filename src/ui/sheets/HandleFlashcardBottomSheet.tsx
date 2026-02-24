@@ -53,6 +53,14 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
   const { mainLang, translationLang } = useLanguage();
   const voice = useVoiceInput({});
 
+  const translationsOfWord = wordTranslations && wordTranslations
+    .find(wt => wt.word.toLowerCase() === currentWord.toLowerCase() && wt.from == mainLang && wt.to == translationLang)
+  const translationsOfTranslation = wordTranslations && wordTranslations
+    .find(wt => wt.word.toLowerCase() === currentTranslation.toLowerCase() && wt.from == translationLang && wt.to == mainLang)
+
+  const translationSuggestions = translationsOfWord ? translationsOfWord.translations : [];
+  const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
+
   const renderBackdrop = useCallback((props: any) =>
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
 
@@ -80,9 +88,20 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
     }
   }, [props.flashcardId]);
 
+  const getCurrentWordAndTranslation = () => {
+    const currentWordInput = wordInputRef.current?.getWord();
+    const currentTranslationInput = translationInputRef.current?.getWord();
+
+    const word = currentWordInput.length > 0 ?
+      currentWordInput.trim() : wordSuggestions.length > 0 ? wordSuggestions[0].trim() : '';
+    const translation = currentTranslationInput.length > 0 ?
+      currentTranslationInput.trim() : translationSuggestions.length > 0 ? translationSuggestions[0].trim() : '';
+
+    return { word, translation };
+  }
+
   const validateInputs = () => {
-    const word = wordInputRef.current?.getWord().trim();
-    const translation = translationInputRef.current?.getWord().trim();
+    const { word, translation } = getCurrentWordAndTranslation();
     if (word && translation) return true;
     setStatus('error');
     setStatusMessage(t('bothInputs'));
@@ -92,8 +111,7 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
   const editFlashcard = () => {
     if (!validateInputs()) return;
     scheduleDismiss();
-    const word = wordInputRef.current?.getWord().trim();
-    const translation = translationInputRef.current?.getWord().trim();
+    const { word, translation } = getCurrentWordAndTranslation();
     wordsContext.editWord({ id: props.flashcardId, text: word, translation: translation });
     props.onWordEdit?.(props.flashcardId, word, translation);
     setStatusMessage(t('editWord', { word: word }));
@@ -101,10 +119,9 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
 
   const addFlashcard = (multiple: boolean) => {
     if (!validateInputs()) return;
-    const word = wordInputRef.current?.getWord().trim();
-    const translation = translationInputRef.current?.getWord().trim();
+    const { word, translation } = getCurrentWordAndTranslation();
     wordsContext.addWord(word, translation, WordSource.USER);
-    setStatusMessage(t('addNewWord', { word: word }));
+    setStatusMessage(t('addNewWord', { word }));
     if (!multiple) {
       scheduleDismiss();
     } else {
@@ -169,14 +186,6 @@ export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFla
     if (!!word && !translation) translateWord(word);
     if (!!translation && !word) translateWord(translation, translationLang, mainLang);
   }, [word, translation, mainLang, translationLang]);
-
-  const translationsOfWord = wordTranslations && wordTranslations
-    .find(wt => wt.word.toLowerCase() === currentWord.toLowerCase() && wt.from == mainLang && wt.to == translationLang)
-  const translationsOfTranslation = wordTranslations && wordTranslations
-    .find(wt => wt.word.toLowerCase() === currentTranslation.toLowerCase() && wt.from == translationLang && wt.to == mainLang)
-
-  const translationSuggestions = translationsOfWord ? translationsOfWord.translations : [];
-  const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
 
   const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
     <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;

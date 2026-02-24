@@ -1,9 +1,8 @@
 import { useCallback, useRef, useState } from "react";
-import {
-  ExpoSpeechRecognitionModule,
-  useSpeechRecognitionEvent,
-} from "expo-speech-recognition";
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent, } from "expo-speech-recognition";
 import { speechLocaleMap } from "../constants/SpeechLocaleMap";
+import { useHaptics } from "./useHaptics";
+import { ImpactFeedbackStyle } from "expo-haptics";
 
 let activeVoiceId: string | null = null;
 
@@ -12,11 +11,13 @@ type UseVoiceInputParams = {
   languageCode?: string;
   onResult?: (text: string) => void;
   onPermissionDenied?: () => void;
+  onEnd?: (result: string) => void;
 };
 
-export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, }: UseVoiceInputParams) => {
-  const [recording, setRecording] = useState(false);
+export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, onEnd }: UseVoiceInputParams) => {
+  const [recording, setRecording] = useState<string | false>(false);
   const transcriptRef = useRef("");
+  const haptics = useHaptics();
 
   useSpeechRecognitionEvent("start", () => {
     transcriptRef.current = "";
@@ -26,14 +27,14 @@ export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, 
     if (activeVoiceId === id) {
       activeVoiceId = null;
       setRecording(false);
+      onEnd?.(transcriptRef.current);
     }
   });
 
   useSpeechRecognitionEvent("result", (event) => {
     if (activeVoiceId !== id) return;
 
-    const text = event.results?.[0]?.transcript ?? "";
-    transcriptRef.current += text;
+    transcriptRef.current = event.results?.[0]?.transcript ?? "";
     onResult?.(transcriptRef.current);
   });
 
@@ -52,7 +53,7 @@ export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, 
 
     activeVoiceId = id;
     transcriptRef.current = "";
-    setRecording(true);
+    setRecording(id);
 
     ExpoSpeechRecognitionModule.start({
       lang: speechLocaleMap[languageCode],
@@ -70,11 +71,18 @@ export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, 
   }, [id]);
 
   const toggle = useCallback(() => {
+    if (activeVoiceId && activeVoiceId !== id) {
+      return;
+    }
+
+    haptics.triggerHaptics(ImpactFeedbackStyle.Rigid);
+
     if (recording) {
       stop();
-    } else {
-      start();
+      return;
     }
+
+    start();
   }, [recording, start, stop]);
 
   return {

@@ -26,24 +26,21 @@ const WordInput: FC<WordInputProps> =
     const styles = getStyles(colors);
     const [focused, setFocused] = useState(false);
 
+    const debounceRef = useRef<NodeJS.Timeout | null>(null);
     const [internalWord, setInternalWord] = useState(word);
     const [currentSuggestions, setCurrentSuggestions] = useState<string[]>([]);
     const inputRef = useRef<any>(null);
-
-    useEffect(() => {
-      setInternalWord(word);
-    }, [word]);
 
     const voice = useVoiceInput({
       id,
       languageCode,
       onResult: (text) => {
-        const word = internalWord + text;
-        setInternalWord(word);
-        onWordChange?.(word);
+        setInternalWord(text);
+        onWordChange?.(text);
       },
-      onPermissionDenied: () => {
-      },
+      onEnd: (result: string) => {
+        onWordCommit?.(result);
+      }
     });
 
     useImperativeHandle(ref, () => ({
@@ -62,8 +59,19 @@ const WordInput: FC<WordInputProps> =
 
     const handleTextChange = (newWord: string) => {
       if (!active) return;
+
       setInternalWord(newWord);
       onWordChange?.(newWord);
+
+      if (voice.recording) return;
+
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+
+      debounceRef.current = setTimeout(() => {
+        onWordCommit?.(newWord);
+      }, 450);
     };
 
     const handleBlur = () => {
@@ -93,6 +101,8 @@ const WordInput: FC<WordInputProps> =
               multiline={true}
               value={internalWord}
               scrollEnabled={true}
+              placeholder={(currentSuggestions && !focused && currentSuggestions) ? currentSuggestions[0] : undefined}
+              placeholderTextColor={colors.cardAccent}
               onFocus={setFocused}
               onChangeText={handleTextChange}
               onBlur={handleBlur}
@@ -100,7 +110,7 @@ const WordInput: FC<WordInputProps> =
             />
             <Ionicons
               name={'mic-sharp'}
-              color={colors.primary600}
+              color={voice.recording ? colors.primary : colors.primary600}
               size={24}
               style={styles.icon}
               onPress={voice.toggle}
@@ -147,7 +157,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     alignItems: 'center',
-    paddingRight: MARGIN_HORIZONTAL / 2
+    paddingHorizontal: MARGIN_HORIZONTAL / 2
   },
   icon: {
     padding: 6.5,

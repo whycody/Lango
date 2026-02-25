@@ -19,6 +19,8 @@ export const AnalyticsEventName = {
   NOTIFICATIONS_ENABLE_FAILURE: 'notifications_enable_failure',
   NOTIFICATIONS_DISABLE: 'notifications_disable',
 
+  MICROPHONE_WORD_INPUT: 'microphone_word_input',
+
   ENABLE_NOTIFICATIONS_SHEET_OPEN: 'start_session_sheet_open',
   START_SESSION_SHEET_OPEN: 'start_session_sheet_open',
   HANDLE_FLASHCARD_SHEET_OPEN: 'handle_flashcard_sheet_open',
@@ -69,6 +71,8 @@ export type AnalyticsEventPayloadMap = {
   notifications_enable_success?: undefined;
   notifications_enable_failure?: { reason: string };
   notifications_disable?: undefined;
+
+  microphone_word_input?: undefined;
 
   enable_notifications_sheet_open?: undefined;
   start_session_sheet_open?: undefined;

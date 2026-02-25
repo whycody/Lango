@@ -8,6 +8,8 @@ import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { useVoiceInput } from "../../hooks/useVoiceInput";
 import { LanguageCode } from "../../constants/LanguageCode";
+import { trackEvent } from "../../utils/analytics";
+import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 
 type WordInputProps = TextInputProps & {
   id: string;
@@ -39,6 +41,7 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
     id,
     languageCode,
     onResult: (text) => {
+      trackEvent(AnalyticsEventName.MICROPHONE_WORD_INPUT);
       setInternalWord(text);
       onWordChange?.(text);
     },

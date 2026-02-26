@@ -2,6 +2,7 @@ import { createContext, FC, ReactNode, useContext } from "react";
 import { SessionMode } from "../types";
 import { useUserStorage } from "./UserStorageContext";
 import { useTypedMMKV } from "../hooks/useTypedMKKV";
+import { PermissionStatus } from "expo-notifications";
 
 export enum FlashcardSide {
   WORD = 'WORD',
@@ -32,6 +33,7 @@ interface UserPreferencesContext {
   askLaterNotifications: number | null;
   flashcardsSortingMethod: FlashcardSortingMethod;
   userHasEverHitFlashcard: boolean;
+  notificationsPermissionStatus: PermissionStatus;
   setFlashcardSide: (side: FlashcardSide) => void;
   setSessionMode: (mode: SessionMode) => void;
   setSessionLength: (length: SessionLength) => void;
@@ -40,6 +42,7 @@ interface UserPreferencesContext {
   setAskLaterNotifications: (timestamp: number) => void;
   setFlashcardsSortingMethod: (method: FlashcardSortingMethod) => void;
   setUserHasEverHitFlashcard: (hasEverHit: boolean) => void;
+  setNotificationsPermissionStatus: (status: PermissionStatus) => void;
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContext>({
@@ -51,6 +54,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   askLaterNotifications: null,
   flashcardsSortingMethod: FlashcardSortingMethod.ADD_DATE_DESC,
   userHasEverHitFlashcard: false,
+  notificationsPermissionStatus: PermissionStatus.UNDETERMINED,
   setFlashcardSide: () => {},
   setSessionMode: () => {},
   setSessionLength: () => {},
@@ -59,6 +63,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   setAskLaterNotifications: () => {},
   setFlashcardsSortingMethod: () => {},
   setUserHasEverHitFlashcard: () => {},
+  setNotificationsPermissionStatus: () => {},
 });
 
 const FLASHCARD_SIDE_KEY = 'flashcardSide';
@@ -69,6 +74,7 @@ const VIBRATIONS_KEY = 'vibrationsEnabled';
 const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
 const FLASHCARDS_SORTING_METHOD = 'flashcardsSortingMethod';
 const USER_HAS_EVER_HIT_FLASHCARD = 'userHasEverHitFlashcard';
+const NOTIFICATION_PERMISSION_STATUS = 'lastUserNotificationPermissionStatus';
 
 const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { storage } = useUserStorage();
@@ -81,6 +87,8 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [flashcardsSortingMethod, setFlashcardsSortingMethod] = useTypedMMKV<FlashcardSortingMethod>(FLASHCARDS_SORTING_METHOD,
     FlashcardSortingMethod.ADD_DATE_DESC, storage)
   const [userHasEverHitFlashcard, setUserHasEverHitFlashcard] = useTypedMMKV(USER_HAS_EVER_HIT_FLASHCARD, false, storage);
+  const [notificationsPermissionStatus, setNotificationsPermissionStatus] =
+    useTypedMMKV<PermissionStatus>(NOTIFICATION_PERMISSION_STATUS, PermissionStatus.UNDETERMINED, storage);
 
   return (
     <UserPreferencesContext.Provider
@@ -93,6 +101,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         askLaterNotifications,
         flashcardsSortingMethod,
         userHasEverHitFlashcard,
+        notificationsPermissionStatus,
         setFlashcardSide,
         setSessionMode,
         setSessionLength,
@@ -101,6 +110,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setAskLaterNotifications,
         setFlashcardsSortingMethod,
         setUserHasEverHitFlashcard,
+        setNotificationsPermissionStatus,
       }}
     >
       {children}

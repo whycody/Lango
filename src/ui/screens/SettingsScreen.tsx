@@ -16,6 +16,7 @@ import { LanguageTypes } from "../../constants/LanguageTypes";
 import { FlashcardSide, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import * as Notifications from "expo-notifications";
+import { PermissionStatus } from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { updateNotificationsEnabled } from "../../api/apiClient";
 import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
@@ -39,10 +40,9 @@ const SettingsScreen = () => {
   const currentTranslationLang = languages.filter(lang => lang.languageCode === translationLang)[0].languageName;
   const currentApplicationLang = languages.filter(lang => lang.languageCode === applicationLang)[0].languageName;
 
-  const [notificationsStatus, setNotificationsStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
   const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(LanguageTypes.MAIN);
   const { style, onScroll } = useDynamicStatusBar(100, 0.5);
-  const notificationsEnabled = notificationsStatus == 'granted' && user.notificationsEnabled;
+  const notificationsEnabled = userPreferences.notificationsPermissionStatus == PermissionStatus.GRANTED && user.notificationsEnabled;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -59,7 +59,7 @@ const SettingsScreen = () => {
   useLayoutEffect(() => {
     const checkPermissions = async () => {
       const { status } = await Notifications.getPermissionsAsync();
-      setNotificationsStatus(status);
+      userPreferences.setNotificationsPermissionStatus(status)
     }
 
     checkPermissions();
@@ -74,7 +74,7 @@ const SettingsScreen = () => {
     }
 
     trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS)
-    setNotificationsStatus('granted');
+    userPreferences.setNotificationsPermissionStatus(PermissionStatus.GRANTED)
     await registerNotificationsToken();
     await updateNotificationsEnabled(true);
     await getSession();

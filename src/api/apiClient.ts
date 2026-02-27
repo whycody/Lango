@@ -1,6 +1,6 @@
 import { apiCall } from "./auth/apiHandler";
 import DeviceInfo from 'react-native-device-info';
-import { Evaluation, LanguageCode, Session, Suggestion, SyncResult, User, Word } from "../types";
+import { Evaluation, LanguageCode, LanguageLevel, Session, Suggestion, SyncResult, User, Word } from "../types";
 
 const getDeviceId = async () => {
   try {
@@ -114,6 +114,19 @@ export const updateNotificationsEnabled = async (enabled: boolean) => {
     }, true);
   } catch (e) {
     console.error('PATCH /notifications', e);
+    return null;
+  }
+}
+
+export const updateLanguageLevels = async (languageLevels: LanguageLevel[]) => {
+  try {
+    return await apiCall({
+      method: 'PATCH',
+      url: '/users/languageLevels',
+      data: { languageLevels }
+    }, true);
+  } catch (e) {
+    console.error('PATCH /users/languageLevels', e);
     return null;
   }
 }

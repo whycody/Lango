@@ -31,7 +31,7 @@ const SettingsScreen = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { languages, mainLang, translationLang, applicationLang } = useLanguage();
-  const { user, getSession } = useAuth();
+  const { user, updateUserNotificationsEnabled, getSession } = useAuth();
   const languageBottomSheetRef = useRef<BottomSheetModal>();
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const userPreferences = useUserPreferences();
@@ -75,9 +75,7 @@ const SettingsScreen = () => {
 
     trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS)
     userPreferences.setNotificationsPermissionStatus(PermissionStatus.GRANTED)
-    await registerNotificationsToken();
-    await updateNotificationsEnabled(true);
-    await getSession();
+    updateUserNotificationsEnabled(true);
   };
 
   const handleNotificationsSettingItemPress = async () => {
@@ -85,8 +83,7 @@ const SettingsScreen = () => {
       await checkNotifications();
     } else {
       trackEvent(AnalyticsEventName.NOTIFICATIONS_DISABLE)
-      await updateNotificationsEnabled(false);
-      await getSession();
+      updateUserNotificationsEnabled(false)
     }
   }
 

@@ -14,6 +14,7 @@ import { checkUpdates } from "../../utils/checkUpdates";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
 import * as Notifications from "expo-notifications";
+import { PermissionStatus } from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { ScreenName } from "../../navigation/AppStack";
 import { SessionMode } from "../../types";
@@ -64,8 +65,8 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const checkNotifications = async () => {
       const { status } = await Notifications.getPermissionsAsync();
-      if (status == 'granted' && user.notificationsEnabled) registerNotificationsToken();
-      if ((askLaterNotifications && Date.now() < askLaterNotifications) || status == 'granted') return;
+      if (status == PermissionStatus.GRANTED && user.notificationsEnabled) registerNotificationsToken();
+      if ((askLaterNotifications && Date.now() < askLaterNotifications) || status == PermissionStatus.GRANTED) return;
       trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN)
       enableNotificationsRef.current?.present();
     }

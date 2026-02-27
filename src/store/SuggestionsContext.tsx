@@ -13,6 +13,7 @@ import {
   updateLocalItems,
 } from "../utils/sync";
 import { useAppInitializer } from "./AppInitializerContext";
+import { useAuth } from "../api/auth/AuthProvider";
 
 interface SuggestionsContextProps {
   suggestions: Suggestion[];
@@ -38,6 +39,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad.suggestions);
   const [loading, setLoading] = useState(false);
   const { translationLang, mainLang } = useLanguage();
+  const { user } = useAuth();
   const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == mainLang &&
     suggestion.translationLang == translationLang && !suggestion.skipped && !suggestion.added)
     .sort((a, b) => a.displayCount - b.displayCount);
@@ -120,7 +122,8 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const loadData = async () => {
-    if (mainLang == translationLang) return;
+    const userDeterminedLanguageLevel = user.languageLevels?.some((level) => level.language == mainLang);
+    if (mainLang == translationLang || !userDeterminedLanguageLevel) return;
 
     try {
       setLoading(true);
@@ -136,7 +139,7 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (syncing.current || (langSuggestions.length >= 20 && syncedOnMount.current)) return;
     syncedOnMount.current = true;
     loadData();
-  }, [mainLang, translationLang, langSuggestions.length]);
+  }, [user.languageLevels, mainLang, translationLang, langSuggestions.length]);
 
   return (
     <SuggestionsContext.Provider

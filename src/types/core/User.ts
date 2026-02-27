@@ -16,6 +16,11 @@ export enum SessionModelVersion {
   R1 = 'r1',
 }
 
+export type LanguageLevel = {
+  language: LanguageCode;
+  level: 1 | 2 | 3 | 4 | 5;
+};
+
 export const PICKED_SESSION_MODEL_VERSION = SessionModelVersion.ML2;
 
 export type UserStats = {
@@ -31,6 +36,11 @@ export enum UserProvider {
   APPLE = 'apple',
 }
 
+export type UserUpdatePayload = {
+  notificationsEnabled?: boolean;
+  languageLevels?: LanguageLevel[];
+};
+
 export type User = {
   userId: string;
   name: string;
@@ -41,5 +51,6 @@ export type User = {
   translationLang: LanguageCode | null;
   sessionModel: SessionModel;
   notificationsEnabled: boolean;
+  languageLevels: LanguageLevel[];
   stats: UserStats;
 };

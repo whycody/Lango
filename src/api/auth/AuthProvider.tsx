@@ -2,14 +2,22 @@ import React, { createContext, FC, ReactNode, useContext, useEffect, useState } 
 import { removeAccessToken, removeRefreshToken, setAccessToken, setRefreshToken } from './apiHandler';
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
-import { getUserInfo, signInWithApple, signInWithFacebook, signInWithGoogle, signOut } from "../apiClient";
-import { User, UserProvider } from '../../types';
+import {
+  getUserInfo,
+  signInWithApple,
+  signInWithFacebook,
+  signInWithGoogle,
+  signOut, updateLanguageLevels,
+  updateNotificationsEnabled
+} from "../apiClient";
+import { LanguageLevel, User, UserProvider, UserUpdatePayload } from '../../types';
 import LoadingView from "../../ui/components/LoadingView";
-import { useMMKVObject } from "react-native-mmkv";
+import { useMMKV, useMMKVObject } from "react-native-mmkv";
 import axios, { AxiosError } from "axios";
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { setAnalyticsUserData, trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
+import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -17,6 +25,8 @@ interface AuthContextType {
   login: (method: UserProvider) => Promise<void>;
   authError: string | null;
   user: User | null;
+  updateUserNotificationsEnabled: (notificationsEnabled: boolean) => Promise<void>;
+  updateUserLanguageLevels: (languageLevels: LanguageLevel) => Promise<void>;
   getSession: () => Promise<void>;
   logout: () => void;
 }
@@ -36,14 +46,19 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [authError, setAuthError] = useState<string | null>(null);
   const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
+  const storage = user?.userId ? useMMKV({ id: `user-${user.userId}` }) : useMMKV()
+  const [userUpdatePayload, setUserUpdatePayload] = useMMKVObject<UserUpdatePayload>("user-update-payload", storage);
+
   useEffect(() => {
     getSession();
   }, []);
 
   const getSession = async () => {
     try {
-      const loggedUser = await getUserInfo();
+      let loggedUser = await getUserInfo();
       if (loggedUser) {
+        const userUpdated = await sendUserUpdates(userUpdatePayload);
+        loggedUser = userUpdated ? await getUserInfo() : loggedUser;
         setUser(loggedUser);
         await setAnalyticsUserData(loggedUser, true);
         setIsAuthenticated(true);
@@ -65,6 +80,58 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
       if (error.response?.status !== 401) return;
       await removeData();
+    }
+  }
+
+  const sendUserUpdates = async (payload?: UserUpdatePayload) => {
+    if (!payload || (!payload.notificationsEnabled && !payload.languageLevels?.length)) return false;
+
+    let updated = false;
+
+    if (payload?.notificationsEnabled !== undefined) {
+      const res = await updateNotificationsEnabled(userUpdatePayload.notificationsEnabled);
+      if (res) {
+        if (userUpdatePayload.notificationsEnabled) await registerNotificationsToken();
+        setUserUpdatePayload((payload) => payload ? { ...payload, notificationsEnabled: undefined } : null);
+        updated = true;
+      }
+    }
+
+    if (payload?.languageLevels?.length) {
+      const res = await updateLanguageLevels(userUpdatePayload.languageLevels);
+      if (res) {
+        setUserUpdatePayload((payload) => payload ? { ...payload, languageLevels: undefined } : null);
+        updated = true;
+      }
+    }
+
+    return updated;
+  }
+
+  const updateUserNotificationsEnabled = async (notificationsEnabled: boolean) => {
+    setUser((user) => user ? { ...user, notificationsEnabled } : null);
+    const updated = await updateNotificationsEnabled(notificationsEnabled);
+    if (updated) {
+      await registerNotificationsToken();
+      await getSession();
+    } else {
+      setUserUpdatePayload(userUpdatePayload ? {
+        ...userUpdatePayload,
+        notificationsEnabled
+      } : { notificationsEnabled });
+    }
+  }
+
+  const updateUserLanguageLevels = async (languageLevel: LanguageLevel) => {
+    setUser((user) => user ? { ...user, languageLevels: [...user.languageLevels, languageLevel] } : null);
+    const updated = await updateLanguageLevels([languageLevel]);
+    if (updated) {
+      await getSession();
+    } else {
+      setUserUpdatePayload(userUpdatePayload ? {
+        ...userUpdatePayload,
+        languageLevels: [...(userUpdatePayload.languageLevels || []), languageLevel]
+      } : { languageLevels: [languageLevel] });
     }
   }
 
@@ -238,7 +305,17 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   if (isAuthenticated == null) return <LoadingView/>;
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, login, authError, user, getSession, logout }}>
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      loading,
+      login,
+      authError,
+      user,
+      updateUserNotificationsEnabled,
+      updateUserLanguageLevels,
+      getSession,
+      logout
+    }}>
       {children}
     </AuthContext.Provider>
   );

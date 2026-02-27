@@ -56,6 +56,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const getSession = async () => {
     try {
       let loggedUser = await getUserInfo();
+
       if (loggedUser) {
         const userUpdated = await sendUserUpdates(userUpdatePayload);
         loggedUser = userUpdated ? await getUserInfo() : loggedUser;
@@ -66,7 +67,6 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
 
       if (user) {
-        setUser(user);
         await setAnalyticsUserData(user, false);
         setIsAuthenticated(true);
         return;
@@ -123,7 +123,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }
 
   const updateUserLanguageLevels = async (languageLevel: LanguageLevel) => {
-    setUser((user) => user ? { ...user, languageLevels: [...user.languageLevels, languageLevel] } : null);
+    setUser((user) => user ? { ...user, languageLevels: [...(user.languageLevels ?? []), languageLevel] } : null);
     const updated = await updateLanguageLevels([languageLevel]);
     if (updated) {
       await getSession();

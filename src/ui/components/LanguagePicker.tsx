@@ -9,11 +9,12 @@ import { useHaptics } from "../../hooks/useHaptics";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import Header from "./Header";
 import LanguageItem from "./items/LanguageItem";
+import { useAuth } from "../../api/auth/AuthProvider";
 
 interface LanguagePickerProps {
   allLanguages?: boolean;
   languageType?: LanguageTypes;
-  onLanguagePick?: () => void;
+  onLanguagePick?: (language: Language, userEvaluatedLanguageLevel: boolean) => void;
   style?: ViewStyle;
 }
 
@@ -29,6 +30,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, sty
     setTranslationLang,
     setApplicationLang,
   } = useLanguage();
+  const { user } = useAuth();
   const { triggerHaptics } = useHaptics();
 
   const pickedLanguage = languageType === LanguageTypes.MAIN ? mainLang :
@@ -47,10 +49,15 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, sty
       [LanguageTypes.APPLICATION]: setApplicationLang,
     };
 
-    setters[languageType](language.languageCode);
+    const userEvaluatedLanguageLevel = (languageType === LanguageTypes.MAIN && translationLang == language.languageCode)
+      || user.languageLevels?.some((level) => level.language == language.languageCode);
+
+    if (languageType !== LanguageTypes.MAIN || userEvaluatedLanguageLevel) {
+      setters[languageType](language.languageCode);
+    }
 
     triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-    onLanguagePick?.();
+    onLanguagePick?.(language, userEvaluatedLanguageLevel);
   }, [languageType, translationLang, mainLang, setMainLang, setTranslationLang, setApplicationLang, triggerHaptics, onLanguagePick]);
 
   const renderLanguageItem = useCallback(({ item, index }: { item: Language, index: number }) =>

@@ -161,5 +161,19 @@
     "desc": "Aby korzystać z tej funkcji, musisz udzielić aplikacji dostępu do mikrofonu. Możesz to zrobić w ustawieniach swojego urządzenia.",
     "disabled_title": "Mikrofon wyłączony",
     "disabled_message": "Aby włączyć mikrofon, musisz zmienić ustawienia aplikacji w systemie."
+  },
+  "language_level": {
+    "select": "Jak dobrze znasz ten język?",
+    "select_desc": "Wybierz poziom, który najlepiej opisuje Twoją znajomość języka. To pomoże nam dostosować treści i sugestie do Twoich potrzeb.",
+    "beginner": "Początkujący",
+    "beginner_desc": "Dopiero zaczynasz. Znasz podstawowe słowa i pojedyncze zwroty.",
+    "elementary": "Podstawowy",
+    "elementary_desc": "Rozumiesz proste zdania i potrafisz porozumieć się w codziennych sytuacjach.",
+    "intermediate": "Średniozaawansowany",
+    "intermediate_desc": "Radzisz sobie w większości typowych rozmów i umiesz opisać swoje doświadczenia.",
+    "advanced": "Zaawansowany",
+    "advanced_desc": "Swobodnie komunikujesz się na różne tematy i rozumiesz bardziej złożone treści.",
+    "proficient": "Biegły",
+    "proficient_desc": "Mówisz płynnie i precyzyjnie, rozumiesz niuanse językowe i dłuższe wypowiedzi."
   }
 }

@@ -161,5 +161,19 @@
     "desc": "To use this feature, you need to grant the app access to your microphone. You can do this in your device settings.",
     "disabled_title": "Microphone disabled",
     "disabled_message": "To enable the microphone, you need to change the app settings in your system."
+  },
+  "language_level": {
+    "select": "How well do you know this language?",
+    "select_desc": "Choose the level that best describes your language proficiency. This will help us tailor the content and suggestions to your needs.",
+    "beginner": "Beginner",
+    "beginner_desc": "You are just starting out. You know basic words and simple phrases.",
+    "elementary": "Elementary",
+    "elementary_desc": "You understand simple sentences and can communicate in everyday situations.",
+    "intermediate": "Intermediate",
+    "intermediate_desc": "You can handle most typical conversations and describe your experiences.",
+    "advanced": "Advanced",
+    "advanced_desc": "You communicate fluently on various topics and understand more complex content.",
+    "proficient": "Proficient",
+    "proficient_desc": "You speak fluently and precisely, and understand nuances and longer statements."
   }
 }

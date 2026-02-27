@@ -23,6 +23,7 @@ import { useTheme } from "@react-navigation/native";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 import { EnableNotificationsBottomSheet } from "../sheets";
+import { PickLanguageLeveLBottomSheet } from "../sheets/PickLanguageLeveLBottomSheet";
 
 const HomeScreen = ({ navigation }) => {
   const auth = useAuth();
@@ -38,8 +39,9 @@ const HomeScreen = ({ navigation }) => {
 
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const enableNotificationsRef = useRef<BottomSheetModal>(null);
+  const pickLanguageLevelRef = useRef<BottomSheetModal>(null);
   const { askLaterNotifications } = useUserPreferences();
-  const { mainLang, translationLang } = useLanguage();
+  const { mainLang, translationLang, languages } = useLanguage();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -75,6 +77,12 @@ const HomeScreen = ({ navigation }) => {
   }, [askLaterNotifications]);
 
   useEffect(() => {
+    if (!user.languageLevels?.some(level => level.language == mainLang)) {
+      pickLanguageLevelRef.current?.present();
+    }
+  }, []);
+
+  useEffect(() => {
     const handleBackPress = () => {
       if (bottomSheetIsShown) {
         enableNotificationsRef.current?.dismiss();
@@ -99,11 +107,20 @@ const HomeScreen = ({ navigation }) => {
 
   const languagesAreTheSame = mainLang === translationLang;
 
+  const handleBottomSheetChangeIndex = (index: number) => {
+    setBottomSheetIsShown(index >= 0);
+  }
+
   return (
     <>
+      <PickLanguageLeveLBottomSheet
+        ref={pickLanguageLevelRef}
+        language={languages.find(l => l.languageCode === mainLang)}
+        onChangeIndex={handleBottomSheetChangeIndex}
+      />
       <EnableNotificationsBottomSheet
         ref={enableNotificationsRef}
-        onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
+        onChangeIndex={handleBottomSheetChangeIndex}
       />
       <View style={style}/>
       <ScrollView

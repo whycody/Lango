@@ -9,6 +9,7 @@ import ActionButton from "../components/ActionButton";
 type GenericBottomSheetProps = {
   title?: string;
   description?: string;
+  stackBehavior?: "replace" | "push" | "switch";
   primaryActionLabel?: string;
   onPrimaryButtonPress?: () => void;
   secondaryActionLabel?: string;
@@ -22,6 +23,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
     {
       title,
       description,
+      stackBehavior = 'push',
       primaryActionLabel,
       onPrimaryButtonPress,
       secondaryActionLabel,
@@ -45,12 +47,13 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
       <BottomSheetModal
         ref={ref}
         index={0}
+        stackBehavior={stackBehavior}
         onChange={(index: number) => onChangeIndex?.(index)}
         backdropComponent={renderBackdrop}
         backgroundStyle={{ backgroundColor: colors.card }}
         handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
       >
-        <BottomSheetScrollView style={styles.root}>
+        <BottomSheetScrollView>
           {title && (
             <CustomText weight="Bold" style={styles.title}>
               {title}
@@ -92,27 +95,28 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
 );
 
 const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    paddingHorizontal: MARGIN_HORIZONTAL
-  },
   title: {
     color: colors.primary300,
     fontSize: 18,
     marginTop: 12,
+    paddingHorizontal: MARGIN_HORIZONTAL
   },
   subtitle: {
     color: colors.primary600,
     fontSize: 15,
     marginTop: MARGIN_VERTICAL / 2,
+    paddingHorizontal: MARGIN_HORIZONTAL
   },
   actionText: {
     color: colors.primary,
     fontSize: 13,
     textAlign: "center",
     paddingTop: MARGIN_VERTICAL,
+    paddingHorizontal: MARGIN_HORIZONTAL
   },
   button: {
     marginTop: MARGIN_VERTICAL,
+    marginHorizontal: MARGIN_HORIZONTAL
   },
   spacer: {
     height: MARGIN_VERTICAL

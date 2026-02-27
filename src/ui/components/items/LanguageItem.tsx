@@ -12,7 +12,7 @@ type LanguageItemProps = {
   index: number;
   language: Language,
   checked: boolean,
-  onPress: () => void;
+  onPress?: () => void;
   style?: any;
 }
 
@@ -26,7 +26,7 @@ const LanguageItem: FC<LanguageItemProps> =
         key={language.languageCode}
         style={[styles.root, style]}
         onPress={onPress}
-        android_ripple={{ color: colors.background }}
+        android_ripple={onPress && { color: colors.background }}
       >
         {index !== 0 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
         <LinearGradient

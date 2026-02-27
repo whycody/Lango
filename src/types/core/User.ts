@@ -16,9 +16,11 @@ export enum SessionModelVersion {
   R1 = 'r1',
 }
 
+export type LanguageLevelRange = 1 | 2 | 3 | 4 | 5;
+
 export type LanguageLevel = {
   language: LanguageCode;
-  level: 1 | 2 | 3 | 4 | 5;
+  level: LanguageLevelRange;
 };
 
 export const PICKED_SESSION_MODEL_VERSION = SessionModelVersion.ML2;

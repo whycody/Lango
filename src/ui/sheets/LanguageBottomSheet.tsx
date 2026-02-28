@@ -39,7 +39,7 @@ export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSh
     if (userEvaluatedLanguageLevel || languageType !== LanguageTypes.MAIN) return;
     setPickedLanguage(language);
     pickLanguageLevelBottomSheetRef.current?.present();
-  }, [ref]);
+  }, [ref, languageType]);
 
   return (
     <>

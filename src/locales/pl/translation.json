@@ -163,8 +163,8 @@
     "disabled_message": "Aby włączyć mikrofon, musisz zmienić ustawienia aplikacji w systemie."
   },
   "language_level": {
-    "select": "Jak dobrze znasz ten język?",
-    "select_desc": "Wybierz poziom, który najlepiej opisuje Twoją znajomość języka. To pomoże nam dostosować treści i sugestie do Twoich potrzeb.",
+    "select": "Jak dobrze znasz język {{language}}?",
+    "select_desc": "Wybierz poziom, który najlepiej opisuje Twoją znajomość języka. Pomoże nam to dostosować treści do Twoich potrzeb.",
     "beginner": "Początkujący",
     "beginner_desc": "Dopiero zaczynasz. Znasz podstawowe słowa i pojedyncze zwroty.",
     "elementary": "Podstawowy",

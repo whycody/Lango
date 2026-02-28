@@ -4,6 +4,7 @@ import CustomText from "../CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { LanguageLevelRange } from "../../../types";
+import { LinearGradient } from "expo-linear-gradient";
 
 type LanguageLevelItemProps = {
   level: LanguageLevelRange;
@@ -19,13 +20,19 @@ const LanguageLevelItem: FC<LanguageLevelItemProps> = ({ level, code, label, des
 
   return (
     <>{level !== 1 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
-      <Pressable style={styles.root} onPress={() => onPress(level)} android_ripple={{ color: colors.background }}>
-        <CustomText weight={'Black'} style={styles.code}>{code}</CustomText>
-        <View style={{ flex: 1, }}>
-          <CustomText style={[styles.text, styles.title]} weight={'Bold'}>{label}</CustomText>
-          <CustomText style={[styles.text, styles.desc]} weight={'Regular'}>{desc}</CustomText>
-        </View>
-      </Pressable>
+      <LinearGradient
+        colors={[colors.card, colors.background]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Pressable style={styles.root} onPress={() => onPress(level)} android_ripple={{ color: colors.background }}>
+          <CustomText weight={'Black'} style={styles.code}>{code}</CustomText>
+          <View style={{ flex: 1, }}>
+            <CustomText style={[styles.text, styles.title]} weight={'Bold'}>{label}</CustomText>
+            <CustomText style={[styles.text, styles.desc]} weight={'Regular'}>{desc}</CustomText>
+          </View>
+        </Pressable>
+      </LinearGradient>
     </>
   )
 }
@@ -38,19 +45,19 @@ const getStyles = (colors: any) => StyleSheet.create({
     flex: 1,
   },
   code: {
+    width: 45,
     color: colors.primary600,
     fontSize: 18,
     paddingRight: MARGIN_HORIZONTAL
   },
-  text: {
-    color: colors.text,
-  },
+  text: {},
   title: {
     fontSize: 13,
+    color: colors.primary
   },
   desc: {
     fontSize: 12,
-    opacity: 0.5
+    color: colors.primary300
   }
 })
 

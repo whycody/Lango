@@ -43,13 +43,21 @@ export const PickLanguageLeveLBottomSheet = forwardRef<BottomSheetModal, {
   return (
     <GenericBottomSheet
       ref={ref}
-      title={t('language_level.select')}
+      title={t('language_level.select', { language: props.language?.languageName.toLowerCase() })}
       description={t('language_level.select_desc')}
       primaryActionLabel={t('general.cancel')}
       onPrimaryButtonPress={dismiss}
       onChangeIndex={handleChangeIndex}
     >
-      {props.language && <LanguageItem index={0} checked={true} language={props.language} style={styles.languageItem}/>}
+      {props.language &&
+        <LanguageItem
+          index={0}
+          showIcon={false}
+          checked={false}
+          language={props.language}
+          style={styles.languageItem}
+        />
+      }
       {languageLevels.map(({ level, label, code, desc }) => (
         <LanguageLevelItem
           key={level}

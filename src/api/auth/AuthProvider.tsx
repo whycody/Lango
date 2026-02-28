@@ -123,17 +123,22 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }
 
   const updateUserLanguageLevels = async (languageLevel: LanguageLevel) => {
-    setUser((user) => user ? { ...user, languageLevels: [...(user.languageLevels ?? []), languageLevel] } : null);
+    const levelsToUpdate = [
+      ...((userUpdatePayload?.languageLevels ?? []).filter((l) => l.language !== languageLevel.language)),
+      languageLevel,
+    ];
+
+    setUser((user) => user ? { ...user, languageLevels: levelsToUpdate } : null);
     const updated = await updateLanguageLevels([languageLevel]);
+
     if (updated) {
       await getSession();
-    } else {
-      setUserUpdatePayload(userUpdatePayload ? {
-        ...userUpdatePayload,
-        languageLevels: [...(userUpdatePayload.languageLevels || []), languageLevel]
-      } : { languageLevels: [languageLevel] });
+      setUserUpdatePayload({ ...userUpdatePayload, languageLevels: undefined });
+      return;
     }
-  }
+
+    setUserUpdatePayload({ ...userUpdatePayload, languageLevels: levelsToUpdate });
+  };
 
   const removeData = async () => {
     setIsAuthenticated(false);

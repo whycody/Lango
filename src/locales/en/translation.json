@@ -163,8 +163,8 @@
     "disabled_message": "To enable the microphone, you need to change the app settings in your system."
   },
   "language_level": {
-    "select": "How well do you know this language?",
-    "select_desc": "Choose the level that best describes your language proficiency. This will help us tailor the content and suggestions to your needs.",
+    "select": "How well do you know {{language}} language?",
+    "select_desc": "Choose the level that best describes your language proficiency. This will help us tailor the content to your needs.",
     "beginner": "Beginner",
     "beginner_desc": "You are just starting out. You know basic words and simple phrases.",
     "elementary": "Elementary",

@@ -8,8 +8,8 @@ import { LanguageTypes } from "../../constants/LanguageTypes";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { PickLanguageLeveLBottomSheet } from "./PickLanguageLeveLBottomSheet";
 import { Language } from "../../types";
+import { PickLanguageLevelBottomSheet } from "./PickLanguageLevelBottomSheet";
 
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
@@ -43,7 +43,7 @@ export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSh
 
   return (
     <>
-      <PickLanguageLeveLBottomSheet ref={pickLanguageLevelBottomSheetRef} language={pickedLanguage}/>
+      <PickLanguageLevelBottomSheet ref={pickLanguageLevelBottomSheetRef} language={pickedLanguage}/>
       <BottomSheetModal
         ref={ref}
         onChange={(index: number) => onChangeIndex?.(index)}

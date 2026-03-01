@@ -15,6 +15,8 @@ import { useLanguage } from "../../store/LanguageContext";
 import { updateUserLanguages } from "../../api/apiClient";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
+import { LanguageLevelPicker } from "../components/LanguageLevelPicker";
+import { LanguageLevelRange } from "../../types";
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -32,10 +34,12 @@ const OnboardingScreen = () => {
   const backOpacityAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(0)).current;
 
-  const { mainLang, translationLang } = useLanguage();
+  const { mainLang, translationLang, languages } = useLanguage();
   const [welcomeScreenIsReady, setWelcomeScreenIsReady] = useState(false);
-  const buttonEnabled = currentStep === 0 && welcomeScreenIsReady || currentStep === 1 && !!mainLang ||
-    currentStep === 2 && !!translationLang;
+  const [pickedLevel, setPickedLevel] = useState<LanguageLevelRange | undefined>();
+
+  const buttonEnabled = (currentStep === 0 && welcomeScreenIsReady) || (currentStep === 1 && !!translationLang) ||
+    (currentStep === 2 && !!mainLang) || (currentStep === 3 && !!pickedLevel);
 
   useEffect(() => {
     trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED)
@@ -77,16 +81,16 @@ const OnboardingScreen = () => {
 
   const updateUserData = useCallback(async () => {
     setLoading(true);
-    const res = await updateUserLanguages(mainLang, translationLang);
+    const res = await updateUserLanguages(mainLang, translationLang, pickedLevel);
     if (!!res) {
       trackEvent(AnalyticsEventName.ONBOARDING_FINISHED)
       await getSession();
     }
     setLoading(false);
-  }, [mainLang, translationLang]);
+  }, [mainLang, translationLang, pickedLevel]);
 
   const handleContinuePress = useCallback(() => {
-    if (currentStep < 2) {
+    if (currentStep < 3) {
       triggerPulse();
       scrollToScreen(currentStep + 1);
     } else updateUserData();
@@ -132,7 +136,7 @@ const OnboardingScreen = () => {
     }
   }, [currentStep === 0, backSlideAnim, backOpacityAnim]);
 
-  const languages = [LanguageTypes.MAIN, LanguageTypes.TRANSLATION];
+  const languageTypes = [LanguageTypes.TRANSLATION, LanguageTypes.MAIN];
 
   return (
     <>
@@ -153,7 +157,7 @@ const OnboardingScreen = () => {
           </OnboardingScreenContainer>
         </LinearGradient>
 
-        {languages.map((type, index) => (
+        {languageTypes.map((type, index) => (
           <LinearGradient
             key={type}
             colors={[colors.background, colors.card]}
@@ -164,10 +168,28 @@ const OnboardingScreen = () => {
               <LanguagePicker
                 languageType={type}
                 style={styles.languagePicker}
+                alwaysAllowPick
               />
             </OnboardingScreenContainer>
           </LinearGradient>
         ))}
+
+        <LinearGradient
+          colors={[colors.background, colors.card]}
+          start={{ x: 0.5, y: 0.5 }}
+          end={{ x: 0, y: 0 }}
+          style={{ flex: 1 }}
+        >
+          <OnboardingScreenContainer currentStep={currentStep}>
+            <LanguageLevelPicker
+              language={languages.find((lang) => lang.languageCode === mainLang)}
+              updateUserData={false}
+              pickedLevel={pickedLevel}
+              onLevelPick={setPickedLevel}
+              style={styles.languagePicker}
+            />
+          </OnboardingScreenContainer>
+        </LinearGradient>
       </ScrollView>
 
       <View style={styles.buttonContainer}>

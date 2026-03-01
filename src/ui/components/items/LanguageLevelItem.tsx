@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { StyleSheet, Pressable, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import CustomText from "../CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
@@ -11,25 +11,26 @@ type LanguageLevelItemProps = {
   code: string;
   label: string;
   desc: string;
+  picked: boolean;
   onPress: (level: LanguageLevelRange) => void;
 }
 
-const LanguageLevelItem: FC<LanguageLevelItemProps> = ({ level, code, label, desc, onPress }) => {
+const LanguageLevelItem: FC<LanguageLevelItemProps> = ({ level, code, label, desc, picked, onPress }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
   return (
     <>{level !== 1 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
       <LinearGradient
-        colors={[colors.card, colors.background]}
+        colors={['transparent', picked ? colors.cardAccent300 : 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
         <Pressable style={styles.root} onPress={() => onPress(level)} android_ripple={{ color: colors.background }}>
           <CustomText weight={'Black'} style={styles.code}>{code}</CustomText>
           <View style={{ flex: 1, }}>
-            <CustomText style={[styles.text, styles.title]} weight={'Bold'}>{label}</CustomText>
-            <CustomText style={[styles.text, styles.desc]} weight={'Regular'}>{desc}</CustomText>
+            <CustomText style={styles.title} weight={'Bold'}>{label}</CustomText>
+            <CustomText style={styles.desc} weight={'Regular'}>{desc}</CustomText>
           </View>
         </Pressable>
       </LinearGradient>
@@ -42,7 +43,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     padding: MARGIN_HORIZONTAL,
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+
   },
   code: {
     width: 45,
@@ -50,7 +51,6 @@ const getStyles = (colors: any) => StyleSheet.create({
     fontSize: 18,
     paddingRight: MARGIN_HORIZONTAL
   },
-  text: {},
   title: {
     fontSize: 13,
     color: colors.primary

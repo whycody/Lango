@@ -17,8 +17,6 @@ import { FlashcardSide, useUserPreferences } from "../../store/UserPreferencesCo
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import * as Notifications from "expo-notifications";
 import { PermissionStatus } from "expo-notifications";
-import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
-import { updateNotificationsEnabled } from "../../api/apiClient";
 import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { trackEvent } from "../../utils/analytics";

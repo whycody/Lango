@@ -15,10 +15,12 @@ interface LanguagePickerProps {
   allLanguages?: boolean;
   languageType?: LanguageTypes;
   onLanguagePick?: (language: Language, userEvaluatedLanguageLevel: boolean) => void;
+  alwaysAllowPick?: boolean;
   style?: ViewStyle;
 }
 
-const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, style }: LanguagePickerProps) => {
+const LanguagePicker = (props: LanguagePickerProps) => {
+  const { languageType = LanguageTypes.MAIN, onLanguagePick, alwaysAllowPick, style } = props;
   const styles = getStyles();
   const { t } = useTranslation();
   const {
@@ -52,7 +54,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, sty
     const userEvaluatedLanguageLevel = (languageType === LanguageTypes.MAIN && translationLang == language.languageCode)
       || user.languageLevels?.some((level) => level.language == language.languageCode);
 
-    if (languageType !== LanguageTypes.MAIN || userEvaluatedLanguageLevel) {
+    if (languageType !== LanguageTypes.MAIN || userEvaluatedLanguageLevel || alwaysAllowPick) {
       setters[languageType](language.languageCode);
     }
 
@@ -72,7 +74,7 @@ const LanguagePicker = ({ languageType = LanguageTypes.MAIN, onLanguagePick, sty
     <View style={style}>
       <Header
         title={t(`choose_${langTypeDesc}_language`)}
-        subtitle={t(`choose_language_desc`)}
+        subtitle={t(`choose_language_${languageType}_desc`)}
         style={styles.header}
       />
       <FlatList

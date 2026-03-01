@@ -22,8 +22,7 @@ import { useLanguage } from "../../store/LanguageContext";
 import { useTheme } from "@react-navigation/native";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
-import { EnableNotificationsBottomSheet } from "../sheets";
-import { PickLanguageLeveLBottomSheet } from "../sheets/PickLanguageLeveLBottomSheet";
+import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from "../sheets";
 
 const HomeScreen = ({ navigation }) => {
   const auth = useAuth();
@@ -113,7 +112,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <>
-      <PickLanguageLeveLBottomSheet
+      <PickLanguageLevelBottomSheet
         ref={pickLanguageLevelRef}
         language={languages.find(l => l.languageCode === mainLang)}
         onChangeIndex={handleBottomSheetChangeIndex}

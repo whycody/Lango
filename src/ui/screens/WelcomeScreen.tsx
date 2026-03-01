@@ -139,7 +139,6 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginBottom: 40,
   },
   name: {
-    fontFamily: 'Montserrat-Black',
     backgroundColor: colors.card
   },
   text: {

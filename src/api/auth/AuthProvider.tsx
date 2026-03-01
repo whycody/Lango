@@ -7,7 +7,8 @@ import {
   signInWithApple,
   signInWithFacebook,
   signInWithGoogle,
-  signOut, updateLanguageLevels,
+  signOut,
+  updateLanguageLevels,
   updateNotificationsEnabled
 } from "../apiClient";
 import { LanguageLevel, User, UserProvider, UserUpdatePayload } from '../../types';

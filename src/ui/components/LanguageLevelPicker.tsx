@@ -21,7 +21,7 @@ type LanguageLevelPickerProps = {
 }
 
 export const LanguageLevelPicker: FC<LanguageLevelPickerProps> =
-  ({ language, pickedLevel, onLevelPick, updateUserData = false, style }) => {
+  ({ language, pickedLevel, onLevelPick, updateUserData = true, style }) => {
     const { t } = useTranslation();
     const { setMainLang } = useLanguage();
     const { updateUserLanguageLevels } = useAuth();
@@ -55,7 +55,6 @@ export const LanguageLevelPicker: FC<LanguageLevelPickerProps> =
             showIcon={false}
             checked={false}
             language={language}
-            style={styles.languageItem}
           />
         }
         {languageLevels.map(({ level, label, code, desc }) => (
@@ -74,9 +73,6 @@ export const LanguageLevelPicker: FC<LanguageLevelPickerProps> =
   };
 
 const styles = StyleSheet.create({
-  languageItem: {
-    marginTop: MARGIN_VERTICAL / 2
-  },
   header: {
     paddingVertical: MARGIN_VERTICAL / 2,
     paddingHorizontal: MARGIN_HORIZONTAL,

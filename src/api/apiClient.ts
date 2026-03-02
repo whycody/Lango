@@ -131,12 +131,12 @@ export const updateNotificationsEnabled = async (enabled: boolean) => {
 export const updateLanguageLevels = async (languageLevels: LanguageLevel[]) => {
   try {
     return await apiCall({
-      method: 'PATCH',
-      url: '/users/languageLevels',
+      method: 'PUT',
+      url: '/users/language-levels',
       data: { languageLevels }
     }, true);
   } catch (e) {
-    console.error('PATCH /users/languageLevels', e);
+    console.error('PUT /users/language-levels', e);
     return null;
   }
 }

@@ -12,9 +12,11 @@ type GenericBottomSheetProps = {
   stackBehavior?: "replace" | "push" | "switch";
   primaryActionLabel?: string;
   onPrimaryButtonPress?: () => void;
+  primaryButtonEnabled?: boolean;
   secondaryActionLabel?: string;
   onSecondaryButtonPress?: () => void;
   onChangeIndex?: (index: number) => void;
+  allowDismiss?: boolean;
   children?: ReactNode;
 };
 
@@ -26,9 +28,11 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
       stackBehavior = 'push',
       primaryActionLabel,
       onPrimaryButtonPress,
+      primaryButtonEnabled,
       secondaryActionLabel,
       onSecondaryButtonPress,
       onChangeIndex,
+      allowDismiss = true,
       children
     },
     ref
@@ -38,7 +42,12 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
 
     const renderBackdrop = useCallback(
       (props: any) => (
-        <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
+        <BottomSheetBackdrop
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          pressBehavior={allowDismiss ? 'close' : 'none'}
+          {...props}
+        />
       ),
       []
     );
@@ -47,6 +56,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
       <BottomSheetModal
         ref={ref}
         index={0}
+        enablePanDownToClose={allowDismiss}
         stackBehavior={stackBehavior}
         onChange={(index: number) => onChangeIndex?.(index)}
         backdropComponent={renderBackdrop}
@@ -72,6 +82,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
             <ActionButton
               onPress={() => onPrimaryButtonPress?.()}
               label={primaryActionLabel}
+              active={primaryButtonEnabled}
               primary={true}
               style={styles.button}
             />

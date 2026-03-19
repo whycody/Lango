@@ -1,6 +1,7 @@
 import { SessionModel, SessionModelVersion, WordSet, WordSetStrategy } from "../../types";
+import { mapWordsToSessionWords } from "../../utils/sessionWordMapper";
 
-export const oldestStrategy: WordSetStrategy = (size, words, evaluations): WordSet => {
+export const oldestStrategy: WordSetStrategy = (size, words, _suggestions, evaluations): WordSet => {
   const active = words.filter(w => w.active);
 
   const lastDates = new Map<string, number>();
@@ -10,11 +11,11 @@ export const oldestStrategy: WordSetStrategy = (size, words, evaluations): WordS
     if (t > prev) lastDates.set(e.wordId, t);
   }
 
-  const sorted = [...active].sort((a, b) => {
+  const sorted = mapWordsToSessionWords([...active].sort((a, b) => {
     const aDate = lastDates.get(a.id) ?? 0;
     const bDate = lastDates.get(b.id) ?? 0;
     return aDate - bDate;
-  });
+  }));
 
-  return { words: sorted.slice(0, size), model: SessionModel.NONE, version: SessionModelVersion.O1 };
+  return { sessionWords: sorted.slice(0, size), model: SessionModel.NONE, version: SessionModelVersion.O1 };
 };

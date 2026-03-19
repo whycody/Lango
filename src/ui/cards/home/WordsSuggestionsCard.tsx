@@ -16,7 +16,7 @@ type WordsSuggestionsCardProps = {
   style?: StyleProp<ViewStyle>;
 }
 
-const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
+const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
@@ -29,10 +29,17 @@ const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
   const secondFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
 
   useEffect(() => {
-    if (suggestionsContext.suggestions.length == 0 ||
-      (firstFlashcard && firstFlashcard.mainLang == mainLang && secondFlashcard && secondFlashcard.mainLang == mainLang
-        && firstFlashcard.translationLang == translationLang && secondFlashcard.translationLang == translationLang)
-    ) return;
+    const pickedFlashcards = (firstFlashcard && secondFlashcard) ? suggestionsContext.suggestions.filter(suggestion =>
+      ([firstFlashcard.id, secondFlashcard.id].includes(suggestion.id))) : [];
+
+    if (suggestionsContext.langSuggestions.length == 0 ||
+      (!pickedFlashcards.some((suggestion) => suggestion.added || suggestion.skipped) &&
+        firstFlashcard && firstFlashcard.mainLang == mainLang &&
+        secondFlashcard && secondFlashcard.mainLang == mainLang &&
+        firstFlashcard.translationLang == translationLang &&
+        secondFlashcard.translationLang == translationLang
+      )) return;
+
     const sortedSuggestions = suggestionsContext.langSuggestions.slice().sort((a, b) => a.displayCount - b.displayCount);
     const [firstSuggestion, secondSuggestion] = sortedSuggestions.slice(0, 2);
 
@@ -42,7 +49,7 @@ const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
     if (!firstSuggestion && !secondSuggestion) return;
 
     suggestionsContext.increaseSuggestionsDisplayCount([firstSuggestion, secondSuggestion].filter(Boolean).map(s => s.id));
-  }, [suggestionsContext.langSuggestions, firstFlashcard, secondFlashcard]);
+  }, [suggestionsContext.langSuggestions, suggestionsContext.suggestions, firstFlashcard, secondFlashcard]);
 
   const debouncedSyncSuggestions = useDebouncedSyncSuggestions(suggestionsContext.syncSuggestions, 3000);
 

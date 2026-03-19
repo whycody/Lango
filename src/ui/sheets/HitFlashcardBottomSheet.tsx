@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import FlipCard from "react-native-flip-card";
@@ -14,7 +14,7 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, {
   const styles = getStyles();
   const [flip, setFlip] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -62,7 +62,6 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, {
 
 const getStyles = () => StyleSheet.create({
   exampleCard: {
-    width: '100%',
     height: 350,
     alignSelf: 'center',
     marginTop: MARGIN_VERTICAL,

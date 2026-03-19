@@ -20,6 +20,7 @@ import { useWords } from "../../../store/WordsContext";
 import { trackEvent } from "../../../utils/analytics";
 import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
 import { LanguageBottomSheet, StartSessionBottomSheet } from "../../sheets";
+import { useSuggestions } from "../../../store/SuggestionsContext";
 
 type HeaderCardProps = {
   navigateToSessionScreen(length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide): void;
@@ -29,7 +30,8 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const langContext = useLanguage();
+  const { mainLang } = useLanguage();
+  const { langSuggestions } = useSuggestions();
   const { langWords } = useWords();
   const { langWordsHeuristicStates } = useWordsHeuristicStates();
   const statisticsContext = useStatistics();
@@ -116,7 +118,7 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
           {streak.numberOfDays.toString()}
         </CustomText>
         <Pressable onPress={handleLanguageSheetOpen} style={styles.flag}>
-          <SquareFlag languageCode={langContext.mainLang} size={24}/>
+          <SquareFlag languageCode={mainLang} size={24}/>
         </Pressable>
       </View>
 
@@ -131,7 +133,7 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
         label={t('startLearning')}
         primary={true}
         icon={'play'}
-        active={langWordsHeuristicStates.length >= 5}
+        active={langWords.length + langSuggestions.length >= 5}
         style={styles.actionButton}
         onPress={handleActionButtonPress}
       />

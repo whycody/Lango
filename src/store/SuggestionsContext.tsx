@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, FC, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
 import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from "../api/apiClient";
 import debounce from "lodash.debounce";
@@ -40,9 +40,11 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const { translationLang, mainLang } = useLanguage();
   const { user } = useAuth();
-  const langSuggestions = suggestions.filter((suggestion) => suggestion.mainLang == mainLang &&
+
+  const langSuggestions = useMemo(() => suggestions.filter((suggestion) => suggestion.mainLang == mainLang &&
     suggestion.translationLang == translationLang && !suggestion.skipped && !suggestion.added)
-    .sort((a, b) => a.displayCount - b.displayCount);
+    .sort((a, b) => a.displayCount - b.displayCount), [suggestions, mainLang, translationLang]);
+
   const syncedOnMount = useRef(false);
   const syncing = useRef(false);
 

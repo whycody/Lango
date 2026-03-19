@@ -33,6 +33,7 @@ interface UserPreferencesContext {
   askLaterNotifications: number | null;
   flashcardsSortingMethod: FlashcardSortingMethod;
   userHasEverHitFlashcard: boolean;
+  userHasEverSkippedSuggestion: boolean;
   notificationsPermissionStatus: PermissionStatus;
   setFlashcardSide: (side: FlashcardSide) => void;
   setSessionMode: (mode: SessionMode) => void;
@@ -42,6 +43,7 @@ interface UserPreferencesContext {
   setAskLaterNotifications: (timestamp: number) => void;
   setFlashcardsSortingMethod: (method: FlashcardSortingMethod) => void;
   setUserHasEverHitFlashcard: (hasEverHit: boolean) => void;
+  setUserHasEverSkippedSuggestion: (hasEverSkip: boolean) => void;
   setNotificationsPermissionStatus: (status: PermissionStatus) => void;
 }
 
@@ -54,6 +56,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   askLaterNotifications: null,
   flashcardsSortingMethod: FlashcardSortingMethod.ADD_DATE_DESC,
   userHasEverHitFlashcard: false,
+  userHasEverSkippedSuggestion: false,
   notificationsPermissionStatus: PermissionStatus.UNDETERMINED,
   setFlashcardSide: () => {},
   setSessionMode: () => {},
@@ -63,6 +66,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContext>({
   setAskLaterNotifications: () => {},
   setFlashcardsSortingMethod: () => {},
   setUserHasEverHitFlashcard: () => {},
+  setUserHasEverSkippedSuggestion: () => {},
   setNotificationsPermissionStatus: () => {},
 });
 
@@ -74,6 +78,7 @@ const VIBRATIONS_KEY = 'vibrationsEnabled';
 const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
 const FLASHCARDS_SORTING_METHOD = 'flashcardsSortingMethod';
 const USER_HAS_EVER_HIT_FLASHCARD = 'userHasEverHitFlashcard';
+const USER_HAS_SKIPPED_SUGGESTION = 'userHasEverSkippedSuggestion';
 const NOTIFICATION_PERMISSION_STATUS = 'lastUserNotificationPermissionStatus';
 
 const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
@@ -87,6 +92,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [flashcardsSortingMethod, setFlashcardsSortingMethod] = useTypedMMKV<FlashcardSortingMethod>(FLASHCARDS_SORTING_METHOD,
     FlashcardSortingMethod.ADD_DATE_DESC, storage)
   const [userHasEverHitFlashcard, setUserHasEverHitFlashcard] = useTypedMMKV(USER_HAS_EVER_HIT_FLASHCARD, false, storage);
+  const [userHasEverSkippedSuggestion, setUserHasEverSkippedSuggestion] = useTypedMMKV(USER_HAS_SKIPPED_SUGGESTION, false, storage);
   const [notificationsPermissionStatus, setNotificationsPermissionStatus] =
     useTypedMMKV<PermissionStatus>(NOTIFICATION_PERMISSION_STATUS, PermissionStatus.UNDETERMINED, storage);
 
@@ -101,6 +107,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         askLaterNotifications,
         flashcardsSortingMethod,
         userHasEverHitFlashcard,
+        userHasEverSkippedSuggestion,
         notificationsPermissionStatus,
         setFlashcardSide,
         setSessionMode,
@@ -110,6 +117,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setAskLaterNotifications,
         setFlashcardsSortingMethod,
         setUserHasEverHitFlashcard,
+        setUserHasEverSkippedSuggestion,
         setNotificationsPermissionStatus,
       }}
     >

@@ -26,7 +26,9 @@ export const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessi
 
   let messageKey = "balancedEffort";
 
-  if (grade3Count > grade1Count && grade3Count > grade2Count) {
+  if (props.flashcardUpdates.length == 0) {
+    messageKey = "no_updates";
+  } else if (grade3Count > grade1Count && grade3Count > grade2Count) {
     messageKey = "perfect";
   } else if (grade2Count > grade1Count && grade2Count > grade3Count) {
     messageKey = "steadyImprovement";
@@ -44,7 +46,6 @@ export const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessi
       ref={ref}
       index={0}
       onChange={(index: number) => props.onChangeIndex?.(index)}
-      onDismiss={props.endSession}
       enablePanDownToClose={false}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.card }}
@@ -52,12 +53,15 @@ export const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessi
     >
       <BottomSheetScrollView style={styles.root}>
         <CustomText weight={"Bold"} style={styles.title}>{t('sessionSummary')}</CustomText>
-        <View style={{ flexDirection: 'row', paddingTop: MARGIN_VERTICAL }}>
-          <View style={{ flex: grade3Count, backgroundColor: '#73c576', height: 9 }}/>
-          <View style={{ flex: grade2Count, backgroundColor: '#ead66c', height: 9 }}/>
-          <View style={{ flex: grade1Count, backgroundColor: '#e48181', height: 9 }}/>
 
-        </View>
+        {props.flashcardUpdates.length > 0 &&
+          <View style={styles.statusBar}>
+            <View style={{ flex: grade3Count, backgroundColor: '#73c576', height: 9 }}/>
+            <View style={{ flex: grade2Count, backgroundColor: '#ead66c', height: 9 }}/>
+            <View style={{ flex: grade1Count, backgroundColor: '#e48181', height: 9 }}/>
+          </View>
+        }
+
         <CustomText style={styles.subtitle}>{t(messageKey, { grade1Count, grade2Count, grade3Count })}</CustomText>
 
         <ActionButton
@@ -93,7 +97,12 @@ const getStyles = (colors: any) => StyleSheet.create({
   subtitle: {
     color: colors.primary600,
     fontSize: 15,
-    marginTop: MARGIN_VERTICAL,
+    marginTop: MARGIN_VERTICAL / 2,
+  },
+  statusBar: {
+    flexDirection: 'row',
+    paddingTop: MARGIN_VERTICAL,
+    paddingBottom: MARGIN_VERTICAL / 2
   },
   sessionItemsContainer: {
     flexDirection: 'row',

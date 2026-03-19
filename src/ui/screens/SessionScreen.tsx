@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useRoute, useTheme } from '@react-navigation/native';
@@ -17,7 +17,7 @@ import * as Speech from 'expo-speech';
 import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
 import { useSessions } from "../../store/SessionsContext";
 import { useEvaluations } from "../../store/EvaluationsContext";
-import { EvaluationGrade, SessionMode } from "../../types";
+import { EvaluationGrade, SessionMode, SessionWord, Word } from "../../types";
 import { useWordSet } from "../../hooks/useWordSet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WordUpdate } from "../../types/utils/WordUpdate";
@@ -33,6 +33,8 @@ import {
   LeaveSessionBottomSheet,
   SessionSettingsBottomSheet
 } from "../sheets";
+import { useWords, WordSource } from "../../store/WordsContext";
+import { useSuggestions } from "../../store/SuggestionsContext";
 
 export type SessionScreenParams = {
   length: SessionLength;
@@ -53,13 +55,15 @@ const SessionScreen = ({ navigation }) => {
   const flashcardSide = params?.flashcardSide || FlashcardSide.WORD;
   const sessionsContext = useSessions();
   const evaluationsContext = useEvaluations();
+  const { addWords } = useWords();
+  const { skipSuggestions } = useSuggestions();
 
   const pagerRef = useRef(null);
   const wordSet = useWordSet(length * 10, mode);
 
   const [version, setVersion] = useState(wordSet.version);
   const [model, setModel] = useState(wordSet.model);
-  const [cards, setCards] = useState(wordSet.words);
+  const [cards, setCards] = useState(wordSet.sessionWords);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -73,6 +77,7 @@ const SessionScreen = ({ navigation }) => {
   const [editId, setEditId] = useState<string | null>(null);
   const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
   const [wordsUpdates, setWordsUpdates] = useState<WordUpdate[]>([]);
+  const [skippedSuggestionsIds, setSkippedSuggestionsIds] = useState<string[]>([]);
   const [numberOfSession, setNumberOfSession] = useState(0);
   const [flippedCards, setFlippedCards] = useState(Array(length * 10).fill(false));
   const [lastPressTime, setLastPressTime] = useState<number>(0);
@@ -118,19 +123,26 @@ const SessionScreen = ({ navigation }) => {
     hitFlashcardBottomSheetRef.current?.dismiss();
   }
 
-  const decrementCurrentIndex = () => {
+  const decrementCurrentIndex = useCallback(() => {
     setCurrentIndex((prev) => prev == 0 ? prev : prev - 1)
-  };
+  }, []);
 
-  const incrementCurrentIndex = () => {
+  const incrementCurrentIndex = useCallback(() => {
     if (currentIndex < cards.length) setCurrentIndex((prev) => prev + 1);
-  };
+  }, []);
 
-  const handleEditPress = (id: string) => {
+  const handleEditPress = useCallback((id: string) => {
     setEditId(id);
     trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, { mode: 'edit', source: 'session_screen' })
     handleFlashcardBottomSheetRef.current.present();
-  }
+  }, [])
+
+  const handleContinuePress = useCallback((id: string) => {
+    trackEvent(AnalyticsEventName.SESSION_SKIP_SUGGESTION)
+    if (!userPreferences.userHasEverSkippedSuggestion) userPreferences.setUserHasEverSkippedSuggestion(true);
+    setWordsUpdates(prev => prev.filter(update => update.flashcardId !== id));
+    setSkippedSuggestionsIds(prev => prev.includes(id) ? prev : [...prev, id]);
+  }, []);
 
   const handleFlipPress = (index: number, isFlipped: boolean) => {
     trackEvent(AnalyticsEventName.FLIP_FLASHCARD)
@@ -145,7 +157,16 @@ const SessionScreen = ({ navigation }) => {
     });
   }
 
-  const renderCard = (word: any, wordIndex: number) => {
+  const speakWord = useCallback((word: SessionWord, frontSide: boolean) => {
+    const shouldSpeakTranslation = flipped ? !frontSide : frontSide;
+    Speech.stop().then(() => {
+      Speech.speak(shouldSpeakTranslation ? word?.translation : word.text, {
+        language: shouldSpeakTranslation ? word.translationLang : word.mainLang
+      });
+    });
+  }, [])
+
+  const renderCard = (word: SessionWord, wordIndex: number) => {
     const isActive = currentIndex === wordIndex;
 
     Animated.spring(scaleValues[wordIndex], {
@@ -166,18 +187,28 @@ const SessionScreen = ({ navigation }) => {
       >
         <Animated.View style={[styles.cardContent, { transform: [{ scale: scaleValues[wordIndex] }] }]}>
           <Card
+            word={word}
             wordIndex={wordIndex}
+            frontSide={true}
             text={flipped ? word?.text : word?.translation}
             onBackPress={decrementCurrentIndex}
-            onEditPress={() => handleEditPress(word.id)}
+            onEditPress={handleEditPress}
+            onContinuePress={handleContinuePress}
+            onPlayAudio={speakWord}
+            userHasEverSkippedSuggestion={userPreferences.userHasEverSkippedSuggestion}
           />
         </Animated.View>
         <Animated.View style={[styles.cardContent, { transform: [{ scale: scaleValues[wordIndex] }] }]}>
           <Card
+            word={word}
             wordIndex={wordIndex}
+            frontSide={false}
             text={flipped ? word?.translation : word?.text}
             onBackPress={decrementCurrentIndex}
-            onEditPress={() => handleEditPress(word.id)}
+            onEditPress={handleEditPress}
+            onContinuePress={handleContinuePress}
+            onPlayAudio={speakWord}
+            userHasEverSkippedSuggestion={userPreferences.userHasEverSkippedSuggestion}
           />
         </Animated.View>
       </FlipCard>
@@ -207,25 +238,32 @@ const SessionScreen = ({ navigation }) => {
 
     triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
 
-    const currentCardId: string = cards[currentIndex].id;
+    const currentCard = cards[currentIndex];
+    const { id, type } = currentCard;
+
+    if (type === 'suggestion') {
+      setSkippedSuggestionsIds(prev => prev.filter(suggestionId => suggestionId !== id));
+      trackEvent(AnalyticsEventName.SESSION_ADD_SUGGESTION);
+    }
 
     setWordsUpdates(prevUpdates => {
-      const existingUpdateIndex = prevUpdates.findIndex(update => update.flashcardId === currentCardId);
+      const existingUpdateIndex = prevUpdates.findIndex(update => update.flashcardId === id);
 
       if (existingUpdateIndex >= 0) {
         const updatedUpdates = [...prevUpdates];
         updatedUpdates[existingUpdateIndex].grade = level;
         return updatedUpdates;
       } else {
-        return [...prevUpdates, { flashcardId: currentCardId, grade: level }];
+        return [...prevUpdates, { flashcardId: id, type, grade: level }];
       }
     });
   };
 
   useEffect(() => {
-    if (wordsUpdates.length === 0) return;
-    (wordsUpdates.length === cards.length) ? finishSession() : incrementCurrentIndex();
-  }, [wordsUpdates]);
+    const evaluatedCount = wordsUpdates.length + skippedSuggestionsIds.length;
+    if (evaluatedCount === 0) return;
+    evaluatedCount === cards.length ? finishSession() : incrementCurrentIndex();
+  }, [wordsUpdates, skippedSuggestionsIds]);
 
   const finishSession = () => {
     incrementCurrentIndex();
@@ -242,7 +280,6 @@ const SessionScreen = ({ navigation }) => {
   }, [currentIndex]);
 
   const endSession = () => {
-    if (wordsUpdates.length !== cards.length) return;
     finishSessionBottomSheetRef.current?.dismiss();
     navigation.navigate(ScreenName.Tabs);
   }
@@ -254,7 +291,7 @@ const SessionScreen = ({ navigation }) => {
     setWordsUpdates([]);
     setModel(wordSet.model);
     setVersion(wordSet.version);
-    setCards(wordSet.words);
+    setCards(wordSet.sessionWords);
     setTimeout(() => {
       setCurrentIndex(0);
       finishSessionBottomSheetRef.current?.dismiss();
@@ -272,18 +309,75 @@ const SessionScreen = ({ navigation }) => {
     navigation.navigate(ScreenName.Tabs);
   }
 
-  const saveProgress = (finished: boolean) => {
-    if (wordsUpdates.length == 0) return;
-    const avgGrade = wordsUpdates.reduce((sum, u) => sum + u.grade, 0) / wordsUpdates.length;
-    if (finished) trackEvent(AnalyticsEventName.SESSION_COMPLETED, { length, mode, flashcardSide, avgGrade });
-    const { mainLang, translationLang } = wordSet.words[0];
-    const session = sessionsContext.addSession(mode, model, version, avgGrade, length * 10, mainLang, translationLang, finished);
-    evaluationsContext.addEvaluations(wordsUpdates.map((update: WordUpdate) => ({
-      wordId: update.flashcardId,
-      sessionId: session.id,
+  const getSuggestionUpdates = (updates: WordUpdate[]) => updates.filter(u => u.type === 'suggestion');
+
+  const calculateAvgGrade = (updates: WordUpdate[]) => updates.reduce((sum, u) => sum + u.grade, 0) / updates.length;
+
+  const getWordsToAdd = (sessionWords: SessionWord[], suggestionUpdates: WordUpdate[]) => {
+    const ids = new Set(suggestionUpdates.map(u => u.flashcardId));
+    return sessionWords.filter(w => ids.has(w.id));
+  };
+
+  const mapAddedWordsToSuggestions = (addedWords: Word[], sessionWords: SessionWord[]) => {
+    const map = new Map<string, Word>();
+
+    for (const added of addedWords) {
+      const match = sessionWords.find(w => w.text === added.text && w.translation === added.translation);
+      if (match) map.set(match.id, added);
+    }
+
+    return map;
+  };
+
+  const buildEvaluations = (updates: WordUpdate[], sessionId: string, map: Map<string, Word>) =>
+    updates.map(update => ({
+      wordId:
+        update.type === 'word'
+          ? update.flashcardId
+          : map.get(update.flashcardId)!.id,
+      sessionId,
       grade: update.grade
-    })));
-  }
+    }));
+
+  const saveProgress = useCallback((finished: boolean) => {
+    skipSuggestions(skippedSuggestionsIds, 'skipped');
+
+    if (wordsUpdates.length === 0) return;
+
+    const suggestionUpdates = getSuggestionUpdates(wordsUpdates);
+    skipSuggestions(suggestionUpdates.map(u => u.flashcardId), 'added');
+
+    const avgGrade = calculateAvgGrade(wordsUpdates);
+    const { mainLang, translationLang } = wordSet.sessionWords[0];
+    const wordsToAdd = getWordsToAdd(wordSet.sessionWords, suggestionUpdates);
+
+    if (finished) {
+      trackEvent(AnalyticsEventName.SESSION_COMPLETED, { length, mode, flashcardSide, avgGrade });
+    }
+
+    const session = sessionsContext.addSession(
+      mode,
+      model,
+      version,
+      avgGrade,
+      length * 10,
+      mainLang,
+      translationLang,
+      finished
+    );
+
+    const addedWords = addWords(
+      wordsToAdd.map(w => ({
+        text: w.text,
+        translation: w.translation
+      })),
+      WordSource.LANGO
+    );
+
+    const wordsMap = mapAddedWordsToSuggestions(addedWords, wordSet.sessionWords);
+    const evaluations = buildEvaluations(wordsUpdates, session.id, wordsMap);
+    evaluationsContext.addEvaluations(evaluations);
+  }, [wordsUpdates, wordSet, skippedSuggestionsIds]);
 
   const handleWordEdit = (id: string, word: string, translation: string) => {
     setCards((prevCards) =>

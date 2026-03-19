@@ -35,6 +35,8 @@ export const AnalyticsEventName = {
   SESSION_STARTED: 'session_started',
   SESSION_COMPLETED: 'session_completed',
   SESSION_SKIPPED: 'session_skipped',
+  SESSION_SKIP_SUGGESTION: 'session_skip_suggestion',
+  SESSION_ADD_SUGGESTION: 'session_add_suggestion',
 
   SUGGESTION_ADD: 'suggestion_add',
   SUGGESTIONS_SKIPPED: 'suggestions_skipped',
@@ -91,6 +93,8 @@ export type AnalyticsEventPayloadMap = {
   session_started: { length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide, restarted: boolean };
   session_completed: { length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide, avgGrade: number };
   session_skipped: { length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide, evaluatedCount: number };
+  session_skip_suggestion?: undefined;
+  session_add_suggestion?: undefined;
 
   suggestion_add: { suggestionId: string, successfully: boolean };
   suggestions_skipped?: undefined;

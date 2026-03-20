@@ -53,8 +53,6 @@ export const saveSuggestions = async (
         return suggestion[col as keyof Suggestion] ?? null;
       });
       const placeholders = columns.map(() => "?").join(", ");
-      if (values[0] == "68dbb7f72c43da3dfa266290")
-        console.log(placeholders, values);
       tx.executeSql(
         `INSERT OR
          REPLACE
@@ -92,7 +90,7 @@ export const getAllSuggestions = async (
               skipped: row.skipped === 1,
               added: row.added === 1,
               synced: row.synced === 1,
-              updatedAt: row.updatedAt || null,
+              updatedAt: row.updatedAt,
               locallyUpdatedAt:
                 row.locallyUpdatedAt || new Date().toISOString(),
             });

@@ -15,8 +15,8 @@ export const heuristicStrategy: WordSetStrategy = (
   size,
   words,
   suggestions,
-  _wordsMLStates,
   _evaluations,
+  _wordsMLStates,
   wordsHeuristicStates,
 ): WordSet => {
   const now = Date.now();

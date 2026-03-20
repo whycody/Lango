@@ -124,11 +124,7 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
   return (
     <View>
       <View style={[styles.root, style]}>
-        <SquareFlag
-          size={30}
-          style={styles.flag}
-          languageCode={languageCode}
-        />
+        <SquareFlag size={30} style={styles.flag} languageCode={languageCode} />
         <View style={styles.inputContainer}>
           <BottomSheetTextInput
             ref={inputRef}
@@ -146,7 +142,7 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
                 : undefined
             }
             placeholderTextColor={colors.cardAccent}
-            onFocus={setFocused}
+            onFocus={() => setFocused(true)}
             onChangeText={handleTextChange}
             onBlur={handleBlur}
             {...rest}

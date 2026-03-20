@@ -45,7 +45,7 @@ export const EvaluationsProvider: FC<{ children: ReactNode }> = ({
 }) => {
   const { initialLoad } = useAppInitializer();
   const { getAllEvaluations, saveEvaluations } = useEvaluationsRepository();
-  const [evaluations, setEvaluations] = useState<Evaluation[] | null>(
+  const [evaluations, setEvaluations] = useState<Evaluation[]>(
     initialLoad.evaluations,
   );
   const [loading, setLoading] = useState(true);

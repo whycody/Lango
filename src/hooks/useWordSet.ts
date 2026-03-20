@@ -88,7 +88,7 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
       lastSessionModel,
     );
 
-    if (langWords.length < size) {
+    if (langWords.length < size || !evaluations?.length) {
       const fallbackSet = buildFallbackSet(size, langWords, langSuggestions);
       const enhanced = enhanceWords(fallbackSet, langWordsMLStates);
       return {
@@ -112,7 +112,7 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
     user.sessionModel,
     langWords,
     langSuggestions,
-    evaluations.length,
+    evaluations?.length ?? 0,
     langWordsMLStates,
     langWordsHeuristicStates,
     sessions,

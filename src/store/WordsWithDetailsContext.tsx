@@ -10,7 +10,7 @@ import { WordMLState, WordWithDetails } from "../types";
 import { useWordsMLStatesContext, useLanguage, useWords } from ".";
 
 interface WordsWithDetailsContextProps {
-  wordsWithDetails: WordWithDetails[];
+  wordsWithDetails: WordWithDetails[] | null;
   langWordsWithDetails: WordWithDetails[];
 }
 

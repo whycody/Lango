@@ -153,7 +153,7 @@ export const apiCall = async <T>(
         }
         return apiCall(options, true);
       } else {
-        throw getAPIError("Unathorized", 401);
+        throw getAPIError("Unauthorized", 401);
       }
     }
 

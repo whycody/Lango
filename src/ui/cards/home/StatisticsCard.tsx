@@ -10,8 +10,8 @@ import { Word } from "../../../types";
 import { useStatistics } from "../../../store/StatisticsContext";
 
 type StatisticsCardProps = {
-  style?: StyleProp<ViewStyle>
-}
+  style?: StyleProp<ViewStyle>;
+};
 
 const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
   const { t } = useTranslation();
@@ -23,57 +23,67 @@ const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
     numberOfWords: langWords.filter((word: Word) => !word.removed).length,
     numberOfSessions: statsContext.numberOfSessions,
     numberOfStudyDays: statsContext.studyDaysList.length,
-    numberOfLangoWords: langWords.filter((word) => word.source == WordSource.LANGO && !word.removed).length,
+    numberOfLangoWords: langWords.filter(
+      (word) => word.source == WordSource.LANGO && !word.removed,
+    ).length,
   });
 
   const updateStat = (key: keyof typeof studyStats, value: number) => {
-    setStudyStats(prevStats => ({
+    setStudyStats((prevStats) => ({
       ...prevStats,
       [key]: value,
     }));
   };
 
   useEffect(() => {
-    updateStat('numberOfWords', langWords.filter((word: Word) => !word.removed).length);
-    updateStat('numberOfLangoWords', langWords.filter((word) => word.source == WordSource.LANGO && !word.removed).length);
-    updateStat('numberOfStudyDays', statsContext.studyDaysList.length);
-    updateStat('numberOfSessions', statsContext.numberOfSessions);
+    updateStat(
+      "numberOfWords",
+      langWords.filter((word: Word) => !word.removed).length,
+    );
+    updateStat(
+      "numberOfLangoWords",
+      langWords.filter(
+        (word) => word.source == WordSource.LANGO && !word.removed,
+      ).length,
+    );
+    updateStat("numberOfStudyDays", statsContext.studyDaysList.length);
+    updateStat("numberOfSessions", statsContext.numberOfSessions);
   }, [langWords, statsContext.studyDaysList, sessions]);
 
   return (
     <View style={[styles.root, style]}>
-      <Header title={t('statistics')} subtitle={t('statisticsDesc')}/>
+      <Header title={t("statistics")} subtitle={t("statisticsDesc")} />
       <View style={styles.statisticsRow}>
         <StatisticItem
-          icon={'layers-outline'}
+          icon={"layers-outline"}
           label={studyStats.numberOfWords.toString()}
-          description={t('words')}
+          description={t("words")}
           style={[styles.statisticsItem, { marginRight: 6 }]}
         />
         <StatisticItem
-          icon={'repeat-outline'}
+          icon={"repeat-outline"}
           label={studyStats.numberOfSessions.toString()}
-          description={t('sessions')}
+          description={t("sessions")}
           style={[styles.statisticsItem, { marginLeft: 6 }]}
         />
       </View>
       <View style={styles.statisticsRow}>
         <StatisticItem
-          icon={'calendar-outline'}
+          icon={"calendar-outline"}
           label={studyStats.numberOfStudyDays.toString()}
-          description={t('studyDays')}
+          description={t("studyDays")}
           style={[styles.statisticsItem, { marginRight: 6 }]}
         />
         <StatisticItem
-          icon={'layers-outline'}
+          icon={"layers-outline"}
           label={studyStats.numberOfLangoWords.toString()}
-          description={t('langoWords')}
+          description={t("langoWords")}
           style={[styles.statisticsItem, { marginLeft: 6 }]}
         />
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   root: {
@@ -82,12 +92,12 @@ const styles = StyleSheet.create({
     paddingBottom: MARGIN_VERTICAL + MARGIN_HORIZONTAL / 2,
   },
   statisticsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 12,
   },
   statisticsItem: {
     flex: 1,
-  }
+  },
 });
 
 export default StatisticsCard;

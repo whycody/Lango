@@ -2,6 +2,6 @@ import { EvaluationGrade } from "../core/Evaluation";
 
 export type WordUpdate = {
   flashcardId: string;
-  type: 'word' | 'suggestion';
+  type: "word" | "suggestion";
   grade: EvaluationGrade;
 };

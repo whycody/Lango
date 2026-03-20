@@ -4,4 +4,4 @@ export type Language = {
   languageCode: LanguageCode;
   languageName: string;
   languageInTargetLanguage: string;
-}
+};

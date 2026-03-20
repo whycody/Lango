@@ -1,5 +1,11 @@
 import React, { FC, useRef } from "react";
-import { ActivityIndicator, Animated, Easing, Pressable, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Animated,
+  Easing,
+  Pressable,
+  StyleSheet,
+} from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,16 +13,24 @@ import * as Haptics from "expo-haptics";
 import { useHaptics } from "../../hooks/useHaptics";
 
 interface ActionButtonProps {
-  label: string,
-  active?: boolean,
-  primary?: boolean,
-  icon?: string,
-  onPress?: () => void,
-  style?: any,
-  loading?: boolean,
+  label: string;
+  active?: boolean;
+  primary?: boolean;
+  icon?: string;
+  onPress?: () => void;
+  style?: any;
+  loading?: boolean;
 }
 
-const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, icon, onPress, style, loading = false }) => {
+const ActionButton: FC<ActionButtonProps> = ({
+  label,
+  active = true,
+  primary,
+  icon,
+  onPress,
+  style,
+  loading = false,
+}) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, primary, active);
   const { triggerHaptics } = useHaptics();
@@ -26,7 +40,7 @@ const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, ic
   const handlePress = () => {
     triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
     onPress?.();
-  }
+  };
 
   const handlePressIn = () => {
     scaleAnim.setValue(1);
@@ -44,9 +58,9 @@ const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, ic
         duration: 100,
         easing: Easing.out(Easing.quad),
         useNativeDriver: true,
-      })
+      }),
     ]).start();
-  }
+  };
 
   const handlePressOut = () => {
     Animated.parallel([
@@ -61,9 +75,9 @@ const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, ic
         duration: 100,
         easing: Easing.out(Easing.quad),
         useNativeDriver: true,
-      })
+      }),
     ]).start();
-  }
+  };
 
   return (
     <Animated.View
@@ -71,50 +85,62 @@ const ActionButton: FC<ActionButtonProps> = ({ label, active = true, primary, ic
         {
           transform: [{ scale: scaleAnim }],
           opacity: opacityAnim,
-        }
+        },
       ]}
     >
       <Pressable
         style={[styles.root, style]}
-        android_ripple={{ color: primary ? 'white' : colors.card }}
+        android_ripple={{ color: primary ? "white" : colors.card }}
         onPress={active && !loading ? handlePress : undefined}
         onPressIn={active && !loading ? handlePressIn : undefined}
         onPressOut={active && !loading ? handlePressOut : undefined}
       >
         {loading ? (
-          <ActivityIndicator size="small" color={primary ? colors.card : colors.primary}/>
+          <ActivityIndicator
+            size="small"
+            color={primary ? colors.card : colors.primary}
+          />
         ) : (
           <>
-            <CustomText weight={"Bold"} style={styles.label}>{label}</CustomText>
-            {icon &&
-              <Ionicons name={icon} color={primary ? colors.card : colors.primary} size={14} style={styles.icon}/>}
+            <CustomText weight={"Bold"} style={styles.label}>
+              {label}
+            </CustomText>
+            {icon && (
+              <Ionicons
+                name={icon}
+                color={primary ? colors.card : colors.primary}
+                size={14}
+                style={styles.icon}
+              />
+            )}
           </>
         )}
       </Pressable>
     </Animated.View>
   );
-}
+};
 
-const getStyles = (colors: any, primary: boolean, active: boolean) => StyleSheet.create({
-  root: {
-    opacity: active ? 1 : 0.5,
-    backgroundColor: primary ? colors.primary : undefined,
-    borderWidth: primary ? 0 : 2,
-    borderColor: colors.cardAccent,
-    paddingVertical: primary ? 14 : 12,
-    paddingHorizontal: 24,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  label: {
-    color: primary ? colors.card : colors.primary,
-    fontSize: 13,
-  },
-  icon: {
-    marginTop: 2,
-    marginLeft: 4,
-  }
-});
+const getStyles = (colors: any, primary: boolean, active: boolean) =>
+  StyleSheet.create({
+    root: {
+      opacity: active ? 1 : 0.5,
+      backgroundColor: primary ? colors.primary : undefined,
+      borderWidth: primary ? 0 : 2,
+      borderColor: colors.cardAccent,
+      paddingVertical: primary ? 14 : 12,
+      paddingHorizontal: 24,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    label: {
+      color: primary ? colors.card : colors.primary,
+      fontSize: 13,
+    },
+    icon: {
+      marginTop: 2,
+      marginLeft: 4,
+    },
+  });
 
 export default ActionButton;

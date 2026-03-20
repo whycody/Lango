@@ -1,5 +1,9 @@
 import React, { forwardRef, useCallback, useState } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { Platform, StyleSheet } from "react-native";
 import { FullWindowOverlay } from "react-native-screens";
@@ -14,43 +18,75 @@ import { PickLanguageLevelBottomSheet } from "./PickLanguageLevelBottomSheet";
 type LanguageBottomSheetProps = {
   onChangeIndex?: (index: number) => void;
   allLanguages?: boolean;
-  languageType?: LanguageTypes
-}
+  languageType?: LanguageTypes;
+};
 
-export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>((props, ref) => {
+export const LanguageBottomSheet = forwardRef<
+  BottomSheetModal,
+  LanguageBottomSheetProps
+>((props, ref) => {
   const { colors } = useTheme();
-  const { onChangeIndex, allLanguages, languageType = LanguageTypes.MAIN } = props;
+  const {
+    onChangeIndex,
+    allLanguages,
+    languageType = LanguageTypes.MAIN,
+  } = props;
   const [pickedLanguage, setPickedLanguage] = useState<Language | null>(null);
   const pickLanguageLevelBottomSheetRef = React.useRef<BottomSheetModal>(null);
   const { t } = useTranslation();
 
-  const renderBackdrop = useCallback((props: any) =>
-    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        {...props}
+      />
+    ),
+    [],
+  );
 
-  const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
-    <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
+  const renderContainerComponent =
+    Platform.OS === "ios"
+      ? useCallback(
+          ({ children }: any) => (
+            <FullWindowOverlay>{children}</FullWindowOverlay>
+          ),
+          [],
+        )
+      : undefined;
 
   const dismiss = () => {
-    ref && typeof ref !== 'function' && ref.current?.dismiss();
-  }
+    ref && typeof ref !== "function" && ref.current?.dismiss();
+  };
 
-  const handleLanguagePicked = useCallback((language: Language, userEvaluatedLanguageLevel: boolean) => {
-    dismiss();
-    if (userEvaluatedLanguageLevel || languageType !== LanguageTypes.MAIN) return;
-    setPickedLanguage(language);
-    pickLanguageLevelBottomSheetRef.current?.present();
-  }, [ref, languageType]);
+  const handleLanguagePicked = useCallback(
+    (language: Language, userEvaluatedLanguageLevel: boolean) => {
+      dismiss();
+      if (userEvaluatedLanguageLevel || languageType !== LanguageTypes.MAIN)
+        return;
+      setPickedLanguage(language);
+      pickLanguageLevelBottomSheetRef.current?.present();
+    },
+    [ref, languageType],
+  );
 
   return (
     <>
-      <PickLanguageLevelBottomSheet ref={pickLanguageLevelBottomSheetRef} language={pickedLanguage}/>
+      <PickLanguageLevelBottomSheet
+        ref={pickLanguageLevelBottomSheetRef}
+        language={pickedLanguage}
+      />
       <BottomSheetModal
         ref={ref}
         onChange={(index: number) => onChangeIndex?.(index)}
         containerComponent={renderContainerComponent}
         backdropComponent={renderBackdrop}
         backgroundStyle={{ backgroundColor: colors.card }}
-        handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
+        handleIndicatorStyle={{
+          backgroundColor: colors.primary,
+          borderRadius: 0,
+        }}
       >
         <BottomSheetScrollView>
           <LanguagePicker
@@ -61,7 +97,7 @@ export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSh
           />
           <ActionButton
             onPress={dismiss}
-            label={t('cancel')}
+            label={t("cancel")}
             primary={true}
             style={styles.button}
           />
@@ -73,11 +109,11 @@ export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSh
 
 const styles = StyleSheet.create({
   languagePicker: {
-    marginBottom: MARGIN_VERTICAL
+    marginBottom: MARGIN_VERTICAL,
   },
   button: {
     marginBottom: MARGIN_VERTICAL,
     marginTop: MARGIN_VERTICAL / 2,
     marginHorizontal: MARGIN_HORIZONTAL,
-  }
-})
+  },
+});

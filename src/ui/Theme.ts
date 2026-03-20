@@ -12,4 +12,4 @@ export type CustomTheme = Theme & {
     yellow600: string;
     green600: string;
   };
-}
+};

@@ -1,6 +1,18 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
-import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from "../api/apiClient";
+import {
+  fetchUpdatedSuggestions,
+  syncSuggestionsOnServer,
+} from "../api/apiClient";
 import debounce from "lodash.debounce";
 import { Suggestion } from "../types";
 import { useLanguage } from "./LanguageContext";
@@ -20,7 +32,7 @@ interface SuggestionsContextProps {
   langSuggestions: Suggestion[];
   loading: boolean;
   increaseSuggestionsDisplayCount: (ids: string[]) => Promise<void>;
-  skipSuggestions: (ids: string[], prop: 'skipped' | 'added') => Promise<void>;
+  skipSuggestions: (ids: string[], prop: "skipped" | "added") => Promise<void>;
   syncSuggestions: () => Promise<void>;
 }
 
@@ -35,53 +47,70 @@ export const SuggestionsContext = createContext<SuggestionsContextProps>({
 
 const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { initialLoad } = useAppInitializer();
-  const { getAllSuggestions, deleteSuggestions, saveSuggestions } = useSuggestionsRepository();
-  const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad.suggestions);
+  const { getAllSuggestions, deleteSuggestions, saveSuggestions } =
+    useSuggestionsRepository();
+  const [suggestions, setSuggestions] = useState<Suggestion[]>(
+    initialLoad.suggestions,
+  );
   const [loading, setLoading] = useState(false);
   const { translationLang, mainLang } = useLanguage();
   const { user } = useAuth();
 
-  const langSuggestions = useMemo(() => suggestions.filter((suggestion) => suggestion.mainLang == mainLang &&
-    suggestion.translationLang == translationLang && !suggestion.skipped && !suggestion.added)
-    .sort((a, b) => a.displayCount - b.displayCount), [suggestions, mainLang, translationLang]);
+  const langSuggestions = useMemo(
+    () =>
+      suggestions
+        .filter(
+          (suggestion) =>
+            suggestion.mainLang == mainLang &&
+            suggestion.translationLang == translationLang &&
+            !suggestion.skipped &&
+            !suggestion.added,
+        )
+        .sort((a, b) => a.displayCount - b.displayCount),
+    [suggestions, mainLang, translationLang],
+  );
 
   const syncedOnMount = useRef(false);
   const syncing = useRef(false);
 
   const increaseSuggestionsDisplayCount = async (ids: string[]) => {
-    setSuggestions(prevSuggestions => {
-      const updated = prevSuggestions.map(suggestion => {
+    setSuggestions((prevSuggestions) => {
+      const updated = prevSuggestions.map((suggestion) => {
         if (ids.includes(suggestion.id)) {
           return {
             ...suggestion,
             synced: false,
             displayCount: suggestion.displayCount + 1,
-            locallyUpdatedAt: new Date().toISOString()
+            locallyUpdatedAt: new Date().toISOString(),
           };
         }
         return suggestion;
       });
-      const updatedSuggestions = updated.filter(suggestion => ids.includes(suggestion.id));
+      const updatedSuggestions = updated.filter((suggestion) =>
+        ids.includes(suggestion.id),
+      );
       saveSuggestions(updatedSuggestions);
       return updated;
     });
   };
 
-  const skipSuggestions = async (ids: string[], prop: 'skipped' | 'added') => {
-    setSuggestions(prevSuggestions => {
-      const updated = prevSuggestions.map(suggestion => {
+  const skipSuggestions = async (ids: string[], prop: "skipped" | "added") => {
+    setSuggestions((prevSuggestions) => {
+      const updated = prevSuggestions.map((suggestion) => {
         if (ids.includes(suggestion.id)) {
           return {
             ...suggestion,
             synced: false,
-            skipped: prop == 'skipped' ? true : suggestion.skipped,
-            added: prop == 'added' ? true : suggestion.added,
-            locallyUpdatedAt: new Date().toISOString()
+            skipped: prop == "skipped" ? true : suggestion.skipped,
+            added: prop == "added" ? true : suggestion.added,
+            locallyUpdatedAt: new Date().toISOString(),
           };
         }
         return suggestion;
       });
-      const updatedSuggestions = updated.filter(suggestion => ids.includes(suggestion.id));
+      const updatedSuggestions = updated.filter((suggestion) =>
+        ids.includes(suggestion.id),
+      );
       saveSuggestions(updatedSuggestions);
       return updated;
     });
@@ -92,23 +121,45 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       if (syncing.current) return;
       syncing.current = true;
       let suggestionsList = inputSuggestions ?? (await getAllSuggestions());
-      const langSuggestionsList = suggestionsList.filter((suggestion) => suggestion.mainLang ==
-        mainLang && suggestion.translationLang == translationLang);
-      const unsyncedSuggestions = getUnsyncedItems<Suggestion>(langSuggestionsList);
-      const serverUpdates = await syncInBatches<Suggestion>(unsyncedSuggestions, syncSuggestionsOnServer);
+      const langSuggestionsList = suggestionsList.filter(
+        (suggestion) =>
+          suggestion.mainLang == mainLang &&
+          suggestion.translationLang == translationLang,
+      );
+      const unsyncedSuggestions =
+        getUnsyncedItems<Suggestion>(langSuggestionsList);
+      const serverUpdates = await syncInBatches<Suggestion>(
+        unsyncedSuggestions,
+        syncSuggestionsOnServer,
+      );
 
-      const updatedSuggestions = updateLocalItems<Suggestion>(langSuggestionsList, serverUpdates);
+      const updatedSuggestions = updateLocalItems<Suggestion>(
+        langSuggestionsList,
+        serverUpdates,
+      );
       const serverSuggestions = await fetchNewSuggestions(updatedSuggestions);
       suggestionsList = inputSuggestions ?? (await getAllSuggestions());
-      const mergedSuggestions = mergeLocalAndServer<Suggestion>(suggestionsList, serverSuggestions);
+      const mergedSuggestions = mergeLocalAndServer<Suggestion>(
+        suggestionsList,
+        serverSuggestions,
+      );
 
-      const locallyKeptSuggestions = mergedSuggestions.filter(suggestion => !suggestion.synced || (!suggestion.skipped && !suggestion.added));
-      const suggestionsToRemove = mergedSuggestions.filter(suggestion => suggestion.synced && (suggestion.skipped || suggestion.added));
-      const changedSuggestions = findChangedItems<Suggestion>(suggestionsList, mergedSuggestions);
+      const locallyKeptSuggestions = mergedSuggestions.filter(
+        (suggestion) =>
+          !suggestion.synced || (!suggestion.skipped && !suggestion.added),
+      );
+      const suggestionsToRemove = mergedSuggestions.filter(
+        (suggestion) =>
+          suggestion.synced && (suggestion.skipped || suggestion.added),
+      );
+      const changedSuggestions = findChangedItems<Suggestion>(
+        suggestionsList,
+        mergedSuggestions,
+      );
 
       if (changedSuggestions.length > 0) {
         setSuggestions(locallyKeptSuggestions);
-        await deleteSuggestions(suggestionsToRemove.map(e => e.id));
+        await deleteSuggestions(suggestionsToRemove.map((e) => e.id));
         await saveSuggestions(changedSuggestions);
       }
     } catch (error) {
@@ -118,27 +169,39 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const fetchNewSuggestions = async (updatedSuggestions: Suggestion[]): Promise<Suggestion[]> => {
+  const fetchNewSuggestions = async (
+    updatedSuggestions: Suggestion[],
+  ): Promise<Suggestion[]> => {
     const latestUpdatedAt = findLatestUpdatedAt<Suggestion>(updatedSuggestions);
-    return await fetchUpdatedSuggestions(mainLang, translationLang, latestUpdatedAt);
+    return await fetchUpdatedSuggestions(
+      mainLang,
+      translationLang,
+      latestUpdatedAt,
+    );
   };
 
   const loadData = async () => {
-    const userDeterminedLanguageLevel = user.languageLevels?.some((level) => level.language == mainLang);
+    const userDeterminedLanguageLevel = user.languageLevels?.some(
+      (level) => level.language == mainLang,
+    );
     if (mainLang == translationLang || !userDeterminedLanguageLevel) return;
 
     try {
       setLoading(true);
       await syncSuggestions();
     } catch (error) {
-      console.log('Error loading suggestions from storage:', error);
+      console.log("Error loading suggestions from storage:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (syncing.current || (langSuggestions.length >= 20 && syncedOnMount.current)) return;
+    if (
+      syncing.current ||
+      (langSuggestions.length >= 20 && syncedOnMount.current)
+    )
+      return;
     syncedOnMount.current = true;
     loadData();
   }, [user.languageLevels, mainLang, translationLang, langSuggestions.length]);
@@ -151,14 +214,18 @@ const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         loading,
         increaseSuggestionsDisplayCount,
         skipSuggestions,
-        syncSuggestions
-      }}>
+        syncSuggestions,
+      }}
+    >
       {children}
     </SuggestionsContext.Provider>
   );
 };
 
-export function useDebouncedSyncSuggestions(syncFn: () => void, delay: number = 1000) {
+export function useDebouncedSyncSuggestions(
+  syncFn: () => void,
+  delay: number = 1000,
+) {
   const syncFnRef = useRef(syncFn);
   const debouncedRef = useRef<() => void>();
 
@@ -179,7 +246,9 @@ export function useDebouncedSyncSuggestions(syncFn: () => void, delay: number = 
 export const useSuggestions = (): SuggestionsContextProps => {
   const context = useContext(SuggestionsContext);
   if (!context) {
-    throw new Error("useSuggestions must be used within an SuggestionsProvider");
+    throw new Error(
+      "useSuggestions must be used within an SuggestionsProvider",
+    );
   }
   return context;
 };

@@ -1,4 +1,8 @@
-import { createTables, getAllSessions, saveSessions } from "../../database/SessionRepository";
+import {
+  createTables,
+  getAllSessions,
+  saveSessions,
+} from "../../database/SessionRepository";
 import { Session } from "../../types";
 import { useAuth } from "../../api/auth/AuthProvider";
 

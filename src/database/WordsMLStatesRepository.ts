@@ -1,13 +1,22 @@
 import { WordMLState } from "../types";
 import { getDb } from "./utils/db";
 
-export const WORD_ML_STATE_COLUMNS: Array<keyof WordMLState> = ['wordId', 'hoursSinceLastRepetition', 'studyStreak',
-  'studyDuration', 'gradesAverage', 'repetitionsCount', 'gradesTrend', 'predictedGrade', 'gradeThreeProb'];
-export const WORD_ML_STATE = 'word_ml_state';
+export const WORD_ML_STATE_COLUMNS: Array<keyof WordMLState> = [
+  "wordId",
+  "hoursSinceLastRepetition",
+  "studyStreak",
+  "studyDuration",
+  "gradesAverage",
+  "repetitionsCount",
+  "gradesTrend",
+  "predictedGrade",
+  "gradeThreeProb",
+];
+export const WORD_ML_STATE = "word_ml_state";
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
-  await db.transaction(tx => {
+  await db.transaction((tx) => {
     tx.executeSql(`
         CREATE TABLE IF NOT EXISTS ${WORD_ML_STATE}
         (
@@ -25,10 +34,13 @@ export const createTables = async (userId: string) => {
   });
 };
 
-export const saveWordsMLStates = async (userId: string, wordsMLStates: WordMLState[]) => {
+export const saveWordsMLStates = async (
+  userId: string,
+  wordsMLStates: WordMLState[],
+) => {
   const db = await getDb(userId);
-  await db.transaction(tx => {
-    wordsMLStates.forEach(wordDetails => {
+  await db.transaction((tx) => {
+    wordsMLStates.forEach((wordDetails) => {
       const values = [
         wordDetails.wordId,
         wordDetails.hoursSinceLastRepetition,
@@ -38,25 +50,27 @@ export const saveWordsMLStates = async (userId: string, wordsMLStates: WordMLSta
         wordDetails.repetitionsCount,
         wordDetails.gradesTrend,
         wordDetails.predictedGrade,
-        wordDetails.gradeThreeProb
+        wordDetails.gradeThreeProb,
       ];
 
-      const placeholders = WORD_ML_STATE_COLUMNS.map(() => '?').join(', ');
+      const placeholders = WORD_ML_STATE_COLUMNS.map(() => "?").join(", ");
 
       tx.executeSql(
-        `REPLACE INTO ${WORD_ML_STATE} (${WORD_ML_STATE_COLUMNS.join(', ')})
+        `REPLACE INTO ${WORD_ML_STATE} (${WORD_ML_STATE_COLUMNS.join(", ")})
          VALUES (${placeholders})`,
-        values
+        values,
       );
     });
   });
 };
 
-export const getAllWordsMLStates = async (userId: string): Promise<WordMLState[]> => {
+export const getAllWordsMLStates = async (
+  userId: string,
+): Promise<WordMLState[]> => {
   const db = await getDb(userId);
 
   return new Promise((resolve, reject) => {
-    db.readTransaction(tx => {
+    db.readTransaction((tx) => {
       tx.executeSql(
         `SELECT *
          FROM ${WORD_ML_STATE}`,
@@ -71,12 +85,15 @@ export const getAllWordsMLStates = async (userId: string): Promise<WordMLState[]
         (_, error) => {
           reject(error);
           return true;
-        }
+        },
       );
     });
   });
 };
 
-export const updateWordMLState = async (userId: string, wordsMLStates: WordMLState) => {
+export const updateWordMLState = async (
+  userId: string,
+  wordsMLStates: WordMLState,
+) => {
   await saveWordsMLStates(userId, [wordsMLStates]);
 };

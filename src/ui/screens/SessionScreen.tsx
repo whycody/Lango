@@ -8,7 +8,7 @@ import LottieView from "lottie-react-native";
 import FlipCard from "react-native-flip-card";
 import PagerView from "react-native-pager-view";
 import { ProgressBar } from "react-native-paper";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
@@ -50,7 +50,8 @@ export type SessionScreenParams = {
 const SessionScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
+  const styles = getStyles(colors, insets);
 
   const route = useRoute();
   const params = route.params as SessionScreenParams;
@@ -66,7 +67,6 @@ const SessionScreen = ({ navigation }) => {
   const userPreferences = useUserPreferences();
   const { mainLang, translationLang } = useLanguage();
   const { triggerHaptics } = useHaptics();
-  const insets = useSafeAreaInsets();
 
   const wordSet = useWordSet(length * 10, mode);
 
@@ -497,7 +497,12 @@ const SessionScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ height: insets.top, backgroundColor: colors.card }} />
+      <View
+        style={[
+          styles.topInsetSpacer,
+          { height: insets.top, backgroundColor: colors.card },
+        ]}
+      />
       <LeaveSessionBottomSheet
         ref={leaveSessionBottomSheetRef}
         leaveSession={handleSessionExit}
@@ -525,7 +530,12 @@ const SessionScreen = ({ navigation }) => {
         ref={hitFlashcardBottomSheetRef}
         onChangeIndex={(index) => setBottomSheetIsShown(index >= 0)}
       />
-      <View style={{ backgroundColor: colors.card, paddingBottom: 20 }}>
+      <View
+        style={[
+          styles.sessionHeaderContainer,
+          { backgroundColor: colors.card },
+        ]}
+      >
         <SessionHeader
           length={length}
           cardsSetLength={cards.length}
@@ -533,7 +543,7 @@ const SessionScreen = ({ navigation }) => {
           onSessionExit={handleSessionExitPress}
           onSettingsPressed={handleSessionSettingsPress}
         />
-        <View style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
+        <View style={styles.progressBarWrapper}>
           <ProgressBar
             animatedValue={progress ? progress / cards.length : 0.000001}
             color={colors.primary}
@@ -598,7 +608,7 @@ const SessionScreen = ({ navigation }) => {
   );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: any, insets: EdgeInsets) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -620,6 +630,16 @@ const getStyles = (colors: any) =>
     cardContent: {
       flex: 1,
       width: "100%",
+    },
+    topInsetSpacer: {
+      height: insets.top,
+      backgroundColor: colors.card,
+    },
+    sessionHeaderContainer: {
+      paddingBottom: 20,
+    },
+    progressBarWrapper: {
+      marginHorizontal: MARGIN_HORIZONTAL,
     },
     progressBar: {
       marginTop: 12,

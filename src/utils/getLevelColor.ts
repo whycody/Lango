@@ -3,7 +3,8 @@ export const getLevelColor = (level: number): string => {
   const middleColor = { r: 255, g: 255, b: 100 };
   const endColor = { r: 100, g: 255, b: 100 };
 
-  const interpolate = (c1: number, c2: number, t: number) => Math.round(c1 + (c2 - c1) * t);
+  const interpolate = (c1: number, c2: number, t: number) =>
+    Math.round(c1 + (c2 - c1) * t);
 
   let r: number, g: number, b: number;
 

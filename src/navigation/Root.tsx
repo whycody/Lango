@@ -8,21 +8,30 @@ import OnboardingScreen from "../ui/screens/OnboardingScreen";
 import LanguageProvider from "../store/LanguageContext";
 
 const Root = () => {
-  const { user, isAuthenticated, loading: authLoading, login, authError } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    loading: authLoading,
+    login,
+    authError,
+  } = useAuth();
   const { loading: initLoading } = useAppInitializer();
 
-  if (!isAuthenticated) return <LoginScreen login={login} authError={authError} loading={authLoading}/>;
+  if (!isAuthenticated)
+    return (
+      <LoginScreen login={login} authError={authError} loading={authLoading} />
+    );
 
-  if (authLoading || initLoading) return <LoadingView/>;
+  if (authLoading || initLoading) return <LoadingView />;
 
   if (!user.mainLang || !user.translationLang)
     return (
       <LanguageProvider>
-        <OnboardingScreen/>
+        <OnboardingScreen />
       </LanguageProvider>
     );
 
-  return <AppStack/>;
+  return <AppStack />;
 };
 
 export default Root;

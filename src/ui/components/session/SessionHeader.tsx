@@ -13,9 +13,15 @@ type SessionHeaderProps = {
   progress: number;
   onSessionExit: () => void;
   onSettingsPressed: () => void;
-}
+};
 
-const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progress, onSessionExit, onSettingsPressed }) => {
+const SessionHeader: FC<SessionHeaderProps> = ({
+  length,
+  cardsSetLength,
+  progress,
+  onSessionExit,
+  onSettingsPressed,
+}) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -23,10 +29,10 @@ const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progres
   return (
     <View style={styles.headerContainer}>
       <MaterialCommunityIcons
-        name={'exit-to-app'}
+        name={"exit-to-app"}
         size={21}
         color={colors.primary300}
-        style={[{ transform: [{ rotate: '180deg' }] }, styles.icon]}
+        style={[{ transform: [{ rotate: "180deg" }] }, styles.icon]}
         onPress={onSessionExit}
       />
       <CustomText weight={"SemiBold"} style={styles.progressText}>
@@ -34,16 +40,16 @@ const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progres
       </CustomText>
       <CustomText weight="SemiBold" style={styles.title}>
         {length === 1
-          ? t('shortSession')
+          ? t("shortSession")
           : length === 2
-            ? t('mediumSession')
-            : t('longSession')}
+            ? t("mediumSession")
+            : t("longSession")}
       </CustomText>
       <CustomText weight={"SemiBold"} style={styles.progressText}>
         {`${cardsSetLength - progress}`}
       </CustomText>
       <Ionicons
-        name={'settings-outline'}
+        name={"settings-outline"}
         size={21}
         color={colors.primary300}
         onPress={onSettingsPressed}
@@ -51,32 +57,33 @@ const SessionHeader: FC<SessionHeaderProps> = ({ length, cardsSetLength, progres
       />
     </View>
   );
-}
+};
 
-const getStyles = (colors: any) => StyleSheet.create({
-  title: {
-    fontSize: 15,
-    paddingHorizontal: 10,
-    color: colors.primary,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    marginTop: 15,
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  progressText: {
-    color: colors.primary600,
-    width: 30,
-    textAlign: 'center'
-  },
-  icon: {
-    paddingHorizontal: MARGIN_HORIZONTAL,
-    paddingVertical: 5,
-    height: '100%',
-  }
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    title: {
+      fontSize: 15,
+      paddingHorizontal: 10,
+      color: colors.primary,
+      textAlign: "center",
+      textTransform: "uppercase",
+    },
+    headerContainer: {
+      flexDirection: "row",
+      marginTop: 15,
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    progressText: {
+      color: colors.primary600,
+      width: 30,
+      textAlign: "center",
+    },
+    icon: {
+      paddingHorizontal: MARGIN_HORIZONTAL,
+      paddingVertical: 5,
+      height: "100%",
+    },
+  });
 
 export default SessionHeader;

@@ -1,19 +1,19 @@
 import { LanguageCode } from "../../constants/LanguageCode";
 
 export enum SessionModel {
-  HEURISTIC = 'heuristic',
-  ML = 'ml',
-  HYBRID = 'hybrid',
-  NONE = 'none',
+  HEURISTIC = "heuristic",
+  ML = "ml",
+  HYBRID = "hybrid",
+  NONE = "none",
 }
 
 export enum SessionModelVersion {
-  NONE = 'none',
-  H1 = 'h1',
-  ML1 = 'ml1',
-  ML2 = 'ml2',
-  O1 = 'o1',
-  R1 = 'r1',
+  NONE = "none",
+  H1 = "h1",
+  ML1 = "ml1",
+  ML2 = "ml2",
+  O1 = "o1",
+  R1 = "r1",
 }
 
 export type LanguageLevelRange = 1 | 2 | 3 | 4 | 5;
@@ -30,12 +30,12 @@ export type UserStats = {
   sessionCount: number;
   evaluationCount: number;
   averageScore: number;
-}
+};
 
 export enum UserProvider {
-  GOOGLE = 'google',
-  FACEBOOK = 'facebook',
-  APPLE = 'apple',
+  GOOGLE = "google",
+  FACEBOOK = "facebook",
+  APPLE = "apple",
 }
 
 export type UserUpdatePayload = {

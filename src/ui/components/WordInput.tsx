@@ -1,7 +1,20 @@
-import React, { FC, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  FC,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useTheme } from "@react-navigation/native";
 import SquareFlag from "./SquareFlag";
-import { FlatList, Pressable, StyleSheet, TextInputProps, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  TextInputProps,
+  View,
+} from "react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import CustomText from "./CustomText";
@@ -25,14 +38,22 @@ type WordInputProps = TextInputProps & {
 
 const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
   const {
-    id, word, active, onWordCommit, onWordChange, languageCode, suggestions, style,
-    onMicrophonePermissionsNotGranted, ...rest
+    id,
+    word,
+    active,
+    onWordCommit,
+    onWordChange,
+    languageCode,
+    suggestions,
+    style,
+    onMicrophonePermissionsNotGranted,
+    ...rest
   } = props;
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const [focused, setFocused] = useState(false);
 
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [internalWord, setInternalWord] = useState(word);
   const [currentSuggestions, setCurrentSuggestions] = useState<string[]>([]);
   const inputRef = useRef<any>(null);
@@ -48,19 +69,25 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
     onEnd: (result: string) => {
       onWordCommit?.(result);
     },
-    onPermissionDenied: onMicrophonePermissionsNotGranted
+    onPermissionDenied: onMicrophonePermissionsNotGranted,
   });
 
   useImperativeHandle(ref, () => ({
     focus: () => inputRef.current?.focus(),
-    clearWord: () => setInternalWord(''),
+    clearWord: () => setInternalWord(""),
     getWord: () => internalWord,
   }));
 
   useEffect(() => {
-    const filteredSuggestions = suggestions ? suggestions.filter((suggestion) =>
-      suggestion.toLowerCase().startsWith(internalWord.toLowerCase()) && suggestion.toLowerCase() !== internalWord.toLowerCase()
-    ).slice(0, 2) : [];
+    const filteredSuggestions = suggestions
+      ? suggestions
+          .filter(
+            (suggestion) =>
+              suggestion.toLowerCase().startsWith(internalWord.toLowerCase()) &&
+              suggestion.toLowerCase() !== internalWord.toLowerCase(),
+          )
+          .slice(0, 2)
+      : [];
 
     setCurrentSuggestions(filteredSuggestions);
   }, [internalWord, suggestions]);
@@ -97,19 +124,27 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
   return (
     <View>
       <View style={[styles.root, style]}>
-        <SquareFlag size={30} style={{ marginRight: 10 }} languageCode={languageCode}/>
+        <SquareFlag
+          size={30}
+          style={styles.flag}
+          languageCode={languageCode}
+        />
         <View style={styles.inputContainer}>
           <BottomSheetTextInput
             ref={inputRef}
             style={styles.input}
-            cursorColor={active ? colors.primary : 'transparent'}
-            autoCapitalize={'none'}
-            textContentType={'none'}
+            cursorColor={active ? colors.primary : "transparent"}
+            autoCapitalize={"none"}
+            textContentType={"none"}
             autoCorrect={true}
             multiline={true}
             value={internalWord}
             scrollEnabled={true}
-            placeholder={(currentSuggestions && !focused && currentSuggestions) ? currentSuggestions[0] : undefined}
+            placeholder={
+              currentSuggestions && !focused && currentSuggestions
+                ? currentSuggestions[0]
+                : undefined
+            }
             placeholderTextColor={colors.cardAccent}
             onFocus={setFocused}
             onChangeText={handleTextChange}
@@ -117,7 +152,7 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
             {...rest}
           />
           <Ionicons
-            name={'mic-sharp'}
+            name={"mic-sharp"}
             color={voice.recording ? colors.primary : colors.primary600}
             size={24}
             style={styles.icon}
@@ -129,7 +164,7 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
         <FlatList
           data={currentSuggestions}
           scrollEnabled={false}
-          keyboardShouldPersistTaps={'always'}
+          keyboardShouldPersistTaps={"always"}
           keyExtractor={(index) => index.toString()}
           renderItem={({ item }) => (
             <Pressable onPress={() => handleSuggestionPress(item)}>
@@ -145,45 +180,49 @@ const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
   );
 });
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    fontFamily: `Montserrat-Regular`,
-    color: colors.primary300,
-    paddingHorizontal: MARGIN_HORIZONTAL / 2,
-    backgroundColor: colors.background,
-    fontSize: 16,
-    minHeight: 42,
-    lineHeight: 30,
-  },
-  inputContainer: {
-    backgroundColor: colors.background,
-    flexDirection: 'row',
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: MARGIN_HORIZONTAL / 2
-  },
-  icon: {
-    padding: 6.5,
-  },
-  suggestionsList: {
-    marginTop: 10,
-    borderColor: colors.border,
-  },
-  suggestionItem: {
-    marginTop: 5,
-    backgroundColor: colors.background,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-  },
-  suggestionText: {
-    fontSize: 14,
-    color: colors.primary300,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    root: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    input: {
+      flex: 1,
+      fontFamily: `Montserrat-Regular`,
+      color: colors.primary300,
+      paddingHorizontal: MARGIN_HORIZONTAL / 2,
+      backgroundColor: colors.background,
+      fontSize: 16,
+      minHeight: 42,
+      lineHeight: 30,
+    },
+    inputContainer: {
+      backgroundColor: colors.background,
+      flexDirection: "row",
+      flex: 1,
+      alignItems: "center",
+      paddingHorizontal: MARGIN_HORIZONTAL / 2,
+    },
+    flag: {
+      marginRight: 10,
+    },
+    icon: {
+      padding: 6.5,
+    },
+    suggestionsList: {
+      marginTop: 10,
+      borderColor: colors.border,
+    },
+    suggestionItem: {
+      marginTop: 5,
+      backgroundColor: colors.background,
+      paddingVertical: 10,
+      paddingHorizontal: 10,
+    },
+    suggestionText: {
+      fontSize: 14,
+      color: colors.primary300,
+    },
+  });
 
 export default WordInput;

@@ -1,30 +1,41 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useState, } from "react";
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useWordsMLStatesContext } from "./WordsMLStatesContext";
 import { WordMLState, WordWithDetails } from "../types";
 import { useLanguage } from "./LanguageContext";
 import { useWords } from "./WordsContext";
 
 interface WordsWithDetailsContextProps {
-  loading: boolean;
   wordsWithDetails: WordWithDetails[];
   langWordsWithDetails: WordWithDetails[];
 }
 
-export const WordsWithDetailsContext = createContext<WordsWithDetailsContextProps>({
-  loading: false,
-  wordsWithDetails: [],
-  langWordsWithDetails: [],
-});
+export const WordsWithDetailsContext =
+  createContext<WordsWithDetailsContextProps>({
+    wordsWithDetails: [],
+    langWordsWithDetails: [],
+  });
 
-const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [wordsWithDetails, setWordsWithDetails] = useState<WordWithDetails[] | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [wordsWithDetails, setWordsWithDetails] = useState<
+    WordWithDetails[] | null
+  >(null);
   const { mainLang, translationLang } = useLanguage();
   const { wordsMLStates } = useWordsMLStatesContext();
   const { langWords } = useWords();
-  const langWordsWithDetails = wordsWithDetails?.filter((word) =>
-    word.mainLang === mainLang && word.translationLang === translationLang
-  ) || [];
+  const langWordsWithDetails =
+    wordsWithDetails?.filter(
+      (word) =>
+        word.mainLang === mainLang && word.translationLang === translationLang,
+    ) || [];
 
   const loadData = () => {
     const statesByWordId: Record<string, WordMLState> = {};
@@ -33,20 +44,21 @@ const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => 
     }
 
     setWordsWithDetails(
-      langWords
-        .map(w => {
-            const state = statesByWordId[w.id];
-            return { ...w, ...state, } satisfies WordWithDetails;
-          }
-        ));
-  }
+      langWords.map((w) => {
+        const state = statesByWordId[w.id];
+        return { ...w, ...state } satisfies WordWithDetails;
+      }),
+    );
+  };
 
   useEffect(() => {
     loadData();
   }, [wordsMLStates, langWords]);
 
   return (
-    <WordsWithDetailsContext.Provider value={{ loading, wordsWithDetails, langWordsWithDetails }}>
+    <WordsWithDetailsContext.Provider
+      value={{ wordsWithDetails, langWordsWithDetails }}
+    >
       {children}
     </WordsWithDetailsContext.Provider>
   );
@@ -55,7 +67,9 @@ const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => 
 export const useWordsWithDetails = (): WordsWithDetailsContextProps => {
   const context = useContext(WordsWithDetailsContext);
   if (!context) {
-    throw new Error("useWordsWithDetails must be used within a WordsWithDetailsProvider");
+    throw new Error(
+      "useWordsWithDetails must be used within a WordsWithDetailsProvider",
+    );
   }
   return context;
 };

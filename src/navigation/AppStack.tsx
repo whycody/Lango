@@ -1,5 +1,7 @@
 import FlashcardsScreen from "../ui/screens/FlashcardsScreen";
-import SessionScreen, { SessionScreenParams } from "../ui/screens/SessionScreen";
+import SessionScreen, {
+  SessionScreenParams,
+} from "../ui/screens/SessionScreen";
 import UserPreferencesProvider from "../store/UserPreferencesContext";
 import SessionsProvider from "../store/SessionsContext";
 import SuggestionsProvider from "../store/SuggestionsContext";
@@ -14,7 +16,7 @@ import TabsNavigator from "./TabsNavigator";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DarkTheme } from "../ui/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import SettingsScreen from "../ui/screens/SettingsScreen";
 import LanguageProvider from "../store/LanguageContext";
 
@@ -26,10 +28,10 @@ export type RootStackParamList = {
 };
 
 export enum ScreenName {
-  Tabs = 'Tabs',
-  Settings = 'Settings',
-  Session = 'Session',
-  Flashcards = 'Flashcards',
+  Tabs = "Tabs",
+  Settings = "Settings",
+  Session = "Session",
+  Flashcards = "Flashcards",
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,9 +39,10 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppStack = () => {
   const { colors } = DarkTheme;
   const insets = useSafeAreaInsets();
+  const styles = getStyles(insets.bottom);
 
   return (
-    <View style={{ marginBottom: insets.bottom, flex: 1 }}>
+    <View style={styles.root}>
       <LanguageProvider>
         <UserPreferencesProvider>
           <SessionsProvider>
@@ -56,15 +59,18 @@ const AppStack = () => {
                                 headerShown: false,
                                 navigationBarColor: colors.card,
                                 statusBarTranslucent: true,
-                              }}>
+                              }}
+                            >
                               <Stack.Screen
                                 name={ScreenName.Tabs}
                                 component={TabsNavigator}
                               />
-                              <Stack.Group screenOptions={{
-                                presentation: "modal",
-                                animationDuration: 100,
-                              }}>
+                              <Stack.Group
+                                screenOptions={{
+                                  presentation: "modal",
+                                  animationDuration: 100,
+                                }}
+                              >
                                 <Stack.Screen
                                   name={ScreenName.Settings}
                                   component={SettingsScreen}
@@ -74,11 +80,16 @@ const AppStack = () => {
                                 name={ScreenName.Session}
                                 component={SessionScreen}
                               />
-                              <Stack.Group screenOptions={{
-                                presentation: "modal",
-                                animationDuration: 100,
-                              }}>
-                                <Stack.Screen name={ScreenName.Flashcards} component={FlashcardsScreen}/>
+                              <Stack.Group
+                                screenOptions={{
+                                  presentation: "modal",
+                                  animationDuration: 100,
+                                }}
+                              >
+                                <Stack.Screen
+                                  name={ScreenName.Flashcards}
+                                  component={FlashcardsScreen}
+                                />
                               </Stack.Group>
                             </Stack.Navigator>
                           </BottomSheetModalProvider>
@@ -93,7 +104,15 @@ const AppStack = () => {
         </UserPreferencesProvider>
       </LanguageProvider>
     </View>
-  )
-}
+  );
+};
+
+const getStyles = (bottomInset: number) =>
+  StyleSheet.create({
+    root: {
+      marginBottom: bottomInset,
+      flex: 1,
+    },
+  });
 
 export default AppStack;

@@ -4,5 +4,5 @@ import { SessionModel, SessionModelVersion } from "./User";
 export type WordSet = {
   sessionWords: SessionWord[];
   model: SessionModel;
-  version: SessionModelVersion
-}
+  version: SessionModelVersion;
+};

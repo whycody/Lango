@@ -1,7 +1,18 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
-import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from "../api/apiClient";
-import uuid from 'react-native-uuid';
+import {
+  fetchUpdatedEvaluations,
+  syncEvaluationsOnServer,
+} from "../api/apiClient";
+import uuid from "react-native-uuid";
 import { Evaluation, EvaluationGrade } from "../types";
 import {
   findChangedItems,
@@ -9,14 +20,16 @@ import {
   getUnsyncedItems,
   mergeLocalAndServer,
   syncInBatches,
-  updateLocalItems
+  updateLocalItems,
 } from "../utils/sync";
 import { useAppInitializer } from "./AppInitializerContext";
 
 interface EvaluationsContextProps {
   evaluations: Evaluation[] | null;
   loading: boolean;
-  addEvaluations: (evaluationsData: { wordId: string, sessionId: string, grade: number }[]) => Evaluation[];
+  addEvaluations: (
+    evaluationsData: { wordId: string; sessionId: string; grade: number }[],
+  ) => Evaluation[];
   syncEvaluations: () => Promise<void>;
 }
 
@@ -30,11 +43,17 @@ export const EvaluationsContext = createContext<EvaluationsContextProps>({
 const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { initialLoad } = useAppInitializer();
   const { getAllEvaluations, saveEvaluations } = useEvaluationsRepository();
-  const [evaluations, setEvaluations] = useState<Evaluation[] | null>(initialLoad.evaluations);
+  const [evaluations, setEvaluations] = useState<Evaluation[] | null>(
+    initialLoad.evaluations,
+  );
   const [loading, setLoading] = useState(true);
   const syncing = useRef(false);
 
-  const createEvaluation = (wordId: string, sessionId: string, grade: EvaluationGrade): Evaluation => {
+  const createEvaluation = (
+    wordId: string,
+    sessionId: string,
+    grade: EvaluationGrade,
+  ): Evaluation => {
     const now = new Date().toISOString();
     return {
       id: uuid.v4(),
@@ -48,9 +67,15 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   };
 
-  const addEvaluations = (evaluationsData: { wordId: string, sessionId: string, grade: EvaluationGrade }[]) => {
+  const addEvaluations = (
+    evaluationsData: {
+      wordId: string;
+      sessionId: string;
+      grade: EvaluationGrade;
+    }[],
+  ) => {
     const newEvaluations = evaluationsData.map(({ wordId, sessionId, grade }) =>
-      createEvaluation(wordId, sessionId, grade)
+      createEvaluation(wordId, sessionId, grade),
     );
 
     const updatedEvaluations = [...newEvaluations, ...evaluations];
@@ -66,12 +91,24 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       syncing.current = true;
       const evaluationsList = inputEvaluations ?? (await getAllEvaluations());
       const unsyncedEvaluations = getUnsyncedItems<Evaluation>(evaluationsList);
-      const serverUpdates = await syncInBatches<Evaluation>(unsyncedEvaluations, syncEvaluationsOnServer);
+      const serverUpdates = await syncInBatches<Evaluation>(
+        unsyncedEvaluations,
+        syncEvaluationsOnServer,
+      );
 
-      const updatedEvaluations = updateLocalItems<Evaluation>(evaluationsList, serverUpdates);
+      const updatedEvaluations = updateLocalItems<Evaluation>(
+        evaluationsList,
+        serverUpdates,
+      );
       const serverEvaluations = await fetchNewEvaluations(updatedEvaluations);
-      const mergedEvaluations = mergeLocalAndServer<Evaluation>(updatedEvaluations, serverEvaluations);
-      const changedEvaluations = findChangedItems<Evaluation>(evaluationsList, mergedEvaluations);
+      const mergedEvaluations = mergeLocalAndServer<Evaluation>(
+        updatedEvaluations,
+        serverEvaluations,
+      );
+      const changedEvaluations = findChangedItems<Evaluation>(
+        evaluationsList,
+        mergedEvaluations,
+      );
 
       if (changedEvaluations.length > 0) {
         setEvaluations(mergedEvaluations);
@@ -84,7 +121,9 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const fetchNewEvaluations = async (updatedEvaluations: Evaluation[]): Promise<Evaluation[]> => {
+  const fetchNewEvaluations = async (
+    updatedEvaluations: Evaluation[],
+  ): Promise<Evaluation[]> => {
     const latestUpdatedAt = findLatestUpdatedAt<Evaluation>(updatedEvaluations);
     return await fetchUpdatedEvaluations(latestUpdatedAt);
   };
@@ -94,7 +133,7 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(true);
       await syncEvaluations();
     } catch (error) {
-      console.log('Error loading evaluations from storage:', error);
+      console.log("Error loading evaluations from storage:", error);
     } finally {
       setLoading(false);
     }
@@ -105,7 +144,9 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   return (
-    <EvaluationsContext.Provider value={{ evaluations, loading, addEvaluations, syncEvaluations }}>
+    <EvaluationsContext.Provider
+      value={{ evaluations, loading, addEvaluations, syncEvaluations }}
+    >
       {children}
     </EvaluationsContext.Provider>
   );
@@ -114,7 +155,9 @@ const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 export const useEvaluations = (): EvaluationsContextProps => {
   const context = useContext(EvaluationsContext);
   if (!context) {
-    throw new Error("useEvaluations must be used within an EvaluationsProvider");
+    throw new Error(
+      "useEvaluations must be used within an EvaluationsProvider",
+    );
   }
   return context;
 };

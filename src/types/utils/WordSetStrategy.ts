@@ -13,5 +13,5 @@ export type WordSetStrategy = (
   evaluations: Evaluation[],
   wordsMLStates: WordMLState[],
   wordsHeuristicStates: WordHeuristicState[],
-  lastSessionModel?: SessionModel
+  lastSessionModel?: SessionModel,
 ) => WordSet;

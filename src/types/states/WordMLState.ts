@@ -10,4 +10,4 @@ export type WordMLState = {
   gradesTrend: number;
   predictedGrade: EvaluationGrade;
   gradeThreeProb: number;
-}
+};

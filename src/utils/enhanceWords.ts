@@ -6,11 +6,14 @@ const addTag = (tags: WordTag[], condition: boolean, tag: WordTag) => {
   if (condition) tags.push(tag);
 };
 
-export const enhanceWords = (sessionWords: SessionWord[], mlStates: WordMLState[]): SessionWord[] => {
-  const mlMap = new Map(mlStates.map(s => [s.wordId, s]));
+export const enhanceWords = (
+  sessionWords: SessionWord[],
+  mlStates: WordMLState[],
+): SessionWord[] => {
+  const mlMap = new Map(mlStates.map((s) => [s.wordId, s]));
   const now = Date.now();
 
-  return sessionWords.map(word => {
+  return sessionWords.map((word) => {
     const state = mlMap.get(word.id);
     const tags: WordTag[] = [];
 

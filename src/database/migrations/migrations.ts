@@ -7,7 +7,7 @@ export const runMigrations = async (userId: string) => {
   const db = await getDb(userId);
 
   let version = await new Promise<number>((resolve, reject) => {
-    db.transaction(tx => {
+    db.transaction((tx) => {
       tx.executeSql(
         "PRAGMA user_version",
         [],
@@ -15,7 +15,7 @@ export const runMigrations = async (userId: string) => {
           const userVersion = result.rows.item(0).user_version;
           resolve(typeof userVersion === "number" ? userVersion : 0);
         },
-        (_, err) => reject(err)
+        (_, err) => reject(err),
       );
     });
   });
@@ -36,8 +36,13 @@ export const runMigrations = async (userId: string) => {
   }
 
   await new Promise<void>((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(`PRAGMA user_version = ${version}`, [], () => resolve(), (_, err) => reject(err));
+    db.transaction((tx) => {
+      tx.executeSql(
+        `PRAGMA user_version = ${version}`,
+        [],
+        () => resolve(),
+        (_, err) => reject(err),
+      );
     });
   });
 };

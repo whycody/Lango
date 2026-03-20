@@ -12,18 +12,18 @@ export type Word = SyncMetadata & {
   addDate: string;
   active: boolean;
   removed: boolean;
-}
+};
 
 export type SessionWord = {
   id: string;
-  type: 'suggestion' | 'word';
+  type: "suggestion" | "word";
   text: string;
   translation: string;
   mainLang: LanguageCode;
   translationLang: LanguageCode;
   tags: WordTag[];
   addDate: string;
-}
+};
 
 export type WordTag =
   | "streak"

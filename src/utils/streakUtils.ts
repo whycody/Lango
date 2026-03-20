@@ -1,9 +1,9 @@
 import { toLocalDateString } from "./dateUtil";
 
 export type Streak = {
-  numberOfDays: number
-  active: boolean
-}
+  numberOfDays: number;
+  active: boolean;
+};
 
 export const getCurrentStreak = (studyDaysList: string[]): Streak => {
   const studySet = new Set(studyDaysList);

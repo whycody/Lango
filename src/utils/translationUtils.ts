@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from "axios";
 
 interface TranslationResponse {
   translations: {
@@ -9,11 +9,16 @@ interface TranslationResponse {
 
 const key = process.env.AZURE_TRANSLATOR_API_KEY;
 const region = process.env.AZURE_TRANSLATOR_REGION;
-const endpoint = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0'
+const endpoint =
+  "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0";
 
 class TranslationUtils {
-
-  static async translateText(text: string, from: string, to: string, abortController: AbortController): Promise<string> {
+  static async translateText(
+    text: string,
+    from: string,
+    to: string,
+    abortController: AbortController,
+  ): Promise<string> {
     const requestBody = [
       {
         text: text,
@@ -26,25 +31,25 @@ class TranslationUtils {
         requestBody,
         {
           headers: {
-            'Ocp-Apim-Subscription-Key': key,
-            'Content-Type': 'application/json',
-            'Ocp-Apim-Subscription-Region': region,
+            "Ocp-Apim-Subscription-Key": key,
+            "Content-Type": "application/json",
+            "Ocp-Apim-Subscription-Region": region,
           },
           params: {
             from: from,
             to: to,
           },
           signal: abortController.signal,
-        }
+        },
       );
       return response.data[0].translations[0].text;
     } catch (error) {
       if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
+        console.log("Request canceled", error.message);
       } else {
-        console.error('Error translating text:', error);
+        console.error("Error translating text:", error);
       }
-      throw new Error('Translation failed');
+      throw new Error("Translation failed");
     }
   }
 }

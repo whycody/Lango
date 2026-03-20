@@ -1,5 +1,9 @@
 import React, { forwardRef, ReactNode, useCallback } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
@@ -20,12 +24,15 @@ type GenericBottomSheetProps = {
   children?: ReactNode;
 };
 
-export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomSheetProps>(
+export const GenericBottomSheet = forwardRef<
+  BottomSheetModal,
+  GenericBottomSheetProps
+>(
   (
     {
       title,
       description,
-      stackBehavior = 'push',
+      stackBehavior = "push",
       primaryActionLabel,
       onPrimaryButtonPress,
       primaryButtonEnabled,
@@ -33,9 +40,9 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
       onSecondaryButtonPress,
       onChangeIndex,
       allowDismiss = true,
-      children
+      children,
     },
-    ref
+    ref,
   ) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
@@ -45,11 +52,11 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
         <BottomSheetBackdrop
           appearsOnIndex={0}
           disappearsOnIndex={-1}
-          pressBehavior={allowDismiss ? 'close' : 'none'}
+          pressBehavior={allowDismiss ? "close" : "none"}
           {...props}
         />
       ),
-      []
+      [],
     );
 
     return (
@@ -61,7 +68,10 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
         onChange={(index: number) => onChangeIndex?.(index)}
         backdropComponent={renderBackdrop}
         backgroundStyle={{ backgroundColor: colors.card }}
-        handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
+        handleIndicatorStyle={{
+          backgroundColor: colors.primary,
+          borderRadius: 0,
+        }}
       >
         <BottomSheetScrollView>
           {title && (
@@ -71,9 +81,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
           )}
 
           {description && (
-            <CustomText style={styles.subtitle}>
-              {description}
-            </CustomText>
+            <CustomText style={styles.subtitle}>{description}</CustomText>
           )}
 
           {children}
@@ -98,38 +106,39 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
             </CustomText>
           )}
 
-          <View style={styles.spacer}/>
+          <View style={styles.spacer} />
         </BottomSheetScrollView>
       </BottomSheetModal>
     );
-  }
+  },
 );
 
-const getStyles = (colors: any) => StyleSheet.create({
-  title: {
-    color: colors.primary300,
-    fontSize: 18,
-    marginTop: 12,
-    paddingHorizontal: MARGIN_HORIZONTAL
-  },
-  subtitle: {
-    color: colors.primary600,
-    fontSize: 15,
-    marginTop: MARGIN_VERTICAL / 2,
-    paddingHorizontal: MARGIN_HORIZONTAL
-  },
-  actionText: {
-    color: colors.primary,
-    fontSize: 13,
-    textAlign: "center",
-    paddingTop: MARGIN_VERTICAL,
-    paddingHorizontal: MARGIN_HORIZONTAL
-  },
-  button: {
-    marginTop: MARGIN_VERTICAL,
-    marginHorizontal: MARGIN_HORIZONTAL
-  },
-  spacer: {
-    height: MARGIN_VERTICAL
-  }
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    title: {
+      color: colors.primary300,
+      fontSize: 18,
+      marginTop: 12,
+      paddingHorizontal: MARGIN_HORIZONTAL,
+    },
+    subtitle: {
+      color: colors.primary600,
+      fontSize: 15,
+      marginTop: MARGIN_VERTICAL / 2,
+      paddingHorizontal: MARGIN_HORIZONTAL,
+    },
+    actionText: {
+      color: colors.primary,
+      fontSize: 13,
+      textAlign: "center",
+      paddingTop: MARGIN_VERTICAL,
+      paddingHorizontal: MARGIN_HORIZONTAL,
+    },
+    button: {
+      marginTop: MARGIN_VERTICAL,
+      marginHorizontal: MARGIN_HORIZONTAL,
+    },
+    spacer: {
+      height: MARGIN_VERTICAL,
+    },
+  });

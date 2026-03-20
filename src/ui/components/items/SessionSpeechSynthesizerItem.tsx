@@ -7,24 +7,28 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface SessionSpeechSynthesizerItemProps {
-  synthesizerOn: boolean,
+  synthesizerOn: boolean;
   selected: boolean;
-  onPress?: () => void,
+  onPress?: () => void;
   style?: any;
 }
 
-const SessionSpeechSynthesizerItem: FC<SessionSpeechSynthesizerItemProps> = ({ synthesizerOn, selected, onPress, style }) => {
+const SessionSpeechSynthesizerItem: FC<SessionSpeechSynthesizerItemProps> = ({
+  synthesizerOn,
+  selected,
+  onPress,
+  style,
+}) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, selected);
   const { t } = useTranslation();
 
-  const iconName = synthesizerOn ? 'volume-high-outline' : 'volume-mute-outline';
+  const iconName = synthesizerOn
+    ? "volume-high-outline"
+    : "volume-mute-outline";
 
   return (
-    <Pressable
-      style={{ flex: 1 }}
-      onPress={onPress}
-    >
+    <Pressable style={styles.pressable} onPress={onPress}>
       <LinearGradient
         colors={[colors.cardAccent600, colors.background]}
         start={{ x: 0, y: 0 }}
@@ -38,36 +42,40 @@ const SessionSpeechSynthesizerItem: FC<SessionSpeechSynthesizerItemProps> = ({ s
           style={styles.icon}
         />
         <CustomText weight={"Bold"} style={styles.title}>
-          {t(synthesizerOn ? 'turned_on' : 'turned_off')}
+          {t(synthesizerOn ? "turned_on" : "turned_off")}
         </CustomText>
       </LinearGradient>
     </Pressable>
   );
-}
+};
 
-const getStyles = (colors: any, selected: boolean) => StyleSheet.create({
-  root: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: selected ? 1 : 0.4,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  icon: {
-    paddingRight: 5,
-  },
-  squaresContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  title: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: colors.primary300
-  },
-});
+const getStyles = (colors: any, selected: boolean) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      opacity: selected ? 1 : 0.4,
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+    },
+    pressable: {
+      flex: 1,
+    },
+    icon: {
+      paddingRight: 5,
+    },
+    squaresContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      flex: 1,
+    },
+    title: {
+      fontSize: 12,
+      textAlign: "center",
+      color: colors.primary300,
+    },
+  });
 
 export default SessionSpeechSynthesizerItem;

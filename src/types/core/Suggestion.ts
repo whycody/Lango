@@ -1,7 +1,9 @@
 import { SyncMetadata } from "../sync/SyncMetadata";
 import { LanguageCode } from "../../constants/LanguageCode";
 
-export type Suggestion = SyncMetadata & {
+export type Suggestion = Omit<SyncMetadata, "updatedAt"> & {
+  updatedAt: string;
+} & {
   id: string;
   userId: string;
   word: string;
@@ -11,4 +13,4 @@ export type Suggestion = SyncMetadata & {
   displayCount: number;
   skipped: boolean;
   added: boolean;
-}
+};

@@ -3,20 +3,38 @@ import { useWords } from "../store/WordsContext";
 import { useWordsMLStatesContext } from "../store/WordsMLStatesContext";
 import { useAuth } from "../api/auth/AuthProvider";
 import { useSessions } from "../store/SessionsContext";
-import { Session, SessionMode, SessionModel, Suggestion, Word, WordSet, WordSetStrategy, } from "../types";
+import {
+  Session,
+  SessionMode,
+  SessionModel,
+  Suggestion,
+  Word,
+  WordSet,
+  WordSetStrategy,
+} from "../types";
 import { strategies } from "../database/strategies";
 import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
 import { useEvaluations } from "../store/EvaluationsContext";
 import { shuffle } from "../utils/shuffle";
 import { useSuggestions } from "../store/SuggestionsContext";
-import { mapSuggestionsToSessionWords, mapWordsToSessionWords, } from "../utils/sessionWordMapper";
+import {
+  mapSuggestionsToSessionWords,
+  mapWordsToSessionWords,
+} from "../utils/sessionWordMapper";
 import { enhanceWords } from "../utils/enhanceWords";
 
-const getLastSessionModel = (sessions?: Session[]): SessionModel => sessions
-  ?.filter((s: Session) => s.mode === SessionMode.STUDY)
-  .sort((a: Session, b: Session) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]?.sessionModel;
+const getLastSessionModel = (sessions?: Session[]): SessionModel | undefined =>
+  sessions
+    ?.filter((s: Session) => s.mode === SessionMode.STUDY)
+    .sort(
+      (a: Session, b: Session) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime(),
+    )[0]?.sessionModel;
 
-const resolveStrategy = (mode: SessionMode, model: SessionModel): WordSetStrategy => {
+const resolveStrategy = (
+  mode: SessionMode,
+  model: SessionModel,
+): WordSetStrategy => {
   if (mode === SessionMode.OLDEST) return strategies.OLDEST;
   if (mode === SessionMode.RANDOM) return strategies.RANDOM;
 
@@ -31,11 +49,15 @@ const resolveStrategy = (mode: SessionMode, model: SessionModel): WordSetStrateg
   }
 };
 
-const buildFallbackSet = (size: number, words: Word[], suggestions: Suggestion[]) =>
+const buildFallbackSet = (
+  size: number,
+  words: Word[],
+  suggestions: Suggestion[],
+) =>
   shuffle([
     ...mapWordsToSessionWords(words),
     ...mapSuggestionsToSessionWords(
-      shuffle(suggestions).slice(0, size - words.length)
+      shuffle(suggestions).slice(0, size - words.length),
     ),
   ]);
 
@@ -61,12 +83,12 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
       evaluations,
       langWordsMLStates,
       langWordsHeuristicStates,
-      lastSessionModel
+      lastSessionModel,
     );
 
     if (langWords.length < size) {
       const fallbackSet = buildFallbackSet(size, langWords, langSuggestions);
-      const enhanced = enhanceWords(fallbackSet, langWordsMLStates)
+      const enhanced = enhanceWords(fallbackSet, langWordsMLStates);
       return {
         sessionWords: enhanced,
         model: strategy.model,
@@ -74,7 +96,10 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
       };
     }
 
-    const enhanced = enhanceWords(shuffle(strategy.sessionWords), langWordsMLStates);
+    const enhanced = enhanceWords(
+      shuffle(strategy.sessionWords),
+      langWordsMLStates,
+    );
 
     return {
       sessionWords: enhanced,
@@ -90,6 +115,6 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
     langWordsHeuristicStates,
     sessions,
     size,
-    mode
+    mode,
   ]);
 };

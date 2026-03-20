@@ -1,8 +1,17 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
 import { useWordsRepository } from "../hooks/repo/useWordsRepository";
-import uuid from 'react-native-uuid';
-import { Word } from '../types';
+import uuid from "react-native-uuid";
+import { Word } from "../types";
 import { useLanguage } from "./LanguageContext";
 import {
   findChangedItems,
@@ -10,7 +19,7 @@ import {
   getUnsyncedItems,
   mergeLocalAndServer,
   syncInBatches,
-  updateLocalItems
+  updateLocalItems,
 } from "../utils/sync";
 import { useAppInitializer } from "./AppInitializerContext";
 
@@ -18,17 +27,24 @@ interface WordsContextProps {
   words: Word[];
   loading: boolean;
   langWords: Word[];
-  addWord: (text: string, translation: string, source?: WordSource) => Word | null;
-  addWords: (wordsToAdd: { text: string, translation: string }[], source: WordSource) => Word[];
+  addWord: (
+    text: string,
+    translation: string,
+    source?: WordSource,
+  ) => Word | null;
+  addWords: (
+    wordsToAdd: { text: string; translation: string }[],
+    source: WordSource,
+  ) => Word[];
   getWord: (id: string) => Word | undefined;
-  editWord: (updatedWord: Partial<Word>) => void;
+  editWord: (updatedWord: Partial<Word> & { id: string }) => void;
   removeWord: (id: string) => void;
   syncWords: () => Promise<void>;
 }
 
 export enum WordSource {
-  USER = 'user',
-  LANGO = 'lango',
+  USER = "user",
+  LANGO = "lango",
 }
 
 const WordsContext = createContext<WordsContextProps>({
@@ -36,7 +52,7 @@ const WordsContext = createContext<WordsContextProps>({
   loading: true,
   langWords: [],
   addWord: () => null,
-  addWords: () => null,
+  addWords: () => [],
   getWord: () => undefined,
   editWord: () => [],
   removeWord: () => [],
@@ -51,11 +67,22 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { saveWords, getAllWords, updateWord } = useWordsRepository();
   const syncing = useRef(false);
 
-  const langWords = useMemo(() => words.filter((word) =>
-    !word.removed && word.mainLang == mainLang && word.translationLang == translationLang
-  ), [words, mainLang, translationLang]);
+  const langWords = useMemo(
+    () =>
+      words.filter(
+        (word) =>
+          !word.removed &&
+          word.mainLang == mainLang &&
+          word.translationLang == translationLang,
+      ),
+    [words, mainLang, translationLang],
+  );
 
-  const createWord = (text: string, translation: string, source: WordSource): Word => ({
+  const createWord = (
+    text: string,
+    translation: string,
+    source: WordSource,
+  ): Word => ({
     id: uuid.v4(),
     text,
     translation,
@@ -70,15 +97,22 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     locallyUpdatedAt: new Date().toISOString(),
   });
 
-  const findExistingWord = (text: string, translation: string): Word | undefined =>
-    words.find(w => w.text === text && w.translation === translation);
+  const findExistingWord = (
+    text: string,
+    translation: string,
+  ): Word | undefined =>
+    words.find((w) => w.text === text && w.translation === translation);
 
   const reviveWord = (word: Word): Word => {
     editWord({ id: word.id, removed: false });
     return { ...word, removed: false };
   };
 
-  const addWord = (text: string, translation: string, source: WordSource): Word | null => {
+  const addWord = (
+    text: string,
+    translation: string,
+    source: WordSource,
+  ): Word | null => {
     const existing = findExistingWord(text, translation);
 
     if (existing) return existing.removed ? reviveWord(existing) : null;
@@ -93,8 +127,12 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return newWord;
   };
 
-  const addWords = (wordsToAdd: { text: string, translation: string }[], source: WordSource): Word[] => {
-    const map = new Map(words.map(w => [`${w.text}__${w.translation}`, w]));
+  const addWords = (
+    wordsToAdd: { text: string; translation: string }[],
+    source: WordSource,
+  ): Word[] => {
+    const map = new Map(words.map((w) => [`${w.text}__${w.translation}`, w]));
+    const now = new Date().toISOString();
 
     const result: Word[] = [];
 
@@ -103,7 +141,16 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const existing = map.get(key);
 
       if (existing) {
-        result.push(reviveWord(existing));
+        result.push(
+          existing.removed
+            ? {
+                ...existing,
+                synced: false,
+                locallyUpdatedAt: now,
+                removed: false,
+              }
+            : existing,
+        );
         continue;
       }
 
@@ -114,7 +161,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const updatedWords = [
       ...result,
-      ...words.filter(w => !result.some(r => r.id === w.id)),
+      ...words.filter((w) => !result.some((r) => r.id === w.id)),
     ];
 
     setWords(updatedWords);
@@ -122,25 +169,26 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     saveWords(result);
 
     return result;
-  }
+  };
 
-  const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
+  const getWord = (id: string): Word | undefined =>
+    words.find((word) => word.id === id);
 
   const editWord = (updatedWord: Partial<Word> & { id: string }) => {
     const updatedAt = new Date().toISOString();
 
-    const updatedWords = words.map(word =>
+    const updatedWords = words.map((word) =>
       word.id === updatedWord.id
         ? {
-          ...word,
-          ...updatedWord,
-          synced: false,
-          locallyUpdatedAt: updatedAt,
-        }
-        : word
+            ...word,
+            ...updatedWord,
+            synced: false,
+            locallyUpdatedAt: updatedAt,
+          }
+        : word,
     );
 
-    const changed = updatedWords.find(w => w.id === updatedWord.id)!;
+    const changed = updatedWords.find((w) => w.id === updatedWord.id)!;
 
     setWords(updatedWords);
     syncWords(updatedWords);
@@ -148,14 +196,19 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const removeWord = (id: string) => {
-    const updatedWords = words.map(word => {
+    const updatedWords = words.map((word) => {
       if (word.id === id) {
-        return { ...word, synced: false, removed: true, locallyUpdatedAt: new Date().toISOString() };
+        return {
+          ...word,
+          synced: false,
+          removed: true,
+          locallyUpdatedAt: new Date().toISOString(),
+        };
       }
       return word;
     });
 
-    updateWord(updatedWords.find(word => word.id === id)!);
+    updateWord(updatedWords.find((word) => word.id === id)!);
     setWords(updatedWords);
     syncWords(updatedWords);
   };
@@ -166,7 +219,10 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       syncing.current = true;
       const wordsList = inputWords ?? (await getAllWords());
       const unsyncedWords = getUnsyncedItems<Word>(wordsList);
-      const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
+      const serverUpdates = await syncInBatches<Word>(
+        unsyncedWords,
+        syncWordsOnServer,
+      );
 
       const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
       const serverWords = await fetchNewWords(updatedWords);
@@ -194,11 +250,11 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(true);
       await syncWords();
     } catch (error) {
-      console.log('Error loading words from storage:', error);
+      console.log("Error loading words from storage:", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     loadData();

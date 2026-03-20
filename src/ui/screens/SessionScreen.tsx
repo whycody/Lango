@@ -145,7 +145,7 @@ const SessionScreen = ({ navigation }) => {
 
   const incrementCurrentIndex = useCallback(() => {
     if (currentIndex < cards.length) setCurrentIndex((prev) => prev + 1);
-  }, []);
+  }, [currentIndex, cards.length]);
 
   const handleEditPress = useCallback((id: string) => {
     setEditId(id);
@@ -181,14 +181,19 @@ const SessionScreen = ({ navigation }) => {
     });
   };
 
-  const speakWord = useCallback((word: SessionWord, frontSide: boolean) => {
-    const shouldSpeakTranslation = flipped ? !frontSide : frontSide;
-    Speech.stop().then(() => {
-      Speech.speak(shouldSpeakTranslation ? word?.translation : word.text, {
-        language: shouldSpeakTranslation ? word.translationLang : word.mainLang,
+  const speakWord = useCallback(
+    (word: SessionWord, frontSide: boolean) => {
+      const shouldSpeakTranslation = flipped ? !frontSide : frontSide;
+      Speech.stop().then(() => {
+        Speech.speak(shouldSpeakTranslation ? word?.translation : word.text, {
+          language: shouldSpeakTranslation
+            ? word.translationLang
+            : word.mainLang,
+        });
       });
-    });
-  }, []);
+    },
+    [flipped],
+  );
 
   const renderCard = (word: SessionWord, wordIndex: number) => {
     const isActive = currentIndex === wordIndex;
@@ -406,14 +411,15 @@ const SessionScreen = ({ navigation }) => {
     sessionId: string,
     map: Map<string, Word>,
   ) =>
-    updates.map((update) => ({
-      wordId:
+    updates.map((update) => {
+      const addedWord = map.get(update.flashcardId);
+      const wordId =
         update.type === "word"
           ? update.flashcardId
-          : map.get(update.flashcardId)!.id,
-      sessionId,
-      grade: update.grade,
-    }));
+          : (addedWord?.id ?? update.flashcardId);
+
+      return { wordId, sessionId, grade: update.grade };
+    });
 
   const saveProgress = useCallback(
     (finished: boolean) => {

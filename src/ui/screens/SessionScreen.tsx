@@ -16,15 +16,17 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useHaptics } from "../../hooks/useHaptics";
 import { useWordSet } from "../../hooks/useWordSet";
 import { ScreenName } from "../../navigation/AppStack";
-import { useEvaluations } from "../../store/EvaluationsContext";
-import { useLanguage } from "../../store/LanguageContext";
-import { useSessions } from "../../store/SessionsContext";
-import { useSuggestions } from "../../store/SuggestionsContext";
 import {
   FlashcardSide,
   SessionLength,
+  WordSource,
+  useEvaluations,
+  useLanguage,
+  useSessions,
+  useSuggestions,
   useUserPreferences,
-} from "../../store/UserPreferencesContext";
+  useWords,
+} from "../../store";
 import { EvaluationGrade, SessionMode, SessionWord, Word } from "../../types";
 import { WordUpdate } from "../../types/utils/WordUpdate";
 import { trackEvent } from "../../utils/analytics";
@@ -39,7 +41,6 @@ import {
   LeaveSessionBottomSheet,
   SessionSettingsBottomSheet,
 } from "../sheets";
-import { useWords, WordSource } from "../../store/WordsContext";
 
 export type SessionScreenParams = {
   length: SessionLength;

@@ -21,15 +21,15 @@ import { SessionMode } from "../../../types";
 import {
   FlashcardSide,
   SessionLength,
-} from "../../../store/UserPreferencesContext";
-import { useStatistics } from "../../../store/StatisticsContext";
-import { useLanguage } from "../../../store/LanguageContext";
-import { useWordsHeuristicStates } from "../../../store/WordsHeuristicStatesContext";
-import { useWords } from "../../../store/WordsContext";
+  useLanguage,
+  useStatistics,
+  useSuggestions,
+  useWords,
+  useWordsHeuristicStates,
+} from "../../../store";
 import { trackEvent } from "../../../utils/analytics";
 import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
 import { LanguageBottomSheet, StartSessionBottomSheet } from "../../sheets";
-import { useSuggestions } from "../../../store/SuggestionsContext";
 
 type HeaderCardProps = {
   navigateToSessionScreen(

@@ -19,7 +19,9 @@ export const StatisticsContext = createContext<StatisticsContextProps>({
   studyDaysList: [],
 });
 
-const StatisticsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const StatisticsProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const { sessions } = useSessions();
   const { user } = useAuth();
   const [daysList, setDaysList] = useState<string[]>(
@@ -66,5 +68,3 @@ export const useStatistics = () => {
 
   return context;
 };
-
-export default StatisticsProvider;

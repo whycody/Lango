@@ -11,7 +11,12 @@ import CustomText from "../components/CustomText";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import StatisticItem from "../components/items/StatisticItem";
-import { useWords, WordSource } from "../../store/WordsContext";
+import {
+  useWords,
+  WordSource,
+  useWordsWithDetails,
+  useUserPreferences,
+} from "../../store";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import React, {
@@ -27,11 +32,9 @@ import { FlashList } from "@shopify/flash-list";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import ListFilter from "../components/ListFilter";
 import { WordWithDetails } from "../../types";
-import { useWordsWithDetails } from "../../store/WordsWithDetailsContext";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import EmptyList from "../components/EmptyList";
 import { ProgressBar } from "react-native-paper";
-import { useUserPreferences } from "../../store/UserPreferencesContext";
 import {
   getSortingMethod,
   getSortingMethodLabel,

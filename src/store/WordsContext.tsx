@@ -286,5 +286,3 @@ export const useWords = (): WordsContextProps => {
   }
   return context;
 };
-
-export default WordsProvider;

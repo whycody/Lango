@@ -4,23 +4,24 @@ import {
   SessionScreen,
 } from "../ui/screens/";
 import { SessionScreenParams } from "../ui/screens/SessionScreen";
-import UserPreferencesProvider from "../store/UserPreferencesContext";
-import SessionsProvider from "../store/SessionsContext";
-import SuggestionsProvider from "../store/SuggestionsContext";
-import StatisticsProvider from "../store/StatisticsContext";
-import WordsProvider from "../store/WordsContext";
-import EvaluationsProvider from "../store/EvaluationsContext";
-import WordsMLStatesProvider from "../store/WordsMLStatesContext";
-import { WordsHeuristicProvider } from "../store/WordsHeuristicStatesContext";
-import WordsWithDetailsProvider from "../store/WordsWithDetailsContext";
+import {
+  EvaluationsProvider,
+  LanguageProvider,
+  SessionsProvider,
+  StatisticsProvider,
+  SuggestionsProvider,
+  UserPreferencesProvider,
+  WordsHeuristicProvider,
+  WordsMLStatesProvider,
+  WordsProvider,
+  WordsWithDetailsProvider,
+} from "../store";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import TabsNavigator from "./TabsNavigator";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DarkTheme } from "../ui/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, View } from "react-native";
-import LanguageProvider from "../store/LanguageContext";
-
 export type RootStackParamList = {
   Tabs: undefined;
   Settings: undefined;

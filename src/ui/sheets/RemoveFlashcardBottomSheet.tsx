@@ -13,7 +13,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import FlashcardListItem from "../components/items/FlashcardListItem";
-import { useWordsWithDetails } from "../../store/WordsWithDetailsContext";
+import { useWordsWithDetails } from "../../store";
 
 type AcceptationBottomSheetProps = {
   flashcardId: string;

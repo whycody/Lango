@@ -40,7 +40,9 @@ export const EvaluationsContext = createContext<EvaluationsContextProps>({
   syncEvaluations: () => Promise.resolve(),
 });
 
-const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const EvaluationsProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const { initialLoad } = useAppInitializer();
   const { getAllEvaluations, saveEvaluations } = useEvaluationsRepository();
   const [evaluations, setEvaluations] = useState<Evaluation[] | null>(
@@ -161,5 +163,3 @@ export const useEvaluations = (): EvaluationsContextProps => {
   }
   return context;
 };
-
-export default EvaluationsProvider;

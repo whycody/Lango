@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { MARGIN_VERTICAL } from "../../../constants/margins";
 import { LinearGradient } from "expo-linear-gradient";
-import { SessionLength } from "../../../store/UserPreferencesContext";
+import { SessionLength } from "../../../store";
 
 interface SessionLengthItemProps {
   length: SessionLength;

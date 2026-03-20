@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import * as Haptics from "expo-haptics";
-import { useUserPreferences } from "../store/UserPreferencesContext";
+import { useUserPreferences } from "../store";
 
 export const useHaptics = () => {
   const { vibrationsEnabled } = useUserPreferences();

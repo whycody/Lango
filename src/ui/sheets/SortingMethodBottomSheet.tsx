@@ -10,10 +10,7 @@ import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTranslation } from "react-i18next";
 import Header from "../components/Header";
 import { FlashList } from "@shopify/flash-list";
-import {
-  FlashcardSortingMethod,
-  useUserPreferences,
-} from "../../store/UserPreferencesContext";
+import { FlashcardSortingMethod, useUserPreferences } from "../../store";
 import { getSortingMethodLabel } from "../../utils/sortingUtil";
 import SortingMethodItem from "../components/items/SortingMethodItem";
 

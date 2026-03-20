@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import WelcomeScreen from "./WelcomeScreen";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 import { updateUserLanguages } from "../../api/apiClient";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";

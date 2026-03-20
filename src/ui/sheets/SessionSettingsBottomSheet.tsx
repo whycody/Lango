@@ -18,14 +18,11 @@ import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
-import {
-  FlashcardSide,
-  useUserPreferences,
-} from "../../store/UserPreferencesContext";
+import { FlashcardSide, useUserPreferences } from "../../store";
 import { useTranslation } from "react-i18next";
 import SessionSpeechSynthesizerItem from "../components/items/SessionSpeechSynthesizerItem";
 import { useHaptics } from "../../hooks/useHaptics";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 
 interface StartSessionBottomSheetProps {
   onSettingsSave: () => void;

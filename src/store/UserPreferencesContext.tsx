@@ -82,7 +82,9 @@ const USER_HAS_EVER_HIT_FLASHCARD = "userHasEverHitFlashcard";
 const USER_HAS_SKIPPED_SUGGESTION = "userHasEverSkippedSuggestion";
 const NOTIFICATION_PERMISSION_STATUS = "lastUserNotificationPermissionStatus";
 
-const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const { storage } = useUserStorage();
   const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(
     FLASHCARD_SIDE_KEY,
@@ -170,5 +172,3 @@ export const useUserPreferences = () => {
   }
   return context;
 };
-
-export default UserPreferencesProvider;

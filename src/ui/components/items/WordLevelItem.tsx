@@ -4,7 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
-import { SessionLength } from "../../../store/UserPreferencesContext";
+import { SessionLength } from "../../../store";
 import { LinearGradient } from "expo-linear-gradient";
 
 const RECT_HEIGHT = 13;

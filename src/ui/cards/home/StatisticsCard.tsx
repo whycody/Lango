@@ -4,10 +4,13 @@ import React, { FC, useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useTranslation } from "react-i18next";
 import StatisticItem from "../../components/items/StatisticItem";
-import { useWords, WordSource } from "../../../store/WordsContext";
-import { useSessions } from "../../../store/SessionsContext";
+import {
+  useWords,
+  WordSource,
+  useSessions,
+  useStatistics,
+} from "../../../store";
 import { Word } from "../../../types";
-import { useStatistics } from "../../../store/StatisticsContext";
 
 type StatisticsCardProps = {
   style?: StyleProp<ViewStyle>;

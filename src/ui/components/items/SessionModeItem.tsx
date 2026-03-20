@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { FlashcardSide } from "../../../store/UserPreferencesContext";
+import { FlashcardSide } from "../../../store";
 import { SessionMode } from "../../../types";
 
 interface SessionModeItemProps {

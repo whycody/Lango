@@ -1,8 +1,13 @@
 import { useMemo } from "react";
-import { useWords } from "../store/WordsContext";
-import { useWordsMLStatesContext } from "../store/WordsMLStatesContext";
+import {
+  useEvaluations,
+  useSessions,
+  useSuggestions,
+  useWords,
+  useWordsHeuristicStates,
+  useWordsMLStatesContext,
+} from "../store";
 import { useAuth } from "../api/auth/AuthProvider";
-import { useSessions } from "../store/SessionsContext";
 import {
   Session,
   SessionMode,
@@ -13,10 +18,7 @@ import {
   WordSetStrategy,
 } from "../types";
 import { strategies } from "../database/strategies";
-import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
-import { useEvaluations } from "../store/EvaluationsContext";
 import { shuffle } from "../utils/shuffle";
-import { useSuggestions } from "../store/SuggestionsContext";
 import {
   mapSuggestionsToSessionWords,
   mapWordsToSessionWords,

@@ -45,7 +45,9 @@ export const SuggestionsContext = createContext<SuggestionsContextProps>({
   syncSuggestions: () => Promise.resolve(),
 });
 
-const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const SuggestionsProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const { initialLoad } = useAppInitializer();
   const { getAllSuggestions, deleteSuggestions, saveSuggestions } =
     useSuggestionsRepository();
@@ -252,5 +254,3 @@ export const useSuggestions = (): SuggestionsContextProps => {
   }
   return context;
 };
-
-export default SuggestionsProvider;

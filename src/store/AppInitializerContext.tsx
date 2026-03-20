@@ -31,7 +31,9 @@ export const AppInitializerContext = createContext<AppInitializerContextProps>({
 export const MAIN_LANG = "mainLangCode";
 export const TRANSLATION_LANG = "translationLangCode";
 
-const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const AppInitializerProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const { user } = useAuth();
   const { createTables: createSessionsTables, getAllSessions } =
     useSessionsRepository();
@@ -121,5 +123,3 @@ export const useAppInitializer = () => {
   }
   return context;
 };
-
-export default AppInitializerProvider;

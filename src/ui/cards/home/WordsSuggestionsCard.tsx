@@ -6,12 +6,9 @@ import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
 import { FC, useEffect, useRef, useState } from "react";
-import {
-  useDebouncedSyncSuggestions,
-  useSuggestions,
-} from "../../../store/SuggestionsContext";
+import { useDebouncedSyncSuggestions, useSuggestions } from "../../../store";
 import { Suggestion } from "../../../types";
-import { useLanguage } from "../../../store/LanguageContext";
+import { useLanguage } from "../../../store";
 import { trackEvent } from "../../../utils/analytics";
 import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
 

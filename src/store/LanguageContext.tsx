@@ -29,7 +29,7 @@ export const LanguageContext = createContext<LanguageContextProps>({
 
 export const APPLICATION_LANG = "applicationLangCode";
 
-const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { storage } = useUserStorage();
@@ -98,5 +98,3 @@ export const useLanguage = (): LanguageContextProps => {
   }
   return context;
 };
-
-export default LanguageProvider;

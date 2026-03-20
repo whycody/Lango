@@ -205,5 +205,3 @@ export const useSessions = (): SessionsContextProps => {
   }
   return context;
 };
-
-export default SessionsProvider;

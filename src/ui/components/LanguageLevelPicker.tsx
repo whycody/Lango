@@ -4,7 +4,7 @@ import LanguageItem from "../components/items/LanguageItem";
 import LanguageLevelItem from "../components/items/LanguageLevelItem";
 import { useTranslation } from "react-i18next";
 import { LANGUAGE_LEVEL_KEYS } from "../../constants/LanguageLevels";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { Language, LanguageLevelRange } from "../../types";

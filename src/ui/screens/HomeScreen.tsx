@@ -9,26 +9,26 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
 import StatisticsCard from "../cards/home/StatisticsCard";
-import { useWords } from "../../store/WordsContext";
-import { useSessions } from "../../store/SessionsContext";
-import { useEvaluations } from "../../store/EvaluationsContext";
-import { useSuggestions } from "../../store/SuggestionsContext";
+import {
+  FlashcardSide,
+  SessionLength,
+  useEvaluations,
+  useLanguage,
+  useSessions,
+  useSuggestions,
+  useUserPreferences,
+  useWords,
+} from "../../store";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { checkUpdates } from "../../utils/checkUpdates";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import {
-  FlashcardSide,
-  SessionLength,
-  useUserPreferences,
-} from "../../store/UserPreferencesContext";
 import * as Notifications from "expo-notifications";
 import { PermissionStatus } from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { ScreenName } from "../../navigation/AppStack";
 import { SessionMode } from "../../types";
-import { useLanguage } from "../../store/LanguageContext";
 import { useTheme } from "@react-navigation/native";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";

@@ -1,6 +1,6 @@
 import { SyncMetadata } from "../sync/SyncMetadata";
 import { LanguageCode } from "../../constants/LanguageCode";
-import { WordSource } from "../../store/WordsContext";
+import { WordSource } from "../../store";
 
 export type Word = SyncMetadata & {
   id: string;

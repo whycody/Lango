@@ -1,4 +1,4 @@
-import { FlashcardSortingMethod } from "../store/UserPreferencesContext";
+import { FlashcardSortingMethod } from "../store";
 import { t } from "i18next";
 import { WordWithDetails } from "../types";
 

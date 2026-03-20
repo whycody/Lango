@@ -14,11 +14,7 @@ import * as Haptics from "expo-haptics";
 import Header from "../components/Header";
 import CustomText from "../components/CustomText";
 import SessionModeItem from "../components/items/SessionModeItem";
-import {
-  FlashcardSide,
-  SessionLength,
-  useUserPreferences,
-} from "../../store/UserPreferencesContext";
+import { FlashcardSide, SessionLength, useUserPreferences } from "../../store";
 import { SessionMode } from "../../types";
 import { useHaptics } from "../../hooks/useHaptics";
 

@@ -10,7 +10,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import CustomText from "../components/CustomText";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { useUserPreferences } from "../../store/UserPreferencesContext";
+import { useUserPreferences } from "../../store";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";
 import { trackEvent } from "../../utils/analytics";

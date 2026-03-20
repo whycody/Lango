@@ -6,10 +6,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useWordsMLStatesContext } from "./WordsMLStatesContext";
 import { WordMLState, WordWithDetails } from "../types";
-import { useLanguage } from "./LanguageContext";
-import { useWords } from "./WordsContext";
+import { useWordsMLStatesContext, useLanguage, useWords } from ".";
 
 interface WordsWithDetailsContextProps {
   wordsWithDetails: WordWithDetails[];
@@ -22,7 +20,7 @@ export const WordsWithDetailsContext =
     langWordsWithDetails: [],
   });
 
-const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({
+export const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [wordsWithDetails, setWordsWithDetails] = useState<
@@ -73,5 +71,3 @@ export const useWordsWithDetails = (): WordsWithDetailsContextProps => {
   }
   return context;
 };
-
-export default WordsWithDetailsProvider;

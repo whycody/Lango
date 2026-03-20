@@ -4,7 +4,7 @@ import CustomText from "../components/CustomText";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 import LibraryItem from "../components/items/LibraryItem";
 import {
   useCallback,
@@ -20,10 +20,7 @@ import { SettingsItems } from "../../constants/SettingsItems";
 import VersionFooter from "../components/VersionFooter";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
-import {
-  FlashcardSide,
-  useUserPreferences,
-} from "../../store/UserPreferencesContext";
+import { FlashcardSide, useUserPreferences } from "../../store";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import * as Notifications from "expo-notifications";
 import { PermissionStatus } from "expo-notifications";

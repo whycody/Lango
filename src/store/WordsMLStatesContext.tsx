@@ -27,7 +27,9 @@ export const WordsMLStatesContext = createContext<WordsMLStatesContextProps>({
   langWordsMLStates: [],
 });
 
-const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const { initialLoad } = useAppInitializer();
   const [wordsMLStates, setWordsMLStates] = useState<WordMLState[] | null>(
     initialLoad.wordsMLStates,
@@ -338,5 +340,3 @@ export const useWordsMLStatesContext = (): WordsMLStatesContextProps => {
   }
   return context;
 };
-
-export default WordsMLStatesProvider;

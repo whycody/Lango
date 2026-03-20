@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View, ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import { Language, LanguageCode } from "../../types";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import { useHaptics } from "../../hooks/useHaptics";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";

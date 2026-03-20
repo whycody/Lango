@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
+import { useEvaluationsRepository } from "../hooks/repo/";
 import {
   fetchUpdatedEvaluations,
   syncEvaluationsOnServer,

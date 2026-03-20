@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { Evaluation, Word, WordHeuristicState } from "../types";
 import { useWords } from "./WordsContext";
-import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
+import { useWordsHeuristicStatesRepository } from "../hooks/repo/";
 import { useEvaluations } from "./EvaluationsContext";
 import { useAppInitializer } from "./AppInitializerContext";
 

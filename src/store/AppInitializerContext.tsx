@@ -6,14 +6,16 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useEvaluationsRepository } from "../hooks/repo/useEvaluationsRepository";
-import { useWordsRepository } from "../hooks/repo/useWordsRepository";
-import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
+import {
+  useEvaluationsRepository,
+  useWordsRepository,
+  useSessionsRepository,
+  useSuggestionsRepository,
+  useWordsMLStatesRepository,
+  useWordsHeuristicStatesRepository,
+} from "../hooks/repo/";
 import { useAuth } from "../api/auth/AuthProvider";
-import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
 import { runMigrations } from "../database/migrations/migrations";
-import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
-import { useWordsHeuristicStatesRepository } from "../hooks/repo/useWordsHeuristicStatesRepository";
 import { InitialLoad } from "../types";
 
 interface AppInitializerContextProps {

@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
-import { useWordsRepository } from "../hooks/repo/useWordsRepository";
+import { useWordsRepository } from "../hooks/repo/";
 import uuid from "react-native-uuid";
 import { Word } from "../types";
 import { useLanguage } from "./LanguageContext";

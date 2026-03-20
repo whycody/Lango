@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { useEvaluations } from "./EvaluationsContext";
 import { useWords } from "./WordsContext";
-import { useWordsMLStatesRepository } from "../hooks/repo/useWordsMLStatesRepository";
+import { useWordsMLStatesRepository } from "../hooks/repo/";
 import { score } from "../utils/model";
 import { Evaluation, EvaluationGrade, Word, WordMLState } from "../types";
 import { useAppInitializer } from "./AppInitializerContext";

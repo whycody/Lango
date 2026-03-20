@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
+import { useSessionsRepository } from "../hooks/repo/";
 import uuid from "react-native-uuid";
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
 import {

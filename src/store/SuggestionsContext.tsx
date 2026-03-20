@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSuggestionsRepository } from "../hooks/repo/useSuggestionsRepository";
+import { useSuggestionsRepository } from "../hooks/repo/";
 import {
   fetchUpdatedSuggestions,
   syncSuggestionsOnServer,

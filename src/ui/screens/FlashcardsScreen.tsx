@@ -44,7 +44,7 @@ import {
   SortingMethodBottomSheet,
 } from "../sheets";
 
-const FlashcardsScreen = () => {
+export const FlashcardsScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -459,5 +459,3 @@ const getStyles = (colors: any, insets: EdgeInsets) =>
       fontSize: 13,
     },
   });
-
-export default FlashcardsScreen;

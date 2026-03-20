@@ -47,7 +47,7 @@ export type SessionScreenParams = {
   flashcardSide: FlashcardSide;
 };
 
-const SessionScreen = ({ navigation }) => {
+export const SessionScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -689,5 +689,3 @@ const getStyles = (colors: any, insets: EdgeInsets) =>
       top: 0,
     },
   });
-
-export default SessionScreen;

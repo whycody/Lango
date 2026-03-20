@@ -1,7 +1,9 @@
-import FlashcardsScreen from "../ui/screens/FlashcardsScreen";
-import SessionScreen, {
-  SessionScreenParams,
-} from "../ui/screens/SessionScreen";
+import {
+  FlashcardsScreen,
+  SettingsScreen,
+  SessionScreen,
+} from "../ui/screens/";
+import { SessionScreenParams } from "../ui/screens/SessionScreen";
 import UserPreferencesProvider from "../store/UserPreferencesContext";
 import SessionsProvider from "../store/SessionsContext";
 import SuggestionsProvider from "../store/SuggestionsContext";
@@ -17,7 +19,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DarkTheme } from "../ui/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, View } from "react-native";
-import SettingsScreen from "../ui/screens/SettingsScreen";
 import LanguageProvider from "../store/LanguageContext";
 
 export type RootStackParamList = {

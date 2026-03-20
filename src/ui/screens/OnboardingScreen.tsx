@@ -27,7 +27,7 @@ import { LanguageLevelRange } from "../../types";
 
 const screenHeight = Dimensions.get("window").height;
 
-const OnboardingScreen = () => {
+export const OnboardingScreen = () => {
   const { colors } = useTheme();
   const { getSession } = useAuth();
   const insets = useSafeAreaInsets();
@@ -271,5 +271,3 @@ const getStyles = (insets: any) =>
       marginBottom: MARGIN_VERTICAL / 2,
     },
   });
-
-export default OnboardingScreen;

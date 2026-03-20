@@ -17,7 +17,7 @@ type LoginProps = {
   authError: string | null;
 };
 
-const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
+export const LoginScreen: FC<LoginProps> = ({ login, loading, authError }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const styles = getStyles(colors);
@@ -157,5 +157,3 @@ const getStyles = (colors: any) =>
       color: colors.red,
     },
   });
-
-export default LoginScreen;

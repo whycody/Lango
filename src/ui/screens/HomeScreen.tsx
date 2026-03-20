@@ -37,7 +37,7 @@ import {
   PickLanguageLevelBottomSheet,
 } from "../sheets";
 
-const HomeScreen = ({ navigation }) => {
+export const HomeScreen = ({ navigation }) => {
   const auth = useAuth();
   const words = useWords();
   const sessions = useSessions();
@@ -184,5 +184,3 @@ const getStyles = (colors: any, insets: EdgeInsets) =>
       backgroundColor: colors.card,
     },
   });
-
-export default HomeScreen;

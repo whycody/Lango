@@ -24,7 +24,7 @@ import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 import { LanguageBottomSheet } from "../sheets";
 
-const LibraryScreen = () => {
+export const LibraryScreen = () => {
   const { t } = useTranslation();
   const { langWords } = useWords();
   const navigation = useNavigation<LibraryNavProp>();
@@ -172,5 +172,3 @@ const getStyles = (insets: EdgeInsets) =>
       height: insets.top,
     },
   });
-
-export default LibraryScreen;

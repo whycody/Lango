@@ -11,7 +11,7 @@ interface WelcomeScreenProps {
   onAnimationEnd?: () => void;
 }
 
-const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
+export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
   const { colors } = useTheme();
   const { user } = useAuth();
   const styles = getStyles(colors);
@@ -176,5 +176,3 @@ const getStyles = (colors: any) =>
       pointerEvents: "none",
     },
   });
-
-export default WelcomeScreen;

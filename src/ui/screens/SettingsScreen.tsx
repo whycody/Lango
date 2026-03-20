@@ -33,7 +33,7 @@ import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 import { LanguageBottomSheet } from "../sheets";
 
-const SettingsScreen = () => {
+export const SettingsScreen = () => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
@@ -356,5 +356,3 @@ const getStyles = (colors: any) =>
       marginVertical: MARGIN_VERTICAL / 2,
     },
   });
-
-export default SettingsScreen;

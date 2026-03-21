@@ -1,8 +1,14 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../ui/screens/HomeScreen";
-import LibraryScreen from "../ui/screens/LibraryScreen";
+import { HomeScreen, LibraryScreen } from "../ui/screens/";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Animated, BackHandler, Pressable, StyleSheet, View, } from "react-native";
+import {
+  Animated,
+  BackHandler,
+  Pressable,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../ui/components/CustomText";
 import { useEffect, useRef, useState } from "react";
@@ -42,7 +48,7 @@ const TabsNavigator = () => {
 
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
-      handleBackPress
+      handleBackPress,
     );
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
@@ -52,7 +58,7 @@ const TabsNavigator = () => {
   const renderTabIcon = (
     route: TabRouteProp,
     focused: boolean,
-    color: string
+    color: string,
   ) => {
     const iconSize = 26;
 
@@ -81,17 +87,18 @@ const TabsNavigator = () => {
     return null;
   };
 
+  const plusStyle: ViewStyle = {
+    transform: [{ scale: iconScale }],
+  };
+
   const renderTabLabel = (
     route: TabRouteProp,
     focused: boolean,
-    color: string
+    color: string,
   ) => (
     <CustomText
       weight={focused ? "Bold" : "Regular"}
-      style={[
-        { color, fontSize: 12 },
-        !focused && { opacity: 0.6 },
-      ]}
+      style={[{ color, fontSize: 12 }, !focused && { opacity: 0.6 }]}
     >
       {t(route.name.toLowerCase())}
     </CustomText>
@@ -123,9 +130,7 @@ const TabsNavigator = () => {
           tabBarIcon: ({ focused, color }) =>
             renderTabIcon(route, focused, color),
           tabBarLabel: ({ focused, color }) =>
-            route.name === "Add"
-              ? null
-              : renderTabLabel(route, focused, color),
+            route.name === "Add" ? null : renderTabLabel(route, focused, color),
           tabBarStyle: styles.tabBarStyle,
           headerShown: false,
         })}
@@ -134,8 +139,7 @@ const TabsNavigator = () => {
           name="Home"
           component={HomeScreen}
           listeners={{
-            tabPress: () =>
-              trackEvent(AnalyticsEventName.NAVIGATE_HOME),
+            tabPress: () => trackEvent(AnalyticsEventName.NAVIGATE_HOME),
           }}
         />
 
@@ -152,11 +156,11 @@ const TabsNavigator = () => {
                 onPressIn={animateIn}
                 onPressOut={animateOut}
                 onPress={() => {
-                  haptics.triggerHaptics(ImpactFeedbackStyle.Rigid)
-                  trackEvent(
-                    AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN,
-                    { mode: "add", source: "main_screen" }
-                  );
+                  haptics.triggerHaptics(ImpactFeedbackStyle.Rigid);
+                  trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, {
+                    mode: "add",
+                    source: "main_screen",
+                  });
                   flashcardBottomSheetRef.current?.present();
                 }}
               >
@@ -169,16 +173,8 @@ const TabsNavigator = () => {
                     },
                   ]}
                 >
-                  <Animated.View
-                    style={{
-                      transform: [{ scale: iconScale }],
-                    }}
-                  >
-                    <Entypo
-                      name="plus"
-                      size={24}
-                      color={colors.card}
-                    />
+                  <Animated.View style={plusStyle}>
+                    <Entypo name="plus" size={24} color={colors.card} />
                   </Animated.View>
                 </View>
               </Pressable>
@@ -190,8 +186,7 @@ const TabsNavigator = () => {
           name="Library"
           component={LibraryScreen}
           listeners={{
-            tabPress: () =>
-              trackEvent(AnalyticsEventName.NAVIGATE_LIBRARY),
+            tabPress: () => trackEvent(AnalyticsEventName.NAVIGATE_LIBRARY),
           }}
         />
       </Tab.Navigator>

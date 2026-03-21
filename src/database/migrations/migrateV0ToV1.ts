@@ -1,5 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Evaluation, EvaluationGrade, LanguageCode, Session, SessionMode, SessionModel, Word } from "../../types";
+import {
+  Evaluation,
+  EvaluationGrade,
+  LanguageCode,
+  Session,
+  SessionMode,
+  SessionModel,
+  Word,
+} from "../../types";
 import uuid from "react-native-uuid";
 import { saveWords } from "../WordsRepository";
 import { saveSessions } from "../SessionRepository";
@@ -19,23 +27,32 @@ type AsyncStorageWord = {
   lastReviewDate: string;
   nextReviewDate: string;
   EF: number;
-}
+};
 
 type AsyncStorageEvaluation = {
   id: string;
   wordId: string;
   grade: EvaluationGrade;
   date: string;
-}
+};
 
 export const migrateV0ToV1 = async (userId: string) => {
-  const storedWords = await loadAndClear("words", x => x as AsyncStorageWord[]);
-  const storedEvaluations = await loadAndClear("evaluations", x => x as AsyncStorageEvaluation[]);
+  const storedWords = await loadAndClear(
+    "words",
+    (x) => x as AsyncStorageWord[],
+  );
+  const storedEvaluations = await loadAndClear(
+    "evaluations",
+    (x) => x as AsyncStorageEvaluation[],
+  );
 
   const words = mapStoredWordsToWords(storedWords);
   const groupedEvaluations = groupByDate(storedEvaluations);
   const sessions = mapGroupedEvaluationsToSessions(groupedEvaluations);
-  const evaluations = mapStoredEvaluationsToEvaluations(storedEvaluations, sessions);
+  const evaluations = mapStoredEvaluationsToEvaluations(
+    storedEvaluations,
+    sessions,
+  );
 
   await Promise.all([
     saveWords(userId, words),
@@ -46,7 +63,10 @@ export const migrateV0ToV1 = async (userId: string) => {
 
 const now = () => new Date().toISOString();
 
-const loadAndClear = async <T>(key: string, parser: (raw: any) => T[]): Promise<T[]> => {
+const loadAndClear = async <T>(
+  key: string,
+  parser: (raw: any) => T[],
+): Promise<T[]> => {
   const stored = await AsyncStorage.getItem(key);
   await AsyncStorage.removeItem(key);
   if (!stored) return [];
@@ -56,7 +76,7 @@ const loadAndClear = async <T>(key: string, parser: (raw: any) => T[]): Promise<
 const mapStoredWordsToWords = (stored: AsyncStorageWord[]): Word[] => {
   const timestamp = now();
   // @ts-ignore
-  return stored.map(word => ({
+  return stored.map((word) => ({
     id: word.id,
     text: word.text,
     translation: word.translation,
@@ -72,7 +92,9 @@ const mapStoredWordsToWords = (stored: AsyncStorageWord[]): Word[] => {
   }));
 };
 
-const mapGroupedEvaluationsToSessions = (grouped: Record<string, AsyncStorageEvaluation[]>): Session[] => {
+const mapGroupedEvaluationsToSessions = (
+  grouped: Record<string, AsyncStorageEvaluation[]>,
+): Session[] => {
   const timestamp = now();
   return Object.entries(grouped).map(([date, evaluations]) => {
     const averageScore =
@@ -93,23 +115,31 @@ const mapGroupedEvaluationsToSessions = (grouped: Record<string, AsyncStorageEva
   }) as unknown as Session[];
 };
 
-const mapStoredEvaluationsToEvaluations = (stored: AsyncStorageEvaluation[], sessions: Session[]): Evaluation[] => {
+const mapStoredEvaluationsToEvaluations = (
+  stored: AsyncStorageEvaluation[],
+  sessions: Session[],
+): Evaluation[] => {
   const timestamp = now();
-  return stored.map(e => ({
+  return stored.map((e) => ({
     id: e.id,
     wordId: e.wordId,
     grade: e.grade,
     date: e.date,
-    sessionId: sessions.find(s => s.date === e.date)?.id ?? null,
+    sessionId: sessions.find((s) => s.date === e.date)?.id ?? null,
     synced: false,
     updatedAt: null,
     locallyUpdatedAt: timestamp,
   }));
 };
 
-const groupByDate = <T extends { date: string }>(items: T[]): Record<string, T[]> =>
-  items.reduce((acc, item) => {
-    acc[item.date] = acc[item.date] || [];
-    acc[item.date].push(item);
-    return acc;
-  }, {} as Record<string, T[]>);
+const groupByDate = <T extends { date: string }>(
+  items: T[],
+): Record<string, T[]> =>
+  items.reduce(
+    (acc, item) => {
+      acc[item.date] = acc[item.date] || [];
+      acc[item.date].push(item);
+      return acc;
+    },
+    {} as Record<string, T[]>,
+  );

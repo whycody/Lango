@@ -1,13 +1,20 @@
 import { WordHeuristicState } from "../types";
 import { getDb } from "./utils/db";
 
-export const WORD_HEURISTIC_STATE_COLUMNS: Array<keyof WordHeuristicState> = ['wordId', 'interval', 'repetitionsCount',
-  'studyCount', 'lastReviewDate', 'nextReviewDate', 'EF'];
-export const WORD_HEURISTIC_STATE = 'word_heuristic_state';
+export const WORD_HEURISTIC_STATE_COLUMNS: Array<keyof WordHeuristicState> = [
+  "wordId",
+  "interval",
+  "repetitionsCount",
+  "studyCount",
+  "lastReviewDate",
+  "nextReviewDate",
+  "EF",
+];
+export const WORD_HEURISTIC_STATE = "word_heuristic_state";
 
 export const createHeuristicTable = async (userId: string) => {
   const db = await getDb(userId);
-  await db.transaction(tx => {
+  await db.transaction((tx) => {
     tx.executeSql(`
         CREATE TABLE IF NOT EXISTS ${WORD_HEURISTIC_STATE}
         (
@@ -23,10 +30,13 @@ export const createHeuristicTable = async (userId: string) => {
   });
 };
 
-export const saveWordsHeuristicStates = async (userId: string, wordsHeuristicStates: WordHeuristicState[]) => {
+export const saveWordsHeuristicStates = async (
+  userId: string,
+  wordsHeuristicStates: WordHeuristicState[],
+) => {
   const db = await getDb(userId);
-  await db.transaction(tx => {
-    wordsHeuristicStates.forEach(state => {
+  await db.transaction((tx) => {
+    wordsHeuristicStates.forEach((state) => {
       const values = [
         state.wordId,
         state.interval,
@@ -37,22 +47,26 @@ export const saveWordsHeuristicStates = async (userId: string, wordsHeuristicSta
         state.EF,
       ];
 
-      const placeholders = WORD_HEURISTIC_STATE_COLUMNS.map(() => '?').join(', ');
+      const placeholders = WORD_HEURISTIC_STATE_COLUMNS.map(() => "?").join(
+        ", ",
+      );
 
       tx.executeSql(
-        `REPLACE INTO ${WORD_HEURISTIC_STATE} (${WORD_HEURISTIC_STATE_COLUMNS.join(', ')})
+        `REPLACE INTO ${WORD_HEURISTIC_STATE} (${WORD_HEURISTIC_STATE_COLUMNS.join(", ")})
          VALUES (${placeholders})`,
-        values
+        values,
       );
     });
   });
 };
 
-export const getAllWordsHeuristicStates = async (userId: string): Promise<WordHeuristicState[]> => {
+export const getAllWordsHeuristicStates = async (
+  userId: string,
+): Promise<WordHeuristicState[]> => {
   const db = await getDb(userId);
 
   return new Promise((resolve, reject) => {
-    db.readTransaction(tx => {
+    db.readTransaction((tx) => {
       tx.executeSql(
         `SELECT *
          FROM ${WORD_HEURISTIC_STATE}`,
@@ -75,12 +89,15 @@ export const getAllWordsHeuristicStates = async (userId: string): Promise<WordHe
         (_, error) => {
           reject(error);
           return true;
-        }
+        },
       );
     });
   });
 };
 
-export const updateWordHeuristicState = async (userId: string, state: WordHeuristicState) => {
+export const updateWordHeuristicState = async (
+  userId: string,
+  state: WordHeuristicState,
+) => {
   await saveWordsHeuristicStates(userId, [state]);
 };

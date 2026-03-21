@@ -1,4 +1,9 @@
-import { createTables, getAllWords, saveWords, updateWord } from "../../database/WordsRepository";
+import {
+  createTables,
+  getAllWords,
+  saveWords,
+  updateWord,
+} from "../../database/WordsRepository";
 import { Word } from "../../types";
 import { useAuth } from "../../api/auth/AuthProvider";
 

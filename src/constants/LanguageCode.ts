@@ -1,6 +1,6 @@
 export enum LanguageCode {
-  ENGLISH = 'en',
-  POLISH = 'pl',
-  SPANISH = 'es',
-  ITALIAN = 'it',
+  ENGLISH = "en",
+  POLISH = "pl",
+  SPANISH = "es",
+  ITALIAN = "it",
 }

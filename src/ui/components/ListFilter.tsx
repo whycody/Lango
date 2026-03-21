@@ -8,8 +8,8 @@ interface ListFilterProps extends Omit<TextInputProps, "style"> {
   onClear: () => void;
 }
 
-const ListFilter =
-  forwardRef<TextInput, ListFilterProps>(({ isSearching, onClear, ...props }, ref) => {
+const ListFilter = forwardRef<TextInput, ListFilterProps>(
+  ({ isSearching, onClear, ...props }, ref) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
 
@@ -38,31 +38,33 @@ const ListFilter =
         )}
       </View>
     );
-  });
+  },
+);
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    backgroundColor: colors.background,
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 15,
-    flex: 1,
-  },
-  icon: {
-    marginLeft: 10,
-    marginRight: 5,
-  },
-  textInput: {
-    flex: 1,
-    backgroundColor: colors.background,
-    height: 50,
-    fontSize: 18,
-    color: colors.primary300,
-  },
-  clearIcon: {
-    marginLeft: 5,
-    marginRight: 10,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    root: {
+      backgroundColor: colors.background,
+      flexDirection: "row",
+      alignItems: "center",
+      marginVertical: 15,
+      flex: 1,
+    },
+    icon: {
+      marginLeft: 10,
+      marginRight: 5,
+    },
+    textInput: {
+      flex: 1,
+      backgroundColor: colors.background,
+      height: 50,
+      fontSize: 18,
+      color: colors.primary300,
+    },
+    clearIcon: {
+      marginLeft: 5,
+      marginRight: 10,
+    },
+  });
 
 export default ListFilter;

@@ -3,10 +3,10 @@ import { SyncMetadata } from "../sync/SyncMetadata";
 import { LanguageCode } from "../../constants/LanguageCode";
 
 export enum SessionMode {
-  STUDY = 'STUDY',
-  RANDOM = 'RANDOM',
-  OLDEST = 'OLDEST',
-  UNKNOWN = 'UNKNOWN',
+  STUDY = "STUDY",
+  RANDOM = "RANDOM",
+  OLDEST = "OLDEST",
+  UNKNOWN = "UNKNOWN",
 }
 
 export type Session = SyncMetadata & {
@@ -21,4 +21,4 @@ export type Session = SyncMetadata & {
   averageScore: number;
   wordsCount: number;
   finished: boolean;
-}
+};

@@ -27,35 +27,65 @@ export const LanguageContext = createContext<LanguageContextProps>({
   setApplicationLang: () => {},
 });
 
-export const APPLICATION_LANG = 'applicationLangCode';
+export const APPLICATION_LANG = "applicationLangCode";
 
-const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { storage } = useUserStorage();
-  const userMainLang = user.mainLang ?? '' as LanguageCode;
-  const userTranslationLang = user.translationLang ?? '' as LanguageCode;
-  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, userMainLang, storage);
-  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(TRANSLATION_LANG, userTranslationLang, storage);
-  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(APPLICATION_LANG, i18n.language as LanguageCode, useMMKV());
+  const userMainLang = user.mainLang ?? ("" as LanguageCode);
+  const userTranslationLang = user.translationLang ?? ("" as LanguageCode);
+  const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(
+    MAIN_LANG,
+    userMainLang,
+    storage,
+  );
+  const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(
+    TRANSLATION_LANG,
+    userTranslationLang,
+    storage,
+  );
+  const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(
+    APPLICATION_LANG,
+    i18n.language as LanguageCode,
+    useMMKV(),
+  );
 
   const languages: Language[] = [
-    { languageCode: LanguageCode.POLISH, languageName: t('polish'), languageInTargetLanguage: 'Polski' },
-    { languageCode: LanguageCode.ENGLISH, languageName: t('english'), languageInTargetLanguage: 'English' },
-    { languageCode: LanguageCode.SPANISH, languageName: t('spanish'), languageInTargetLanguage: 'Español' },
-    { languageCode: LanguageCode.ITALIAN, languageName: t('italian'), languageInTargetLanguage: 'Italiano' },
+    {
+      languageCode: LanguageCode.POLISH,
+      languageName: t("polish"),
+      languageInTargetLanguage: "Polski",
+    },
+    {
+      languageCode: LanguageCode.ENGLISH,
+      languageName: t("english"),
+      languageInTargetLanguage: "English",
+    },
+    {
+      languageCode: LanguageCode.SPANISH,
+      languageName: t("spanish"),
+      languageInTargetLanguage: "Español",
+    },
+    {
+      languageCode: LanguageCode.ITALIAN,
+      languageName: t("italian"),
+      languageInTargetLanguage: "Italiano",
+    },
   ];
 
   return (
-    <LanguageContext.Provider value={{
-      languages,
-      mainLang,
-      translationLang,
-      applicationLang,
-      setMainLang,
-      setTranslationLang,
-      setApplicationLang,
-    }}>
+    <LanguageContext.Provider
+      value={{
+        languages,
+        mainLang,
+        translationLang,
+        applicationLang,
+        setMainLang,
+        setTranslationLang,
+        setApplicationLang,
+      }}
+    >
       {children}
     </LanguageContext.Provider>
   );
@@ -68,5 +98,3 @@ export const useLanguage = (): LanguageContextProps => {
   }
   return context;
 };
-
-export default LanguageProvider;

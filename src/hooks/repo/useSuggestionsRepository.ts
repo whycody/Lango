@@ -2,7 +2,7 @@ import {
   createTables,
   deleteSuggestions,
   getAllSuggestions,
-  saveSuggestions
+  saveSuggestions,
 } from "../../database/SuggestionsRepository";
 import { Suggestion } from "../../types";
 import { useAuth } from "../../api/auth/AuthProvider";
@@ -17,7 +17,8 @@ export const useSuggestionsRepository = () => {
 
   return {
     createTables: () => createTables(getUserId()),
-    saveSuggestions: (suggestions: Suggestion[]) => saveSuggestions(getUserId(), suggestions),
+    saveSuggestions: (suggestions: Suggestion[]) =>
+      saveSuggestions(getUserId(), suggestions),
     getAllSuggestions: () => getAllSuggestions(getUserId()),
     deleteSuggestions: (ids: string[]) => deleteSuggestions(getUserId(), ids),
   };

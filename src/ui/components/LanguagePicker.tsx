@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View, ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import { Language, LanguageCode } from "../../types";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import { useHaptics } from "../../hooks/useHaptics";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
@@ -14,13 +14,21 @@ import { useAuth } from "../../api/auth/AuthProvider";
 interface LanguagePickerProps {
   allLanguages?: boolean;
   languageType?: LanguageTypes;
-  onLanguagePick?: (language: Language, userEvaluatedLanguageLevel: boolean) => void;
+  onLanguagePick?: (
+    language: Language,
+    userEvaluatedLanguageLevel: boolean,
+  ) => void;
   alwaysAllowPick?: boolean;
   style?: ViewStyle;
 }
 
 const LanguagePicker = (props: LanguagePickerProps) => {
-  const { languageType = LanguageTypes.MAIN, onLanguagePick, alwaysAllowPick, style } = props;
+  const {
+    languageType = LanguageTypes.MAIN,
+    onLanguagePick,
+    alwaysAllowPick,
+    style,
+  } = props;
   const styles = getStyles();
   const { t } = useTranslation();
   const {
@@ -35,40 +43,78 @@ const LanguagePicker = (props: LanguagePickerProps) => {
   const { user } = useAuth();
   const { triggerHaptics } = useHaptics();
 
-  const pickedLanguage = languageType === LanguageTypes.MAIN ? mainLang :
-    languageType === LanguageTypes.TRANSLATION ? translationLang : applicationLang;
+  const pickedLanguage =
+    languageType === LanguageTypes.MAIN
+      ? mainLang
+      : languageType === LanguageTypes.TRANSLATION
+        ? translationLang
+        : applicationLang;
 
-  const langTypeDesc = languageType === LanguageTypes.MAIN ? 'main' :
-    languageType === LanguageTypes.TRANSLATION ? 'translation' : 'application';
+  const langTypeDesc =
+    languageType === LanguageTypes.MAIN
+      ? "main"
+      : languageType === LanguageTypes.TRANSLATION
+        ? "translation"
+        : "application";
 
-  const languagesData = languageType !== LanguageTypes.APPLICATION ? languages :
-    languages.filter(lang => [LanguageCode.POLISH, LanguageCode.ENGLISH].includes(lang.languageCode));
+  const languagesData =
+    languageType !== LanguageTypes.APPLICATION
+      ? languages
+      : languages.filter((lang) =>
+          [LanguageCode.POLISH, LanguageCode.ENGLISH].includes(
+            lang.languageCode,
+          ),
+        );
 
-  const handleLanguagePick = useCallback((language: Language) => {
-    const setters: Record<LanguageTypes, (code: string) => void> = {
-      [LanguageTypes.MAIN]: setMainLang,
-      [LanguageTypes.TRANSLATION]: setTranslationLang,
-      [LanguageTypes.APPLICATION]: setApplicationLang,
-    };
+  const handleLanguagePick = useCallback(
+    (language: Language) => {
+      const setters: Record<LanguageTypes, (code: string) => void> = {
+        [LanguageTypes.MAIN]: setMainLang,
+        [LanguageTypes.TRANSLATION]: setTranslationLang,
+        [LanguageTypes.APPLICATION]: setApplicationLang,
+      };
 
-    const userEvaluatedLanguageLevel = (languageType === LanguageTypes.MAIN && translationLang == language.languageCode)
-      || user.languageLevels?.some((level) => level.language == language.languageCode);
+      const userEvaluatedLanguageLevel =
+        (languageType === LanguageTypes.MAIN &&
+          translationLang == language.languageCode) ||
+        user.languageLevels?.some(
+          (level) => level.language == language.languageCode,
+        );
 
-    if (languageType !== LanguageTypes.MAIN || userEvaluatedLanguageLevel || alwaysAllowPick) {
-      setters[languageType](language.languageCode);
-    }
+      if (
+        languageType !== LanguageTypes.MAIN ||
+        userEvaluatedLanguageLevel ||
+        alwaysAllowPick
+      ) {
+        setters[languageType](language.languageCode);
+      }
 
-    triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
-    onLanguagePick?.(language, userEvaluatedLanguageLevel);
-  }, [languageType, translationLang, mainLang, setMainLang, setTranslationLang, setApplicationLang, triggerHaptics, onLanguagePick]);
+      triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
+      onLanguagePick?.(language, userEvaluatedLanguageLevel);
+    },
+    [
+      languageType,
+      translationLang,
+      mainLang,
+      setMainLang,
+      setTranslationLang,
+      setApplicationLang,
+      triggerHaptics,
+      onLanguagePick,
+    ],
+  );
 
-  const renderLanguageItem = useCallback(({ item, index }: { item: Language, index: number }) =>
-    <LanguageItem
-      language={item}
-      index={index}
-      checked={item.languageCode === pickedLanguage}
-      onPress={() => handleLanguagePick(item)}
-    />, [pickedLanguage, handleLanguagePick]);
+  const renderLanguageItem = useCallback(
+    ({ item, index }: { item: Language; index: number }) => (
+      <LanguageItem
+        language={item}
+        index={index}
+        checked={item.languageCode === pickedLanguage}
+        onPress={() => handleLanguagePick(item)}
+      />
+    ),
+    [pickedLanguage, handleLanguagePick],
+  );
 
   return (
     <View style={style}>
@@ -86,11 +132,12 @@ const LanguagePicker = (props: LanguagePickerProps) => {
   );
 };
 
-const getStyles = () => StyleSheet.create({
-  header: {
-    paddingVertical: MARGIN_VERTICAL / 2,
-    paddingHorizontal: MARGIN_HORIZONTAL,
-  },
-});
+const getStyles = () =>
+  StyleSheet.create({
+    header: {
+      paddingVertical: MARGIN_VERTICAL / 2,
+      paddingHorizontal: MARGIN_HORIZONTAL,
+    },
+  });
 
 export default LanguagePicker;

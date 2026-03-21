@@ -4,12 +4,15 @@ import { useTranslation } from "react-i18next";
 import { GenericBottomSheet } from "./GenericBottomSheet";
 import { Language } from "../../types";
 import { LanguageLevelPicker } from "../components/LanguageLevelPicker";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 
-export const PickLanguageLevelBottomSheet = forwardRef<BottomSheetModal, {
-  language?: Language,
-  onChangeIndex?: (index: number) => void
-}>((props, ref) => {
+export const PickLanguageLevelBottomSheet = forwardRef<
+  BottomSheetModal,
+  {
+    language?: Language;
+    onChangeIndex?: (index: number) => void;
+  }
+>((props, ref) => {
   const { t } = useTranslation();
   const { mainLang } = useLanguage();
 
@@ -18,8 +21,8 @@ export const PickLanguageLevelBottomSheet = forwardRef<BottomSheetModal, {
   };
 
   const dismiss = () => {
-    ref && typeof ref !== 'function' && ref.current?.dismiss();
-  }
+    ref && typeof ref !== "function" && ref.current?.dismiss();
+  };
 
   // Do not allow dismissing when user doesn't have information about language level
   // and has already picked it in previous version of app
@@ -29,12 +32,12 @@ export const PickLanguageLevelBottomSheet = forwardRef<BottomSheetModal, {
     <GenericBottomSheet
       ref={ref}
       allowDismiss={allowDismiss}
-      primaryActionLabel={t('general.cancel')}
+      primaryActionLabel={t("general.cancel")}
       onPrimaryButtonPress={dismiss}
       primaryButtonEnabled={allowDismiss}
       onChangeIndex={handleChangeIndex}
     >
-      <LanguageLevelPicker language={props.language} onLevelPick={dismiss}/>
+      <LanguageLevelPicker language={props.language} onLevelPick={dismiss} />
     </GenericBottomSheet>
   );
 });

@@ -15,24 +15,25 @@ const Header: FC<HeaderProps> = ({ title, subtitle, style }) => {
 
   return (
     <View style={style}>
-      <CustomText style={styles.title} weight={"Bold"}>{title}</CustomText>
-      {subtitle &&
-        <CustomText style={styles.subtitle}>{subtitle}</CustomText>
-      }
+      <CustomText style={styles.title} weight={"Bold"}>
+        {title}
+      </CustomText>
+      {subtitle && <CustomText style={styles.subtitle}>{subtitle}</CustomText>}
     </View>
   );
-}
+};
 
-const getStyles = (colors: any) => StyleSheet.create({
-  title: {
-    color: colors.primary300,
-    fontSize: 18,
-  },
-  subtitle: {
-    color: colors.primary600,
-    fontSize: 14,
-    marginTop: 6,
-  }
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    title: {
+      color: colors.primary300,
+      fontSize: 18,
+    },
+    subtitle: {
+      color: colors.primary600,
+      fontSize: 14,
+      marginTop: 6,
+    },
+  });
 
 export default Header;

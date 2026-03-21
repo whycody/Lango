@@ -38,6 +38,7 @@
   "moderately": "Średnio",
   "good": "Dobrze",
   "sessionSummary": "Podsumowanie sesji \uD83D\uDCC8",
+  "no_updates": "Nie udało się ocenić żadnych słówek. Przy następnej okazji dodaj kilka do swojego słownika i spróbuj ponownie!",
   "perfect": "Rewelacja! Wszystkie {{grade3Count}} słówek zostały opanowane perfekcyjnie. Możesz być z siebie dumny! Czyżby nauka szła jak z płatka?",
   "goodProgress": "Gratulacje! Znasz aż {{grade3Count}} słówek perfekcyjnie. Świetna robota! Jeszcze {{grade1Count}} słówek wymaga uwagi, ale idziesz w dobrym kierunku!",
   "balancedEffort": "Świetnie sobie poradziłeś z {{grade3Count}} słówkami, które opanowałeś idealnie. {{grade2Count}} wymaga jeszcze trochę powtórek, a {{grade1Count}} czeka na Twoją uwagę. Dobrze wykorzystana sesja!",
@@ -177,5 +178,19 @@
     "advanced_desc": "Swobodnie komunikujesz się na różne tematy i rozumiesz bardziej złożone treści.",
     "proficient": "Biegły",
     "proficient_desc": "Mówisz płynnie i precyzyjnie, rozumiesz niuanse językowe i dłuższe wypowiedzi."
-  }
+  },
+  "new_word_suggestion": "Propozycja nowego słówka",
+  "word_tags": {
+    "streak": "Seria poprawnych 🔥",
+    "improving": "Poprawa 📈",
+    "in_progress": "W trakcie nauki 📘",
+    "recently_added": "Niedawno dodane ✨",
+    "long_time_no_see": "Dawno nie widziane 🕰️",
+    "frequently_repeated": "Często powtarzane \uD83D\uDD01",
+    "well_known": "Dobrze znane \uD83D\uDC4C",
+    "often_mistaken": "Często mylone 😵",
+    "struggling": "Problematyczne 💥"
+  },
+  "play": "Odtwórz",
+  "press_arrow_to_skip_suggestion": "Jeżeli chciałbyś pominąć tę propozycję, kliknij w strzałkę po prawej stronie"
 }

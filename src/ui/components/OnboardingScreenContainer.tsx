@@ -2,14 +2,17 @@ import React, { useEffect, useRef } from "react";
 import { Animated, Dimensions, Easing, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const screenHeight = Dimensions.get('window').height;
+const screenHeight = Dimensions.get("window").height;
 
 interface OnboardingScreenContainerProps {
   children: React.ReactNode;
   currentStep: number;
 }
 
-const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({ children, currentStep }) => {
+const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({
+  children,
+  currentStep,
+}) => {
   const insets = useSafeAreaInsets();
   const styles = getStyles(insets);
 
@@ -38,29 +41,32 @@ const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({ c
 
   return (
     <View style={styles.screen}>
-      <Animated.View style={[styles.screenContent, {
-        opacity: fadeAnim,
-        transform: [
-          { translateY: slideAnim },
-        ],
-      }]}>
+      <Animated.View
+        style={[
+          styles.screenContent,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
         {children}
       </Animated.View>
     </View>
   );
 };
 
-const getStyles = (insets: any) => StyleSheet.create({
-  screen: {
-    flex: 1,
-    height: screenHeight + insets.top + insets.bottom,
-  },
-  screenContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+const getStyles = (insets: any) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      height: screenHeight + insets.top + insets.bottom,
+    },
+    screenContent: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  });
 
 export default OnboardingScreenContainer;
-

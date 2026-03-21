@@ -1,30 +1,43 @@
-import { BackHandler, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import {
+  BackHandler,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderCard from "../cards/home/HeaderCard";
 import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
 import StatisticsCard from "../cards/home/StatisticsCard";
-import { useWords } from "../../store/WordsContext";
-import { useSessions } from "../../store/SessionsContext";
-import { useEvaluations } from "../../store/EvaluationsContext";
-import { useSuggestions } from "../../store/SuggestionsContext";
+import {
+  FlashcardSide,
+  SessionLength,
+  useEvaluations,
+  useLanguage,
+  useSessions,
+  useSuggestions,
+  useUserPreferences,
+  useWords,
+} from "../../store";
 import { useAuth } from "../../api/auth/AuthProvider";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import { checkUpdates } from "../../utils/checkUpdates";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { FlashcardSide, SessionLength, useUserPreferences } from "../../store/UserPreferencesContext";
 import * as Notifications from "expo-notifications";
 import { PermissionStatus } from "expo-notifications";
 import { registerNotificationsToken } from "../../utils/registerNotificationsToken";
 import { ScreenName } from "../../navigation/AppStack";
 import { SessionMode } from "../../types";
-import { useLanguage } from "../../store/LanguageContext";
 import { useTheme } from "@react-navigation/native";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
-import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from "../sheets";
+import {
+  EnableNotificationsBottomSheet,
+  PickLanguageLevelBottomSheet,
+} from "../sheets";
 
-const HomeScreen = ({ navigation }) => {
+export const HomeScreen = ({ navigation }) => {
   const auth = useAuth();
   const words = useWords();
   const sessions = useSessions();
@@ -34,7 +47,7 @@ const HomeScreen = ({ navigation }) => {
   const { style, onScroll } = useDynamicStatusBar(100, 0.5);
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const styles = getStyles(colors);
+  const styles = getStyles(colors, insets);
 
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const enableNotificationsRef = useRef<BottomSheetModal>(null);
@@ -44,7 +57,7 @@ const HomeScreen = ({ navigation }) => {
   const { user } = useAuth();
 
   useEffect(() => {
-    trackEvent(AnalyticsEventName.NAVIGATE_HOME)
+    trackEvent(AnalyticsEventName.NAVIGATE_HOME);
   }, []);
 
   const tryToRefreshData = async () => {
@@ -54,29 +67,36 @@ const HomeScreen = ({ navigation }) => {
       await words.syncWords();
       await Promise.all([
         sessions.syncSessions(),
-        mainLang !== translationLang ? suggestions.syncSuggestions() : Promise.resolve(),
+        mainLang !== translationLang
+          ? suggestions.syncSuggestions()
+          : Promise.resolve(),
         evaluations.syncEvaluations(),
       ]);
     } finally {
       await auth.getSession();
       setRefreshing(false);
     }
-  }
+  };
 
   useEffect(() => {
     const checkNotifications = async () => {
       const { status } = await Notifications.getPermissionsAsync();
-      if (status == PermissionStatus.GRANTED && user.notificationsEnabled) registerNotificationsToken();
-      if ((askLaterNotifications && Date.now() < askLaterNotifications) || status == PermissionStatus.GRANTED) return;
-      trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN)
+      if (status == PermissionStatus.GRANTED && user.notificationsEnabled)
+        registerNotificationsToken();
+      if (
+        (askLaterNotifications && Date.now() < askLaterNotifications) ||
+        status == PermissionStatus.GRANTED
+      )
+        return;
+      trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
       enableNotificationsRef.current?.present();
-    }
+    };
 
     checkNotifications();
   }, [askLaterNotifications]);
 
   useEffect(() => {
-    if (!user.languageLevels?.some(level => level.language == mainLang)) {
+    if (!user.languageLevels?.some((level) => level.language == mainLang)) {
       pickLanguageLevelRef.current?.present();
     }
   }, []);
@@ -89,65 +109,78 @@ const HomeScreen = ({ navigation }) => {
       }
     };
 
-    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackPress,
+    );
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
 
   const onRefresh = useCallback(async () => {
-    trackEvent(AnalyticsEventName.HOME_REFRESH)
+    trackEvent(AnalyticsEventName.HOME_REFRESH);
     await tryToRefreshData();
   }, [words, sessions, suggestions, evaluations, auth]);
 
-  const navigateToSessionScreen = (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {
+  const navigateToSessionScreen = (
+    length: SessionLength,
+    mode: SessionMode,
+    flashcardSide: FlashcardSide,
+  ) => {
     const props = { length, mode, flashcardSide, restarted: false };
     trackEvent(AnalyticsEventName.SESSION_STARTED, props);
     navigation.navigate(ScreenName.Session, props);
-  }
+  };
 
   const languagesAreTheSame = mainLang === translationLang;
 
   const handleBottomSheetChangeIndex = (index: number) => {
     setBottomSheetIsShown(index >= 0);
-  }
+  };
 
   return (
     <>
       <PickLanguageLevelBottomSheet
         ref={pickLanguageLevelRef}
-        language={languages.find(l => l.languageCode === mainLang)}
+        language={languages.find((l) => l.languageCode === mainLang)}
         onChangeIndex={handleBottomSheetChangeIndex}
       />
       <EnableNotificationsBottomSheet
         ref={enableNotificationsRef}
         onChangeIndex={handleBottomSheetChangeIndex}
       />
-      <View style={style}/>
+      <View style={style} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         onScroll={onScroll}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing || suggestions.loading || words.loading || evaluations.loading || sessions.loading}
+            refreshing={
+              refreshing ||
+              suggestions.loading ||
+              words.loading ||
+              evaluations.loading ||
+              sessions.loading
+            }
             onRefresh={onRefresh}
             progressViewOffset={50}
           />
         }
       >
-        <View style={{ height: insets.top }}/>
-        <HeaderCard navigateToSessionScreen={navigateToSessionScreen}/>
-        {!languagesAreTheSame &&
-          <WordsSuggestionsCard/>
-        }
-        <StatisticsCard style={languagesAreTheSame && styles.darkBackground}/>
+        <View style={styles.spacer} />
+        <HeaderCard navigateToSessionScreen={navigateToSessionScreen} />
+        {!languagesAreTheSame && <WordsSuggestionsCard />}
+        <StatisticsCard style={languagesAreTheSame && styles.darkBackground} />
       </ScrollView>
     </>
   );
 };
 
-const getStyles = (colors: any) => StyleSheet.create({
-  darkBackground: {
-    backgroundColor: colors.card
-  }
-})
-
-export default HomeScreen;
+const getStyles = (colors: any, insets: EdgeInsets) =>
+  StyleSheet.create({
+    spacer: {
+      height: insets.top,
+    },
+    darkBackground: {
+      backgroundColor: colors.card,
+    },
+  });

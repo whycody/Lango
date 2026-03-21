@@ -4,16 +4,23 @@ import CustomText from "../components/CustomText";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 import LibraryItem from "../components/items/LibraryItem";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SettingItem } from "../../types";
 import { SettingsItems } from "../../constants/SettingsItems";
 import VersionFooter from "../components/VersionFooter";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
-import { FlashcardSide, useUserPreferences } from "../../store/UserPreferencesContext";
+import { FlashcardSide, useUserPreferences } from "../../store";
 import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
 import * as Notifications from "expo-notifications";
 import { PermissionStatus } from "expo-notifications";
@@ -23,24 +30,35 @@ import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 import { LanguageBottomSheet } from "../sheets";
 
-const SettingsScreen = () => {
+export const SettingsScreen = () => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { languages, mainLang, translationLang, applicationLang } = useLanguage();
-  const { user, updateUserNotificationsEnabled, getSession } = useAuth();
+  const { languages, mainLang, translationLang, applicationLang } =
+    useLanguage();
+  const { user, updateUserNotificationsEnabled } = useAuth();
   const languageBottomSheetRef = useRef<BottomSheetModal>();
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
   const userPreferences = useUserPreferences();
 
-  const currentMainLang = languages.filter(lang => lang.languageCode === mainLang)[0].languageName;
-  const currentTranslationLang = languages.filter(lang => lang.languageCode === translationLang)[0].languageName;
-  const currentApplicationLang = languages.filter(lang => lang.languageCode === applicationLang)[0].languageName;
+  const currentMainLang = languages.filter(
+    (lang) => lang.languageCode === mainLang,
+  )[0].languageName;
+  const currentTranslationLang = languages.filter(
+    (lang) => lang.languageCode === translationLang,
+  )[0].languageName;
+  const currentApplicationLang = languages.filter(
+    (lang) => lang.languageCode === applicationLang,
+  )[0].languageName;
 
-  const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(LanguageTypes.MAIN);
+  const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(
+    LanguageTypes.MAIN,
+  );
   const { style, onScroll } = useDynamicStatusBar(100, 0.5);
-  const notificationsEnabled = userPreferences.notificationsPermissionStatus == PermissionStatus.GRANTED && user.notificationsEnabled;
+  const notificationsEnabled =
+    userPreferences.notificationsPermissionStatus == PermissionStatus.GRANTED &&
+    user.notificationsEnabled;
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -50,15 +68,18 @@ const SettingsScreen = () => {
       }
     };
 
-    const subscription = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackPress,
+    );
     return () => subscription.remove();
   }, [bottomSheetIsShown]);
 
   useLayoutEffect(() => {
     const checkPermissions = async () => {
       const { status } = await Notifications.getPermissionsAsync();
-      userPreferences.setNotificationsPermissionStatus(status)
-    }
+      userPreferences.setNotificationsPermissionStatus(status);
+    };
 
     checkPermissions();
   }, []);
@@ -67,12 +88,14 @@ const SettingsScreen = () => {
     const granted = await ensureNotificationsPermission();
 
     if (!granted) {
-      trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_FAILURE, { reason: 'Permissions not granted' });
+      trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_FAILURE, {
+        reason: "Permissions not granted",
+      });
       return;
     }
 
-    trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS)
-    userPreferences.setNotificationsPermissionStatus(PermissionStatus.GRANTED)
+    trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS);
+    userPreferences.setNotificationsPermissionStatus(PermissionStatus.GRANTED);
     updateUserNotificationsEnabled(true);
   };
 
@@ -80,78 +103,95 @@ const SettingsScreen = () => {
     if (!notificationsEnabled) {
       await checkNotifications();
     } else {
-      trackEvent(AnalyticsEventName.NOTIFICATIONS_DISABLE)
-      updateUserNotificationsEnabled(false)
+      trackEvent(AnalyticsEventName.NOTIFICATIONS_DISABLE);
+      updateUserNotificationsEnabled(false);
     }
-  }
+  };
 
-  const settingsItems: SettingItem[] = useMemo(() => [
-    {
-      id: SettingsItems.MAIN_LANGUAGE,
-      label: t('main_language'),
-      description: currentMainLang,
-      icon: 'language-sharp',
-      section: SettingsSections.LANGUAGE,
-    },
-    {
-      id: SettingsItems.TRANSLATION_LANGUAGE,
-      label: t('translation_language'),
-      description: currentTranslationLang,
-      icon: 'language-sharp',
-      section: SettingsSections.LANGUAGE,
-    },
-    {
-      id: SettingsItems.APPLICATION_LANGUAGE,
-      label: t('application_language'),
-      description: currentApplicationLang,
-      icon: 'language-sharp',
-      section: SettingsSections.LANGUAGE,
-    },
-    {
-      id: SettingsItems.VIBRATIONS,
-      label: t('vibrations'),
-      description: t(`turned_${userPreferences.vibrationsEnabled ? 'on' : 'off'}_m`),
-      icon: 'phone-portrait-sharp',
-      enabled: userPreferences.vibrationsEnabled,
-      section: SettingsSections.PREFERENCES,
-    },
-    {
-      id: SettingsItems.NOTIFICATIONS,
-      label: t('notifications'),
-      description: t(`turned_${notificationsEnabled ? 'on' : 'off'}_m`),
-      icon: 'notifications-sharp',
-      enabled: notificationsEnabled,
-      section: SettingsSections.PREFERENCES,
-    },
-    {
-      id: SettingsItems.FLASHCARD_SIDE,
-      label: t('flashcard_side'),
-      description: userPreferences.flashcardSide == FlashcardSide.WORD ? t('word') : t('translation'),
-      icon: 'document-text-sharp',
-      section: SettingsSections.SESSION,
-    },
-    {
-      id: SettingsItems.SESSION_SPEECH_SYNTHESIZER,
-      label: t('speech_synthesizer'),
-      description: t(`turned_${userPreferences.sessionSpeechSynthesizer ? 'on' : 'off'}`),
-      icon: 'volume-high-sharp',
-      enabled: userPreferences.sessionSpeechSynthesizer,
-      section: SettingsSections.SESSION
-    }
-  ], [t, notificationsEnabled, userPreferences, currentMainLang, currentTranslationLang, currentApplicationLang]);
+  const settingsItems: SettingItem[] = useMemo(
+    () => [
+      {
+        id: SettingsItems.MAIN_LANGUAGE,
+        label: t("main_language"),
+        description: currentMainLang,
+        icon: "language-sharp",
+        section: SettingsSections.LANGUAGE,
+      },
+      {
+        id: SettingsItems.TRANSLATION_LANGUAGE,
+        label: t("translation_language"),
+        description: currentTranslationLang,
+        icon: "language-sharp",
+        section: SettingsSections.LANGUAGE,
+      },
+      {
+        id: SettingsItems.APPLICATION_LANGUAGE,
+        label: t("application_language"),
+        description: currentApplicationLang,
+        icon: "language-sharp",
+        section: SettingsSections.LANGUAGE,
+      },
+      {
+        id: SettingsItems.VIBRATIONS,
+        label: t("vibrations"),
+        description: t(
+          `turned_${userPreferences.vibrationsEnabled ? "on" : "off"}_m`,
+        ),
+        icon: "phone-portrait-sharp",
+        enabled: userPreferences.vibrationsEnabled,
+        section: SettingsSections.PREFERENCES,
+      },
+      {
+        id: SettingsItems.NOTIFICATIONS,
+        label: t("notifications"),
+        description: t(`turned_${notificationsEnabled ? "on" : "off"}_m`),
+        icon: "notifications-sharp",
+        enabled: notificationsEnabled,
+        section: SettingsSections.PREFERENCES,
+      },
+      {
+        id: SettingsItems.FLASHCARD_SIDE,
+        label: t("flashcard_side"),
+        description:
+          userPreferences.flashcardSide == FlashcardSide.WORD
+            ? t("word")
+            : t("translation"),
+        icon: "document-text-sharp",
+        section: SettingsSections.SESSION,
+      },
+      {
+        id: SettingsItems.SESSION_SPEECH_SYNTHESIZER,
+        label: t("speech_synthesizer"),
+        description: t(
+          `turned_${userPreferences.sessionSpeechSynthesizer ? "on" : "off"}`,
+        ),
+        icon: "volume-high-sharp",
+        enabled: userPreferences.sessionSpeechSynthesizer,
+        section: SettingsSections.SESSION,
+      },
+    ],
+    [
+      t,
+      notificationsEnabled,
+      userPreferences,
+      currentMainLang,
+      currentTranslationLang,
+      currentApplicationLang,
+    ],
+  );
 
   const getSectionTitle = (section: number) => {
     switch (section) {
       case SettingsSections.LANGUAGE:
-        return t('language');
+        return t("language");
       case SettingsSections.PREFERENCES:
-        return t('preferences');
+        return t("preferences");
       case SettingsSections.SESSION:
-        return t('session');
+        return t("session");
       default:
-        return '';
+        return "";
     }
-  }
+  };
 
   const mapSettingsToLanguageType = (id: SettingsItems): LanguageTypes => {
     switch (id) {
@@ -162,37 +202,54 @@ const SettingsScreen = () => {
       case SettingsItems.APPLICATION_LANGUAGE:
         return LanguageTypes.APPLICATION;
     }
-  }
+  };
 
-  const handlePress = useCallback((id: SettingsItems) => {
-    switch (id) {
-      case SettingsItems.TRANSLATION_LANGUAGE:
-      case SettingsItems.APPLICATION_LANGUAGE:
-      case SettingsItems.MAIN_LANGUAGE:
-        const languageType = mapSettingsToLanguageType(id);
-        trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
-          source: 'settings_screen',
-          type: languageType == LanguageTypes.MAIN ? 'main' : languageType === LanguageTypes.TRANSLATION ? 'translation' : 'app'
-        });
-        setPickedLanguageType(languageType);
-        languageBottomSheetRef.current?.present();
-        break;
-      case SettingsItems.VIBRATIONS:
-        userPreferences.setVibrationsEnabled(!userPreferences.vibrationsEnabled);
-        break;
-      case SettingsItems.NOTIFICATIONS:
-        handleNotificationsSettingItemPress();
-        break;
-      case SettingsItems.FLASHCARD_SIDE:
-        userPreferences.setFlashcardSide(userPreferences.flashcardSide === FlashcardSide.WORD ? FlashcardSide.TRANSLATION : FlashcardSide.WORD);
-        break;
-      case SettingsItems.SESSION_SPEECH_SYNTHESIZER:
-        userPreferences.setSessionSpeechSynthesizer(!userPreferences.sessionSpeechSynthesizer);
-        break;
-      default:
-        break;
-    }
-  }, [userPreferences, notificationsEnabled, languageBottomSheetRef]);
+  const handlePress = useCallback(
+    (id: SettingsItems) => {
+      switch (id) {
+        case SettingsItems.TRANSLATION_LANGUAGE:
+        case SettingsItems.APPLICATION_LANGUAGE:
+        case SettingsItems.MAIN_LANGUAGE: {
+          const languageType = mapSettingsToLanguageType(id);
+          trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
+            source: "settings_screen",
+            type:
+              languageType == LanguageTypes.MAIN
+                ? "main"
+                : languageType === LanguageTypes.TRANSLATION
+                  ? "translation"
+                  : "app",
+          });
+          setPickedLanguageType(languageType);
+          languageBottomSheetRef.current?.present();
+          break;
+        }
+        case SettingsItems.VIBRATIONS:
+          userPreferences.setVibrationsEnabled(
+            !userPreferences.vibrationsEnabled,
+          );
+          break;
+        case SettingsItems.NOTIFICATIONS:
+          handleNotificationsSettingItemPress();
+          break;
+        case SettingsItems.FLASHCARD_SIDE:
+          userPreferences.setFlashcardSide(
+            userPreferences.flashcardSide === FlashcardSide.WORD
+              ? FlashcardSide.TRANSLATION
+              : FlashcardSide.WORD,
+          );
+          break;
+        case SettingsItems.SESSION_SPEECH_SYNTHESIZER:
+          userPreferences.setSessionSpeechSynthesizer(
+            !userPreferences.sessionSpeechSynthesizer,
+          );
+          break;
+        default:
+          break;
+      }
+    },
+    [userPreferences, notificationsEnabled, languageBottomSheetRef],
+  );
 
   const renderSettingsItem = ({ item, index }) => (
     <LibraryItem
@@ -207,17 +264,20 @@ const SettingsScreen = () => {
     />
   );
 
-  const renderSectionHeader = (title: string) => (
-    !title ? <></> : <CustomText weight='Bold' style={styles.section}>{title}</CustomText>
-  );
+  const renderSectionHeader = (title: string) =>
+    !title ? (
+      <></>
+    ) : (
+      <CustomText weight="Bold" style={styles.section}>
+        {title}
+      </CustomText>
+    );
 
   const sections = useMemo(() => {
-    return Object.values(SettingsSections)
-      .map((section: number) => ({
-        title: getSectionTitle(section),
-        data: settingsItems.filter(item => item.section === section)
-      }))
-
+    return Object.values(SettingsSections).map((section: number) => ({
+      title: getSectionTitle(section),
+      data: settingsItems.filter((item) => item.section === section),
+    }));
   }, [settingsItems, t]);
 
   return (
@@ -229,59 +289,67 @@ const SettingsScreen = () => {
         languageType={pickedLanguageType}
       />
       <View style={styles.root}>
-        <View style={style}/>
+        <View style={style} />
         <SectionList
           sections={sections}
           showsVerticalScrollIndicator={false}
           onScroll={onScroll}
           ListHeaderComponent={
             <>
-              <CustomText weight="Bold" style={[styles.title, { paddingTop: insets.top }]}>{t('settings')}</CustomText>
-              <CustomText style={styles.subtitle}>{t('settings_long_desc')}</CustomText>
+              <CustomText
+                weight="Bold"
+                style={[styles.title, { paddingTop: insets.top }]}
+              >
+                {t("settings")}
+              </CustomText>
+              <CustomText style={styles.subtitle}>
+                {t("settings_long_desc")}
+              </CustomText>
             </>
           }
-          ListFooterComponent={<VersionFooter style={styles.footer}/>}
+          ListFooterComponent={<VersionFooter style={styles.footer} />}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderSettingsItem}
-          renderSectionHeader={({ section }) => renderSectionHeader(section.title)}
+          renderSectionHeader={({ section }) =>
+            renderSectionHeader(section.title)
+          }
           stickySectionHeadersEnabled={false}
         />
       </View>
     </>
   );
-}
+};
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.card,
-  },
-  statusBar: {
-    backgroundColor: colors.card
-  },
-  title: {
-    marginTop: MARGIN_VERTICAL,
-    marginHorizontal: MARGIN_HORIZONTAL,
-    color: colors.primary,
-    fontSize: 24,
-  },
-  subtitle: {
-    color: colors.primary600,
-    marginHorizontal: MARGIN_HORIZONTAL,
-    marginTop: MARGIN_VERTICAL / 3,
-    fontSize: 15
-  },
-  section: {
-    textTransform: 'uppercase',
-    color: colors.primary,
-    fontSize: 13,
-    marginTop: 20,
-    marginBottom: 10,
-    marginHorizontal: MARGIN_HORIZONTAL
-  },
-  footer: {
-    marginVertical: MARGIN_VERTICAL / 2,
-  }
-});
-
-export default SettingsScreen;
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: colors.card,
+    },
+    statusBar: {
+      backgroundColor: colors.card,
+    },
+    title: {
+      marginTop: MARGIN_VERTICAL,
+      marginHorizontal: MARGIN_HORIZONTAL,
+      color: colors.primary,
+      fontSize: 24,
+    },
+    subtitle: {
+      color: colors.primary600,
+      marginHorizontal: MARGIN_HORIZONTAL,
+      marginTop: MARGIN_VERTICAL / 3,
+      fontSize: 15,
+    },
+    section: {
+      textTransform: "uppercase",
+      color: colors.primary,
+      fontSize: 13,
+      marginTop: 20,
+      marginBottom: 10,
+      marginHorizontal: MARGIN_HORIZONTAL,
+    },
+    footer: {
+      marginVertical: MARGIN_VERTICAL / 2,
+    },
+  });

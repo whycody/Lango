@@ -1,23 +1,23 @@
-import { FlashcardSortingMethod } from "../store/UserPreferencesContext";
+import { FlashcardSortingMethod } from "../store";
 import { t } from "i18next";
 import { WordWithDetails } from "../types";
 
 export const getSortingMethodLabel = (method: FlashcardSortingMethod) => {
   switch (method) {
     case FlashcardSortingMethod.ADD_DATE_ASC:
-      return t('sorting.add_date_asc');
+      return t("sorting.add_date_asc");
     case FlashcardSortingMethod.ADD_DATE_DESC:
-      return t('sorting.add_date_desc');
+      return t("sorting.add_date_desc");
     case FlashcardSortingMethod.GRADE_THREE_PROB_ASC:
-      return t('sorting.grade_three_asc');
+      return t("sorting.grade_three_asc");
     case FlashcardSortingMethod.GRADE_THREE_PROB_DESC:
-      return t('sorting.grade_three_desc');
+      return t("sorting.grade_three_desc");
     case FlashcardSortingMethod.REPETITIONS_COUNT_ASC:
-      return t('sorting.repetitions_count_asc');
+      return t("sorting.repetitions_count_asc");
     case FlashcardSortingMethod.REPETITIONS_COUNT_DESC:
-      return t('sorting.repetitions_count_desc');
+      return t("sorting.repetitions_count_desc");
   }
-}
+};
 
 export const getSortingMethod = (sortingMethod: FlashcardSortingMethod) => {
   switch (sortingMethod) {
@@ -42,4 +42,4 @@ export const getSortingMethod = (sortingMethod: FlashcardSortingMethod) => {
     default:
       return () => 0;
   }
-}
+};

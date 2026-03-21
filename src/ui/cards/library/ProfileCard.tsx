@@ -16,35 +16,55 @@ const ProfileCard = () => {
     <View style={styles.root}>
       {auth.user.picture ? (
         <View style={styles.profileIconContainer}>
-          <Image source={{ uri: auth.user.picture }} style={{ width: 90, height: 90, marginTop: 5, }} resizeMode="cover"/>
+          <Image
+            source={{ uri: auth.user.picture }}
+            style={styles.profileImage}
+            resizeMode="cover"
+          />
         </View>
       ) : (
         <View style={styles.profileIconContainer}>
-          <Ionicons name={'person-sharp'} size={80} color={colors.primary300} style={{ marginTop: 24 }} />
+          <Ionicons
+            name={"person-sharp"}
+            size={80}
+            color={colors.primary300}
+            style={styles.profileFallbackIcon}
+          />
         </View>
       )}
-      <CustomText weight={'Bold'} style={styles.name}>{auth.user.name}</CustomText>
+      <CustomText weight={"Bold"} style={styles.name}>
+        {auth.user.name}
+      </CustomText>
     </View>
   );
-}
+};
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: MARGIN_VERTICAL * 3,
-  },
-  profileIconContainer: {
-    width: 100,
-    height: 100,
-    backgroundColor: colors.cardAccent,
-    alignItems: 'center',
-  },
-  name: {
-    color: colors.primary,
-    fontSize: 22,
-    marginTop: 18,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    root: {
+      justifyContent: "center",
+      alignItems: "center",
+      marginVertical: MARGIN_VERTICAL * 3,
+    },
+    profileIconContainer: {
+      width: 100,
+      height: 100,
+      backgroundColor: colors.cardAccent,
+      alignItems: "center",
+    },
+    profileImage: {
+      width: 90,
+      height: 90,
+      marginTop: 5,
+    },
+    profileFallbackIcon: {
+      marginTop: 24,
+    },
+    name: {
+      color: colors.primary,
+      fontSize: 22,
+      marginTop: 18,
+    },
+  });
 
 export default ProfileCard;

@@ -1,4 +1,4 @@
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
 import { alertOpenSettings } from "./alertOpenSettings";
 
 export const ensureNotificationsPermission = async (): Promise<boolean> => {
@@ -11,7 +11,7 @@ export const ensureNotificationsPermission = async (): Promise<boolean> => {
   }
 
   if (status !== "granted" && !canAskAgain) {
-    alertOpenSettings('notifications');
+    alertOpenSettings("notifications");
     return false;
   }
 

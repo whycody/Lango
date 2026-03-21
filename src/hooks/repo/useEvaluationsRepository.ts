@@ -1,4 +1,8 @@
-import { createTables, getAllEvaluations, saveEvaluations } from "../../database/EvaluationsRepository";
+import {
+  createTables,
+  getAllEvaluations,
+  saveEvaluations,
+} from "../../database/EvaluationsRepository";
 import { Evaluation } from "../../types";
 import { useAuth } from "../../api/auth/AuthProvider";
 
@@ -12,7 +16,8 @@ export const useEvaluationsRepository = () => {
 
   return {
     createTables: () => createTables(getUserId()),
-    saveEvaluations: (evaluations: Evaluation[]) => saveEvaluations(getUserId(), evaluations),
+    saveEvaluations: (evaluations: Evaluation[]) =>
+      saveEvaluations(getUserId(), evaluations),
     getAllEvaluations: () => getAllEvaluations(getUserId()),
   };
 };

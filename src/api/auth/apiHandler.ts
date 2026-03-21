@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import axios, { AxiosRequestConfig } from "axios";
 import { refreshTokens } from "../apiClient";
-import * as Updates from 'expo-updates';
+import * as Updates from "expo-updates";
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -17,7 +17,10 @@ const ACCESS_TOKEN = "accessToken";
 const REFRESH_TOKEN = "refreshToken";
 
 const profile = Updates.channel;
-const apiUrl = (!profile || ['test', 'development'].includes(profile)) ? process.env.API_DEV_URL : process.env.API_URL;
+const apiUrl =
+  !profile || ["test", "development"].includes(profile)
+    ? process.env.API_DEV_URL
+    : process.env.API_URL;
 
 export const removeAccessToken = async (): Promise<void> => {
   accessToken = null;
@@ -67,11 +70,11 @@ const getAPIError = (message: string, status: number) => {
   const error: any = new Error(message);
   error.response = { status: status };
   return error;
-}
+};
 
 const refreshAccessToken = async (): Promise<void> => {
   if (isRefreshing && refreshPromise) return refreshPromise;
-  if (!refreshToken) throw getAPIError('No refresh token provided.', 401);
+  if (!refreshToken) throw getAPIError("No refresh token provided.", 401);
 
   isRefreshing = true;
 
@@ -103,7 +106,7 @@ export const apiCall = async <T>(
     data?: object | string;
   },
   refreshed: boolean = false,
-  timeout?: number
+  timeout?: number,
 ): Promise<T> => {
   // console.log("Calling API:", options.method, `${getBaseURL()}${options.url}`, options.data);
 
@@ -126,12 +129,16 @@ export const apiCall = async <T>(
       method: options.method,
       url: fullUrl,
       headers,
-      timeout
+      timeout,
     };
 
-    if (options.data && typeof options.data === 'object' && Object.keys(options.data).length > 0) {
+    if (
+      options.data &&
+      typeof options.data === "object" &&
+      Object.keys(options.data).length > 0
+    ) {
       axiosConfig.data = options.data;
-    } else if (options.data && typeof options.data === 'string') {
+    } else if (options.data && typeof options.data === "string") {
       axiosConfig.data = options.data;
     }
 
@@ -146,7 +153,7 @@ export const apiCall = async <T>(
         }
         return apiCall(options, true);
       } else {
-        throw getAPIError('Unathorized', 401);
+        throw getAPIError("Unauthorized", 401);
       }
     }
 

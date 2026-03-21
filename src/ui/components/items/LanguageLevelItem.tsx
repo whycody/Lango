@@ -13,52 +13,80 @@ type LanguageLevelItemProps = {
   desc: string;
   picked: boolean;
   onPress: (level: LanguageLevelRange) => void;
-}
+};
 
-const LanguageLevelItem: FC<LanguageLevelItemProps> = ({ level, code, label, desc, picked, onPress }) => {
+const LanguageLevelItem: FC<LanguageLevelItemProps> = ({
+  level,
+  code,
+  label,
+  desc,
+  picked,
+  onPress,
+}) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
   return (
-    <>{level !== 1 && <View style={{ width: '100%', height: 3, backgroundColor: colors.background }}/>}
+    <>
+      {level !== 1 && (
+        <View style={styles.divider} />
+      )}
       <LinearGradient
-        colors={['transparent', picked ? colors.cardAccent300 : 'transparent']}
+        colors={["transparent", picked ? colors.cardAccent300 : "transparent"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Pressable style={styles.root} onPress={() => onPress(level)} android_ripple={{ color: colors.background }}>
-          <CustomText weight={'Black'} style={styles.code}>{code}</CustomText>
-          <View style={{ flex: 1, }}>
-            <CustomText style={styles.title} weight={'Bold'}>{label}</CustomText>
-            <CustomText style={styles.desc} weight={'Regular'}>{desc}</CustomText>
+        <Pressable
+          style={styles.root}
+          onPress={() => onPress(level)}
+          android_ripple={{ color: colors.background }}
+        >
+          <CustomText weight={"Black"} style={styles.code}>
+            {code}
+          </CustomText>
+          <View style={styles.content}>
+            <CustomText style={styles.title} weight={"Bold"}>
+              {label}
+            </CustomText>
+            <CustomText style={styles.desc} weight={"Regular"}>
+              {desc}
+            </CustomText>
           </View>
         </Pressable>
       </LinearGradient>
     </>
-  )
-}
+  );
+};
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    padding: MARGIN_HORIZONTAL,
-    flexDirection: 'row',
-    alignItems: 'center',
-
-  },
-  code: {
-    width: 45,
-    color: colors.primary600,
-    fontSize: 18,
-    paddingRight: MARGIN_HORIZONTAL
-  },
-  title: {
-    fontSize: 13,
-    color: colors.primary
-  },
-  desc: {
-    fontSize: 12,
-    color: colors.primary300
-  }
-})
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    root: {
+      padding: MARGIN_HORIZONTAL,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    code: {
+      width: 45,
+      color: colors.primary600,
+      fontSize: 18,
+      paddingRight: MARGIN_HORIZONTAL,
+    },
+    title: {
+      fontSize: 13,
+      color: colors.primary,
+    },
+    desc: {
+      fontSize: 12,
+      color: colors.primary300,
+    },
+    divider: {
+      width: "100%",
+      height: 3,
+      backgroundColor: colors.background,
+    },
+    content: {
+      flex: 1,
+    },
+  });
 
 export default LanguageLevelItem;

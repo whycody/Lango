@@ -8,19 +8,26 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
-import { Animated, Dimensions, Easing, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import WelcomeScreen from "./WelcomeScreen";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLanguage } from "../../store/LanguageContext";
+import { useLanguage } from "../../store";
 import { updateUserLanguages } from "../../api/apiClient";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 import { LanguageLevelPicker } from "../components/LanguageLevelPicker";
 import { LanguageLevelRange } from "../../types";
 
-const screenHeight = Dimensions.get('window').height;
+const screenHeight = Dimensions.get("window").height;
 
-const OnboardingScreen = () => {
+export const OnboardingScreen = () => {
   const { colors } = useTheme();
   const { getSession } = useAuth();
   const insets = useSafeAreaInsets();
@@ -36,13 +43,18 @@ const OnboardingScreen = () => {
 
   const { mainLang, translationLang, languages } = useLanguage();
   const [welcomeScreenIsReady, setWelcomeScreenIsReady] = useState(false);
-  const [pickedLevel, setPickedLevel] = useState<LanguageLevelRange | undefined>();
+  const [pickedLevel, setPickedLevel] = useState<
+    LanguageLevelRange | undefined
+  >();
 
-  const buttonEnabled = (currentStep === 0 && welcomeScreenIsReady) || (currentStep === 1 && !!translationLang) ||
-    (currentStep === 2 && !!mainLang) || (currentStep === 3 && !!pickedLevel);
+  const buttonEnabled =
+    (currentStep === 0 && welcomeScreenIsReady) ||
+    (currentStep === 1 && !!translationLang) ||
+    (currentStep === 2 && !!mainLang) ||
+    (currentStep === 3 && !!pickedLevel);
 
   useEffect(() => {
-    trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED)
+    trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED);
   }, []);
 
   const scrollToScreen = useCallback((screenIndex: number) => {
@@ -68,7 +80,7 @@ const OnboardingScreen = () => {
         duration: 200,
         easing: Easing.in(Easing.quad),
         useNativeDriver: true,
-      })
+      }),
     ]).start();
   }, [pulseAnim]);
 
@@ -81,9 +93,13 @@ const OnboardingScreen = () => {
 
   const updateUserData = useCallback(async () => {
     setLoading(true);
-    const res = await updateUserLanguages(mainLang, translationLang, pickedLevel);
-    if (!!res) {
-      trackEvent(AnalyticsEventName.ONBOARDING_FINISHED)
+    const res = await updateUserLanguages(
+      mainLang,
+      translationLang,
+      pickedLevel,
+    );
+    if (res) {
+      trackEvent(AnalyticsEventName.ONBOARDING_FINISHED);
       await getSession();
     }
     setLoading(false);
@@ -113,7 +129,7 @@ const OnboardingScreen = () => {
           duration: 300,
           easing: Easing.out(Easing.quad),
           useNativeDriver: true,
-        })
+        }),
       ]).start();
     } else {
       backSlideAnim.setValue(0);
@@ -131,7 +147,7 @@ const OnboardingScreen = () => {
           duration: 300,
           easing: Easing.in(Easing.quad),
           useNativeDriver: true,
-        })
+        }),
       ]).start();
     }
   }, [currentStep === 0, backSlideAnim, backOpacityAnim]);
@@ -150,10 +166,12 @@ const OnboardingScreen = () => {
           colors={[colors.background, colors.card]}
           start={{ x: 0.5, y: 0.5 }}
           end={{ x: 1, y: 1 }}
-          style={{ flex: 1 }}
+          style={styles.fullScreenSection}
         >
           <OnboardingScreenContainer currentStep={currentStep}>
-            <WelcomeScreen onAnimationEnd={() => setWelcomeScreenIsReady(true)}/>
+            <WelcomeScreen
+              onAnimationEnd={() => setWelcomeScreenIsReady(true)}
+            />
           </OnboardingScreenContainer>
         </LinearGradient>
 
@@ -178,11 +196,13 @@ const OnboardingScreen = () => {
           colors={[colors.background, colors.card]}
           start={{ x: 0.5, y: 0.5 }}
           end={{ x: 0, y: 0 }}
-          style={{ flex: 1 }}
+          style={styles.fullScreenSection}
         >
           <OnboardingScreenContainer currentStep={currentStep}>
             <LanguageLevelPicker
-              language={languages.find((lang) => lang.languageCode === mainLang)}
+              language={languages.find(
+                (lang) => lang.languageCode === mainLang,
+              )}
               updateUserData={false}
               pickedLevel={pickedLevel}
               onLevelPick={setPickedLevel}
@@ -194,26 +214,28 @@ const OnboardingScreen = () => {
 
       <View style={styles.buttonContainer}>
         {currentStep > 0 && (
-          <Animated.View style={[
-            {
-              transform: [{ translateY: backSlideAnim }],
-              opacity: backOpacityAnim,
-            }
-          ]}>
+          <Animated.View
+            style={[
+              {
+                transform: [{ translateY: backSlideAnim }],
+                opacity: backOpacityAnim,
+              },
+            ]}
+          >
             <ActionButton
-              label={t('back')}
+              label={t("back")}
               primary={false}
               active={!loading}
               style={styles.backButton}
-              icon={'arrow-back-outline'}
+              icon={"arrow-back-outline"}
               onPress={handleBackPress}
             />
           </Animated.View>
         )}
         <ActionButton
-          label={t('continue')}
+          label={t("continue")}
           primary={true}
-          icon={'arrow-forward-outline'}
+          icon={"arrow-forward-outline"}
           onPress={handleContinuePress}
           loading={loading}
           active={buttonEnabled}
@@ -221,29 +243,31 @@ const OnboardingScreen = () => {
       </View>
     </>
   );
-}
+};
 
-const getStyles = (insets: any) => StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-  languagePicker: {
-    flex: 1,
-    paddingTop: insets.top + MARGIN_VERTICAL,
-    height: screenHeight + insets.top + insets.bottom,
-    width: '100%',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: MARGIN_HORIZONTAL,
-    paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
-  },
-  backButton: {
-    marginBottom: MARGIN_VERTICAL / 2,
-  },
-});
-
-export default OnboardingScreen;
+const getStyles = (insets: any) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+    },
+    languagePicker: {
+      flex: 1,
+      paddingTop: insets.top + MARGIN_VERTICAL,
+      height: screenHeight + insets.top + insets.bottom,
+      width: "100%",
+    },
+    fullScreenSection: {
+      flex: 1,
+    },
+    buttonContainer: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      paddingHorizontal: MARGIN_HORIZONTAL,
+      paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
+    },
+    backButton: {
+      marginBottom: MARGIN_VERTICAL / 2,
+    },
+  });

@@ -3,4 +3,5 @@ import { WordMLState } from "../states/WordMLState";
 
 export type WordWithDetails = {
   id: string;
-} & Omit<WordMLState, 'wordId'> & Word;
+} & Omit<WordMLState, "wordId"> &
+  Word;

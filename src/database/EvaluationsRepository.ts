@@ -1,11 +1,20 @@
 import { Evaluation } from "../types";
 import { getDb } from "./utils/db";
 
-const columns: Array<keyof Evaluation> = ['id', 'wordId', 'sessionId', 'grade', 'date', 'synced', 'updatedAt', 'locallyUpdatedAt'];
+const columns: Array<keyof Evaluation> = [
+  "id",
+  "wordId",
+  "sessionId",
+  "grade",
+  "date",
+  "synced",
+  "updatedAt",
+  "locallyUpdatedAt",
+];
 
 export const createTables = async (userId: string) => {
   const db = await getDb(userId);
-  await db.transaction(tx => {
+  await db.transaction((tx) => {
     tx.executeSql(`
         CREATE TABLE IF NOT EXISTS evaluations
         (
@@ -22,29 +31,34 @@ export const createTables = async (userId: string) => {
   });
 };
 
-export const saveEvaluations = async (userId: string, evaluations: Evaluation[]) => {
+export const saveEvaluations = async (
+  userId: string,
+  evaluations: Evaluation[],
+) => {
   const db = await getDb(userId);
-  await db.transaction(tx => {
-    evaluations.forEach(evaluation => {
-      const values = columns.map(col => {
-        if (col === 'synced') return evaluation.synced ? 1 : 0;
+  await db.transaction((tx) => {
+    evaluations.forEach((evaluation) => {
+      const values = columns.map((col) => {
+        if (col === "synced") return evaluation.synced ? 1 : 0;
         return evaluation[col as keyof Evaluation] || null;
       });
-      const placeholders = columns.map(() => '?').join(', ');
+      const placeholders = columns.map(() => "?").join(", ");
 
       tx.executeSql(
-        `REPLACE INTO evaluations (${columns.join(', ')})
+        `REPLACE INTO evaluations (${columns.join(", ")})
          VALUES (${placeholders})`,
-        values
+        values,
       );
     });
   });
 };
 
-export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> => {
+export const getAllEvaluations = async (
+  userId: string,
+): Promise<Evaluation[]> => {
   const db = await getDb(userId);
   return new Promise((resolve, reject) => {
-    db.transaction(tx => {
+    db.transaction((tx) => {
       tx.executeSql(
         `SELECT *
          FROM evaluations`,
@@ -62,12 +76,13 @@ export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> =
               date: row.date,
               synced: row.synced === 1,
               updatedAt: row.updatedAt || null,
-              locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
+              locallyUpdatedAt:
+                row.locallyUpdatedAt || new Date().toISOString(),
             });
           }
           resolve(evaluations);
         },
-        error => reject(error)
+        (error) => reject(error),
       );
     });
   });

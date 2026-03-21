@@ -38,6 +38,7 @@
   "moderately": "Moderately",
   "good": "Good",
   "sessionSummary": "Session summary \uD83D\uDCC8",
+  "no_updates": "No words were evaluated. Add some to your dictionary and try again!",
   "perfect": "Amazing! You mastered all {{grade3Count}} words perfectly. You should be proud! Is learning becoming second nature to you?",
   "goodProgress": "Congratulations! You know {{grade3Count}} words perfectly. Great job! There are still {{grade1Count}} words that need attention, but you're on the right track!",
   "balancedEffort": "Great effort! You’ve mastered {{grade3Count}} words perfectly. {{grade2Count}} need a bit more practice, and {{grade1Count}} need your attention. A productive session!",
@@ -177,5 +178,19 @@
     "advanced_desc": "You communicate fluently on various topics and understand more complex content.",
     "proficient": "Proficient",
     "proficient_desc": "You speak fluently and precisely, and understand nuances and longer statements."
-  }
+  },
+  "new_word_suggestion": "New word suggestion",
+  "word_tags": {
+    "streak": "Correct Streak 🔥",
+    "improving": "Improving 📈",
+    "in_progress": "In Progress 📘",
+    "recently_added": "Recently Added ✨",
+    "long_time_no_see": "Long Time No See 🕰️",
+    "frequently_repeated": "Frequently Repeated 🔁",
+    "well_known": "Well Known 👌",
+    "often_mistaken": "Often Mistaken 😵",
+    "struggling": "Struggling 💥"
+  },
+  "play": "Play",
+  "press_arrow_to_skip_suggestion": "If you would like to skip this suggestion, press arrow to the right"
 }

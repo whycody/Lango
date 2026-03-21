@@ -4,7 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import CustomText from "../CustomText";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
-import { SessionLength } from "../../../store/UserPreferencesContext";
+import { SessionLength } from "../../../store";
 import { LinearGradient } from "expo-linear-gradient";
 
 const RECT_HEIGHT = 13;
@@ -12,40 +12,64 @@ const RECT_HEIGHT = 13;
 interface SessionLengthItemProps {
   level: SessionLength;
   active: boolean;
-  onPress?: () => void;
+  onPress?: (level: number) => void;
   style?: any;
 }
 
-const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, style }) => {
+const WordLevelItem: FC<SessionLengthItemProps> = ({
+  level,
+  active,
+  onPress,
+  style,
+}) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, level);
   const { t } = useTranslation();
 
-  const [gradientColors, setGradientColors] = useState<[string, string, ...string[]]>([colors.background, colors.card]);
+  const [gradientColors, setGradientColors] = useState<
+    [string, string, ...string[]]
+  >([colors.background, colors.card]);
 
   const rectangles = [
     {
       scale: useRef(new Animated.Value(1)).current,
       spread: useRef(new Animated.Value(0)).current,
-      jump: useRef(new Animated.Value(0)).current
+      jump: useRef(new Animated.Value(0)).current,
     },
     {
       scale: useRef(new Animated.Value(1)).current,
       spread: useRef(new Animated.Value(0)).current,
-      jump: useRef(new Animated.Value(0)).current
+      jump: useRef(new Animated.Value(0)).current,
     },
     { scale: null, spread: null, jump: null },
   ];
 
   const handlePressIn = () => {
-    const color = level > SessionLength.MEDIUM ? colors.green300 : level > SessionLength.SHORT ? colors.yellow300 : colors.red300;
+    const color =
+      level > SessionLength.MEDIUM
+        ? colors.green300
+        : level > SessionLength.SHORT
+          ? colors.yellow300
+          : colors.red300;
     setGradientColors([color, colors.card]);
 
     Animated.parallel([
-      Animated.spring(rectangles[0].scale!, { toValue: 1.1, useNativeDriver: true }),
-      Animated.spring(rectangles[1].scale!, { toValue: 1.05, useNativeDriver: true }),
-      Animated.spring(rectangles[0].spread!, { toValue: -2, useNativeDriver: true }),
-      Animated.spring(rectangles[1].spread!, { toValue: -0.5, useNativeDriver: true }),
+      Animated.spring(rectangles[0].scale!, {
+        toValue: 1.1,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rectangles[1].scale!, {
+        toValue: 1.05,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rectangles[0].spread!, {
+        toValue: -2,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rectangles[1].spread!, {
+        toValue: -0.5,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
@@ -53,10 +77,22 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
     setGradientColors([colors.background, colors.card]);
 
     Animated.parallel([
-      Animated.spring(rectangles[0].scale!, { toValue: 1, useNativeDriver: true }),
-      Animated.spring(rectangles[1].scale!, { toValue: 1, useNativeDriver: true }),
-      Animated.spring(rectangles[0].spread!, { toValue: 0, useNativeDriver: true }),
-      Animated.spring(rectangles[1].spread!, { toValue: 0, useNativeDriver: true }),
+      Animated.spring(rectangles[0].scale!, {
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rectangles[1].scale!, {
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rectangles[0].spread!, {
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rectangles[1].spread!, {
+        toValue: 0,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
@@ -67,9 +103,14 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
           toValue: -height,
           duration: 160,
           easing: Easing.out(Easing.cubic),
-          useNativeDriver: true
+          useNativeDriver: true,
         }),
-        Animated.spring(anim, { toValue: 0, speed: 18, bounciness: 4, useNativeDriver: true }),
+        Animated.spring(anim, {
+          toValue: 0,
+          speed: 18,
+          bounciness: 4,
+          useNativeDriver: true,
+        }),
       ]);
 
     Animated.parallel([
@@ -77,7 +118,7 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
       jump(rectangles[1].jump!, 1),
     ]).start();
 
-    onPress?.();
+    onPress?.(level);
   };
 
   return (
@@ -103,9 +144,13 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
                   {
                     opacity:
                       i === 0
-                        ? level > SessionLength.MEDIUM ? 1 : 0.2
+                        ? level > SessionLength.MEDIUM
+                          ? 1
+                          : 0.2
                         : i === 1
-                          ? level > SessionLength.SHORT ? 1 : 0.2
+                          ? level > SessionLength.SHORT
+                            ? 1
+                            : 0.2
                           : 1,
                     transform: [
                       { translateY: Animated.add(r.spread!, r.jump!) },
@@ -115,8 +160,8 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
                 ]}
               />
             ) : (
-              <View key={i} style={[styles.rectangle, { opacity: 1 }]}/>
-            )
+              <View key={i} style={[styles.rectangle, { opacity: 1 }]} />
+            ),
           )}
         </View>
 
@@ -126,7 +171,7 @@ const WordLevelItem: FC<SessionLengthItemProps> = ({ level, active, onPress, sty
               ? "poorly"
               : level === SessionLength.MEDIUM
                 ? "moderately"
-                : "good"
+                : "good",
           )}
         </CustomText>
       </Pressable>

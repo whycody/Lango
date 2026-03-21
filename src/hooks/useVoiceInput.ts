@@ -1,5 +1,8 @@
 import { useCallback, useRef, useState } from "react";
-import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent, } from "expo-speech-recognition";
+import {
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
 import { speechLocaleMap } from "../constants/SpeechLocaleMap";
 import { useHaptics } from "./useHaptics";
 import { ImpactFeedbackStyle } from "expo-haptics";
@@ -14,7 +17,13 @@ type UseVoiceInputParams = {
   onEnd?: (result: string) => void;
 };
 
-export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, onEnd }: UseVoiceInputParams) => {
+export const useVoiceInput = ({
+  id,
+  languageCode,
+  onResult,
+  onPermissionDenied,
+  onEnd,
+}: UseVoiceInputParams) => {
   const [recording, setRecording] = useState<string | false>(false);
   const transcriptRef = useRef("");
   const haptics = useHaptics();
@@ -39,7 +48,8 @@ export const useVoiceInput = ({ id, languageCode, onResult, onPermissionDenied, 
   });
 
   const start = useCallback(async () => {
-    const permission = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+    const permission =
+      await ExpoSpeechRecognitionModule.requestPermissionsAsync();
 
     if (!permission.granted) {
       onPermissionDenied?.();

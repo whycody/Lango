@@ -1,13 +1,16 @@
 import { SyncMetadata } from "../sync/SyncMetadata";
+import { LanguageCode } from "../../constants/LanguageCode";
 
-export type Suggestion = SyncMetadata & {
+export type Suggestion = Omit<SyncMetadata, "updatedAt"> & {
+  updatedAt: string;
+} & {
   id: string;
   userId: string;
   word: string;
   translation: string;
-  mainLang: string;
-  translationLang: string;
+  mainLang: LanguageCode;
+  translationLang: LanguageCode;
   displayCount: number;
   skipped: boolean;
   added: boolean;
-}
+};

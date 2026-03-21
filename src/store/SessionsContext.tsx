@@ -1,8 +1,22 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useRef, useState } from 'react';
-import { useSessionsRepository } from "../hooks/repo/useSessionsRepository";
-import uuid from 'react-native-uuid';
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useSessionsRepository } from "../hooks/repo/";
+import uuid from "react-native-uuid";
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
-import { LanguageCode, Session, SessionMode, SessionModel, SessionModelVersion } from '../types';
+import {
+  LanguageCode,
+  Session,
+  SessionMode,
+  SessionModel,
+  SessionModelVersion,
+} from "../types";
 import { useAuth } from "../api/auth/AuthProvider";
 import {
   findChangedItems,
@@ -10,7 +24,7 @@ import {
   getUnsyncedItems,
   mergeLocalAndServer,
   syncInBatches,
-  updateLocalItems
+  updateLocalItems,
 } from "../utils/sync";
 import { useAppInitializer } from "./AppInitializerContext";
 import { getTodayDate } from "../utils/dateUtil";
@@ -18,9 +32,16 @@ import { getTodayDate } from "../utils/dateUtil";
 interface SessionsContextProps {
   sessions: Session[];
   loading: boolean;
-  addSession: (mode: SessionMode, sessionModel: SessionModel, sessionModelVersion: SessionModelVersion,
-               averageScore: number, wordsCount: number, mainLang: LanguageCode, translationLang: LanguageCode,
-               finished: boolean) => Session;
+  addSession: (
+    mode: SessionMode,
+    sessionModel: SessionModel,
+    sessionModelVersion: SessionModelVersion,
+    averageScore: number,
+    wordsCount: number,
+    mainLang: LanguageCode,
+    translationLang: LanguageCode,
+    finished: boolean,
+  ) => Session;
   syncSessions: () => Promise<void>;
 }
 
@@ -28,9 +49,9 @@ const SessionsContext = createContext<SessionsContextProps>({
   sessions: [],
   loading: true,
   addSession: () => ({
-    id: '',
-    date: '',
-    localDay: '',
+    id: "",
+    date: "",
+    localDay: "",
     mode: SessionMode.STUDY,
     sessionModel: SessionModel.HEURISTIC,
     sessionModelVersion: SessionModelVersion.H1,
@@ -40,7 +61,7 @@ const SessionsContext = createContext<SessionsContextProps>({
     translationLang: LanguageCode.ITALIAN,
     finished: false,
     synced: false,
-    locallyUpdatedAt: ''
+    locallyUpdatedAt: "",
   }),
   syncSessions: () => Promise.resolve(),
 });
@@ -53,9 +74,16 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const auth = useAuth();
   const syncing = useRef(false);
 
-  const createSession = (mode: SessionMode, sessionModel: SessionModel, sessionModelVersion: SessionModelVersion,
-                         averageScore: number, wordsCount: number, mainLang: LanguageCode, translationLang: LanguageCode,
-                         finished: boolean): Session => {
+  const createSession = (
+    mode: SessionMode,
+    sessionModel: SessionModel,
+    sessionModelVersion: SessionModelVersion,
+    averageScore: number,
+    wordsCount: number,
+    mainLang: LanguageCode,
+    translationLang: LanguageCode,
+    finished: boolean,
+  ): Session => {
     const now = new Date().toISOString();
     return {
       id: uuid.v4(),
@@ -75,9 +103,26 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   };
 
-  const addSession = (mode: SessionMode, model: SessionModel, version: SessionModelVersion, averageScore: number, wordsCount: number,
-                      mainLang: LanguageCode, translationLang: LanguageCode, finished: boolean): Session => {
-    const newSession = createSession(mode, model, version, averageScore, wordsCount, mainLang, translationLang, finished);
+  const addSession = (
+    mode: SessionMode,
+    model: SessionModel,
+    version: SessionModelVersion,
+    averageScore: number,
+    wordsCount: number,
+    mainLang: LanguageCode,
+    translationLang: LanguageCode,
+    finished: boolean,
+  ): Session => {
+    const newSession = createSession(
+      mode,
+      model,
+      version,
+      averageScore,
+      wordsCount,
+      mainLang,
+      translationLang,
+      finished,
+    );
     const updatedSessions = [newSession, ...sessions];
     setSessions(updatedSessions);
     saveSessions([newSession]);
@@ -91,12 +136,24 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       syncing.current = true;
       const sessionsList = inputSessions ?? (await getAllSessions());
       const unsyncedSessions = getUnsyncedItems<Session>(sessionsList);
-      const serverUpdates = await syncInBatches<Session>(unsyncedSessions, syncSessionsOnServer);
+      const serverUpdates = await syncInBatches<Session>(
+        unsyncedSessions,
+        syncSessionsOnServer,
+      );
 
-      const updatedSessions = updateLocalItems<Session>(sessionsList, serverUpdates);
+      const updatedSessions = updateLocalItems<Session>(
+        sessionsList,
+        serverUpdates,
+      );
       const serverSessions = await fetchNewSessions(updatedSessions);
-      const mergedSessions = mergeLocalAndServer<Session>(updatedSessions, serverSessions);
-      const changedSessions = findChangedItems<Session>(sessionsList, mergedSessions);
+      const mergedSessions = mergeLocalAndServer<Session>(
+        updatedSessions,
+        serverSessions,
+      );
+      const changedSessions = findChangedItems<Session>(
+        sessionsList,
+        mergedSessions,
+      );
 
       if (changedSessions.length > 0) {
         setSessions(mergedSessions);
@@ -110,7 +167,9 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const fetchNewSessions = async (updatedSessions: Session[]): Promise<Session[]> => {
+  const fetchNewSessions = async (
+    updatedSessions: Session[],
+  ): Promise<Session[]> => {
     const latestUpdatedAt = findLatestUpdatedAt<Session>(updatedSessions);
     return await fetchUpdatedSessions(latestUpdatedAt);
   };
@@ -120,7 +179,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(true);
       await syncSessions();
     } catch (error) {
-      console.log('Error loading evaluations from storage:', error);
+      console.log("Error loading evaluations from storage:", error);
     } finally {
       setLoading(false);
     }
@@ -131,7 +190,9 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   return (
-    <SessionsContext.Provider value={{ sessions, loading, addSession, syncSessions }}>
+    <SessionsContext.Provider
+      value={{ sessions, loading, addSession, syncSessions }}
+    >
       {children}
     </SessionsContext.Provider>
   );
@@ -144,5 +205,3 @@ export const useSessions = (): SessionsContextProps => {
   }
   return context;
 };
-
-export default SessionsProvider;

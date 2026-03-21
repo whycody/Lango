@@ -6,17 +6,17 @@ import Header from "../../components/Header";
 import Flashcard from "../../components/Flashcard";
 import ActionButton from "../../components/ActionButton";
 import { FC, useEffect, useRef, useState } from "react";
-import { useDebouncedSyncSuggestions, useSuggestions } from "../../../store/SuggestionsContext";
+import { useDebouncedSyncSuggestions, useSuggestions } from "../../../store";
 import { Suggestion } from "../../../types";
-import { useLanguage } from "../../../store/LanguageContext";
+import { useLanguage } from "../../../store";
 import { trackEvent } from "../../../utils/analytics";
 import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
 
 type WordsSuggestionsCardProps = {
   style?: StyleProp<ViewStyle>;
-}
+};
 
-const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
+const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
@@ -29,11 +29,33 @@ const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
   const secondFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
 
   useEffect(() => {
-    if (suggestionsContext.suggestions.length == 0 ||
-      (firstFlashcard && firstFlashcard.mainLang == mainLang && secondFlashcard && secondFlashcard.mainLang == mainLang
-        && firstFlashcard.translationLang == translationLang && secondFlashcard.translationLang == translationLang)
-    ) return;
-    const sortedSuggestions = suggestionsContext.langSuggestions.slice().sort((a, b) => a.displayCount - b.displayCount);
+    const pickedFlashcards =
+      firstFlashcard && secondFlashcard
+        ? suggestionsContext.suggestions.filter((suggestion) =>
+            [firstFlashcard.id, secondFlashcard.id].includes(suggestion.id),
+          )
+        : [];
+
+    const pickedFlashcardsAreOutdated = pickedFlashcards.some(
+      (suggestion) => suggestion.added || suggestion.skipped,
+    );
+
+    const flashcardIsValid = (flashcard: Suggestion | undefined) =>
+      flashcard &&
+      flashcard.mainLang == mainLang &&
+      flashcard.translationLang == translationLang;
+
+    if (
+      suggestionsContext.langSuggestions.length > 0 &&
+      !pickedFlashcardsAreOutdated &&
+      flashcardIsValid(firstFlashcard) &&
+      flashcardIsValid(secondFlashcard)
+    )
+      return;
+
+    const sortedSuggestions = suggestionsContext.langSuggestions
+      .slice()
+      .sort((a, b) => a.displayCount - b.displayCount);
     const [firstSuggestion, secondSuggestion] = sortedSuggestions.slice(0, 2);
 
     setFirstFlashcard(firstSuggestion);
@@ -41,70 +63,106 @@ const WordsSuggestionsCard: FC<WordsSuggestionsCardProps>= ({ style }) => {
 
     if (!firstSuggestion && !secondSuggestion) return;
 
-    suggestionsContext.increaseSuggestionsDisplayCount([firstSuggestion, secondSuggestion].filter(Boolean).map(s => s.id));
-  }, [suggestionsContext.langSuggestions, firstFlashcard, secondFlashcard]);
+    suggestionsContext.increaseSuggestionsDisplayCount(
+      [firstSuggestion, secondSuggestion].filter(Boolean).map((s) => s.id),
+    );
+  }, [
+    suggestionsContext.langSuggestions,
+    suggestionsContext.suggestions,
+    firstFlashcard,
+    secondFlashcard,
+    mainLang,
+    translationLang,
+  ]);
 
-  const debouncedSyncSuggestions = useDebouncedSyncSuggestions(suggestionsContext.syncSuggestions, 3000);
+  const debouncedSyncSuggestions = useDebouncedSyncSuggestions(
+    suggestionsContext.syncSuggestions,
+    3000,
+  );
 
   const flipFlashcards = () => {
-    trackEvent(AnalyticsEventName.SUGGESTIONS_SKIPPED)
+    trackEvent(AnalyticsEventName.SUGGESTIONS_SKIPPED);
     if (firstFlashcard) firstFlashcardRef.current?.flipWithoutAdd();
     if (secondFlashcard) secondFlashcardRef.current?.flipWithoutAdd();
     debouncedSyncSuggestions();
-  }
+  };
 
   const handleFlashcardPress = async (first: boolean, add: boolean) => {
     const suggestionId = first ? firstFlashcard?.id : secondFlashcard?.id;
-    await suggestionsContext.skipSuggestions([suggestionId], add ? 'added' : 'skipped');
+    await suggestionsContext.skipSuggestions(
+      [suggestionId],
+      add ? "added" : "skipped",
+    );
     const currentFlashcards = [firstFlashcard, secondFlashcard].filter(Boolean);
-    const filteredSuggestions = suggestionsContext.langSuggestions.filter((suggestion) =>
-      !currentFlashcards.map((flashcard) => flashcard.id).includes(suggestion.id))
-    const newSuggestion = filteredSuggestions.length > 0 ? filteredSuggestions[first ? 0 : 1] : null;
-    if (newSuggestion) await suggestionsContext.increaseSuggestionsDisplayCount([newSuggestion?.id])
-    first ? setFirstFlashcard(newSuggestion) : setSecondFlashcard(newSuggestion);
+    const filteredSuggestions = suggestionsContext.langSuggestions.filter(
+      (suggestion) =>
+        !currentFlashcards
+          .map((flashcard) => flashcard.id)
+          .includes(suggestion.id),
+    );
+    const newSuggestion =
+      filteredSuggestions.length > 0
+        ? filteredSuggestions[first ? 0 : 1]
+        : null;
+    if (newSuggestion)
+      await suggestionsContext.increaseSuggestionsDisplayCount([
+        newSuggestion?.id,
+      ]);
+    first
+      ? setFirstFlashcard(newSuggestion)
+      : setSecondFlashcard(newSuggestion);
     debouncedSyncSuggestions();
-  }
+  };
 
   return (
     <View style={[styles.root, style]}>
-      <Header title={t('wordsSuggestion')} subtitle={t('wordSuggestionDesc')}/>
+      <Header title={t("wordsSuggestion")} subtitle={t("wordSuggestionDesc")} />
       <View style={styles.flashcardsContainer}>
         <Flashcard
           ref={firstFlashcardRef}
           onFlashcardPress={(add: boolean) => handleFlashcardPress(true, add)}
           suggestion={firstFlashcard}
-          style={{ flex: 1, marginRight: MARGIN_HORIZONTAL / 2 }}
+          style={styles.firstFlashcard}
         />
         <Flashcard
           ref={secondFlashcardRef}
           onFlashcardPress={(add: boolean) => handleFlashcardPress(false, add)}
           suggestion={secondFlashcard}
-          style={{ flex: 1, marginLeft: MARGIN_HORIZONTAL / 2 }}
+          style={styles.secondFlashcard}
         />
       </View>
       <ActionButton
-        label={t('switch_suggestions')}
+        label={t("switch_suggestions")}
         style={styles.actionButton}
         onPress={flipFlashcards}
-        icon={'sync'}
+        icon={"sync"}
       />
     </View>
   );
-}
+};
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    backgroundColor: colors.card,
-    paddingVertical: MARGIN_VERTICAL,
-    paddingHorizontal: MARGIN_HORIZONTAL
-  },
-  flashcardsContainer: {
-    marginTop: 14,
-    flexDirection: 'row',
-  },
-  actionButton: {
-    marginTop: 16,
-  }
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    root: {
+      backgroundColor: colors.card,
+      paddingVertical: MARGIN_VERTICAL,
+      paddingHorizontal: MARGIN_HORIZONTAL,
+    },
+    flashcardsContainer: {
+      marginTop: 14,
+      flexDirection: "row",
+    },
+    actionButton: {
+      marginTop: 16,
+    },
+    firstFlashcard: {
+      flex: 1,
+      marginRight: MARGIN_HORIZONTAL / 2,
+    },
+    secondFlashcard: {
+      flex: 1,
+      marginLeft: MARGIN_HORIZONTAL / 2,
+    },
+  });
 
 export default WordsSuggestionsCard;

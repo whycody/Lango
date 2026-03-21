@@ -16,36 +16,37 @@ const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
 
   return (
     <View>
-      {!small &&
+      {!small && (
         <Image
-          source={require('../../../assets/logo.png')}
+          source={require("../../../assets/logo.png")}
           style={styles.image}
           resizeMode="contain"
         />
-      }
+      )}
       <CustomText style={[style, styles.version, small && styles.smallVersion]}>
         {`${version}`}
       </CustomText>
     </View>
   );
-}
+};
 
-const getStyles = (colors: any) => StyleSheet.create({
-  image: {
-    height: 40,
-    alignSelf: 'center',
-    marginTop: 30,
-  },
-  version: {
-    color: colors.primary300,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 13
-  },
-  smallVersion: {
-    fontSize: 12,
-    color: colors.primary600
-  }
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    image: {
+      height: 40,
+      alignSelf: "center",
+      marginTop: 30,
+    },
+    version: {
+      color: colors.primary300,
+      fontWeight: "bold",
+      textAlign: "center",
+      fontSize: 13,
+    },
+    smallVersion: {
+      fontSize: 12,
+      color: colors.primary600,
+    },
+  });
 
 export default VersionFooter;

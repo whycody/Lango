@@ -4,5 +4,5 @@ export enum LibraryItems {
   MY_WORDS,
   LOGOUT,
   PRIVACY_POLICY,
-  USE_CONDITIONS
+  USE_CONDITIONS,
 }

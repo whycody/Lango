@@ -2,7 +2,8 @@ import { alertOpenSettings } from "./alertOpenSettings";
 import { ExpoSpeechRecognitionModule } from "expo-speech-recognition";
 
 export const ensureMicrophonePermission = async (): Promise<boolean> => {
-  let { status, canAskAgain } = await ExpoSpeechRecognitionModule.getPermissionsAsync();
+  let { status, canAskAgain } =
+    await ExpoSpeechRecognitionModule.getPermissionsAsync();
 
   if (status !== "granted" && canAskAgain) {
     const req = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
@@ -11,7 +12,7 @@ export const ensureMicrophonePermission = async (): Promise<boolean> => {
   }
 
   if (status !== "granted" && !canAskAgain) {
-    alertOpenSettings('microphone');
+    alertOpenSettings("microphone");
     return false;
   }
 

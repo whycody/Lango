@@ -5,8 +5,8 @@ import { useTypedMMKV } from "../hooks/useTypedMKKV";
 import { PermissionStatus } from "expo-notifications";
 
 export enum FlashcardSide {
-  WORD = 'WORD',
-  TRANSLATION = 'TRANSLATION',
+  WORD = "WORD",
+  TRANSLATION = "TRANSLATION",
 }
 
 export enum SessionLength {
@@ -24,7 +24,7 @@ export enum FlashcardSortingMethod {
   REPETITIONS_COUNT_DESC,
 }
 
-interface UserPreferencesContext {
+interface UserPreferencesContextProps {
   flashcardSide: FlashcardSide;
   sessionMode: SessionMode;
   sessionLength: SessionLength;
@@ -33,6 +33,7 @@ interface UserPreferencesContext {
   askLaterNotifications: number | null;
   flashcardsSortingMethod: FlashcardSortingMethod;
   userHasEverHitFlashcard: boolean;
+  userHasEverSkippedSuggestion: boolean;
   notificationsPermissionStatus: PermissionStatus;
   setFlashcardSide: (side: FlashcardSide) => void;
   setSessionMode: (mode: SessionMode) => void;
@@ -42,53 +43,95 @@ interface UserPreferencesContext {
   setAskLaterNotifications: (timestamp: number) => void;
   setFlashcardsSortingMethod: (method: FlashcardSortingMethod) => void;
   setUserHasEverHitFlashcard: (hasEverHit: boolean) => void;
+  setUserHasEverSkippedSuggestion: (hasEverSkip: boolean) => void;
   setNotificationsPermissionStatus: (status: PermissionStatus) => void;
 }
 
-export const UserPreferencesContext = createContext<UserPreferencesContext>({
-  flashcardSide: FlashcardSide.WORD,
-  sessionMode: SessionMode.STUDY,
-  sessionLength: 2,
-  sessionSpeechSynthesizer: true,
-  vibrationsEnabled: true,
-  askLaterNotifications: null,
-  flashcardsSortingMethod: FlashcardSortingMethod.ADD_DATE_DESC,
-  userHasEverHitFlashcard: false,
-  notificationsPermissionStatus: PermissionStatus.UNDETERMINED,
-  setFlashcardSide: () => {},
-  setSessionMode: () => {},
-  setSessionLength: () => {},
-  setSessionSpeechSynthesizer: () => {},
-  setVibrationsEnabled: () => {},
-  setAskLaterNotifications: () => {},
-  setFlashcardsSortingMethod: () => {},
-  setUserHasEverHitFlashcard: () => {},
-  setNotificationsPermissionStatus: () => {},
-});
+export const UserPreferencesContext =
+  createContext<UserPreferencesContextProps>({
+    flashcardSide: FlashcardSide.WORD,
+    sessionMode: SessionMode.STUDY,
+    sessionLength: 2,
+    sessionSpeechSynthesizer: true,
+    vibrationsEnabled: true,
+    askLaterNotifications: null,
+    flashcardsSortingMethod: FlashcardSortingMethod.ADD_DATE_DESC,
+    userHasEverHitFlashcard: false,
+    userHasEverSkippedSuggestion: false,
+    notificationsPermissionStatus: PermissionStatus.UNDETERMINED,
+    setFlashcardSide: () => {},
+    setSessionMode: () => {},
+    setSessionLength: () => {},
+    setSessionSpeechSynthesizer: () => {},
+    setVibrationsEnabled: () => {},
+    setAskLaterNotifications: () => {},
+    setFlashcardsSortingMethod: () => {},
+    setUserHasEverHitFlashcard: () => {},
+    setUserHasEverSkippedSuggestion: () => {},
+    setNotificationsPermissionStatus: () => {},
+  });
 
-const FLASHCARD_SIDE_KEY = 'flashcardSide';
-const SESSION_MODE_KEY = 'sessionMode';
-const SESSION_LENGTH_KEY = 'sessionLength';
-const SESSION_SPEECH_SYNTHESIZER_KEY = 'sessionSpeechSynthesizer';
-const VIBRATIONS_KEY = 'vibrationsEnabled';
-const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
-const FLASHCARDS_SORTING_METHOD = 'flashcardsSortingMethod';
-const USER_HAS_EVER_HIT_FLASHCARD = 'userHasEverHitFlashcard';
-const NOTIFICATION_PERMISSION_STATUS = 'lastUserNotificationPermissionStatus';
+const FLASHCARD_SIDE_KEY = "flashcardSide";
+const SESSION_MODE_KEY = "sessionMode";
+const SESSION_LENGTH_KEY = "sessionLength";
+const SESSION_SPEECH_SYNTHESIZER_KEY = "sessionSpeechSynthesizer";
+const VIBRATIONS_KEY = "vibrationsEnabled";
+const ASK_LATER_NOTIFICATIONS_KEY = "askLaterNotifications";
+const FLASHCARDS_SORTING_METHOD = "flashcardsSortingMethod";
+const USER_HAS_EVER_HIT_FLASHCARD = "userHasEverHitFlashcard";
+const USER_HAS_SKIPPED_SUGGESTION = "userHasEverSkippedSuggestion";
+const NOTIFICATION_PERMISSION_STATUS = "lastUserNotificationPermissionStatus";
 
-const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const { storage } = useUserStorage();
-  const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(FLASHCARD_SIDE_KEY, FlashcardSide.WORD, storage);
-  const [sessionMode, setSessionMode] = useTypedMMKV<SessionMode>(SESSION_MODE_KEY, SessionMode.STUDY, storage);
-  const [sessionLength, setSessionLength] = useTypedMMKV<SessionLength>(SESSION_LENGTH_KEY, SessionLength.MEDIUM, storage);
-  const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV(SESSION_SPEECH_SYNTHESIZER_KEY, true, storage);
-  const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(VIBRATIONS_KEY, true, storage);
-  const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(ASK_LATER_NOTIFICATIONS_KEY, 0, storage);
-  const [flashcardsSortingMethod, setFlashcardsSortingMethod] = useTypedMMKV<FlashcardSortingMethod>(FLASHCARDS_SORTING_METHOD,
-    FlashcardSortingMethod.ADD_DATE_DESC, storage)
-  const [userHasEverHitFlashcard, setUserHasEverHitFlashcard] = useTypedMMKV(USER_HAS_EVER_HIT_FLASHCARD, false, storage);
+  const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(
+    FLASHCARD_SIDE_KEY,
+    FlashcardSide.WORD,
+    storage,
+  );
+  const [sessionMode, setSessionMode] = useTypedMMKV<SessionMode>(
+    SESSION_MODE_KEY,
+    SessionMode.STUDY,
+    storage,
+  );
+  const [sessionLength, setSessionLength] = useTypedMMKV<SessionLength>(
+    SESSION_LENGTH_KEY,
+    SessionLength.MEDIUM,
+    storage,
+  );
+  const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV(
+    SESSION_SPEECH_SYNTHESIZER_KEY,
+    true,
+    storage,
+  );
+  const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(
+    VIBRATIONS_KEY,
+    true,
+    storage,
+  );
+  const [askLaterNotifications, setAskLaterNotifications] =
+    useTypedMMKV<number>(ASK_LATER_NOTIFICATIONS_KEY, 0, storage);
+  const [flashcardsSortingMethod, setFlashcardsSortingMethod] =
+    useTypedMMKV<FlashcardSortingMethod>(
+      FLASHCARDS_SORTING_METHOD,
+      FlashcardSortingMethod.ADD_DATE_DESC,
+      storage,
+    );
+  const [userHasEverHitFlashcard, setUserHasEverHitFlashcard] = useTypedMMKV(
+    USER_HAS_EVER_HIT_FLASHCARD,
+    false,
+    storage,
+  );
+  const [userHasEverSkippedSuggestion, setUserHasEverSkippedSuggestion] =
+    useTypedMMKV(USER_HAS_SKIPPED_SUGGESTION, false, storage);
   const [notificationsPermissionStatus, setNotificationsPermissionStatus] =
-    useTypedMMKV<PermissionStatus>(NOTIFICATION_PERMISSION_STATUS, PermissionStatus.UNDETERMINED, storage);
+    useTypedMMKV<PermissionStatus>(
+      NOTIFICATION_PERMISSION_STATUS,
+      PermissionStatus.UNDETERMINED,
+      storage,
+    );
 
   return (
     <UserPreferencesContext.Provider
@@ -101,6 +144,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         askLaterNotifications,
         flashcardsSortingMethod,
         userHasEverHitFlashcard,
+        userHasEverSkippedSuggestion,
         notificationsPermissionStatus,
         setFlashcardSide,
         setSessionMode,
@@ -110,6 +154,7 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setAskLaterNotifications,
         setFlashcardsSortingMethod,
         setUserHasEverHitFlashcard,
+        setUserHasEverSkippedSuggestion,
         setNotificationsPermissionStatus,
       }}
     >
@@ -121,9 +166,9 @@ const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
 export const useUserPreferences = () => {
   const context = useContext(UserPreferencesContext);
   if (!context) {
-    throw new Error("useUserPreferences must be used within a UserPreferencesProvider");
+    throw new Error(
+      "useUserPreferences must be used within a UserPreferencesProvider",
+    );
   }
   return context;
 };
-
-export default UserPreferencesProvider;

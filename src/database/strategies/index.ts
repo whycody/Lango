@@ -9,5 +9,5 @@ export const strategies = {
   ML: mlStrategy,
   HYBRID: hybridStrategy,
   RANDOM: randomStrategy,
-  OLDEST: oldestStrategy
+  OLDEST: oldestStrategy,
 };

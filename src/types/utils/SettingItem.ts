@@ -5,4 +5,4 @@ export type SettingItem = {
   icon: string;
   section: number;
   enabled?: boolean;
-}
+};

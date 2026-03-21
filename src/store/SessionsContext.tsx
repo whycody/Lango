@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSessionsRepository } from "../hooks/repo/";
+import { useSessionsRepository } from "../hooks";
 import uuid from "react-native-uuid";
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
 import {
@@ -26,7 +26,7 @@ import {
   syncInBatches,
   updateLocalItems,
 } from "../utils/sync";
-import { useAppInitializer } from "./AppInitializerContext";
+import { useAppInitializer } from ".";
 import { getTodayDate } from "../utils/dateUtil";
 
 interface SessionsContextProps {

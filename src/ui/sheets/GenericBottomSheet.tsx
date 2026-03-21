@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactNode, useCallback } from "react";
+import React, { forwardRef, ReactNode, RefObject, useCallback } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -41,7 +41,7 @@ export const GenericBottomSheet = forwardRef<
       allowDismiss = true,
       children,
     },
-    ref,
+    ref: RefObject<BottomSheetModal>,
   ) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);

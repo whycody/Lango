@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import CustomText from "../CustomText";
+import { CustomText } from "..";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { useTranslation } from "react-i18next";

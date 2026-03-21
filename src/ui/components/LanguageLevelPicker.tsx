@@ -8,7 +8,7 @@ import { useLanguage } from "../../store";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { Language, LanguageLevelRange } from "../../types";
-import { useHaptics } from "../../hooks/useHaptics";
+import { useHaptics } from "../../hooks";
 import { ImpactFeedbackStyle } from "expo-haptics";
 
 type LanguageLevelPickerProps = {

@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useSessions } from "./SessionsContext";
+import { useSessions } from ".";
 import { useAuth } from "../api/auth/AuthProvider";
 
 interface StatisticsContextProps {

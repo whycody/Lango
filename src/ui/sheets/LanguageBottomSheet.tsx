@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useState } from "react";
+import React, { forwardRef, RefObject, useCallback, useState } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -23,7 +23,7 @@ type LanguageBottomSheetProps = {
 export const LanguageBottomSheet = forwardRef<
   BottomSheetModal,
   LanguageBottomSheetProps
->((props, ref) => {
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const {
     onChangeIndex,

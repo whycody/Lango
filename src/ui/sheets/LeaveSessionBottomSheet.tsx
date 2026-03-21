@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback } from "react";
+import React, { forwardRef, RefObject, useCallback } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -10,15 +10,15 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { ActionButton, CustomText } from "../components";
 import { useTranslation } from "react-i18next";
 
-type FinishSessionBottomSheetProps = {
+type LeaveSessionBottomSheetProps = {
   leaveSession: () => void;
   onChangeIndex?: (index: number) => void;
 };
 
 export const LeaveSessionBottomSheet = forwardRef<
   BottomSheetModal,
-  FinishSessionBottomSheetProps
->((props, ref) => {
+  LeaveSessionBottomSheetProps
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();

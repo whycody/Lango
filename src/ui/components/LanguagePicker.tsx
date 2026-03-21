@@ -5,10 +5,10 @@ import * as Haptics from "expo-haptics";
 import { Language, LanguageCode } from "../../types";
 import { useLanguage } from "../../store";
 import { LanguageTypes } from "../../constants/LanguageTypes";
-import { useHaptics } from "../../hooks/useHaptics";
+import { useHaptics } from "../../hooks";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import Header from "./Header";
-import LanguageItem from "./items/LanguageItem";
+import { Header } from ".";
+import { LanguageItem } from "./items";
 import { useAuth } from "../../api/auth/AuthProvider";
 
 interface LanguagePickerProps {

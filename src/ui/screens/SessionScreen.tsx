@@ -13,8 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import { useHaptics } from "../../hooks/useHaptics";
-import { useWordSet } from "../../hooks/useWordSet";
+import { useHaptics, useWordSet } from "../../hooks";
 import { ScreenName } from "../../navigation/AppStack";
 import {
   FlashcardSide,

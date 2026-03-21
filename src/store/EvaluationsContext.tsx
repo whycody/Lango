@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useEvaluationsRepository } from "../hooks/repo/";
+import { useEvaluationsRepository } from "../hooks";
 import {
   fetchUpdatedEvaluations,
   syncEvaluationsOnServer,
@@ -22,7 +22,7 @@ import {
   syncInBatches,
   updateLocalItems,
 } from "../utils/sync";
-import { useAppInitializer } from "./AppInitializerContext";
+import { useAppInitializer } from ".";
 
 interface EvaluationsContextProps {
   evaluations: Evaluation[] | null;

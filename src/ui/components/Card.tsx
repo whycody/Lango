@@ -1,7 +1,7 @@
-import React, { FC, memo, useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import CustomText from "./CustomText";
+import { CustomText } from ".";
 import { Ionicons } from "@expo/vector-icons";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,7 +20,7 @@ interface CardProps {
   userHasEverSkippedSuggestion?: boolean;
 }
 
-export const Card: FC<CardProps> = (props) => {
+export const Card = memo<CardProps>((props) => {
   const {
     word,
     frontSide = true,
@@ -128,7 +128,7 @@ export const Card: FC<CardProps> = (props) => {
       </View>
     </LinearGradient>
   );
-};
+});
 
 const getStyles = (colors: any) =>
   StyleSheet.create({

@@ -20,7 +20,7 @@ import { SettingsItems } from "../../constants/SettingsItems";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import { FlashcardSide, useUserPreferences } from "../../store";
-import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
+import { useDynamicStatusBar } from "../../hooks";
 import * as Notifications from "expo-notifications";
 import { PermissionStatus } from "expo-notifications";
 import { ensureNotificationsPermission } from "../../utils/ensureNotificationPermission";

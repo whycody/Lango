@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Marquee } from "@animatereactnative/marquee";
-import CustomText from "../CustomText";
+import { CustomText } from "..";
 
 export const MarqueeRow = ({
   loading,

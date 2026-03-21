@@ -15,7 +15,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useWords, useLanguage } from "../../store";
 import { LibraryNavProp } from "../../types";
 import { useAuth } from "../../api/auth/AuthProvider";
-import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
+import { useDynamicStatusBar } from "../../hooks";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LibraryItems } from "../../constants/LibraryItems";
 import { ScreenName } from "../../navigation/AppStack";

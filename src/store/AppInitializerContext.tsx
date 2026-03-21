@@ -13,7 +13,7 @@ import {
   useSuggestionsRepository,
   useWordsMLStatesRepository,
   useWordsHeuristicStatesRepository,
-} from "../hooks/repo/";
+} from "../hooks";
 import { useAuth } from "../api/auth/AuthProvider";
 import { runMigrations } from "../database/migrations/migrations";
 import { InitialLoad } from "../types";

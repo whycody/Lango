@@ -7,10 +7,10 @@ import {
   StyleSheet,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { CustomText } from "./CustomText";
+import { CustomText } from ".";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { useHaptics } from "../../hooks/useHaptics";
+import { useHaptics } from "../../hooks";
 
 interface ActionButtonProps {
   label: string;

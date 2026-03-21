@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { useTheme } from "@react-navigation/native";
-import SquareFlag from "./SquareFlag";
+import { CustomText, SquareFlag } from ".";
 import {
   FlatList,
   Pressable,
@@ -17,9 +17,8 @@ import {
 } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import { useVoiceInput } from "../../hooks/useVoiceInput";
+import { useVoiceInput } from "../../hooks/";
 import { LanguageCode } from "../../constants/LanguageCode";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";

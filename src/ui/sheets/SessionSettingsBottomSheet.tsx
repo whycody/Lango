@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -21,18 +22,18 @@ import {
 } from "../components/items";
 import { FlashcardSide, useUserPreferences } from "../../store";
 import { useTranslation } from "react-i18next";
-import { useHaptics } from "../../hooks/useHaptics";
+import { useHaptics } from "../../hooks";
 import { useLanguage } from "../../store";
 
-interface StartSessionBottomSheetProps {
+type SessionSettingsBottomSheetProps = {
   onSettingsSave: () => void;
   onChangeIndex?: (index: number) => void;
-}
+};
 
 export const SessionSettingsBottomSheet = forwardRef<
   BottomSheetModal,
-  StartSessionBottomSheetProps
->((props, ref) => {
+  SessionSettingsBottomSheetProps
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const userPreferences = useUserPreferences();

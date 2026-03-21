@@ -7,15 +7,14 @@ import React, {
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import CustomText from "./CustomText";
+import { CustomText, SquareFlag } from ".";
 import * as Haptics from "expo-haptics";
 import FlipCard from "react-native-flip-card";
 import { Foundation } from "@expo/vector-icons";
 import { useWords, WordSource, useLanguage } from "../../store";
-import SquareFlag from "./SquareFlag";
 import { LinearGradient } from "expo-linear-gradient";
 import { Suggestion } from "../../types";
-import { useHaptics } from "../../hooks/useHaptics";
+import { useHaptics } from "../../hooks";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
 

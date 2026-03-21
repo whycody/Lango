@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useMemo } from "react";
+import React, { forwardRef, RefObject, useCallback, useMemo } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -21,7 +21,7 @@ type SortingMethodBottomSheetProps = {
 export const SortingMethodBottomSheet = forwardRef<
   BottomSheetModal,
   SortingMethodBottomSheetProps
->((props, ref) => {
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();

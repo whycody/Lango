@@ -1,7 +1,7 @@
 import { createContext, FC, ReactNode, useContext } from "react";
 import { SessionMode } from "../types";
-import { useUserStorage } from "./UserStorageContext";
-import { useTypedMMKV } from "../hooks/useTypedMKKV";
+import { useUserStorage } from ".";
+import { useTypedMMKV } from "../hooks";
 import { PermissionStatus } from "expo-notifications";
 
 export enum FlashcardSide {

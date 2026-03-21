@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback } from "react";
+import React, { forwardRef, RefObject, useCallback } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -21,7 +21,7 @@ type FinishSessionBottomSheetProps = {
 export const FinishSessionBottomSheet = forwardRef<
   BottomSheetModal,
   FinishSessionBottomSheetProps
->((props, ref) => {
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();

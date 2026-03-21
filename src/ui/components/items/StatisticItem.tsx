@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import { StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
-import { CustomText } from "../CustomText";
+import { CustomText } from "..";
 import { Ionicons } from "@expo/vector-icons";
 import { MARGIN_VERTICAL } from "../../../constants/margins";
 

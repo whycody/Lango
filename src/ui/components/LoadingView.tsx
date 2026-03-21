@@ -1,6 +1,6 @@
-import React, { FC, memo } from "react";
+import React, { FC } from "react";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
-import CustomText from "./CustomText";
+import { CustomText } from ".";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";

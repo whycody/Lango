@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, RefObject } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import { GenericBottomSheet } from "./GenericBottomSheet";
@@ -8,11 +8,8 @@ import { useLanguage } from "../../store";
 
 export const PickLanguageLevelBottomSheet = forwardRef<
   BottomSheetModal,
-  {
-    language?: Language;
-    onChangeIndex?: (index: number) => void;
-  }
->((props, ref) => {
+  PickLanguageLevelBottomSheetProps
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { t } = useTranslation();
   const { mainLang } = useLanguage();
 
@@ -41,3 +38,8 @@ export const PickLanguageLevelBottomSheet = forwardRef<
     </GenericBottomSheet>
   );
 });
+
+type PickLanguageLevelBottomSheetProps = {
+  language?: Language;
+  onChangeIndex?: (index: number) => void;
+};

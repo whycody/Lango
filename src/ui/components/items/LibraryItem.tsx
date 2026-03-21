@@ -1,4 +1,4 @@
-import { FC, memo } from "react";
+import { memo } from "react";
 import {
   Platform,
   Pressable,
@@ -10,9 +10,9 @@ import {
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { CustomText } from "../CustomText";
+import { CustomText } from "../";
 import * as Haptics from "expo-haptics";
-import { useHaptics } from "../../../hooks/useHaptics";
+import { useHaptics } from "../../../hooks";
 
 interface LibraryItemProps {
   index: number;
@@ -24,64 +24,58 @@ interface LibraryItemProps {
   style?: ViewStyle;
 }
 
-export const LibraryItem: FC<LibraryItemProps> = ({
-  index,
-  label,
-  description,
-  onPress,
-  icon,
-  enabled,
-  style,
-}) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors, index);
-  const { triggerHaptics } = useHaptics();
+export const LibraryItem = memo<LibraryItemProps>(
+  ({ index, label, description, onPress, icon, enabled, style }) => {
+    const { colors } = useTheme();
+    const styles = getStyles(colors, index);
+    const { triggerHaptics } = useHaptics();
 
-  const handlePress = () => {
-    onPress?.();
-    triggerHaptics(Haptics.ImpactFeedbackStyle.Light);
-  };
+    const handlePress = () => {
+      onPress?.();
+      triggerHaptics(Haptics.ImpactFeedbackStyle.Light);
+    };
 
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.root,
-        pressed && Platform.OS === "ios" && { opacity: 0.8 },
-        style,
-      ]}
-      android_ripple={{
-        color: index % 2 === 0 ? colors.card : colors.background,
-      }}
-      onPress={handlePress}
-    >
-      {icon && (
-        <Ionicons
-          name={icon}
-          color={colors.primary300}
-          size={24}
-          style={styles.icon}
-        />
-      )}
-      <View style={styles.textContainer}>
-        <CustomText weight={"SemiBold"} style={styles.label}>
-          {label}
-        </CustomText>
-        {description && (
-          <CustomText weight={"Regular"} style={styles.description}>
-            {description}
-          </CustomText>
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          styles.root,
+          pressed && Platform.OS === "ios" && { opacity: 0.8 },
+          style,
+        ]}
+        android_ripple={{
+          color: index % 2 === 0 ? colors.card : colors.background,
+        }}
+        onPress={handlePress}
+      >
+        {icon && (
+          <Ionicons
+            name={icon}
+            color={colors.primary300}
+            size={24}
+            style={styles.icon}
+          />
         )}
-      </View>
-      {enabled !== undefined && (
-        <Switch
-          value={enabled}
-          thumbColor={colors.primary}
-          onValueChange={handlePress}
-        />
-      )}
-    </Pressable>
-  );
-};
+        <View style={styles.textContainer}>
+          <CustomText weight={"SemiBold"} style={styles.label}>
+            {label}
+          </CustomText>
+          {description && (
+            <CustomText weight={"Regular"} style={styles.description}>
+              {description}
+            </CustomText>
+          )}
+        </View>
+        {enabled !== undefined && (
+          <Switch
+            value={enabled}
+            thumbColor={colors.primary}
+            onValueChange={handlePress}
+          />
+        )}
+      </Pressable>
+    );
+  },
+);
 
 const getStyles = (colors: any, index: number) =>
   StyleSheet.create({

@@ -17,7 +17,7 @@ import { RouteProp, useTheme } from "@react-navigation/native";
 import { trackEvent } from "../utils/analytics";
 import { AnalyticsEventName } from "../constants/AnalyticsEventName";
 import { HandleFlashcardBottomSheet } from "../ui/sheets";
-import { useHaptics } from "../hooks/useHaptics";
+import { useHaptics } from "../hooks";
 import { ImpactFeedbackStyle } from "expo-haptics";
 
 export type TabsParamList = {

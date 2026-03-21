@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect } from "react";
+import React, { forwardRef, RefObject, useEffect } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import { GenericBottomSheet } from "./GenericBottomSheet";
@@ -6,12 +6,14 @@ import { ensureMicrophonePermission } from "../../utils/ensureMicrophonePermissi
 import { ExpoSpeechRecognitionModule } from "expo-speech-recognition";
 import { AppState } from "react-native";
 
+type MicrophonePermissionBottomSheetProps = {
+  onChangeIndex?: (index: number) => void;
+};
+
 export const MicrophonePermissionBottomSheet = forwardRef<
   BottomSheetModal,
-  {
-    onChangeIndex?: (index: number) => void;
-  }
->((props, ref) => {
+  MicrophonePermissionBottomSheetProps
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { t } = useTranslation();
 
   useEffect(() => {

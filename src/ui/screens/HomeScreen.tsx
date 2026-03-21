@@ -21,7 +21,7 @@ import {
 } from "../../store";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useDynamicStatusBar } from "../../hooks/useDynamicStatusBar";
+import { useDynamicStatusBar } from "../../hooks";
 import { checkUpdates } from "../../utils/checkUpdates";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import * as Notifications from "expo-notifications";

@@ -8,12 +8,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useEvaluations } from "./EvaluationsContext";
-import { useWords } from "./WordsContext";
-import { useWordsMLStatesRepository } from "../hooks/repo/";
+import { useAppInitializer, useEvaluations, useWords } from ".";
+import { useWordsMLStatesRepository } from "../hooks";
 import { score } from "../utils/model";
 import { Evaluation, EvaluationGrade, Word, WordMLState } from "../types";
-import { useAppInitializer } from "./AppInitializerContext";
 
 interface WordsMLStatesContextProps {
   loading: boolean;

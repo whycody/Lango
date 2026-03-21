@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -26,7 +27,7 @@ import { FullWindowOverlay } from "react-native-screens";
 import axios from "axios";
 import TranslationUtils from "../../utils/translationUtils";
 import { LanguageCode, Word } from "../../types";
-import { useVoiceInput } from "../../hooks/useVoiceInput";
+import { useVoiceInput } from "../../hooks";
 import { MicrophonePermissionBottomSheet } from "./MicrophonePermissionBottomSheet";
 
 type WordTranslations = {
@@ -36,16 +37,16 @@ type WordTranslations = {
   to: LanguageCode;
 };
 
-interface HandleFlashcardBottomSheetProps {
+type HandleFlashcardBottomSheetProps = {
   flashcardId?: string;
   onWordEdit?: (id: string, word: string, translation: string) => void;
   onChangeIndex?: (index: number) => void;
-}
+};
 
 export const HandleFlashcardBottomSheet = forwardRef<
   BottomSheetModal,
   HandleFlashcardBottomSheetProps
->((props, ref) => {
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();

@@ -9,10 +9,10 @@ import React, {
   useState,
 } from "react";
 import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
-import { useWordsRepository } from "../hooks/repo/";
+import { useWordsRepository } from "../hooks";
 import uuid from "react-native-uuid";
 import { Word } from "../types";
-import { useLanguage } from "./LanguageContext";
+import { useAppInitializer, useLanguage } from ".";
 import {
   findChangedItems,
   findLatestUpdatedAt,
@@ -21,7 +21,6 @@ import {
   syncInBatches,
   updateLocalItems,
 } from "../utils/sync";
-import { useAppInitializer } from "./AppInitializerContext";
 
 interface WordsContextProps {
   words: Word[];

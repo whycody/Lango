@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
-import CustomText from "./CustomText";
+import { CustomText } from ".";
 import { FC } from "react";
 
 interface HeaderProps {

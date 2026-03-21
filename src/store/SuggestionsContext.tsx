@@ -8,14 +8,14 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSuggestionsRepository } from "../hooks/repo/";
+import { useSuggestionsRepository } from "../hooks";
 import {
   fetchUpdatedSuggestions,
   syncSuggestionsOnServer,
 } from "../api/apiClient";
 import debounce from "lodash.debounce";
 import { Suggestion } from "../types";
-import { useLanguage } from "./LanguageContext";
+import { useAppInitializer, useLanguage } from ".";
 import {
   findChangedItems,
   findLatestUpdatedAt,
@@ -24,7 +24,6 @@ import {
   syncInBatches,
   updateLocalItems,
 } from "../utils/sync";
-import { useAppInitializer } from "./AppInitializerContext";
 import { useAuth } from "../api/auth/AuthProvider";
 
 interface SuggestionsContextProps {

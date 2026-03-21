@@ -2,7 +2,7 @@ import { FC, useRef, useState } from "react";
 import { Animated, Easing, Pressable, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import CustomText from "../CustomText";
+import { CustomText } from "..";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { SessionLength } from "../../../store";
 import { LinearGradient } from "expo-linear-gradient";

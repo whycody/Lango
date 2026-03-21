@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback } from "react";
+import React, { forwardRef, RefObject, useCallback } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -13,7 +13,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { FullWindowOverlay } from "react-native-screens";
 import { useWordsWithDetails } from "../../store";
 
-type AcceptationBottomSheetProps = {
+type RemoveFlashcardBottomSheetProps = {
   flashcardId: string;
   onRemove: () => void;
   onCancel: () => void;
@@ -22,8 +22,8 @@ type AcceptationBottomSheetProps = {
 
 export const RemoveFlashcardBottomSheet = forwardRef<
   BottomSheetModal,
-  AcceptationBottomSheetProps
->((props, ref) => {
+  RemoveFlashcardBottomSheetProps
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { t } = useTranslation();

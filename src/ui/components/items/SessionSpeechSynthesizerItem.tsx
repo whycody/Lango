@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { CustomText } from "../CustomText";
+import { CustomText } from "..";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 

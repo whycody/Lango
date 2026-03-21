@@ -1,4 +1,10 @@
-import React, { forwardRef, useCallback, useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  RefObject,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -13,21 +19,21 @@ import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import { FlashcardSide, SessionLength, useUserPreferences } from "../../store";
 import { SessionMode } from "../../types";
-import { useHaptics } from "../../hooks/useHaptics";
+import { useHaptics } from "../../hooks";
 
-interface StartSessionBottomSheetProps {
+type StartSessionBottomSheetProps = {
   onSessionStart: (
     length: SessionLength,
     mode: SessionMode,
     flashcardSide: FlashcardSide,
   ) => void;
   onChangeIndex?: (index: number) => void;
-}
+};
 
 export const StartSessionBottomSheet = forwardRef<
   BottomSheetModal,
   StartSessionBottomSheetProps
->((props, ref) => {
+>((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const userPreferences = useUserPreferences();

@@ -1,5 +1,5 @@
 import { Image, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import CustomText from "./CustomText";
+import { CustomText } from ".";
 import { useTheme } from "@react-navigation/native";
 import appBuildNumbers from "../../../app.json";
 import { FC } from "react";

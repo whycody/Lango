@@ -19,7 +19,7 @@ interface LibraryItemProps {
   label: string;
   description?: string;
   onPress?: () => void;
-  icon?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
   enabled?: boolean;
   style?: ViewStyle;
 }

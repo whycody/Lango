@@ -16,7 +16,7 @@ interface ActionButtonProps {
   label: string;
   active?: boolean;
   primary?: boolean;
-  icon?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
   onPress?: () => void;
   style?: any;
   loading?: boolean;

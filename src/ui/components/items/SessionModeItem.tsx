@@ -25,7 +25,7 @@ const SessionModeItem: FC<SessionModeItemProps> = ({
   const styles = getStyles(colors, selected);
   const { t } = useTranslation();
 
-  let iconName = "";
+  let iconName: keyof typeof Ionicons.glyphMap = "school-outline";
   switch (mode) {
     case SessionMode.STUDY:
       iconName = "school-outline";

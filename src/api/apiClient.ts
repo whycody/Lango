@@ -107,7 +107,9 @@ export const signInWithApple = async (
   }
 };
 
-export const refreshTokens = async (refreshToken: string) => {
+export const refreshTokens = async (
+  refreshToken: string,
+): Promise<{ accessToken: string; refreshToken: string } | null> => {
   try {
     const deviceId = await getDeviceId();
     return await apiCall(

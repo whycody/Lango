@@ -9,7 +9,7 @@ import { MARGIN_VERTICAL } from "../../../constants/margins";
 interface StatisticItemProps {
   label: string;
   description: string;
-  icon: string;
+  icon: keyof typeof Ionicons.glyphMap;
   style?: any;
 }
 

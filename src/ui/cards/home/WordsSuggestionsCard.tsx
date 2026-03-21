@@ -36,17 +36,20 @@ const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) => {
           )
         : [];
 
+    const pickedFlashcardsAreOutdated = pickedFlashcards.some(
+      (suggestion) => suggestion.added || suggestion.skipped,
+    );
+
+    const flashcardIsValid = (flashcard: Suggestion | undefined) =>
+      flashcard &&
+      flashcard.mainLang == mainLang &&
+      flashcard.translationLang == translationLang;
+
     if (
-      suggestionsContext.langSuggestions.length == 0 ||
-      (!pickedFlashcards.some(
-        (suggestion) => suggestion.added || suggestion.skipped,
-      ) &&
-        firstFlashcard &&
-        firstFlashcard.mainLang == mainLang &&
-        secondFlashcard &&
-        secondFlashcard.mainLang == mainLang &&
-        firstFlashcard.translationLang == translationLang &&
-        secondFlashcard.translationLang == translationLang)
+      suggestionsContext.langSuggestions.length > 0 &&
+      !pickedFlashcardsAreOutdated &&
+      flashcardIsValid(firstFlashcard) &&
+      flashcardIsValid(secondFlashcard)
     )
       return;
 
@@ -68,6 +71,8 @@ const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) => {
     suggestionsContext.suggestions,
     firstFlashcard,
     secondFlashcard,
+    mainLang,
+    translationLang,
   ]);
 
   const debouncedSyncSuggestions = useDebouncedSyncSuggestions(

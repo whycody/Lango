@@ -29,8 +29,8 @@ import {
 import { EvaluationGrade, SessionMode, SessionWord, Word } from "../../types";
 import { WordUpdate } from "../../types/utils/WordUpdate";
 import { trackEvent } from "../../utils/analytics";
-import { Card, CustomText } from "../components";
-import { SessionHeader } from "../components/session";
+import { CustomText } from "../components";
+import { Card, SessionHeader } from "../components/session";
 import { WordLevelItem } from "../components/items";
 import {
   FinishSessionBottomSheet,

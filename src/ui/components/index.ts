@@ -1,6 +1,5 @@
 export * from "./ActionButton";
 export * from "./Alert";
-export * from "./Card";
 export * from "./CustomText";
 export * from "./EmptyList";
 export * from "./Flashcard";

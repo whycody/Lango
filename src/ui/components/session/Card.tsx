@@ -1,12 +1,12 @@
 import React, { memo, useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { CustomText } from ".";
+import { CustomText } from "..";
 import { Ionicons } from "@expo/vector-icons";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-import { SessionWord } from "../../types";
+import { SessionWord } from "../../../types";
 
 interface CardProps {
   text: string;

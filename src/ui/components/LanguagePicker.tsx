@@ -22,7 +22,7 @@ interface LanguagePickerProps {
   style?: ViewStyle;
 }
 
-const LanguagePicker = (props: LanguagePickerProps) => {
+export const LanguagePicker = (props: LanguagePickerProps) => {
   const {
     languageType = LanguageTypes.MAIN,
     onLanguagePick,
@@ -139,5 +139,3 @@ const getStyles = () =>
       paddingHorizontal: MARGIN_HORIZONTAL,
     },
   });
-
-export default LanguagePicker;

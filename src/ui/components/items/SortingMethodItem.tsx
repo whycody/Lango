@@ -15,7 +15,7 @@ type SortingMethodItemProps = {
   style?: any;
 };
 
-const SortingMethodItem: FC<SortingMethodItemProps> = ({
+export const SortingMethodItem: FC<SortingMethodItemProps> = ({
   index,
   id,
   label,
@@ -33,9 +33,7 @@ const SortingMethodItem: FC<SortingMethodItemProps> = ({
       onPress={() => onPress(id)}
       android_ripple={{ color: colors.background }}
     >
-      {index !== 0 && (
-        <View style={styles.divider} />
-      )}
+      {index !== 0 && <View style={styles.divider} />}
       <LinearGradient
         colors={["transparent", checked ? colors.cardAccent600 : "transparent"]}
         start={{ x: 0, y: 0 }}
@@ -80,5 +78,3 @@ const getStyles = (colors: any) =>
       backgroundColor: colors.background,
     },
   });
-
-export default memo(SortingMethodItem);

@@ -15,7 +15,7 @@ type SessionHeaderProps = {
   onSettingsPressed: () => void;
 };
 
-const SessionHeader: FC<SessionHeaderProps> = ({
+export const SessionHeader: FC<SessionHeaderProps> = ({
   length,
   cardsSetLength,
   progress,
@@ -85,5 +85,3 @@ const getStyles = (colors: any) =>
       height: "100%",
     },
   });
-
-export default SessionHeader;

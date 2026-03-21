@@ -15,7 +15,7 @@ type LanguageLevelItemProps = {
   onPress: (level: LanguageLevelRange) => void;
 };
 
-const LanguageLevelItem: FC<LanguageLevelItemProps> = ({
+export const LanguageLevelItem: FC<LanguageLevelItemProps> = ({
   level,
   code,
   label,
@@ -28,9 +28,7 @@ const LanguageLevelItem: FC<LanguageLevelItemProps> = ({
 
   return (
     <>
-      {level !== 1 && (
-        <View style={styles.divider} />
-      )}
+      {level !== 1 && <View style={styles.divider} />}
       <LinearGradient
         colors={["transparent", picked ? colors.cardAccent300 : "transparent"]}
         start={{ x: 0, y: 0 }}
@@ -88,5 +86,3 @@ const getStyles = (colors: any) =>
       flex: 1,
     },
   });
-
-export default LanguageLevelItem;

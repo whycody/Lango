@@ -8,11 +8,11 @@ import { useTheme } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTranslation } from "react-i18next";
-import Header from "../components/Header";
+import { Header } from "../components";
 import { FlashList } from "@shopify/flash-list";
 import { FlashcardSortingMethod, useUserPreferences } from "../../store";
 import { getSortingMethodLabel } from "../../utils/sortingUtil";
-import SortingMethodItem from "../components/items/SortingMethodItem";
+import { SortingMethodItem } from "../components/items";
 
 type SortingMethodBottomSheetProps = {
   onChangeIndex?: (index: number) => void;

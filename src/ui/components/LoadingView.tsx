@@ -7,7 +7,7 @@ import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 
 type LoadingViewProps = {};
 
-const LoadingView: FC<LoadingViewProps> = () => {
+export const LoadingView: FC<LoadingViewProps> = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -63,5 +63,3 @@ const getStyles = (colors: any, insets: EdgeInsets) =>
       paddingBottom: 50,
     },
   });
-
-export default memo(LoadingView);

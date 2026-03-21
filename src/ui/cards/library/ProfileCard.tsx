@@ -2,7 +2,7 @@ import { Image, StyleSheet, View } from "react-native";
 import { MARGIN_VERTICAL } from "../../../constants/margins";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import CustomText from "../../components/CustomText";
+import { CustomText } from "../../components";
 import { useAuth } from "../../../api/auth/AuthProvider";
 
 const ProfileCard = () => {

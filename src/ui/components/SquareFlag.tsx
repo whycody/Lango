@@ -17,11 +17,13 @@ type SquareFlagProps = {
   style?: any;
 };
 
-const SquareFlag: FC<SquareFlagProps> = ({ languageCode, size, style }) => {
+export const SquareFlag: FC<SquareFlagProps> = ({
+  languageCode,
+  size,
+  style,
+}) => {
   const Flag = flagMap[languageCode];
   return Flag ? (
     <Flag width={size ? size : 22} height={size ? size : 22} style={style} />
   ) : null;
 };
-
-export default SquareFlag;

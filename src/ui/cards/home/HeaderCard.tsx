@@ -9,12 +9,10 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { expo } from "../../../../app.json";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
-import CustomText from "../../components/CustomText";
+import { ActionButton, CustomText, SquareFlag } from "../../components";
 import { ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import ActionButton from "../../components/ActionButton";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import SquareFlag from "../../components/SquareFlag";
 import { getCurrentStreak, Streak } from "../../../utils/streakUtils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SessionMode } from "../../../types";

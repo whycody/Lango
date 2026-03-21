@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import CustomText from "../CustomText";
+import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -13,12 +13,9 @@ interface SessionSpeechSynthesizerItemProps {
   style?: any;
 }
 
-const SessionSpeechSynthesizerItem: FC<SessionSpeechSynthesizerItemProps> = ({
-  synthesizerOn,
-  selected,
-  onPress,
-  style,
-}) => {
+export const SessionSpeechSynthesizerItem: FC<
+  SessionSpeechSynthesizerItemProps
+> = ({ synthesizerOn, selected, onPress, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, selected);
   const { t } = useTranslation();
@@ -77,5 +74,3 @@ const getStyles = (colors: any, selected: boolean) =>
       color: colors.primary300,
     },
   });
-
-export default SessionSpeechSynthesizerItem;

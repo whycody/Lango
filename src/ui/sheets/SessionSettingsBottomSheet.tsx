@@ -13,14 +13,14 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import ActionButton from "../components/ActionButton";
+import { ActionButton, CustomText, Header } from "../components";
 import * as Haptics from "expo-haptics";
-import Header from "../components/Header";
-import CustomText from "../components/CustomText";
-import SessionModeItem from "../components/items/SessionModeItem";
+import {
+  SessionModeItem,
+  SessionSpeechSynthesizerItem,
+} from "../components/items";
 import { FlashcardSide, useUserPreferences } from "../../store";
 import { useTranslation } from "react-i18next";
-import SessionSpeechSynthesizerItem from "../components/items/SessionSpeechSynthesizerItem";
 import { useHaptics } from "../../hooks/useHaptics";
 import { useLanguage } from "../../store";
 

@@ -13,7 +13,7 @@ type EmptyListProps = {
   style?: any;
 };
 
-const EmptyList: FC<EmptyListProps> = ({
+export const EmptyList: FC<EmptyListProps> = ({
   title,
   description,
   icon,
@@ -62,5 +62,3 @@ const getStyles = (colors: any) =>
       marginHorizontal: MARGIN_HORIZONTAL * 3,
     },
   });
-
-export default EmptyList;

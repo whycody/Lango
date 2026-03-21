@@ -9,7 +9,7 @@ interface HeaderProps {
   style?: any;
 }
 
-const Header: FC<HeaderProps> = ({ title, subtitle, style }) => {
+export const Header: FC<HeaderProps> = ({ title, subtitle, style }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -35,5 +35,3 @@ const getStyles = (colors: any) =>
       marginTop: 6,
     },
   });
-
-export default Header;

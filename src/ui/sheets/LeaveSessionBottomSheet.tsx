@@ -7,8 +7,7 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import CustomText from "../components/CustomText";
-import ActionButton from "../components/ActionButton";
+import { ActionButton, CustomText } from "../components";
 import { useTranslation } from "react-i18next";
 
 type FinishSessionBottomSheetProps = {

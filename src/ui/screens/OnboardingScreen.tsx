@@ -1,12 +1,15 @@
-import LanguagePicker from "../components/LanguagePicker";
-import OnboardingScreenContainer from "../components/OnboardingScreenContainer";
+import {
+  ActionButton,
+  LanguageLevelPicker,
+  LanguagePicker,
+  OnboardingScreenContainer,
+} from "../components";
 import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useAuth } from "../../api/auth/AuthProvider";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { LanguageTypes } from "../../constants/LanguageTypes";
-import ActionButton from "../components/ActionButton";
 import { useTranslation } from "react-i18next";
 import {
   Animated,
@@ -16,13 +19,12 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import WelcomeScreen from "./WelcomeScreen";
+import { WelcomeScreen } from ".";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLanguage } from "../../store";
 import { updateUserLanguages } from "../../api/apiClient";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";
-import { LanguageLevelPicker } from "../components/LanguageLevelPicker";
 import { LanguageLevelRange } from "../../types";
 
 const screenHeight = Dimensions.get("window").height;

@@ -20,7 +20,7 @@ interface CardProps {
   userHasEverSkippedSuggestion?: boolean;
 }
 
-const Card: FC<CardProps> = (props) => {
+export const Card: FC<CardProps> = (props) => {
   const {
     word,
     frontSide = true,
@@ -218,5 +218,3 @@ const getStyles = (colors: any) =>
       borderRadius: 50,
     },
   });
-
-export default memo(Card);

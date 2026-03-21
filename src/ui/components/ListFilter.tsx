@@ -8,7 +8,7 @@ interface ListFilterProps extends Omit<TextInputProps, "style"> {
   onClear: () => void;
 }
 
-const ListFilter = forwardRef<TextInput, ListFilterProps>(
+export const ListFilter = forwardRef<TextInput, ListFilterProps>(
   ({ isSearching, onClear, ...props }, ref) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
@@ -66,5 +66,3 @@ const getStyles = (colors: any) =>
       marginRight: 10,
     },
   });
-
-export default ListFilter;

@@ -9,10 +9,9 @@ interface OnboardingScreenContainerProps {
   currentStep: number;
 }
 
-const OnboardingScreenContainer: React.FC<OnboardingScreenContainerProps> = ({
-  children,
-  currentStep,
-}) => {
+export const OnboardingScreenContainer: React.FC<
+  OnboardingScreenContainerProps
+> = ({ children, currentStep }) => {
   const insets = useSafeAreaInsets();
   const styles = getStyles(insets);
 
@@ -68,5 +67,3 @@ const getStyles = (insets: any) =>
       alignItems: "center",
     },
   });
-
-export default OnboardingScreenContainer;

@@ -7,13 +7,10 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import SessionLengthItem from "../components/items/SessionLengthItem";
-import ActionButton from "../components/ActionButton";
+import { ActionButton, CustomText, Header } from "../components";
+import { SessionLengthItem, SessionModeItem } from "../components/items";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
-import Header from "../components/Header";
-import CustomText from "../components/CustomText";
-import SessionModeItem from "../components/items/SessionModeItem";
 import { FlashcardSide, SessionLength, useUserPreferences } from "../../store";
 import { SessionMode } from "../../types";
 import { useHaptics } from "../../hooks/useHaptics";

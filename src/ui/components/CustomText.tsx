@@ -14,7 +14,7 @@ const FONT_MAP: Record<FontWeight, string> = {
   Black: "Montserrat-Black",
 };
 
-const CustomText: FC<CustomTextProps> = ({
+export const CustomText: FC<CustomTextProps> = ({
   weight = "Regular",
   style,
   children,
@@ -62,5 +62,3 @@ const styles = StyleSheet.create({
     fontFamily: FONT_MAP.Bold,
   },
 });
-
-export default CustomText;

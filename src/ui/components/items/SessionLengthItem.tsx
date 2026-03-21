@@ -14,7 +14,7 @@ interface SessionLengthItemProps {
   style?: any;
 }
 
-const SessionLengthItem: FC<SessionLengthItemProps> = ({
+export const SessionLengthItem: FC<SessionLengthItemProps> = ({
   length,
   selected,
   onPress,
@@ -92,5 +92,3 @@ const getStyles = (colors: any, selected: boolean) =>
       color: colors.primary300,
     },
   });
-
-export default SessionLengthItem;

@@ -1,7 +1,7 @@
 import { FC, memo, useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
-import CustomText from "../CustomText";
+import { CustomText } from "../CustomText";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { getLevelColor } from "../../../utils/getLevelColor";
@@ -17,7 +17,7 @@ type FlashcardListItemProps = {
   onRemovePress?: (id: string) => void;
 };
 
-const FlashcardListItem: FC<FlashcardListItemProps> = ({
+export const FlashcardListItem: FC<FlashcardListItemProps> = ({
   id,
   text,
   level,
@@ -103,5 +103,3 @@ const getStyles = (colors: any) =>
       opacity: 0.8,
     },
   });
-
-export default memo(FlashcardListItem);

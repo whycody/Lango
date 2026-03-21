@@ -10,7 +10,7 @@ import {
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import CustomText from "../CustomText";
+import { CustomText } from "../CustomText";
 import * as Haptics from "expo-haptics";
 import { useHaptics } from "../../../hooks/useHaptics";
 
@@ -24,7 +24,7 @@ interface LibraryItemProps {
   style?: ViewStyle;
 }
 
-const LibraryItem: FC<LibraryItemProps> = ({
+export const LibraryItem: FC<LibraryItemProps> = ({
   index,
   label,
   description,
@@ -107,5 +107,3 @@ const getStyles = (colors: any, index: number) =>
       fontSize: 12,
     },
   });
-
-export default memo(LibraryItem);

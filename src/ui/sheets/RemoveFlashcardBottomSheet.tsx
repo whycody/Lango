@@ -6,13 +6,11 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import CustomText from "../components/CustomText";
+import { ActionButton, CustomText, Header } from "../components";
+import { FlashcardListItem } from "../components/items";
 import { Platform, StyleSheet } from "react-native";
-import ActionButton from "../components/ActionButton";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
-import FlashcardListItem from "../components/items/FlashcardListItem";
 import { useWordsWithDetails } from "../../store";
 
 type AcceptationBottomSheetProps = {

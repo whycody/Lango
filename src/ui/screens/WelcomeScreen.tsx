@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useAuth } from "../../api/auth/AuthProvider";
-import CustomText from "../components/CustomText";
+import { CustomText } from "../components";
 import LottieView from "lottie-react-native";
 import { MARGIN_HORIZONTAL } from "../../constants/margins";
 import { useTranslation } from "react-i18next";

@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import CustomText from "../ui/components/CustomText";
+import { CustomText } from "../ui/components";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RouteProp, useTheme } from "@react-navigation/native";

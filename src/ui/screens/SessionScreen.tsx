@@ -30,10 +30,9 @@ import {
 import { EvaluationGrade, SessionMode, SessionWord, Word } from "../../types";
 import { WordUpdate } from "../../types/utils/WordUpdate";
 import { trackEvent } from "../../utils/analytics";
-import Card from "../components/Card";
-import CustomText from "../components/CustomText";
-import WordLevelItem from "../components/items/WordLevelItem";
-import SessionHeader from "../components/session/SessionHeader";
+import { Card, CustomText } from "../components";
+import { SessionHeader } from "../components/session";
+import { WordLevelItem } from "../components/items";
 import {
   FinishSessionBottomSheet,
   HandleFlashcardBottomSheet,

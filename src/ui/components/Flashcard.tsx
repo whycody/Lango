@@ -25,7 +25,7 @@ interface FlashcardProps {
   style?: any;
 }
 
-const Flashcard = forwardRef(
+export const Flashcard = forwardRef(
   ({ onFlashcardPress, suggestion, style }: FlashcardProps, ref) => {
     const [flippable, setFlippable] = useState(true);
     const [newFlashcardIsReady, setNewFlashcardIsReady] = useState(false);
@@ -191,5 +191,3 @@ const getStyles = (colors: any) =>
       top: 12,
     },
   });
-
-export default Flashcard;

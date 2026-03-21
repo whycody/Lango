@@ -7,8 +7,7 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import CustomText from "../components/CustomText";
-import ActionButton from "../components/ActionButton";
+import { ActionButton, CustomText } from "../components";
 import { useTranslation } from "react-i18next";
 import { WordUpdate } from "../../types/utils/WordUpdate";
 
@@ -83,9 +82,27 @@ export const FinishSessionBottomSheet = forwardRef<
 
         {props.flashcardUpdates.length > 0 && (
           <View style={styles.statusBar}>
-            <View style={[styles.statusBarSegment, styles.grade3Bar, { flex: grade3Count }]} />
-            <View style={[styles.statusBarSegment, styles.grade2Bar, { flex: grade2Count }]} />
-            <View style={[styles.statusBarSegment, styles.grade1Bar, { flex: grade1Count }]} />
+            <View
+              style={[
+                styles.statusBarSegment,
+                styles.grade3Bar,
+                { flex: grade3Count },
+              ]}
+            />
+            <View
+              style={[
+                styles.statusBarSegment,
+                styles.grade2Bar,
+                { flex: grade2Count },
+              ]}
+            />
+            <View
+              style={[
+                styles.statusBarSegment,
+                styles.grade1Bar,
+                { flex: grade1Count },
+              ]}
+            />
           </View>
         )}
 

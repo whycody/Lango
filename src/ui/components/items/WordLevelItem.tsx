@@ -16,7 +16,7 @@ interface SessionLengthItemProps {
   style?: any;
 }
 
-const WordLevelItem: FC<SessionLengthItemProps> = ({
+export const WordLevelItem: FC<SessionLengthItemProps> = ({
   level,
   active,
   onPress,
@@ -206,5 +206,3 @@ const getStyles = (colors: any, level: number) =>
       color: colors.primary300,
     },
   });
-
-export default WordLevelItem;

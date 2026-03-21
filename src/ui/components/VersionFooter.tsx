@@ -9,7 +9,10 @@ type VersionFooterProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
+export const VersionFooter: FC<VersionFooterProps> = ({
+  small = false,
+  style,
+}) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const version = appBuildNumbers.expo.version;
@@ -48,5 +51,3 @@ const getStyles = (colors: any) =>
       color: colors.primary600,
     },
   });
-
-export default VersionFooter;

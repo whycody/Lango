@@ -17,7 +17,7 @@ type LanguageItemProps = {
   style?: any;
 };
 
-const LanguageItem: FC<LanguageItemProps> = ({
+export const LanguageItem: FC<LanguageItemProps> = ({
   index,
   language,
   checked,
@@ -35,9 +35,7 @@ const LanguageItem: FC<LanguageItemProps> = ({
       onPress={onPress}
       android_ripple={onPress && { color: colors.background }}
     >
-      {index !== 0 && (
-        <View style={styles.divider} />
-      )}
+      {index !== 0 && <View style={styles.divider} />}
       <LinearGradient
         colors={["transparent", checked ? colors.cardAccent600 : "transparent"]}
         start={{ x: 0, y: 0 }}
@@ -97,5 +95,3 @@ const getStyles = (colors: any) =>
       backgroundColor: colors.background,
     },
   });
-
-export default memo(LanguageItem);

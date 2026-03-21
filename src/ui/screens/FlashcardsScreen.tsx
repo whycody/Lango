@@ -7,10 +7,10 @@ import {
   TextInput,
   View,
 } from "react-native";
-import CustomText from "../components/CustomText";
+import { ActionButton, CustomText, EmptyList, ListFilter } from "../components";
+import { FlashcardListItem, StatisticItem } from "../components/items";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import StatisticItem from "../components/items/StatisticItem";
 import {
   useWords,
   WordSource,
@@ -18,7 +18,6 @@ import {
   useUserPreferences,
 } from "../../store";
 import { useTranslation } from "react-i18next";
-import ActionButton from "../components/ActionButton";
 import React, {
   useCallback,
   useEffect,
@@ -27,13 +26,10 @@ import React, {
   useState,
 } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import FlashcardListItem from "../components/items/FlashcardListItem";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import ListFilter from "../components/ListFilter";
 import { WordWithDetails } from "../../types";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
-import EmptyList from "../components/EmptyList";
 import { ProgressBar } from "react-native-paper";
 import {
   getSortingMethod,

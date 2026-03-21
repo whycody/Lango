@@ -13,13 +13,15 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { Keyboard, Platform, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import CustomText from "../components/CustomText";
-import ActionButton from "../components/ActionButton";
+import {
+  ActionButton,
+  Alert,
+  CustomText,
+  Header,
+  WordInput,
+} from "../components";
 import { useTranslation } from "react-i18next";
 import { useWords, WordSource, useLanguage } from "../../store";
-import WordInput from "../components/WordInput";
-import Alert from "../components/Alert";
-import Header from "../components/Header";
 import { FullWindowOverlay } from "react-native-screens";
 import axios from "axios";
 import TranslationUtils from "../../utils/translationUtils";

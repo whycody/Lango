@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import ProfileCard from "../cards/library/ProfileCard";
 import { useTranslation } from "react-i18next";
-import LibraryItem from "../components/items/LibraryItem";
+import { LibraryItem } from "../components/items";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";

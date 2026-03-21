@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import { StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
-import CustomText from "../CustomText";
+import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { MARGIN_VERTICAL } from "../../../constants/margins";
 
@@ -13,7 +13,7 @@ interface StatisticItemProps {
   style?: any;
 }
 
-const StatisticItem: FC<StatisticItemProps> = ({
+export const StatisticItem: FC<StatisticItemProps> = ({
   label,
   description,
   icon,
@@ -67,5 +67,3 @@ const getStyles = (colors: any) =>
       fontSize: 12,
     },
   });
-
-export default StatisticItem;

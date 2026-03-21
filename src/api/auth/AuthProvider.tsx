@@ -32,7 +32,7 @@ import {
   UserProvider,
   UserUpdatePayload,
 } from "../../types";
-import LoadingView from "../../ui/components/LoadingView";
+import { LoadingView } from "../../ui/components";
 import { useMMKV, useMMKVObject } from "react-native-mmkv";
 import axios, { AxiosError } from "axios";
 import * as AppleAuthentication from "expo-apple-authentication";

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import CustomText from "../CustomText";
+import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { FlashcardSide } from "../../../store";
@@ -15,7 +15,7 @@ interface SessionModeItemProps {
   style?: any;
 }
 
-const SessionModeItem: FC<SessionModeItemProps> = ({
+export const SessionModeItem: FC<SessionModeItemProps> = ({
   mode,
   selected,
   onPress,
@@ -94,5 +94,3 @@ const getStyles = (colors: any, selected: boolean) =>
       color: colors.primary300,
     },
   });
-
-export default SessionModeItem;

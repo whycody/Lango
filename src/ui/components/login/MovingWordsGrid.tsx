@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Marquee } from "@animatereactnative/marquee";
 import CustomText from "../CustomText";
 
-const MarqueeRow = ({
+export const MarqueeRow = ({
   loading,
   words,
   reverse,
@@ -56,5 +56,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
-export default MarqueeRow;

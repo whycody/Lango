@@ -3,7 +3,7 @@ import { LanguageProvider, useAppInitializer } from "../store";
 import { useAuth } from "../api/auth/AuthProvider";
 import { LoginScreen, OnboardingScreen } from "../ui/screens/";
 import AppStack from "./AppStack";
-import LoadingView from "../ui/components/LoadingView";
+import { LoadingView } from "../ui/components";
 
 const Root = () => {
   const {

@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import FlipCard from "react-native-flip-card";
-import Card from "../components/Card";
+import { Card } from "../components";
 import { StyleSheet } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { GenericBottomSheet } from "./GenericBottomSheet";

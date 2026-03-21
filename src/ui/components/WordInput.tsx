@@ -36,7 +36,7 @@ type WordInputProps = TextInputProps & {
   style?: any;
 };
 
-const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
+export const WordInput: FC<WordInputProps> = forwardRef((props, ref) => {
   const {
     id,
     word,
@@ -220,5 +220,3 @@ const getStyles = (colors: any) =>
       color: colors.primary300,
     },
   });
-
-export default WordInput;

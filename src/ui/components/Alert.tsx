@@ -12,7 +12,7 @@ type AlertProps = {
   style?: any;
 };
 
-const Alert = ({ type, title, message, style }: AlertProps) => {
+export const Alert = ({ type, title, message, style }: AlertProps) => {
   const { colors } = useTheme();
   const styles = getStyles(colors, type);
 
@@ -59,5 +59,3 @@ const getStyles = (colors: any, type: "error" | "success") =>
       marginTop: 3,
     },
   });
-
-export default Alert;

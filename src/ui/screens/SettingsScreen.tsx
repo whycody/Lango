@@ -1,11 +1,11 @@
 import { BackHandler, SectionList, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import CustomText from "../components/CustomText";
+import { CustomText, VersionFooter } from "../components";
+import { LibraryItem } from "../components/items";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useLanguage } from "../../store";
-import LibraryItem from "../components/items/LibraryItem";
 import {
   useCallback,
   useEffect,
@@ -17,7 +17,6 @@ import {
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SettingItem } from "../../types";
 import { SettingsItems } from "../../constants/SettingsItems";
-import VersionFooter from "../components/VersionFooter";
 import { SettingsSections } from "../../constants/SettingsSections";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import { FlashcardSide, useUserPreferences } from "../../store";

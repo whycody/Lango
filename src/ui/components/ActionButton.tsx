@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import CustomText from "./CustomText";
+import { CustomText } from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useHaptics } from "../../hooks/useHaptics";
@@ -22,7 +22,7 @@ interface ActionButtonProps {
   loading?: boolean;
 }
 
-const ActionButton: FC<ActionButtonProps> = ({
+export const ActionButton: FC<ActionButtonProps> = ({
   label,
   active = true,
   primary,
@@ -142,5 +142,3 @@ const getStyles = (colors: any, primary: boolean, active: boolean) =>
       marginLeft: 4,
     },
   });
-
-export default ActionButton;

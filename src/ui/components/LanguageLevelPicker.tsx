@@ -1,14 +1,13 @@
 import React, { FC } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import LanguageItem from "../components/items/LanguageItem";
-import LanguageLevelItem from "../components/items/LanguageLevelItem";
+import { Header } from "../components";
+import { LanguageItem, LanguageLevelItem } from "../components/items";
 import { useTranslation } from "react-i18next";
 import { LANGUAGE_LEVEL_KEYS } from "../../constants/LanguageLevels";
 import { useLanguage } from "../../store";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { Language, LanguageLevelRange } from "../../types";
-import Header from "./Header";
 import { useHaptics } from "../../hooks/useHaptics";
 import { ImpactFeedbackStyle } from "expo-haptics";
 

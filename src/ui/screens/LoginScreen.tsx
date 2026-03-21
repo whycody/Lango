@@ -1,15 +1,13 @@
 import { useTheme } from "@react-navigation/native";
 import { Platform, StyleSheet, View } from "react-native";
-import CustomText from "../components/CustomText";
-import ActionButton from "../components/ActionButton";
+import { ActionButton, CustomText, VersionFooter } from "../components";
+import { MarqueeRow } from "../components/login";
 import { FC } from "react";
 import { MARGIN_VERTICAL } from "../../constants/margins";
 import { expo } from "../../../app.json";
 import { useTranslation } from "react-i18next";
-import MarqueeRow from "../components/login/MovingWordsGrid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserProvider } from "../../types";
-import VersionFooter from "../components/VersionFooter";
 
 type LoginProps = {
   login: (method: UserProvider) => Promise<void>;

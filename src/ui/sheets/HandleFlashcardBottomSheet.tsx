@@ -272,11 +272,8 @@ export const HandleFlashcardBottomSheet = forwardRef<
         backdropComponent={renderBackdrop}
         onChange={handleChangeIndex}
         containerComponent={renderContainerComponent}
-        backgroundStyle={{ backgroundColor: colors.card }}
-        handleIndicatorStyle={{
-          backgroundColor: colors.primary,
-          borderRadius: 0,
-        }}
+        backgroundStyle={styles.bottomSheetModal}
+        handleIndicatorStyle={styles.handleIndicatorStyle}
         keyboardBlurBehavior={"restore"}
         onDismiss={handleSheetDismiss}
       >
@@ -388,5 +385,12 @@ const getStyles = (colors: any) =>
     },
     bottomSpacer: {
       height: MARGIN_VERTICAL,
+    },
+    bottomSheetModal: {
+      backgroundColor: colors.card,
+    },
+    handleIndicatorStyle: {
+      backgroundColor: colors.primary,
+      borderRadius: 0,
     },
   });

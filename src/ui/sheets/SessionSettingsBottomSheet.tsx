@@ -100,11 +100,8 @@ export const SessionSettingsBottomSheet = forwardRef<
       index={0}
       onChange={handleChangingIndex}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.card }}
-      handleIndicatorStyle={{
-        backgroundColor: colors.primary,
-        borderRadius: 0,
-      }}
+      backgroundStyle={styles.bottomSheetModal}
+      handleIndicatorStyle={styles.handleIndicatorStyle}
     >
       <BottomSheetScrollView style={styles.root}>
         <Header title={t("sessions_settings")} style={styles.header} />
@@ -192,5 +189,12 @@ const getStyles = (colors: any) =>
       fontSize: 13,
       textAlign: "center",
       paddingVertical: MARGIN_VERTICAL,
+    },
+    bottomSheetModal: {
+      backgroundColor: colors.card,
+    },
+    handleIndicatorStyle: {
+      backgroundColor: colors.primary,
+      borderRadius: 0,
     },
   });

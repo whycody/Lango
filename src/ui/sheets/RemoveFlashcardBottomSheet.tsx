@@ -59,12 +59,9 @@ export const RemoveFlashcardBottomSheet = forwardRef<
       ref={ref}
       backdropComponent={renderBackdrop}
       containerComponent={renderContainerComponent}
-      backgroundStyle={{ backgroundColor: colors.card }}
+      backgroundStyle={styles.bottomSheetModal}
       onChange={(index: number) => props.onChangeIndex?.(index)}
-      handleIndicatorStyle={{
-        backgroundColor: colors.primary,
-        borderRadius: 0,
-      }}
+      handleIndicatorStyle={styles.handleIndicatorStyle}
     >
       <BottomSheetView style={styles.root}>
         <Header
@@ -119,5 +116,12 @@ const getStyles = (colors: any) =>
       textAlign: "center",
       paddingVertical: MARGIN_VERTICAL,
       paddingHorizontal: MARGIN_HORIZONTAL,
+    },
+    bottomSheetModal: {
+      backgroundColor: colors.card,
+    },
+    handleIndicatorStyle: {
+      backgroundColor: colors.primary,
+      borderRadius: 0,
     },
   });

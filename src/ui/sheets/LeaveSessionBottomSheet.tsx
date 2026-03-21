@@ -40,11 +40,8 @@ export const LeaveSessionBottomSheet = forwardRef<
       index={0}
       onChange={(index: number) => props.onChangeIndex?.(index)}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.card }}
-      handleIndicatorStyle={{
-        backgroundColor: colors.primary,
-        borderRadius: 0,
-      }}
+      backgroundStyle={styles.bottomSheetModal}
+      handleIndicatorStyle={styles.handleIndicatorStyle}
     >
       <BottomSheetScrollView style={styles.root}>
         <CustomText weight={"Bold"} style={styles.title}>
@@ -98,5 +95,12 @@ const getStyles = (colors: any) =>
     },
     button: {
       marginTop: MARGIN_VERTICAL,
+    },
+    bottomSheetModal: {
+      backgroundColor: colors.card,
+    },
+    handleIndicatorStyle: {
+      backgroundColor: colors.primary,
+      borderRadius: 0,
     },
   });

@@ -228,7 +228,7 @@ export function useDebouncedSyncSuggestions(
   delay: number = 1000,
 ) {
   const syncFnRef = useRef(syncFn);
-  const debouncedRef = useRef<() => void>();
+  const debouncedRef = useRef<ReturnType<typeof debounce>>();
 
   useEffect(() => {
     syncFnRef.current = syncFn;

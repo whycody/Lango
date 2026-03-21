@@ -66,11 +66,8 @@ export const GenericBottomSheet = forwardRef<
         stackBehavior={stackBehavior}
         onChange={(index: number) => onChangeIndex?.(index)}
         backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: colors.card }}
-        handleIndicatorStyle={{
-          backgroundColor: colors.primary,
-          borderRadius: 0,
-        }}
+        backgroundStyle={styles.bottomSheetModal}
+        handleIndicatorStyle={styles.handleIndicatorStyle}
       >
         <BottomSheetScrollView>
           {title && (
@@ -139,5 +136,12 @@ const getStyles = (colors: any) =>
     },
     spacer: {
       height: MARGIN_VERTICAL,
+    },
+    bottomSheetModal: {
+      backgroundColor: colors.card,
+    },
+    handleIndicatorStyle: {
+      backgroundColor: colors.primary,
+      borderRadius: 0,
     },
   });

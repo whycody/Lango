@@ -25,6 +25,7 @@ export const LanguageBottomSheet = forwardRef<
   LanguageBottomSheetProps
 >((props, ref: RefObject<BottomSheetModal>) => {
   const { colors } = useTheme();
+  const styles = getStyles(colors);
   const {
     onChangeIndex,
     allLanguages,
@@ -81,11 +82,8 @@ export const LanguageBottomSheet = forwardRef<
         onChange={(index: number) => onChangeIndex?.(index)}
         containerComponent={renderContainerComponent}
         backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: colors.card }}
-        handleIndicatorStyle={{
-          backgroundColor: colors.primary,
-          borderRadius: 0,
-        }}
+        backgroundStyle={styles.bottomSheetModal}
+        handleIndicatorStyle={styles.handleIndicatorStyle}
       >
         <BottomSheetScrollView>
           <LanguagePicker
@@ -106,13 +104,21 @@ export const LanguageBottomSheet = forwardRef<
   );
 });
 
-const styles = StyleSheet.create({
-  languagePicker: {
-    marginBottom: MARGIN_VERTICAL,
-  },
-  button: {
-    marginBottom: MARGIN_VERTICAL,
-    marginTop: MARGIN_VERTICAL / 2,
-    marginHorizontal: MARGIN_HORIZONTAL,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    languagePicker: {
+      marginBottom: MARGIN_VERTICAL,
+    },
+    button: {
+      marginBottom: MARGIN_VERTICAL,
+      marginTop: MARGIN_VERTICAL / 2,
+      marginHorizontal: MARGIN_HORIZONTAL,
+    },
+    bottomSheetModal: {
+      backgroundColor: colors.card,
+    },
+    handleIndicatorStyle: {
+      backgroundColor: colors.primary,
+      borderRadius: 0,
+    },
+  });

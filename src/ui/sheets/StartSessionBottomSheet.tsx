@@ -98,11 +98,8 @@ export const StartSessionBottomSheet = forwardRef<
       index={0}
       onChange={(index: number) => props.onChangeIndex?.(index)}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.card }}
-      handleIndicatorStyle={{
-        backgroundColor: colors.primary,
-        borderRadius: 0,
-      }}
+      backgroundStyle={styles.bottomSheetModal}
+      handleIndicatorStyle={styles.handleIndicatorStyle}
     >
       <BottomSheetScrollView style={styles.root}>
         <Header title={t("startSession")} style={styles.header} />
@@ -195,5 +192,12 @@ const getStyles = (colors: any) =>
     },
     button: {
       marginVertical: MARGIN_VERTICAL,
+    },
+    bottomSheetModal: {
+      backgroundColor: colors.card,
+    },
+    handleIndicatorStyle: {
+      backgroundColor: colors.primary,
+      borderRadius: 0,
     },
   });

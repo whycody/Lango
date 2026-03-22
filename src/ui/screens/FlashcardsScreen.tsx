@@ -7,7 +7,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { ActionButton, CustomText, StatisticItem } from "../components";
+import { ActionButton, CustomText } from "../components";
+import { StatisticItem } from "../components/home";
 import {
   EmptyList,
   FlashcardListItem,

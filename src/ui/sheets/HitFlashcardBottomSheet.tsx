@@ -30,7 +30,7 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, HitFlashcard
         }, [flip, isVisible]);
 
         const onFlipStart = () => {
-            clearTimeout(timeoutRef.current);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
             timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
         };
 

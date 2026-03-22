@@ -88,15 +88,24 @@ export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) =
 
     const handleFlashcardPress = async (first: boolean, add: boolean) => {
         const suggestionId = first ? firstFlashcard?.id : secondFlashcard?.id;
+        if (!suggestionId) return;
+
         await suggestionsContext.skipSuggestions([suggestionId], add ? 'added' : 'skipped');
-        const currentFlashcards = [firstFlashcard, secondFlashcard].filter(Boolean);
-        const filteredSuggestions = suggestionsContext.langSuggestions.filter(
-            suggestion => !currentFlashcards.map(flashcard => flashcard.id).includes(suggestion.id),
+        const currentFlashcardIds = [firstFlashcard?.id, secondFlashcard?.id].filter(
+            (id): id is string => !!id,
         );
-        const newSuggestion =
-            filteredSuggestions.length > 0 ? filteredSuggestions[first ? 0 : 1] : null;
-        if (newSuggestion)
-            await suggestionsContext.increaseSuggestionsDisplayCount([newSuggestion?.id]);
+        const currentFlashcardIdsSet = new Set(currentFlashcardIds);
+
+        const filteredSuggestions = suggestionsContext.langSuggestions.filter(
+            suggestion => !currentFlashcardIdsSet.has(suggestion.id),
+        );
+
+        const newSuggestion = filteredSuggestions[first ? 0 : 1];
+
+        if (newSuggestion) {
+            await suggestionsContext.increaseSuggestionsDisplayCount([newSuggestion.id]);
+        }
+
         first ? setFirstFlashcard(newSuggestion) : setSecondFlashcard(newSuggestion);
         debouncedSyncSuggestions();
     };

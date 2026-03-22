@@ -37,7 +37,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
     useEffect(() => {
         setDisplayedText('');
         let currentIndex = 0;
-        let typeInterval: ReturnType<typeof setTimeout> | null;
+        let typeInterval: ReturnType<typeof setInterval> | null;
 
         const startTyping = () => {
             typeInterval = setInterval(() => {

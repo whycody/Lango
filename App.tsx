@@ -40,18 +40,22 @@ export default function App() {
         i18n.changeLanguage(applicationLang);
     }, [applicationLang]);
 
-    const checkForUpdates = async () => {
-        await checkUpdates();
-        await SplashScreen.hideAsync();
-    };
+    useEffect(() => {
+        const checkForUpdates = async () => {
+            await checkUpdates();
+            await SplashScreen.hideAsync();
+        };
 
-    checkForUpdates();
+        checkForUpdates();
 
-    AppState.addEventListener('change', state => {
-        if (state === 'active') {
-            Notifications.dismissAllNotificationsAsync();
-        }
-    });
+        const appStateSubscription = AppState.addEventListener('change', state => {
+            if (state === 'active') Notifications.dismissAllNotificationsAsync();
+        });
+
+        return () => {
+            appStateSubscription.remove();
+        };
+    }, []);
 
     useEffect(() => {
         async function loadFonts() {

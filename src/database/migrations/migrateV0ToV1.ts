@@ -1,15 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 
-import {
-    Evaluation,
-    EvaluationGrade,
-    LanguageCode,
-    Session,
-    SessionMode,
-    SessionModel,
-    Word,
-} from '../../types';
+import { EvaluationGrade } from '../../constants/Evaluation';
+import { LanguageCode } from '../../constants/Language';
+import { SessionMode, SessionModel } from '../../constants/Session';
+import { Evaluation, Session, Word } from '../../types';
 import { toLocalDateString } from '../../utils/dateUtil';
 import { saveEvaluations } from '../EvaluationsRepository';
 import { saveSessions } from '../SessionRepository';

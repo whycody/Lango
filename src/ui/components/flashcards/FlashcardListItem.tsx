@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
@@ -13,7 +13,7 @@ type FlashcardListItemProps = {
     onEditPress?: (id: string) => void;
     onPress?: (id: string) => void;
     onRemovePress?: (id: string) => void;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
     text: string;
     translation: string;
 };

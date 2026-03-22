@@ -4,7 +4,7 @@ import {
     getAllSuggestions,
     saveSuggestions,
 } from '../../database/SuggestionsRepository';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 import { Suggestion } from '../../types';
 
 export const useSuggestionsRepository = () => {

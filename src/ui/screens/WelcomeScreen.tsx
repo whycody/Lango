@@ -5,7 +5,7 @@ import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL } from '../../constants/margins';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 import { CustomText } from '../components';
 
 interface WelcomeScreenProps {

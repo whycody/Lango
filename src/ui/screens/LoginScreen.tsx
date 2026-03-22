@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { expo } from '../../../app.json';
 import { MARGIN_VERTICAL } from '../../constants/margins';
-import { UserProvider } from '../../types';
+import { UserProvider } from '../../constants/User';
 import { ActionButton, CustomText, VersionFooter } from '../components';
 import { MarqueeRow } from '../components/login';
 

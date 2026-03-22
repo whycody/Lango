@@ -23,8 +23,7 @@ import {
     syncInBatches,
     updateLocalItems,
 } from '../utils/sync';
-import { useAppInitializer } from '.';
-import { useAuth } from './AuthContext';
+import { useAppInitializer, useAuth } from '.';
 
 interface SessionsContextProps {
     addSession: (

@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import ENFlag from '../../../assets/flags/eng.svg';
 import ESFlag from '../../../assets/flags/es.svg';
@@ -15,7 +16,7 @@ const flagMap: Record<string, any> = {
 type SquareFlagProps = {
     languageCode: string;
     size?: number;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 };
 
 export const SquareFlag: FC<SquareFlagProps> = ({ languageCode, size, style }) => {

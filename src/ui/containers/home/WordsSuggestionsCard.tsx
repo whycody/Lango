@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
-import { useDebouncedSyncSuggestions, useSuggestions } from '../../../store';
-import { useLanguage } from '../../../store';
+import { useDebouncedSyncSuggestions, useLanguage, useSuggestions } from '../../../store';
 import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { ActionButton, Header } from '../../components';

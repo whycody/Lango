@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,7 +11,7 @@ interface StatisticItemProps {
     description: string;
     icon: keyof typeof Ionicons.glyphMap;
     label: string;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const StatisticItem: FC<StatisticItemProps> = ({ description, icon, label, style }) => {

@@ -1,5 +1,13 @@
 import React, { FC, useRef } from 'react';
-import { ActivityIndicator, Animated, Easing, Pressable, StyleSheet } from 'react-native';
+import {
+    ActivityIndicator,
+    Animated,
+    Easing,
+    Pressable,
+    StyleProp,
+    StyleSheet,
+    ViewStyle,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -14,7 +22,7 @@ interface ActionButtonProps {
     loading?: boolean;
     onPress?: () => void;
     primary?: boolean;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const ActionButton: FC<ActionButtonProps> = ({

@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 
-import { FlashcardSortingMethod } from '../store';
+import { FlashcardSortingMethod } from '../constants/UserPreferences';
 import { WordWithDetails } from '../types';
 
 export const getSortingMethodLabel = (method: FlashcardSortingMethod) => {

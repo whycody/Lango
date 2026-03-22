@@ -1,5 +1,5 @@
 import { createTables, getAllWords, saveWords, updateWord } from '../../database/WordsRepository';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 import { Word } from '../../types';
 
 export const useWordsRepository = () => {

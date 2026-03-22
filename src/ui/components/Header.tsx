@@ -1,11 +1,11 @@
 import { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import { CustomText } from '.';
 
 interface HeaderProps {
-    style?: any;
+    style?: StyleProp<ViewStyle>;
     subtitle?: string;
     title: string;
 }

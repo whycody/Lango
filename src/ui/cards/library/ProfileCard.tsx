@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_VERTICAL } from '../../../constants/margins';
-import { useAuth } from '../../../store/AuthContext';
+import { useAuth } from '../../../store';
 import { CustomText } from '../../components';
 
 const ProfileCard = () => {

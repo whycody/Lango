@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,7 +13,7 @@ type SortingMethodItemProps = {
     index: number;
     label: string;
     onPress: (id: number) => void;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 };
 
 export const SortingMethodItem = memo<SortingMethodItemProps>(

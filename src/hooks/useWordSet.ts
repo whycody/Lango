@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 
+import { SessionMode, SessionModel } from '../constants/Session';
 import { strategies } from '../database/strategies';
 import {
+    useAuth,
     useEvaluations,
     useSessions,
     useSuggestions,
@@ -9,16 +11,7 @@ import {
     useWordsHeuristicStates,
     useWordsMLStatesContext,
 } from '../store';
-import { useAuth } from '../store/AuthContext';
-import {
-    Session,
-    SessionMode,
-    SessionModel,
-    Suggestion,
-    Word,
-    WordSet,
-    WordSetStrategy,
-} from '../types';
+import { Session, Suggestion, Word, WordSet, WordSetStrategy } from '../types';
 import { enhanceWords } from '../utils/enhanceWords';
 import { mapSuggestionsToSessionWords, mapWordsToSessionWords } from '../utils/sessionWordMapper';
 import { shuffle } from '../utils/shuffle';

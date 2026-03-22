@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Foundation } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -16,7 +16,7 @@ import { CustomText, SquareFlag } from '..';
 
 interface FlashcardProps {
     onFlashcardPress?: (add: boolean) => void;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
     suggestion?: Suggestion;
 }
 

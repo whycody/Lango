@@ -5,7 +5,7 @@ import {
     updateWordMLState,
 } from '../../database/WordsMLStatesRepository';
 import { WordsStatesRepository } from '../../database/WordsStatesRepository';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 import { WordMLState } from '../../types';
 
 export const useWordsMLStatesRepository = (): WordsStatesRepository<WordMLState> => {

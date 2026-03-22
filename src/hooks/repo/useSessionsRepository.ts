@@ -1,5 +1,5 @@
 import { createTables, getAllSessions, saveSessions } from '../../database/SessionRepository';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 import { Session } from '../../types';
 
 export const useSessionsRepository = () => {

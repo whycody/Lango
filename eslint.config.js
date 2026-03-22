@@ -64,6 +64,13 @@ module.exports = [
             'no-redeclare': 'off',
             'no-use-before-define': 'off',
             'no-global-assign': 'off',
+            'no-duplicate-imports': [
+                'warn',
+                {
+                    includeExports: true,
+                    allowSeparateTypeImports: true,
+                },
+            ],
             'no-unused-vars': 'off',
             eqeqeq: 'off',
             'prefer-const': 'off',

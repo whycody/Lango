@@ -5,7 +5,7 @@ import {
     updateWordHeuristicState,
 } from '../../database/WordsHeuristicStatesRepository';
 import { WordsStatesRepository } from '../../database/WordsStatesRepository';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 import { WordHeuristicState } from '../../types';
 
 export const useWordsHeuristicStatesRepository = (): WordsStatesRepository<WordHeuristicState> => {

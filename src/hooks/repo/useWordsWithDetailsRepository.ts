@@ -1,5 +1,5 @@
 import { getAllWordsWithDetails } from '../../database/WordsWithDetailsRepository';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 
 export const useWordsWithDetailsRepository = () => {
     const userId = useAuth().user.userId;

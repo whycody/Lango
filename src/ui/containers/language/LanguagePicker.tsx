@@ -3,12 +3,10 @@ import { FlatList, StyleSheet, View, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 
-import { LanguageCode } from '../../../constants/Language';
-import { LanguageTypes } from '../../../constants/Language';
+import { LanguageCode, LanguageTypes } from '../../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
-import { useLanguage } from '../../../store';
-import { useAuth } from '../../../store/AuthContext';
+import { useAuth, useLanguage } from '../../../store';
 import { Language } from '../../../types';
 import { Header } from '../../components';
 import { LanguageItem } from '../../components/language';

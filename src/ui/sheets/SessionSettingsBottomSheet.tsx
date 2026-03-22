@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { FlashcardSide } from '../../constants/UserPreferences';
 import { useHaptics } from '../../hooks';
-import { useUserPreferences } from '../../store';
-import { useLanguage } from '../../store';
+import { useLanguage, useUserPreferences } from '../../store';
 import { ActionButton, CustomText, Header } from '../components';
 import { SessionModeItem, SessionSpeechSynthesizerItem } from '../components/session';
 

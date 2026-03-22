@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,7 +14,7 @@ type LanguageItemProps = {
     language: Language;
     onPress?: () => void;
     showIcon?: boolean;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 };
 
 export const LanguageItem = memo<LanguageItemProps>(

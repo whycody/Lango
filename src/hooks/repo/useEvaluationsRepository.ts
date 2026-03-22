@@ -3,7 +3,7 @@ import {
     getAllEvaluations,
     saveEvaluations,
 } from '../../database/EvaluationsRepository';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../../store';
 import { Evaluation } from '../../types';
 
 export const useEvaluationsRepository = () => {

@@ -5,9 +5,13 @@ import './i18n';
 import * as Font from 'expo-font';
 import { DarkTheme } from './src/ui/themes';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AuthProvider from './src/store/AuthContext';
 import Root from './src/navigation/Root';
-import { AppInitializerProvider, APPLICATION_LANG, UserStorageProvider } from './src/store';
+import {
+    AppInitializerProvider,
+    APPLICATION_LANG,
+    AuthProvider,
+    UserStorageProvider,
+} from './src/store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { checkUpdates } from './src/utils/checkUpdates';

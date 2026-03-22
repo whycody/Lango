@@ -31,8 +31,7 @@ import { SessionWord, Word } from '../../types';
 import { WordUpdate } from '../../types/utils/WordUpdate';
 import { trackEvent } from '../../utils/analytics';
 import { CustomText } from '../components';
-import { Card, SessionHeader } from '../components/session';
-import { WordLevelItem } from '../components/session';
+import { Card, SessionHeader, WordLevelItem } from '../components/session';
 import {
     FinishSessionBottomSheet,
     HandleFlashcardBottomSheet,

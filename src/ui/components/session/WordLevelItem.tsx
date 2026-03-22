@@ -1,11 +1,11 @@
 import { FC, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
-import { SessionLength } from '../../../store';
+import { SessionLength } from '../../../constants/UserPreferences';
 import { CustomText } from '..';
 
 const RECT_HEIGHT = 13;
@@ -14,7 +14,7 @@ interface SessionLengthItemProps {
     active: boolean;
     level: SessionLength;
     onPress?: (level: number) => void;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPress, style }) => {

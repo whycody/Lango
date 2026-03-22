@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,7 +13,7 @@ interface SessionModeItemProps {
     mode: SessionMode | FlashcardSide;
     onPress?: () => void;
     selected: boolean;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const SessionModeItem: FC<SessionModeItemProps> = ({ mode, onPress, selected, style }) => {

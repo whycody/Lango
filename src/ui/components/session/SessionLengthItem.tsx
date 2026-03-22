@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ interface SessionLengthItemProps {
     length: SessionLength;
     onPress?: () => void;
     selected: boolean;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const SessionLengthItem: FC<SessionLengthItemProps> = ({

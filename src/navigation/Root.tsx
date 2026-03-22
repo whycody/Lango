@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { LanguageProvider, useAppInitializer } from '../store';
-import { useAuth } from '../store/AuthContext';
+import { LanguageProvider, useAppInitializer, useAuth } from '../store';
 import { LoadingView } from '../ui/containers/login';
 import { LoginScreen, OnboardingScreen } from '../ui/screens';
 import AppStack from './AppStack';

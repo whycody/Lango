@@ -9,13 +9,11 @@ import { updateUserLanguages } from '../../api/apiClient';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageTypes } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
-import { useLanguage } from '../../store';
-import { useAuth } from '../../store/AuthContext';
+import { useAuth, useLanguage } from '../../store';
 import { LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { ActionButton } from '../components';
-import { OnboardingScreenContainer } from '../containers';
-import { LanguageLevelPicker, LanguagePicker } from '../containers';
+import { LanguageLevelPicker, LanguagePicker, OnboardingScreenContainer } from '../containers';
 import { WelcomeScreen } from '.';
 
 const screenHeight = Dimensions.get('window').height;

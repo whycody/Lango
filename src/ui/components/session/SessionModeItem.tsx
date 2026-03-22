@@ -5,8 +5,8 @@ import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
-import { FlashcardSide } from '../../../store';
-import { SessionMode } from '../../../types';
+import { SessionMode } from '../../../constants/Session';
+import { FlashcardSide } from '../../../constants/UserPreferences';
 import { CustomText } from '..';
 
 interface SessionModeItemProps {

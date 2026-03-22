@@ -1,4 +1,5 @@
-import { SessionModel, SessionModelVersion, Word, WordSet, WordSetStrategy } from '../../types';
+import { SessionModel, SessionModelVersion } from '../../constants/Session';
+import { Word, WordSet, WordSetStrategy } from '../../types';
 import {
     mapSuggestionsToSessionWords,
     mapWordsToSessionWords,

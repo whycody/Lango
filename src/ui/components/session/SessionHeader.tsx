@@ -5,7 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
-import { SessionLength } from '../../../store';
+import { SessionLength } from '../../../constants/UserPreferences';
 import { CustomText } from '..';
 
 type SessionHeaderProps = {

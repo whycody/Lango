@@ -1,68 +1,69 @@
-import { Image, StyleSheet, View } from "react-native";
-import { MARGIN_VERTICAL } from "../../../constants/margins";
-import { useTheme } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import { CustomText } from "../../components";
-import { useAuth } from "../../../api/auth/AuthProvider";
+import { Image, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@react-navigation/native';
+
+import { MARGIN_VERTICAL } from '../../../constants/margins';
+import { useAuth } from '../../../store/AuthContext';
+import { CustomText } from '../../components';
 
 export const ProfileCard = () => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors);
-  const auth = useAuth();
+    const { colors } = useTheme();
+    const styles = getStyles(colors);
+    const auth = useAuth();
 
-  if (!auth.user) return null;
+    if (!auth.user) return null;
 
-  return (
-    <View style={styles.root}>
-      {auth.user.picture ? (
-        <View style={styles.profileIconContainer}>
-          <Image
-            source={{ uri: auth.user.picture }}
-            style={styles.profileImage}
-            resizeMode="cover"
-          />
+    return (
+        <View style={styles.root}>
+            {auth.user.picture ? (
+                <View style={styles.profileIconContainer}>
+                    <Image
+                        resizeMode="cover"
+                        source={{ uri: auth.user.picture }}
+                        style={styles.profileImage}
+                    />
+                </View>
+            ) : (
+                <View style={styles.profileIconContainer}>
+                    <Ionicons
+                        color={colors.primary300}
+                        name={'person-sharp'}
+                        size={80}
+                        style={styles.profileFallbackIcon}
+                    />
+                </View>
+            )}
+            <CustomText style={styles.name} weight={'Bold'}>
+                {auth.user.name}
+            </CustomText>
         </View>
-      ) : (
-        <View style={styles.profileIconContainer}>
-          <Ionicons
-            name={"person-sharp"}
-            size={80}
-            color={colors.primary300}
-            style={styles.profileFallbackIcon}
-          />
-        </View>
-      )}
-      <CustomText weight={"Bold"} style={styles.name}>
-        {auth.user.name}
-      </CustomText>
-    </View>
-  );
+    );
 };
 
 const getStyles = (colors: any) =>
-  StyleSheet.create({
-    root: {
-      justifyContent: "center",
-      alignItems: "center",
-      marginVertical: MARGIN_VERTICAL * 3,
-    },
-    profileIconContainer: {
-      width: 100,
-      height: 100,
-      backgroundColor: colors.cardAccent,
-      alignItems: "center",
-    },
-    profileImage: {
-      width: 90,
-      height: 90,
-      marginTop: 5,
-    },
-    profileFallbackIcon: {
-      marginTop: 24,
-    },
-    name: {
-      color: colors.primary,
-      fontSize: 22,
-      marginTop: 18,
-    },
-  });
+    StyleSheet.create({
+        name: {
+            color: colors.primary,
+            fontSize: 22,
+            marginTop: 18,
+        },
+        profileFallbackIcon: {
+            marginTop: 24,
+        },
+        profileIconContainer: {
+            alignItems: 'center',
+            backgroundColor: colors.cardAccent,
+            height: 100,
+            width: 100,
+        },
+        profileImage: {
+            height: 90,
+            marginTop: 5,
+            width: 90,
+        },
+        root: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginVertical: MARGIN_VERTICAL * 3,
+        },
+    });

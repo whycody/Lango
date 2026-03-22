@@ -1,37 +1,32 @@
-import {
-  SessionModel,
-  SessionModelVersion,
-  WordSet,
-  WordSetStrategy,
-} from "../../types";
-import { mapWordsToSessionWords } from "../../utils/sessionWordMapper";
+import { SessionModel, SessionModelVersion, WordSet, WordSetStrategy } from '../../types';
+import { mapWordsToSessionWords } from '../../utils/sessionWordMapper';
 
 export const oldestStrategy: WordSetStrategy = (
-  size,
-  words,
-  _suggestions,
-  evaluations,
+    size,
+    words,
+    _suggestions,
+    evaluations,
 ): WordSet => {
-  const active = words.filter((w) => w.active);
+    const active = words.filter(w => w.active);
 
-  const lastDates = new Map<string, number>();
-  for (const e of evaluations) {
-    const t = new Date(e.date).getTime();
-    const prev = lastDates.get(e.wordId) ?? 0;
-    if (t > prev) lastDates.set(e.wordId, t);
-  }
+    const lastDates = new Map<string, number>();
+    for (const e of evaluations) {
+        const t = new Date(e.date).getTime();
+        const prev = lastDates.get(e.wordId) ?? 0;
+        if (t > prev) lastDates.set(e.wordId, t);
+    }
 
-  const sorted = mapWordsToSessionWords(
-    [...active].sort((a, b) => {
-      const aDate = lastDates.get(a.id) ?? 0;
-      const bDate = lastDates.get(b.id) ?? 0;
-      return aDate - bDate;
-    }),
-  );
+    const sorted = mapWordsToSessionWords(
+        [...active].sort((a, b) => {
+            const aDate = lastDates.get(a.id) ?? 0;
+            const bDate = lastDates.get(b.id) ?? 0;
+            return aDate - bDate;
+        }),
+    );
 
-  return {
-    sessionWords: sorted.slice(0, size),
-    model: SessionModel.NONE,
-    version: SessionModelVersion.O1,
-  };
+    return {
+        model: SessionModel.NONE,
+        sessionWords: sorted.slice(0, size),
+        version: SessionModelVersion.O1,
+    };
 };

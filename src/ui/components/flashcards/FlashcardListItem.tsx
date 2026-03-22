@@ -1,107 +1,99 @@
-import { memo, useCallback } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { MARGIN_HORIZONTAL } from "../../../constants/margins";
-import { CustomText } from "..";
-import { useTheme } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import { getLevelColor } from "../../../utils/getLevelColor";
+import { memo, useCallback } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@react-navigation/native';
+
+import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { getLevelColor } from '../../../utils/getLevelColor';
+import { CustomText } from '..';
 
 type FlashcardListItemProps = {
-  id: string;
-  text: string;
-  level: number;
-  translation: string;
-  style?: any;
-  onPress?: (id: string) => void;
-  onEditPress?: (id: string) => void;
-  onRemovePress?: (id: string) => void;
+    id: string;
+    level: number;
+    onEditPress?: (id: string) => void;
+    onPress?: (id: string) => void;
+    onRemovePress?: (id: string) => void;
+    style?: any;
+    text: string;
+    translation: string;
 };
 
 export const FlashcardListItem = memo<FlashcardListItemProps>(
-  ({
-    id,
-    text,
-    level,
-    translation,
-    style,
-    onPress,
-    onEditPress,
-    onRemovePress,
-  }) => {
-    const { colors } = useTheme();
-    const styles = getStyles(colors);
+    ({ id, level, onEditPress, onPress, onRemovePress, style, text, translation }) => {
+        const { colors } = useTheme();
+        const styles = getStyles(colors);
 
-    const getColor = useCallback((level: number) => {
-      return getLevelColor(level);
-    }, []);
+        const getColor = useCallback((level: number) => {
+            return getLevelColor(level);
+        }, []);
 
-    return (
-      <Pressable
-        style={[styles.root, style]}
-        android_ripple={{ color: colors.card }}
-        onPress={() => onPress?.(id)}
-      >
-        <View style={styles.container}>
-          <Ionicons name={"reader-sharp"} color={getColor(level)} size={22} />
-          <View style={styles.textContainer}>
-            <CustomText weight={"SemiBold"} style={styles.text}>
-              {text}
-            </CustomText>
-            <CustomText style={styles.translation}>{translation}</CustomText>
-          </View>
-          {onRemovePress && (
-            <Ionicons
-              name={"trash-sharp"}
-              color={colors.primary600}
-              size={22}
-              style={styles.icon}
-              onPress={() => onRemovePress(id)}
-            />
-          )}
-          {onEditPress && (
-            <Ionicons
-              name={"pencil-sharp"}
-              color={colors.primary300}
-              size={21}
-              style={styles.icon}
-              onPress={() => onEditPress(id)}
-            />
-          )}
-        </View>
-      </Pressable>
-    );
-  },
+        return (
+            <Pressable
+                android_ripple={{ color: colors.card }}
+                style={[styles.root, style]}
+                onPress={() => onPress?.(id)}
+            >
+                <View style={styles.container}>
+                    <Ionicons color={getColor(level)} name={'reader-sharp'} size={22} />
+                    <View style={styles.textContainer}>
+                        <CustomText style={styles.text} weight={'SemiBold'}>
+                            {text}
+                        </CustomText>
+                        <CustomText style={styles.translation}>{translation}</CustomText>
+                    </View>
+                    {onRemovePress && (
+                        <Ionicons
+                            color={colors.primary600}
+                            name={'trash-sharp'}
+                            size={22}
+                            style={styles.icon}
+                            onPress={() => onRemovePress(id)}
+                        />
+                    )}
+                    {onEditPress && (
+                        <Ionicons
+                            color={colors.primary300}
+                            name={'pencil-sharp'}
+                            size={21}
+                            style={styles.icon}
+                            onPress={() => onEditPress(id)}
+                        />
+                    )}
+                </View>
+            </Pressable>
+        );
+    },
 );
 
 const getStyles = (colors: any) =>
-  StyleSheet.create({
-    root: {
-      borderTopWidth: 3,
-      backgroundColor: colors.background,
-      borderColor: colors.card,
-    },
-    container: {
-      paddingVertical: 15,
-      paddingHorizontal: MARGIN_HORIZONTAL,
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    textContainer: {
-      flex: 1,
-      marginLeft: 10,
-    },
-    text: {
-      color: colors.primary,
-      fontSize: 14,
-    },
-    translation: {
-      color: colors.primary300,
-      fontSize: 13,
-    },
-    icon: {
-      marginLeft: 10,
-      padding: 5,
-      paddingRight: 0,
-      opacity: 0.8,
-    },
-  });
+    StyleSheet.create({
+        container: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingVertical: 15,
+        },
+        icon: {
+            marginLeft: 10,
+            opacity: 0.8,
+            padding: 5,
+            paddingRight: 0,
+        },
+        root: {
+            backgroundColor: colors.background,
+            borderColor: colors.card,
+            borderTopWidth: 3,
+        },
+        text: {
+            color: colors.primary,
+            fontSize: 14,
+        },
+        textContainer: {
+            flex: 1,
+            marginLeft: 10,
+        },
+        translation: {
+            color: colors.primary300,
+            fontSize: 13,
+        },
+    });

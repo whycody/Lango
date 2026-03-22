@@ -1,70 +1,58 @@
-import {
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { useSessions } from ".";
-import { useAuth } from "../api/auth/AuthProvider";
+import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+
+import { useSessions } from '.';
+import { useAuth } from './AuthContext';
 
 interface StatisticsContextProps {
-  numberOfSessions: number;
-  studyDaysList: string[];
+    numberOfSessions: number;
+    studyDaysList: string[];
 }
 
 export const StatisticsContext = createContext<StatisticsContextProps>({
-  numberOfSessions: 0,
-  studyDaysList: [],
+    numberOfSessions: 0,
+    studyDaysList: [],
 });
 
-export const StatisticsProvider: FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const { sessions } = useSessions();
-  const { user } = useAuth();
-  const [daysList, setDaysList] = useState<string[]>(
-    user.stats?.studyDays || [],
-  );
-  const [serverSessionsCount, setServerSessionsCount] = useState(
-    user.stats?.sessionCount || 0,
-  );
+export const StatisticsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+    const { sessions } = useSessions();
+    const { user } = useAuth();
+    const [daysList, setDaysList] = useState<string[]>(user.stats?.studyDays || []);
+    const [serverSessionsCount, setServerSessionsCount] = useState(user.stats?.sessionCount || 0);
 
-  const localUnsyncedSessions = sessions.filter((s) => !s.synced);
-  const localUnsyncedSessionsCount = localUnsyncedSessions.length;
-  const numberOfSessions = serverSessionsCount + localUnsyncedSessionsCount;
+    const localUnsyncedSessions = sessions.filter(s => !s.synced);
+    const localUnsyncedSessionsCount = localUnsyncedSessions.length;
+    const numberOfSessions = serverSessionsCount + localUnsyncedSessionsCount;
 
-  useEffect(() => {
-    const serverDaysLocal = user.stats?.studyDays || [];
-    const unsyncedLocalDays = localUnsyncedSessions.map((s) => s.localDay);
+    useEffect(() => {
+        const serverDaysLocal = user.stats?.studyDays || [];
+        const unsyncedLocalDays = localUnsyncedSessions.map(s => s.localDay);
 
-    const combinedDaysSet = new Set([...serverDaysLocal, ...unsyncedLocalDays]);
+        const combinedDaysSet = new Set([...serverDaysLocal, ...unsyncedLocalDays]);
 
-    const combinedDaysList = Array.from(combinedDaysSet).sort();
+        const combinedDaysList = Array.from(combinedDaysSet).sort();
 
-    setDaysList(combinedDaysList);
-    setServerSessionsCount(user.stats?.sessionCount || 0);
-  }, [user.stats, sessions]);
+        setDaysList(combinedDaysList);
+        setServerSessionsCount(user.stats?.sessionCount || 0);
+    }, [user.stats, sessions]);
 
-  return (
-    <StatisticsContext.Provider
-      value={{
-        numberOfSessions,
-        studyDaysList: daysList,
-      }}
-    >
-      {children}
-    </StatisticsContext.Provider>
-  );
+    return (
+        <StatisticsContext.Provider
+            value={{
+                numberOfSessions,
+                studyDaysList: daysList,
+            }}
+        >
+            {children}
+        </StatisticsContext.Provider>
+    );
 };
 
 export const useStatistics = () => {
-  const context = useContext(StatisticsContext);
+    const context = useContext(StatisticsContext);
 
-  if (!context) {
-    throw new Error("useStatistics must be used within a StatisticsProvider");
-  }
+    if (!context) {
+        throw new Error('useStatistics must be used within a StatisticsProvider');
+    }
 
-  return context;
+    return context;
 };

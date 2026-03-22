@@ -1,134 +1,133 @@
-import { FlashcardSide, SessionLength } from "../store";
-import { SessionMode } from "./Session";
-import { UserProvider } from "./User";
+import { SessionMode } from './Session';
+import { UserProvider } from './User';
+import { FlashcardSide, SessionLength } from './UserPreferences';
 
 export const AnalyticsEventName = {
-  LOGIN_SUCCESS: "login_success",
-  LOGIN_FAILURE: "login_failure",
-  LOGOUT_SUCCESS: "logout_success",
-  LOGOUT_FAILURE: "logout_failure",
+    CHECK_UPDATES: 'check_updates',
+    ENABLE_NOTIFICATIONS_SHEET_OPEN: 'start_session_sheet_open',
+    FINISH_SESSION_SHEET_OPEN: 'finish_session_sheet_open',
+    FLIP_FLASHCARD: 'flip_flashcard',
 
-  USER_SET: "user_set",
-  HOME_REFRESH: "home_refresh",
-  SEARCH_FLASHCARD: "search_flashcard",
+    HANDLE_FLASHCARD_SHEET_OPEN: 'handle_flashcard_sheet_open',
+    HOME_REFRESH: 'home_refresh',
+    LANGUAGE_SHEET_OPEN: 'language_sheet_open',
 
-  CHECK_UPDATES: "check_updates",
-  UPDATE_SUCCESS: "update_success",
-  UPDATE_FAILURE: "update_failure",
+    LEAVE_SESSION_SHEET_OPEN: 'leave_session_sheet_open',
+    LOGIN_FAILURE: 'login_failure',
+    LOGIN_SUCCESS: 'login_success',
 
-  NOTIFICATIONS_ENABLE_SUCCESS: "notifications_enable_success",
-  NOTIFICATIONS_ENABLE_FAILURE: "notifications_enable_failure",
-  NOTIFICATIONS_DISABLE: "notifications_disable",
+    LOGOUT_FAILURE: 'logout_failure',
+    LOGOUT_SUCCESS: 'logout_success',
+    MICROPHONE_WORD_INPUT: 'microphone_word_input',
 
-  MICROPHONE_WORD_INPUT: "microphone_word_input",
+    NAVIGATE_FLASHCARDS: 'navigate_flashcards',
 
-  ENABLE_NOTIFICATIONS_SHEET_OPEN: "start_session_sheet_open",
-  START_SESSION_SHEET_OPEN: "start_session_sheet_open",
-  HANDLE_FLASHCARD_SHEET_OPEN: "handle_flashcard_sheet_open",
-  LANGUAGE_SHEET_OPEN: "language_sheet_open",
-  SESSION_SETTINGS_SHEET_OPEN: "session_settings_sheet_open",
-  LEAVE_SESSION_SHEET_OPEN: "leave_session_sheet_open",
-  FINISH_SESSION_SHEET_OPEN: "finish_session_sheet_open",
-  REMOVE_FLASHCARD_SHEET_OPEN: "remove_flashcard_sheet_open",
-  SORTING_METHODS_SHEET_OPEN: "sorting_methods_sheet_open",
+    NAVIGATE_HOME: 'navigate_home',
+    NAVIGATE_LIBRARY: 'navigate_library',
+    NAVIGATE_SETTINGS: 'navigate_settings',
+    NOTIFICATIONS_DISABLE: 'notifications_disable',
+    NOTIFICATIONS_ENABLE_FAILURE: 'notifications_enable_failure',
+    NOTIFICATIONS_ENABLE_SUCCESS: 'notifications_enable_success',
+    ONBOARDING_FINISHED: 'onboarding_finished',
+    ONBOARDING_INITIALIZED: 'onboarding_initialized',
+    OPEN_PRIVACY_POLICY: 'open_privacy_policy',
 
-  FLIP_FLASHCARD: "flip_flashcard",
-  SESSION_STARTED: "session_started",
-  SESSION_COMPLETED: "session_completed",
-  SESSION_SKIPPED: "session_skipped",
-  SESSION_SKIP_SUGGESTION: "session_skip_suggestion",
-  SESSION_ADD_SUGGESTION: "session_add_suggestion",
+    OPEN_USE_CONDITIONS: 'open_use_conditions',
+    REMOVE_FLASHCARD_SHEET_OPEN: 'remove_flashcard_sheet_open',
+    SEARCH_FLASHCARD: 'search_flashcard',
+    SESSION_ADD_SUGGESTION: 'session_add_suggestion',
+    SESSION_COMPLETED: 'session_completed',
+    SESSION_SETTINGS_SHEET_OPEN: 'session_settings_sheet_open',
 
-  SUGGESTION_ADD: "suggestion_add",
-  SUGGESTIONS_SKIPPED: "suggestions_skipped",
-  WORD_ADD_SUCCESS: "word_add_success",
-  WORD_ADD_FAILURE: "word_add_failure",
+    SESSION_SKIP_SUGGESTION: 'session_skip_suggestion',
+    SESSION_SKIPPED: 'session_skipped',
+    SESSION_STARTED: 'session_started',
+    SORTING_METHODS_SHEET_OPEN: 'sorting_methods_sheet_open',
 
-  ONBOARDING_INITIALIZED: "onboarding_initialized",
-  ONBOARDING_FINISHED: "onboarding_finished",
+    START_SESSION_SHEET_OPEN: 'start_session_sheet_open',
+    SUGGESTION_ADD: 'suggestion_add',
 
-  NAVIGATE_HOME: "navigate_home",
-  NAVIGATE_LIBRARY: "navigate_library",
-  NAVIGATE_FLASHCARDS: "navigate_flashcards",
-  NAVIGATE_SETTINGS: "navigate_settings",
+    SUGGESTIONS_SKIPPED: 'suggestions_skipped',
+    UPDATE_FAILURE: 'update_failure',
+    UPDATE_SUCCESS: 'update_success',
+    USER_SET: 'user_set',
 
-  OPEN_PRIVACY_POLICY: "open_privacy_policy",
-  OPEN_USE_CONDITIONS: "open_use_conditions",
+    WORD_ADD_FAILURE: 'word_add_failure',
+    WORD_ADD_SUCCESS: 'word_add_success',
 } as const;
 
-export type AnalyticsEventNameType =
-  (typeof AnalyticsEventName)[keyof typeof AnalyticsEventName];
+export type AnalyticsEventNameType = (typeof AnalyticsEventName)[keyof typeof AnalyticsEventName];
 
 export type AnalyticsEventPayloadMap = {
-  login_success: { provider: UserProvider };
-  login_failure: { provider: UserProvider; reason: string; raw?: string };
-  logout_success: { provider: UserProvider };
-  logout_failure: { provider: UserProvider; reason: string };
+    check_updates?: undefined;
+    enable_notifications_sheet_open?: undefined;
+    finish_session_sheet_open?: undefined;
+    flip_flashcard?: undefined;
 
-  user_set: { online: boolean };
-  home_refresh?: undefined;
+    handle_flashcard_sheet_open: {
+        mode: 'add' | 'edit';
+        source: 'main_screen' | 'flashcards_screen' | 'session_screen';
+    };
+    home_refresh?: undefined;
 
-  check_updates?: undefined;
-  update_success?: undefined;
-  update_failure: { reason: string };
+    language_sheet_open?: {
+        source: 'main_screen' | 'library_screen' | 'settings_screen';
+        type: 'main' | 'translation' | 'app';
+    };
+    leave_session_sheet_open?: undefined;
+    login_failure: { provider: UserProvider; raw?: string; reason: string };
 
-  notifications_enable_success?: undefined;
-  notifications_enable_failure?: { reason: string };
-  notifications_disable?: undefined;
+    login_success: { provider: UserProvider };
+    logout_failure: { provider: UserProvider; reason: string };
+    logout_success: { provider: UserProvider };
 
-  microphone_word_input?: undefined;
+    microphone_word_input?: undefined;
 
-  enable_notifications_sheet_open?: undefined;
-  start_session_sheet_open?: undefined;
-  handle_flashcard_sheet_open: {
-    mode: "add" | "edit";
-    source: "main_screen" | "flashcards_screen" | "session_screen";
-  };
-  language_sheet_open?: {
-    source: "main_screen" | "library_screen" | "settings_screen";
-    type: "main" | "translation" | "app";
-  };
-  session_settings_sheet_open?: undefined;
-  leave_session_sheet_open?: undefined;
-  finish_session_sheet_open?: undefined;
-  remove_flashcard_sheet_open?: undefined;
-  sorting_methods_sheet_open?: undefined;
+    navigate_flashcards?: undefined;
+    navigate_home?: undefined;
+    navigate_library?: undefined;
+    navigate_settings?: undefined;
+    notifications_disable?: undefined;
+    notifications_enable_failure?: { reason: string };
+    notifications_enable_success?: undefined;
+    onboarding_finished?: undefined;
+    onboarding_initialized?: undefined;
 
-  flip_flashcard?: undefined;
-  session_started: {
-    length: SessionLength;
-    mode: SessionMode;
-    flashcardSide: FlashcardSide;
-    restarted: boolean;
-  };
-  session_completed: {
-    length: SessionLength;
-    mode: SessionMode;
-    flashcardSide: FlashcardSide;
-    avgGrade: number;
-  };
-  session_skipped: {
-    length: SessionLength;
-    mode: SessionMode;
-    flashcardSide: FlashcardSide;
-    evaluatedCount: number;
-  };
-  session_skip_suggestion?: undefined;
-  session_add_suggestion?: undefined;
+    open_privacy_policy?: undefined;
+    open_use_conditions?: undefined;
+    remove_flashcard_sheet_open?: undefined;
+    session_add_suggestion?: undefined;
+    session_completed: {
+        avgGrade: number;
+        flashcardSide: FlashcardSide;
+        length: SessionLength;
+        mode: SessionMode;
+    };
+    session_settings_sheet_open?: undefined;
 
-  suggestion_add: { suggestionId: string; successfully: boolean };
-  suggestions_skipped?: undefined;
-  word_add_success: { wordId: string };
-  word_add_failure: { wordId: string; reason: string };
+    session_skip_suggestion?: undefined;
+    session_skipped: {
+        evaluatedCount: number;
+        flashcardSide: FlashcardSide;
+        length: SessionLength;
+        mode: SessionMode;
+    };
+    session_started: {
+        flashcardSide: FlashcardSide;
+        length: SessionLength;
+        mode: SessionMode;
+        restarted: boolean;
+    };
+    sorting_methods_sheet_open?: undefined;
 
-  onboarding_initialized?: undefined;
-  onboarding_finished?: undefined;
+    start_session_sheet_open?: undefined;
+    suggestion_add: { successfully: boolean; suggestionId: string };
 
-  navigate_home?: undefined;
-  navigate_library?: undefined;
-  navigate_flashcards?: undefined;
-  navigate_settings?: undefined;
+    suggestions_skipped?: undefined;
+    update_failure: { reason: string };
+    update_success?: undefined;
+    user_set: { online: boolean };
 
-  open_privacy_policy?: undefined;
-  open_use_conditions?: undefined;
+    word_add_failure: { reason: string; wordId: string };
+    word_add_success: { wordId: string };
 };

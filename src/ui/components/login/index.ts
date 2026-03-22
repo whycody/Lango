@@ -1,1 +1,1 @@
-export * from "./MovingWordsGrid";
+export * from './MovingWordsGrid';

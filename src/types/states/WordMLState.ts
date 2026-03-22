@@ -1,13 +1,13 @@
-import { EvaluationGrade } from "../../constants/Evaluation";
+import { EvaluationGrade } from '../../constants/Evaluation';
 
 export type WordMLState = {
-  wordId: string;
-  hoursSinceLastRepetition: number;
-  studyDuration: number;
-  studyStreak: number;
-  gradesAverage: number;
-  repetitionsCount: number;
-  gradesTrend: number;
-  predictedGrade: EvaluationGrade;
-  gradeThreeProb: number;
+    gradeThreeProb: number;
+    gradesAverage: number;
+    gradesTrend: number;
+    hoursSinceLastRepetition: number;
+    predictedGrade: EvaluationGrade;
+    repetitionsCount: number;
+    studyDuration: number;
+    studyStreak: number;
+    wordId: string;
 };

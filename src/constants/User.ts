@@ -1,5 +1,5 @@
 export enum UserProvider {
-  GOOGLE = "google",
-  FACEBOOK = "facebook",
-  APPLE = "apple",
+    APPLE = 'apple',
+    FACEBOOK = 'facebook',
+    GOOGLE = 'google',
 }

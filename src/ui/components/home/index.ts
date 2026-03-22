@@ -1,2 +1,2 @@
-export * from "./Flashcard";
-export * from "./StatisticItem";
+export * from './Flashcard';
+export * from './StatisticItem';

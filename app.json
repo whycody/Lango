@@ -1,114 +1,112 @@
 {
-  "expo": {
-    "sdkVersion": "52.0.0",
-    "jsEngine": "hermes",
-    "name": "Lango",
-    "slug": "lango",
-    "version": "1.3.5",
-    "orientation": "portrait",
-    "newArchEnabled": true,
-    "icon": "./assets/logo.png",
-    "userInterfaceStyle": "light",
-    "runtimeVersion": "1.3",
-    "splash": {
-      "backgroundColor": "#0f0f30"
-    },
-    "locales": {
-      "en": "./languages/en.json",
-      "pl": "./languages/pl.json",
-      "es": "./languages/es.json",
-      "it": "./languages/it.json"
-    },
-    "plugins": [
-      [
-        "react-native-fbsdk-next",
-        {
-          "appID": "655424690643723",
-          "clientToken": "15bfc376a10d6049dce9292d206c9bdc",
-          "scheme": "fb655424690643723",
-          "isAutoInitEnabled": true,
-          "autoLogAppEventsEnabled": true,
-          "displayName": "Lango"
+    "expo": {
+        "sdkVersion": "52.0.0",
+        "jsEngine": "hermes",
+        "name": "Lango",
+        "slug": "lango",
+        "version": "1.3.5",
+        "orientation": "portrait",
+        "newArchEnabled": true,
+        "icon": "./assets/logo.png",
+        "userInterfaceStyle": "light",
+        "runtimeVersion": "1.3",
+        "splash": {
+            "backgroundColor": "#0f0f30"
+        },
+        "locales": {
+            "en": "./languages/en.json",
+            "pl": "./languages/pl.json",
+            "es": "./languages/es.json",
+            "it": "./languages/it.json"
+        },
+        "plugins": [
+            [
+                "react-native-fbsdk-next",
+                {
+                    "appID": "655424690643723",
+                    "clientToken": "15bfc376a10d6049dce9292d206c9bdc",
+                    "scheme": "fb655424690643723",
+                    "isAutoInitEnabled": true,
+                    "autoLogAppEventsEnabled": true,
+                    "displayName": "Lango"
+                }
+            ],
+            [
+                "expo-splash-screen",
+                {
+                    "backgroundColor": "#0B0B27",
+                    "image": "./assets/lango-logo.png",
+                    "imageWidth": 200
+                }
+            ],
+            [
+                "react-native-edge-to-edge",
+                {
+                    "android": {
+                        "parentTheme": "Default",
+                        "enforceNavigationBarContrast": false
+                    }
+                }
+            ],
+            [
+                "expo-build-properties",
+                {
+                    "android": {
+                        "compileSdkVersion": 35,
+                        "targetSdkVersion": 35,
+                        "buildToolsVersion": "35.0.0"
+                    }
+                }
+            ],
+            [
+                "expo-speech-recognition",
+                {
+                    "microphonePermission": "Allow Lango to use the microphone."
+                }
+            ],
+            "expo-notifications",
+            "@react-native-google-signin/google-signin",
+            "expo-apple-authentication",
+            "@react-native-firebase/app"
+        ],
+        "ios": {
+            "supportsTablet": true,
+            "buildNumber": "16",
+            "bundleIdentifier": "com.whycody.lango",
+            "googleServicesFile": "./config/GoogleService-Info.plist",
+            "entitlements": {
+                "com.apple.developer.applesignin": ["Default"]
+            },
+            "infoPlist": {
+                "CFBundleAllowMixedLocalizations": true,
+                "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
+                "NSMicrophoneUsageDescription": "This app requires access to the microphone to allow you to enter words using your voice.",
+                "ITSAppUsesNonExemptEncryption": false
+            }
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-logo.png",
+                "backgroundColor": "#07071b"
+            },
+            "googleServicesFile": "./config/google-services.json",
+            "edgeToEdgeEnabled": true,
+            "package": "com.whycody.lango"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "extra": {
+            "eas": {
+                "projectId": "f03ad99f-a6b8-42b4-a859-a05091b51fbc"
+            }
+        },
+        "owner": "whycody",
+        "updates": {
+            "enabled": true,
+            "checkAutomatically": "ON_LOAD",
+            "fallbackToCacheTimeout": 0,
+            "url": "https://u.expo.dev/f03ad99f-a6b8-42b4-a859-a05091b51fbc"
         }
-      ],
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#0B0B27",
-          "image": "./assets/lango-logo.png",
-          "imageWidth": 200
-        }
-      ],
-      [
-        "react-native-edge-to-edge",
-        {
-          "android": {
-            "parentTheme": "Default",
-            "enforceNavigationBarContrast": false
-          }
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "buildToolsVersion": "35.0.0"
-          }
-        }
-      ],
-      [
-        "expo-speech-recognition",
-        {
-          "microphonePermission": "Allow Lango to use the microphone."
-        }
-      ],
-      "expo-notifications",
-      "@react-native-google-signin/google-signin",
-      "expo-apple-authentication",
-      "@react-native-firebase/app"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "buildNumber": "16",
-      "bundleIdentifier": "com.whycody.lango",
-      "googleServicesFile": "./config/GoogleService-Info.plist",
-      "entitlements": {
-        "com.apple.developer.applesignin": [
-          "Default"
-        ]
-      },
-      "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true,
-        "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
-        "NSMicrophoneUsageDescription": "This app requires access to the microphone to allow you to enter words using your voice.",
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-logo.png",
-        "backgroundColor": "#07071b"
-      },
-      "googleServicesFile": "./config/google-services.json",
-      "edgeToEdgeEnabled": true,
-      "package": "com.whycody.lango"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "f03ad99f-a6b8-42b4-a859-a05091b51fbc"
-      }
-    },
-    "owner": "whycody",
-    "updates": {
-      "enabled": true,
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/f03ad99f-a6b8-42b4-a859-a05091b51fbc"
     }
-  }
 }

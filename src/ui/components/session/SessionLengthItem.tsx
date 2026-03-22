@@ -1,94 +1,95 @@
-import { FC } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
-import { useTranslation } from "react-i18next";
-import { CustomText } from "..";
-import { MARGIN_VERTICAL } from "../../../constants/margins";
-import { LinearGradient } from "expo-linear-gradient";
-import { SessionLength } from "../../../store";
+import { FC } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
+
+import { MARGIN_VERTICAL } from '../../../constants/margins';
+import { SessionLength } from '../../../store';
+import { CustomText } from '..';
 
 interface SessionLengthItemProps {
-  length: SessionLength;
-  selected: boolean;
-  onPress?: () => void;
-  style?: any;
+    length: SessionLength;
+    onPress?: () => void;
+    selected: boolean;
+    style?: any;
 }
 
 export const SessionLengthItem: FC<SessionLengthItemProps> = ({
-  length,
-  selected,
-  onPress,
-  style,
+    length,
+    onPress,
+    selected,
+    style,
 }) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors, selected);
-  const { t } = useTranslation();
+    const { colors } = useTheme();
+    const styles = getStyles(colors, selected);
+    const { t } = useTranslation();
 
-  return (
-    <Pressable onPress={onPress} style={styles.pressable}>
-      <LinearGradient
-        colors={[colors.cardAccent600, colors.background]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.root, style]}
-      >
-        <View style={styles.squaresContainer}>
-          {length > 2 && <View style={styles.square} />}
-        </View>
-        <View style={styles.squaresContainer}>
-          {length > 1 && <View style={styles.square} />}
-          <View style={styles.square} />
-        </View>
-        <CustomText weight={"Bold"} style={styles.title}>
-          {t(
-            length === SessionLength.SHORT
-              ? "shortSession"
-              : length === SessionLength.MEDIUM
-                ? "mediumSession"
-                : "longSession",
-          )}
-        </CustomText>
-        <CustomText style={styles.subtitle}>
-          {(length * 10 + ` ${t("repetitions")}`).toUpperCase()}
-        </CustomText>
-      </LinearGradient>
-    </Pressable>
-  );
+    return (
+        <Pressable style={styles.pressable} onPress={onPress}>
+            <LinearGradient
+                colors={[colors.cardAccent600, colors.background]}
+                end={{ x: 1, y: 1 }}
+                start={{ x: 0, y: 0 }}
+                style={[styles.root, style]}
+            >
+                <View style={styles.squaresContainer}>
+                    {length > 2 && <View style={styles.square} />}
+                </View>
+                <View style={styles.squaresContainer}>
+                    {length > 1 && <View style={styles.square} />}
+                    <View style={styles.square} />
+                </View>
+                <CustomText style={styles.title} weight={'Bold'}>
+                    {t(
+                        length === SessionLength.SHORT
+                            ? 'shortSession'
+                            : length === SessionLength.MEDIUM
+                              ? 'mediumSession'
+                              : 'longSession',
+                    )}
+                </CustomText>
+                <CustomText style={styles.subtitle}>
+                    {(length * 10 + ` ${t('repetitions')}`).toUpperCase()}
+                </CustomText>
+            </LinearGradient>
+        </Pressable>
+    );
 };
 
 const getStyles = (colors: any, selected: boolean) =>
-  StyleSheet.create({
-    root: {
-      flex: 1,
-      opacity: selected ? 1 : 0.4,
-      paddingTop: MARGIN_VERTICAL * 1.2,
-      paddingBottom: MARGIN_VERTICAL / 2,
-    },
-    pressable: {
-      flex: 1,
-    },
-    squaresContainer: {
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
-      flex: 1,
-    },
-    square: {
-      width: 20,
-      height: 20,
-      marginHorizontal: 2,
-      marginTop: 4,
-      backgroundColor: colors.primary300,
-    },
-    title: {
-      fontSize: 11,
-      marginTop: 5,
-      textAlign: "center",
-      color: colors.primary300,
-    },
-    subtitle: {
-      fontSize: 10,
-      textAlign: "center",
-      color: colors.primary300,
-    },
-  });
+    StyleSheet.create({
+        pressable: {
+            flex: 1,
+        },
+        root: {
+            flex: 1,
+            opacity: selected ? 1 : 0.4,
+            paddingBottom: MARGIN_VERTICAL / 2,
+            paddingTop: MARGIN_VERTICAL * 1.2,
+        },
+        square: {
+            backgroundColor: colors.primary300,
+            height: 20,
+            marginHorizontal: 2,
+            marginTop: 4,
+            width: 20,
+        },
+        squaresContainer: {
+            alignItems: 'center',
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'center',
+        },
+        subtitle: {
+            color: colors.primary300,
+            fontSize: 10,
+            textAlign: 'center',
+        },
+        title: {
+            color: colors.primary300,
+            fontSize: 11,
+            marginTop: 5,
+            textAlign: 'center',
+        },
+    });

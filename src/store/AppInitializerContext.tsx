@@ -1,125 +1,104 @@
+import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+
+import { runMigrations } from '../database/migrations/migrations';
 import {
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import {
-  useEvaluationsRepository,
-  useWordsRepository,
-  useSessionsRepository,
-  useSuggestionsRepository,
-  useWordsMLStatesRepository,
-  useWordsHeuristicStatesRepository,
-} from "../hooks";
-import { useAuth } from "../api/auth/AuthProvider";
-import { runMigrations } from "../database/migrations/migrations";
-import { InitialLoad } from "../types";
+    useEvaluationsRepository,
+    useSessionsRepository,
+    useSuggestionsRepository,
+    useWordsHeuristicStatesRepository,
+    useWordsMLStatesRepository,
+    useWordsRepository,
+} from '../hooks';
+import { InitialLoad } from '../types';
+import { useAuth } from '.';
 
 interface AppInitializerContextProps {
-  initialLoad: InitialLoad | null;
-  loading: boolean;
+    initialLoad: InitialLoad | null;
+    loading: boolean;
 }
 
 export const AppInitializerContext = createContext<AppInitializerContextProps>({
-  initialLoad: null,
-  loading: true,
+    initialLoad: null,
+    loading: true,
 });
 
-export const MAIN_LANG = "mainLangCode";
-export const TRANSLATION_LANG = "translationLangCode";
+export const MAIN_LANG = 'mainLangCode';
+export const TRANSLATION_LANG = 'translationLangCode';
 
-export const AppInitializerProvider: FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const { user } = useAuth();
-  const { createTables: createSessionsTables, getAllSessions } =
-    useSessionsRepository();
-  const { createTables: createWordsTables, getAllWords } = useWordsRepository();
-  const { createTables: createEvaluationsTables, getAllEvaluations } =
-    useEvaluationsRepository();
-  const { createTables: createSuggestionsTables, getAllSuggestions } =
-    useSuggestionsRepository();
-  const {
-    createTables: createWordsMLStatesTables,
-    getAllWordsStates: getAllWordsMLStates,
-  } = useWordsMLStatesRepository();
-  const {
-    createTables: createWordsHeuristicStatesTables,
-    getAllWordsStates: getAllWordsHeuristicStates,
-  } = useWordsHeuristicStatesRepository();
+export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }) => {
+    const { user } = useAuth();
+    const { createTables: createSessionsTables, getAllSessions } = useSessionsRepository();
+    const { createTables: createWordsTables, getAllWords } = useWordsRepository();
+    const { createTables: createEvaluationsTables, getAllEvaluations } = useEvaluationsRepository();
+    const { createTables: createSuggestionsTables, getAllSuggestions } = useSuggestionsRepository();
+    const { createTables: createWordsMLStatesTables, getAllWordsStates: getAllWordsMLStates } =
+        useWordsMLStatesRepository();
+    const {
+        createTables: createWordsHeuristicStatesTables,
+        getAllWordsStates: getAllWordsHeuristicStates,
+    } = useWordsHeuristicStatesRepository();
 
-  const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
-  const [loading, setLoading] = useState(true);
+    const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  const init = async () => {
-    try {
-      await Promise.all([
-        createSessionsTables(),
-        createWordsTables(),
-        createEvaluationsTables(),
-        createSuggestionsTables(),
-        createWordsMLStatesTables(),
-        createWordsHeuristicStatesTables(),
-      ]);
+    const init = async () => {
+        try {
+            await Promise.all([
+                createSessionsTables(),
+                createWordsTables(),
+                createEvaluationsTables(),
+                createSuggestionsTables(),
+                createWordsMLStatesTables(),
+                createWordsHeuristicStatesTables(),
+            ]);
 
-      await runMigrations(user.userId);
+            await runMigrations(user.userId);
 
-      const [
-        sessions,
-        words,
-        evaluations,
-        suggestions,
-        wordsMLStates,
-        wordsHeuristicStates,
-      ] = await Promise.all([
-        getAllSessions(),
-        getAllWords(),
-        getAllEvaluations(),
-        getAllSuggestions(),
-        getAllWordsMLStates(),
-        getAllWordsHeuristicStates(),
-      ]);
+            const [sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates] =
+                await Promise.all([
+                    getAllSessions(),
+                    getAllWords(),
+                    getAllEvaluations(),
+                    getAllSuggestions(),
+                    getAllWordsMLStates(),
+                    getAllWordsHeuristicStates(),
+                ]);
 
-      setInitialLoad({
-        sessions,
-        words,
-        evaluations,
-        suggestions,
-        wordsMLStates,
-        wordsHeuristicStates,
-      });
-    } catch (e) {
-      console.error("AppInitializer init failed", e);
-    }
-  };
-  useEffect(() => {
-    setLoading(!initialLoad);
-  }, [initialLoad]);
+            setInitialLoad({
+                evaluations,
+                sessions,
+                suggestions,
+                words,
+                wordsHeuristicStates,
+                wordsMLStates,
+            });
+        } catch (e) {
+            console.error('AppInitializer init failed', e);
+        }
+    };
+    useEffect(() => {
+        setLoading(!initialLoad);
+    }, [initialLoad]);
 
-  useEffect(() => {
-    if (!user?.userId) {
-      setInitialLoad(null);
-    } else {
-      init();
-    }
-  }, [user?.userId]);
+    useEffect(() => {
+        if (!user?.userId) {
+            setInitialLoad(null);
+        } else {
+            init();
+        }
+    }, [user?.userId]);
 
-  return (
-    <AppInitializerContext.Provider value={{ initialLoad, loading }}>
-      {children}
-    </AppInitializerContext.Provider>
-  );
+    return (
+        <AppInitializerContext.Provider value={{ initialLoad, loading }}>
+            {children}
+        </AppInitializerContext.Provider>
+    );
 };
 
 export const useAppInitializer = () => {
-  const context = useContext(AppInitializerContext);
-  if (!context) {
-    throw new Error(
-      "useAppInitializer must be used within AppInitializerProvider",
-    );
-  }
-  return context;
+    const context = useContext(AppInitializerContext);
+    if (!context) {
+        throw new Error('useAppInitializer must be used within AppInitializerProvider');
+    }
+    return context;
 };

@@ -1,147 +1,139 @@
-import React, { forwardRef, ReactNode, RefObject, useCallback } from "react";
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetScrollView,
-} from "@gorhom/bottom-sheet";
-import { useTheme } from "@react-navigation/native";
-import { StyleSheet, View } from "react-native";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import { ActionButton, CustomText } from "../components";
+import React, { forwardRef, ReactNode, RefObject, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useTheme } from '@react-navigation/native';
+
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { ActionButton, CustomText } from '../components';
 
 type GenericBottomSheetProps = {
-  title?: string;
-  description?: string;
-  stackBehavior?: "replace" | "push" | "switch";
-  primaryActionLabel?: string;
-  onPrimaryButtonPress?: () => void;
-  primaryButtonEnabled?: boolean;
-  secondaryActionLabel?: string;
-  onSecondaryButtonPress?: () => void;
-  onChangeIndex?: (index: number) => void;
-  allowDismiss?: boolean;
-  children?: ReactNode;
+    allowDismiss?: boolean;
+    children?: ReactNode;
+    description?: string;
+    onChangeIndex?: (index: number) => void;
+    onPrimaryButtonPress?: () => void;
+    onSecondaryButtonPress?: () => void;
+    primaryActionLabel?: string;
+    primaryButtonEnabled?: boolean;
+    secondaryActionLabel?: string;
+    stackBehavior?: 'replace' | 'push' | 'switch';
+    title?: string;
 };
 
-export const GenericBottomSheet = forwardRef<
-  BottomSheetModal,
-  GenericBottomSheetProps
->(
-  (
-    {
-      title,
-      description,
-      stackBehavior = "push",
-      primaryActionLabel,
-      onPrimaryButtonPress,
-      primaryButtonEnabled,
-      secondaryActionLabel,
-      onSecondaryButtonPress,
-      onChangeIndex,
-      allowDismiss = true,
-      children,
-    },
-    ref: RefObject<BottomSheetModal>,
-  ) => {
-    const { colors } = useTheme();
-    const styles = getStyles(colors);
+export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomSheetProps>(
+    (
+        {
+            allowDismiss = true,
+            children,
+            description,
+            onChangeIndex,
+            onPrimaryButtonPress,
+            onSecondaryButtonPress,
+            primaryActionLabel,
+            primaryButtonEnabled,
+            secondaryActionLabel,
+            stackBehavior = 'push',
+            title,
+        },
+        ref: RefObject<BottomSheetModal>,
+    ) => {
+        const { colors } = useTheme();
+        const styles = getStyles(colors);
 
-    const renderBackdrop = useCallback(
-      (props: any) => (
-        <BottomSheetBackdrop
-          appearsOnIndex={0}
-          disappearsOnIndex={-1}
-          pressBehavior={allowDismiss ? "close" : "none"}
-          {...props}
-        />
-      ),
-      [],
-    );
+        const renderBackdrop = useCallback(
+            (props: any) => (
+                <BottomSheetBackdrop
+                    appearsOnIndex={0}
+                    disappearsOnIndex={-1}
+                    pressBehavior={allowDismiss ? 'close' : 'none'}
+                    {...props}
+                />
+            ),
+            [],
+        );
 
-    return (
-      <BottomSheetModal
-        ref={ref}
-        index={0}
-        enablePanDownToClose={allowDismiss}
-        stackBehavior={stackBehavior}
-        onChange={(index: number) => onChangeIndex?.(index)}
-        backdropComponent={renderBackdrop}
-        backgroundStyle={styles.bottomSheetModal}
-        handleIndicatorStyle={styles.handleIndicatorStyle}
-      >
-        <BottomSheetScrollView>
-          {title && (
-            <CustomText weight="Bold" style={styles.title}>
-              {title}
-            </CustomText>
-          )}
-
-          {description && (
-            <CustomText style={styles.subtitle}>{description}</CustomText>
-          )}
-
-          {children}
-
-          {primaryActionLabel && (
-            <ActionButton
-              onPress={() => onPrimaryButtonPress?.()}
-              label={primaryActionLabel}
-              active={primaryButtonEnabled}
-              primary={true}
-              style={styles.button}
-            />
-          )}
-
-          {secondaryActionLabel && (
-            <CustomText
-              style={styles.actionText}
-              weight="SemiBold"
-              onPress={() => onSecondaryButtonPress?.()}
+        return (
+            <BottomSheetModal
+                backdropComponent={renderBackdrop}
+                backgroundStyle={styles.bottomSheetModal}
+                enablePanDownToClose={allowDismiss}
+                handleIndicatorStyle={styles.handleIndicatorStyle}
+                index={0}
+                ref={ref}
+                stackBehavior={stackBehavior}
+                onChange={(index: number) => onChangeIndex?.(index)}
             >
-              {secondaryActionLabel}
-            </CustomText>
-          )}
+                <BottomSheetScrollView>
+                    {title && (
+                        <CustomText style={styles.title} weight="Bold">
+                            {title}
+                        </CustomText>
+                    )}
 
-          <View style={styles.spacer} />
-        </BottomSheetScrollView>
-      </BottomSheetModal>
-    );
-  },
+                    {description && <CustomText style={styles.subtitle}>{description}</CustomText>}
+
+                    {children}
+
+                    {primaryActionLabel && (
+                        <ActionButton
+                            active={primaryButtonEnabled}
+                            label={primaryActionLabel}
+                            primary={true}
+                            style={styles.button}
+                            onPress={() => onPrimaryButtonPress?.()}
+                        />
+                    )}
+
+                    {secondaryActionLabel && (
+                        <CustomText
+                            style={styles.actionText}
+                            weight="SemiBold"
+                            onPress={() => onSecondaryButtonPress?.()}
+                        >
+                            {secondaryActionLabel}
+                        </CustomText>
+                    )}
+
+                    <View style={styles.spacer} />
+                </BottomSheetScrollView>
+            </BottomSheetModal>
+        );
+    },
 );
 
 const getStyles = (colors: any) =>
-  StyleSheet.create({
-    title: {
-      color: colors.primary300,
-      fontSize: 18,
-      marginTop: 12,
-      paddingHorizontal: MARGIN_HORIZONTAL,
-    },
-    subtitle: {
-      color: colors.primary600,
-      fontSize: 15,
-      marginTop: MARGIN_VERTICAL / 2,
-      paddingHorizontal: MARGIN_HORIZONTAL,
-    },
-    actionText: {
-      color: colors.primary,
-      fontSize: 13,
-      textAlign: "center",
-      paddingTop: MARGIN_VERTICAL,
-      paddingHorizontal: MARGIN_HORIZONTAL,
-    },
-    button: {
-      marginTop: MARGIN_VERTICAL,
-      marginHorizontal: MARGIN_HORIZONTAL,
-    },
-    spacer: {
-      height: MARGIN_VERTICAL,
-    },
-    bottomSheetModal: {
-      backgroundColor: colors.card,
-    },
-    handleIndicatorStyle: {
-      backgroundColor: colors.primary,
-      borderRadius: 0,
-    },
-  });
+    StyleSheet.create({
+        actionText: {
+            color: colors.primary,
+            fontSize: 13,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingTop: MARGIN_VERTICAL,
+            textAlign: 'center',
+        },
+        bottomSheetModal: {
+            backgroundColor: colors.card,
+        },
+        button: {
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL,
+        },
+        handleIndicatorStyle: {
+            backgroundColor: colors.primary,
+            borderRadius: 0,
+        },
+        spacer: {
+            height: MARGIN_VERTICAL,
+        },
+        subtitle: {
+            color: colors.primary600,
+            fontSize: 15,
+            marginTop: MARGIN_VERTICAL / 2,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+        title: {
+            color: colors.primary300,
+            fontSize: 18,
+            marginTop: 12,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+    });

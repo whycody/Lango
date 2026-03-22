@@ -1,5 +1,5 @@
 export type SyncMetadata = {
-  synced: boolean;
-  updatedAt?: string;
-  locallyUpdatedAt: string;
+    locallyUpdatedAt: string;
+    synced: boolean;
+    updatedAt?: string;
 };

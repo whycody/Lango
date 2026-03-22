@@ -1,88 +1,89 @@
-import React, { FC } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { CustomText } from "..";
-import { useTheme } from "@react-navigation/native";
-import { MARGIN_HORIZONTAL } from "../../../constants/margins";
-import { LanguageLevelRange } from "../../../types";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { FC } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { LanguageLevelRange } from '../../../types';
+import { CustomText } from '..';
 
 type LanguageLevelItemProps = {
-  level: LanguageLevelRange;
-  code: string;
-  label: string;
-  desc: string;
-  picked: boolean;
-  onPress: (level: LanguageLevelRange) => void;
+    code: string;
+    desc: string;
+    label: string;
+    level: LanguageLevelRange;
+    onPress: (level: LanguageLevelRange) => void;
+    picked: boolean;
 };
 
 export const LanguageLevelItem: FC<LanguageLevelItemProps> = ({
-  level,
-  code,
-  label,
-  desc,
-  picked,
-  onPress,
+    code,
+    desc,
+    label,
+    level,
+    onPress,
+    picked,
 }) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors);
+    const { colors } = useTheme();
+    const styles = getStyles(colors);
 
-  return (
-    <>
-      {level !== 1 && <View style={styles.divider} />}
-      <LinearGradient
-        colors={["transparent", picked ? colors.cardAccent300 : "transparent"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <Pressable
-          style={styles.root}
-          onPress={() => onPress(level)}
-          android_ripple={{ color: colors.background }}
-        >
-          <CustomText weight={"Black"} style={styles.code}>
-            {code}
-          </CustomText>
-          <View style={styles.content}>
-            <CustomText style={styles.title} weight={"Bold"}>
-              {label}
-            </CustomText>
-            <CustomText style={styles.desc} weight={"Regular"}>
-              {desc}
-            </CustomText>
-          </View>
-        </Pressable>
-      </LinearGradient>
-    </>
-  );
+    return (
+        <>
+            {level !== 1 && <View style={styles.divider} />}
+            <LinearGradient
+                colors={['transparent', picked ? colors.cardAccent300 : 'transparent']}
+                end={{ x: 1, y: 1 }}
+                start={{ x: 0, y: 0 }}
+            >
+                <Pressable
+                    android_ripple={{ color: colors.background }}
+                    style={styles.root}
+                    onPress={() => onPress(level)}
+                >
+                    <CustomText style={styles.code} weight={'Black'}>
+                        {code}
+                    </CustomText>
+                    <View style={styles.content}>
+                        <CustomText style={styles.title} weight={'Bold'}>
+                            {label}
+                        </CustomText>
+                        <CustomText style={styles.desc} weight={'Regular'}>
+                            {desc}
+                        </CustomText>
+                    </View>
+                </Pressable>
+            </LinearGradient>
+        </>
+    );
 };
 
 const getStyles = (colors: any) =>
-  StyleSheet.create({
-    root: {
-      padding: MARGIN_HORIZONTAL,
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    code: {
-      width: 45,
-      color: colors.primary600,
-      fontSize: 18,
-      paddingRight: MARGIN_HORIZONTAL,
-    },
-    title: {
-      fontSize: 13,
-      color: colors.primary,
-    },
-    desc: {
-      fontSize: 12,
-      color: colors.primary300,
-    },
-    divider: {
-      width: "100%",
-      height: 3,
-      backgroundColor: colors.background,
-    },
-    content: {
-      flex: 1,
-    },
-  });
+    StyleSheet.create({
+        code: {
+            color: colors.primary600,
+            fontSize: 18,
+            paddingRight: MARGIN_HORIZONTAL,
+            width: 45,
+        },
+        content: {
+            flex: 1,
+        },
+        desc: {
+            color: colors.primary300,
+            fontSize: 12,
+        },
+        divider: {
+            backgroundColor: colors.background,
+            height: 3,
+            width: '100%',
+        },
+        root: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            padding: MARGIN_HORIZONTAL,
+        },
+        title: {
+            color: colors.primary,
+            fontSize: 13,
+        },
+    });

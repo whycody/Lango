@@ -1,17 +1,10 @@
-import {
-  Word,
-  Session,
-  Evaluation,
-  Suggestion,
-  WordMLState,
-  WordHeuristicState,
-} from "..";
+import { Evaluation, Session, Suggestion, Word, WordHeuristicState, WordMLState } from '..';
 
 export type InitialLoad = {
-  sessions: Session[];
-  words: Word[];
-  evaluations: Evaluation[];
-  suggestions: Suggestion[];
-  wordsMLStates: WordMLState[];
-  wordsHeuristicStates: WordHeuristicState[];
+    evaluations: Evaluation[];
+    sessions: Session[];
+    suggestions: Suggestion[];
+    words: Word[];
+    wordsHeuristicStates: WordHeuristicState[];
+    wordsMLStates: WordMLState[];
 };

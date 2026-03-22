@@ -1,35 +1,28 @@
-import React from "react";
-import { LanguageProvider, useAppInitializer } from "../store";
-import { useAuth } from "../api/auth/AuthProvider";
-import { LoginScreen, OnboardingScreen } from "../ui/screens";
-import AppStack from "./AppStack";
-import { LoadingView } from "../ui/containers/login";
+import React from 'react';
+
+import { LanguageProvider, useAppInitializer } from '../store';
+import { useAuth } from '../store/AuthContext';
+import { LoadingView } from '../ui/containers/login';
+import { LoginScreen, OnboardingScreen } from '../ui/screens';
+import AppStack from './AppStack';
 
 const Root = () => {
-  const {
-    user,
-    isAuthenticated,
-    loading: authLoading,
-    login,
-    authError,
-  } = useAuth();
-  const { loading: initLoading } = useAppInitializer();
+    const { authError, isAuthenticated, loading: authLoading, login, user } = useAuth();
+    const { loading: initLoading } = useAppInitializer();
 
-  if (!isAuthenticated)
-    return (
-      <LoginScreen login={login} authError={authError} loading={authLoading} />
-    );
+    if (!isAuthenticated)
+        return <LoginScreen authError={authError} loading={authLoading} login={login} />;
 
-  if (authLoading || initLoading) return <LoadingView />;
+    if (authLoading || initLoading) return <LoadingView />;
 
-  if (!user.mainLang || !user.translationLang)
-    return (
-      <LanguageProvider>
-        <OnboardingScreen />
-      </LanguageProvider>
-    );
+    if (!user.mainLang || !user.translationLang)
+        return (
+            <LanguageProvider>
+                <OnboardingScreen />
+            </LanguageProvider>
+        );
 
-  return <AppStack />;
+    return <AppStack />;
 };
 
 export default Root;

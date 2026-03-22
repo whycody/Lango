@@ -1,12 +1,12 @@
-import { useAuth } from "../../api/auth/AuthProvider";
-import { getAllWordsWithDetails } from "../../database/WordsWithDetailsRepository";
+import { getAllWordsWithDetails } from '../../database/WordsWithDetailsRepository';
+import { useAuth } from '../../store/AuthContext';
 
 export const useWordsWithDetailsRepository = () => {
-  const userId = useAuth().user.userId;
+    const userId = useAuth().user.userId;
 
-  if (!userId) throw new Error("User not logged in");
+    if (!userId) throw new Error('User not logged in');
 
-  return {
-    getAllWordsWithDetails: () => getAllWordsWithDetails(userId),
-  };
+    return {
+        getAllWordsWithDetails: () => getAllWordsWithDetails(userId),
+    };
 };

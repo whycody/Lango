@@ -1,37 +1,38 @@
-import { useTheme } from "@react-navigation/native";
-import { StyleSheet, View } from "react-native";
-import { CustomText } from ".";
-import { FC } from "react";
+import { FC } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+
+import { CustomText } from '.';
 
 interface HeaderProps {
-  title: string;
-  subtitle?: string;
-  style?: any;
+    style?: any;
+    subtitle?: string;
+    title: string;
 }
 
-export const Header: FC<HeaderProps> = ({ title, subtitle, style }) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors);
+export const Header: FC<HeaderProps> = ({ style, subtitle, title }) => {
+    const { colors } = useTheme();
+    const styles = getStyles(colors);
 
-  return (
-    <View style={style}>
-      <CustomText style={styles.title} weight={"Bold"}>
-        {title}
-      </CustomText>
-      {subtitle && <CustomText style={styles.subtitle}>{subtitle}</CustomText>}
-    </View>
-  );
+    return (
+        <View style={style}>
+            <CustomText style={styles.title} weight={'Bold'}>
+                {title}
+            </CustomText>
+            {subtitle && <CustomText style={styles.subtitle}>{subtitle}</CustomText>}
+        </View>
+    );
 };
 
 const getStyles = (colors: any) =>
-  StyleSheet.create({
-    title: {
-      color: colors.primary300,
-      fontSize: 18,
-    },
-    subtitle: {
-      color: colors.primary600,
-      fontSize: 14,
-      marginTop: 6,
-    },
-  });
+    StyleSheet.create({
+        subtitle: {
+            color: colors.primary600,
+            fontSize: 14,
+            marginTop: 6,
+        },
+        title: {
+            color: colors.primary300,
+            fontSize: 18,
+        },
+    });

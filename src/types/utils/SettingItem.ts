@@ -1,10 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 
 export type SettingItem = {
-  id: string;
-  label: string;
-  description: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  section: number;
-  enabled?: boolean;
+    description: string;
+    enabled?: boolean;
+    icon: keyof typeof Ionicons.glyphMap;
+    id: string;
+    label: string;
+    section: number;
 };

@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "../../components";
 import { useAuth } from "../../../api/auth/AuthProvider";
 
-const ProfileCard = () => {
+export const ProfileCard = () => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const auth = useAuth();
@@ -66,5 +66,3 @@ const getStyles = (colors: any) =>
       marginTop: 18,
     },
   });
-
-export default ProfileCard;

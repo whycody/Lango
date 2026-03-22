@@ -1,9 +1,6 @@
-import {
-  ActionButton,
-  LanguageLevelPicker,
-  LanguagePicker,
-  OnboardingScreenContainer,
-} from "../components";
+import { ActionButton } from "../components";
+import { OnboardingScreenContainer } from "../containers";
+import { LanguageLevelPicker, LanguagePicker } from "../containers";
 import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";

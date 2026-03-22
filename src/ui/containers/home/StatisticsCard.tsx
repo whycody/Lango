@@ -1,9 +1,8 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
 import React, { FC, useEffect, useState } from "react";
-import { Header } from "../../components";
+import { Header, StatisticItem } from "../../components";
 import { useTranslation } from "react-i18next";
-import { StatisticItem } from "../../components/items";
 import {
   useWords,
   WordSource,
@@ -16,7 +15,7 @@ type StatisticsCardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
+export const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
   const { t } = useTranslation();
   const { langWords } = useWords();
   const statsContext = useStatistics();
@@ -102,5 +101,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export default StatisticsCard;

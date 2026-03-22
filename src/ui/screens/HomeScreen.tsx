@@ -6,9 +6,11 @@ import {
   View,
 } from "react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
-import HeaderCard from "../cards/home/HeaderCard";
-import WordsSuggestionsCard from "../cards/home/WordsSuggestionsCard";
-import StatisticsCard from "../cards/home/StatisticsCard";
+import {
+  HeaderCard,
+  StatisticsCard,
+  WordsSuggestionsCard,
+} from "../containers";
 import {
   FlashcardSide,
   SessionLength,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AppState, StatusBar, View } from "react-native";
+import { AppState, StatusBar, View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import "./i18n";
 import * as Font from "expo-font";
@@ -33,6 +33,7 @@ export default function App() {
     useMMKV(),
   );
   const { colors } = DarkTheme;
+  const styles = getStyles(colors);
 
   useEffect(() => {
     if (!applicationLang) return;
@@ -67,7 +68,7 @@ export default function App() {
   }, []);
 
   if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+    return <View style={styles.emptyView} />;
   }
 
   return (
@@ -77,7 +78,7 @@ export default function App() {
         translucent
         backgroundColor={"transparent"}
       />
-      <SafeAreaProvider style={{ backgroundColor: colors.card }}>
+      <SafeAreaProvider style={styles.root}>
         <GestureHandlerRootView>
           <NavigationContainer theme={DarkTheme}>
             <AuthProvider>
@@ -95,3 +96,12 @@ export default function App() {
     </>
   );
 }
+
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    emptyView: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    root: { backgroundColor: colors.card },
+  });

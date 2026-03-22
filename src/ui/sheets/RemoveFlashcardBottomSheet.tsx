@@ -7,7 +7,7 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { ActionButton, CustomText, Header } from "../components";
-import { FlashcardListItem } from "../components/items";
+import { FlashcardListItem } from "../components/flashcards";
 import { Platform, StyleSheet } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { FullWindowOverlay } from "react-native-screens";

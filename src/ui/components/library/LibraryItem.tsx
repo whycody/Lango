@@ -10,7 +10,7 @@ import {
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { useTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { CustomText } from "../";
+import { CustomText } from "..";
 import * as Haptics from "expo-haptics";
 import { useHaptics } from "../../../hooks";
 

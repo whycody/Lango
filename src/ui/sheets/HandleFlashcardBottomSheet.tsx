@@ -14,13 +14,8 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { Keyboard, Platform, StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import {
-  ActionButton,
-  Alert,
-  CustomText,
-  Header,
-  WordInput,
-} from "../components";
+import { Alert, WordInput } from "../components/flashcards";
+import { ActionButton, CustomText, Header } from "../components";
 import { useTranslation } from "react-i18next";
 import { useWords, WordSource, useLanguage } from "../../store";
 import { FullWindowOverlay } from "react-native-screens";

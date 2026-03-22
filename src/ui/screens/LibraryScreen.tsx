@@ -6,9 +6,9 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import ProfileCard from "../cards/library/ProfileCard";
+import { ProfileCard } from "../containers";
 import { useTranslation } from "react-i18next";
-import { LibraryItem } from "../components/items";
+import { LibraryItem } from "../components/library";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";

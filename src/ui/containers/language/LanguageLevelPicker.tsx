@@ -1,14 +1,14 @@
 import React, { FC } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { Header } from "../components";
-import { LanguageItem, LanguageLevelItem } from "../components/items";
+import { Header } from "../../components";
+import { LanguageItem, LanguageLevelItem } from "../../components/language";
 import { useTranslation } from "react-i18next";
-import { LANGUAGE_LEVEL_KEYS } from "../../constants/LanguageLevels";
-import { useLanguage } from "../../store";
-import { useAuth } from "../../api/auth/AuthProvider";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import { Language, LanguageLevelRange } from "../../types";
-import { useHaptics } from "../../hooks";
+import { LANGUAGE_LEVEL_KEYS } from "../../../constants/LanguageLevels";
+import { useLanguage } from "../../../store";
+import { useAuth } from "../../../api/auth/AuthProvider";
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
+import { Language, LanguageLevelRange } from "../../../types";
+import { useHaptics } from "../../../hooks";
 import { ImpactFeedbackStyle } from "expo-haptics";
 
 type LanguageLevelPickerProps = {

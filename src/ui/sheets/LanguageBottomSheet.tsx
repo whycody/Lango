@@ -7,7 +7,8 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { Platform, StyleSheet } from "react-native";
 import { FullWindowOverlay } from "react-native-screens";
-import { ActionButton, LanguagePicker } from "../components";
+import { ActionButton } from "../components";
+import { LanguagePicker } from "../containers";
 import { LanguageTypes } from "../../constants/LanguageTypes";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { useTranslation } from "react-i18next";

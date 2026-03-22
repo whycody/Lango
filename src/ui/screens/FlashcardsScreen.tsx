@@ -7,8 +7,12 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { ActionButton, CustomText, EmptyList, ListFilter } from "../components";
-import { FlashcardListItem, StatisticItem } from "../components/items";
+import { ActionButton, CustomText, StatisticItem } from "../components";
+import {
+  EmptyList,
+  FlashcardListItem,
+  ListFilter,
+} from "../components/flashcards";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import {

@@ -19,7 +19,7 @@ import * as Haptics from "expo-haptics";
 import {
   SessionModeItem,
   SessionSpeechSynthesizerItem,
-} from "../components/items";
+} from "../components/session";
 import { FlashcardSide, useUserPreferences } from "../../store";
 import { useTranslation } from "react-i18next";
 import { useHaptics } from "../../hooks";

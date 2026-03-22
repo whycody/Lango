@@ -12,7 +12,7 @@ import { Header } from "../components";
 import { FlashList } from "@shopify/flash-list";
 import { FlashcardSortingMethod, useUserPreferences } from "../../store";
 import { getSortingMethodLabel } from "../../utils/sortingUtil";
-import { SortingMethodItem } from "../components/items";
+import { SortingMethodItem } from "../components/flashcards";
 
 type SortingMethodBottomSheetProps = {
   onChangeIndex?: (index: number) => void;

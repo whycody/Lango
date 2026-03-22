@@ -1,8 +1,8 @@
 import { useTheme } from "@react-navigation/native";
-import { MARGIN_HORIZONTAL } from "../../constants/margins";
+import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { CustomText } from ".";
+import { CustomText } from "..";
 import React from "react";
 
 type AlertProps = {

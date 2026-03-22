@@ -2,8 +2,8 @@ import {
   FlashcardsScreen,
   SettingsScreen,
   SessionScreen,
-} from "../ui/screens/";
-import { SessionScreenParams } from "../ui/screens/SessionScreen";
+  SessionScreenParams,
+} from "../ui/screens";
 import {
   EvaluationsProvider,
   LanguageProvider,

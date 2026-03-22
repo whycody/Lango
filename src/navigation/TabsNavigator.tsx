@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { HomeScreen, LibraryScreen } from "../ui/screens/";
+import { HomeScreen, LibraryScreen } from "../ui/screens";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   Animated,

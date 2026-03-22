@@ -1,9 +1,9 @@
 import React, { forwardRef, RefObject } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
+import { LanguageLevelPicker } from "../containers";
 import { GenericBottomSheet } from "./GenericBottomSheet";
 import { Language } from "../../types";
-import { LanguageLevelPicker } from "../components";
 import { useLanguage } from "../../store";
 
 export const PickLanguageLevelBottomSheet = forwardRef<

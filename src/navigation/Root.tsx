@@ -1,9 +1,9 @@
 import React from "react";
 import { LanguageProvider, useAppInitializer } from "../store";
 import { useAuth } from "../api/auth/AuthProvider";
-import { LoginScreen, OnboardingScreen } from "../ui/screens/";
+import { LoginScreen, OnboardingScreen } from "../ui/screens";
 import AppStack from "./AppStack";
-import { LoadingView } from "../ui/components";
+import { LoadingView } from "../ui/containers/login";
 
 const Root = () => {
   const {

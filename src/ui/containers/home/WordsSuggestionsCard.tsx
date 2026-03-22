@@ -2,7 +2,8 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
-import { ActionButton, Flashcard, Header } from "../../components";
+import { ActionButton, Header } from "../../components";
+import { Flashcard } from "../../components/home";
 import { FC, useEffect, useRef, useState } from "react";
 import { useDebouncedSyncSuggestions, useSuggestions } from "../../../store";
 import { Suggestion } from "../../../types";
@@ -14,7 +15,9 @@ type WordsSuggestionsCardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) => {
+export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({
+  style,
+}) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = getStyles(colors);
@@ -162,5 +165,3 @@ const getStyles = (colors: any) =>
       marginLeft: MARGIN_HORIZONTAL / 2,
     },
   });
-
-export default WordsSuggestionsCard;

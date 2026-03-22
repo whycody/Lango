@@ -14,7 +14,7 @@ import { useTheme } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
 import { ActionButton, CustomText, Header } from "../components";
-import { SessionLengthItem, SessionModeItem } from "../components/items";
+import { SessionLengthItem, SessionModeItem } from "../components/session";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import { FlashcardSide, SessionLength, useUserPreferences } from "../../store";

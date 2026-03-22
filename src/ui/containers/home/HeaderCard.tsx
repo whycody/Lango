@@ -37,19 +37,23 @@ type HeaderCardProps = {
   ): void;
 };
 
-const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
+export const HeaderCard: FC<HeaderCardProps> = ({
+  navigateToSessionScreen,
+}) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const styles = getStyles(colors);
   const { mainLang } = useLanguage();
   const { langSuggestions } = useSuggestions();
   const { langWords } = useWords();
   const { langWordsHeuristicStates } = useWordsHeuristicStates();
-  const statisticsContext = useStatistics();
+  const { studyDaysList } = useStatistics();
+
   const [streak, setStreak] = useState<Streak>({
     numberOfDays: 0,
     active: false,
   });
+
+  const styles = getStyles(colors);
   const languageSheetRef = useRef<BottomSheetModal>(null);
   const sessionSheetRef = useRef<BottomSheetModal>(null);
   const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
@@ -96,17 +100,17 @@ const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
   }, [bottomSheetIsShown]);
 
   useLayoutEffect(() => {
-    setStreak(getCurrentStreak(statisticsContext.studyDaysList));
-  }, [statisticsContext.studyDaysList]);
+    setStreak(getCurrentStreak(studyDaysList));
+  }, [studyDaysList]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state !== "active") return;
-      setStreak(getCurrentStreak(statisticsContext.studyDaysList));
+      setStreak(getCurrentStreak(studyDaysList));
     });
 
     return () => subscription.remove();
-  }, [statisticsContext.studyDaysList]);
+  }, [studyDaysList]);
 
   const handleActionButtonPress = () => {
     trackEvent(AnalyticsEventName.START_SESSION_SHEET_OPEN);
@@ -235,5 +239,3 @@ const getStyles = (colors: any) =>
       paddingLeft: 5,
     },
   });
-
-export default HeaderCard;

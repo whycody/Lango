@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { Animated, Dimensions, Easing, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,9 +9,10 @@ interface OnboardingScreenContainerProps {
   currentStep: number;
 }
 
-export const OnboardingScreenContainer: React.FC<
-  OnboardingScreenContainerProps
-> = ({ children, currentStep }) => {
+export const OnboardingScreenContainer: FC<OnboardingScreenContainerProps> = ({
+  children,
+  currentStep,
+}) => {
   const insets = useSafeAreaInsets();
   const styles = getStyles(insets);
 

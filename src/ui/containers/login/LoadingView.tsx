@@ -25,7 +25,7 @@ export const LoadingView: FC<LoadingViewProps> = () => {
             </View>
             <Image
                 resizeMode="contain"
-                source={require('../../../assets/lango-logo.png')}
+                source={require('../../../../assets/lango-logo.png')}
                 style={styles.image}
             />
         </View>

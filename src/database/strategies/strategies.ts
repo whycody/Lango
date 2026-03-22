@@ -1,8 +1,4 @@
-import { heuristicStrategy } from './heuristic';
-import { hybridStrategy } from './hybrid';
-import { mlStrategy } from './ml';
-import { oldestStrategy } from './oldest';
-import { randomStrategy } from './random';
+import { heuristicStrategy, hybridStrategy, mlStrategy, oldestStrategy, randomStrategy } from '.';
 
 export const strategies = {
     HEURISTIC: heuristicStrategy,

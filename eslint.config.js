@@ -5,7 +5,6 @@ const reactPlugin = require('eslint-plugin-react');
 const simpleImportSortPlugin = require('eslint-plugin-simple-import-sort');
 const sortDestructureKeysPlugin = require('eslint-plugin-sort-destructure-keys');
 const sortKeysFixPlugin = require('eslint-plugin-sort-keys-fix');
-const typescriptSortKeysPlugin = require('eslint-plugin-typescript-sort-keys');
 const globals = require('globals');
 
 module.exports = [
@@ -52,7 +51,6 @@ module.exports = [
             'simple-import-sort': simpleImportSortPlugin,
             'sort-destructure-keys': sortDestructureKeysPlugin,
             'sort-keys-fix': sortKeysFixPlugin,
-            'typescript-sort-keys': typescriptSortKeysPlugin,
         },
         settings: {
             react: {
@@ -126,8 +124,6 @@ module.exports = [
             ],
             'simple-import-sort/exports': 'warn',
             'sort-destructure-keys/sort-destructure-keys': 'warn',
-            'typescript-sort-keys/interface': 'warn',
-            'typescript-sort-keys/string-enum': 'warn',
         },
     },
 ];

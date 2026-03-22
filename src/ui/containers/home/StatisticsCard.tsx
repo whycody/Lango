@@ -1,7 +1,8 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
 import React, { FC, useEffect, useState } from "react";
-import { Header, StatisticItem } from "../../components";
+import { Header } from "../../components";
+import { StatisticItem } from "../../components/home";
 import { useTranslation } from "react-i18next";
 import {
   useWords,

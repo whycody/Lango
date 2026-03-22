@@ -1,4 +1,4 @@
-import { EvaluationGrade } from "../core/Evaluation";
+import { EvaluationGrade } from "../../constants/Evaluation";
 
 export type WordMLState = {
   wordId: string;

@@ -1,5 +1,6 @@
-import { SessionMode, UserProvider } from "../types";
 import { FlashcardSide, SessionLength } from "../store";
+import { SessionMode } from "./Session";
+import { UserProvider } from "./User";
 
 export const AnalyticsEventName = {
   LOGIN_SUCCESS: "login_success",

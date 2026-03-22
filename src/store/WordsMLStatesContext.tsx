@@ -11,7 +11,8 @@ import React, {
 import { useAppInitializer, useEvaluations, useWords } from ".";
 import { useWordsMLStatesRepository } from "../hooks";
 import { score } from "../utils/model";
-import { Evaluation, EvaluationGrade, Word, WordMLState } from "../types";
+import { Evaluation, Word, WordMLState } from "../types";
+import { EvaluationGrade } from "../constants/Evaluation";
 
 interface WordsMLStatesContextProps {
   loading: boolean;

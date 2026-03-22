@@ -16,11 +16,11 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { checkUpdates } from "./src/utils/checkUpdates";
 import { useTypedMMKV } from "./src/hooks";
-import { LanguageCode } from "./src/constants/LanguageCode";
 import { useTranslation } from "react-i18next";
 import { useMMKV } from "react-native-mmkv";
 import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
+import { LanguageCode } from "./src/constants/Language";
 
 SplashScreen.preventAutoHideAsync();
 

@@ -2,14 +2,15 @@ import React, { useCallback } from "react";
 import { FlatList, StyleSheet, View, ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
-import { Language, LanguageCode } from "../../../types";
+import { Language } from "../../../types";
+import { LanguageCode } from "../../../constants/Language";
 import { useLanguage } from "../../../store";
-import { LanguageTypes } from "../../../constants/LanguageTypes";
 import { useHaptics } from "../../../hooks";
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../../constants/margins";
 import { Header } from "../../components";
 import { LanguageItem } from "../../components/language";
 import { useAuth } from "../../../api/auth/AuthProvider";
+import { LanguageTypes } from "../../../constants/Language";
 
 interface LanguagePickerProps {
   allLanguages?: boolean;

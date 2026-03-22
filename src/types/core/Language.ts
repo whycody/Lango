@@ -1,4 +1,4 @@
-import { LanguageCode } from "../../constants/LanguageCode";
+import { LanguageCode } from "../../constants/Language";
 
 export type Language = {
   languageCode: LanguageCode;

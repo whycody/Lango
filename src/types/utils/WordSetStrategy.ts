@@ -1,10 +1,12 @@
-import { Word } from "../core/Word";
-import { Evaluation } from "../core/Evaluation";
-import { WordMLState } from "../states/WordMLState";
-import { WordHeuristicState } from "../states/WordHeuristicState";
-import { SessionModel } from "../core/User";
-import { WordSet } from "../core/WordSet";
-import { Suggestion } from "../core/Suggestion";
+import {
+  Word,
+  Evaluation,
+  WordMLState,
+  Suggestion,
+  WordHeuristicState,
+  WordSet,
+} from "..";
+import { SessionModel } from "../../constants/Session";
 
 export type WordSetStrategy = (
   size: number,

@@ -21,9 +21,10 @@ import { useWords, WordSource, useLanguage } from "../../store";
 import { FullWindowOverlay } from "react-native-screens";
 import axios from "axios";
 import TranslationUtils from "../../utils/translationUtils";
-import { LanguageCode, Word } from "../../types";
 import { useVoiceInput } from "../../hooks";
 import { MicrophonePermissionBottomSheet } from "./MicrophonePermissionBottomSheet";
+import { LanguageCode } from "../../constants/Language";
+import { Word } from "../../types";
 
 type WordTranslations = {
   word: string;

@@ -1,4 +1,4 @@
-import { LanguageCode } from "./LanguageCode";
+import { LanguageCode } from "./Language";
 
 export const speechLocaleMap: Record<LanguageCode, string> = {
   [LanguageCode.ENGLISH]: "en-US",

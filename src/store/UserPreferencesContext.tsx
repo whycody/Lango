@@ -1,8 +1,8 @@
 import { createContext, FC, ReactNode, useContext } from "react";
-import { SessionMode } from "../types";
 import { useUserStorage } from ".";
 import { useTypedMMKV } from "../hooks";
 import { PermissionStatus } from "expo-notifications";
+import { SessionMode } from "../constants/Session";
 
 export enum FlashcardSide {
   WORD = "WORD",

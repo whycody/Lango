@@ -17,7 +17,7 @@ import { LibraryNavProp } from "../../types";
 import { useAuth } from "../../api/auth/AuthProvider";
 import { useDynamicStatusBar } from "../../hooks";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
-import { LibraryItems } from "../../constants/LibraryItems";
+import { LibraryItems } from "../../constants/Library";
 import { ScreenName } from "../../navigation/AppStack";
 import { trackEvent } from "../../utils/analytics";
 import { AnalyticsEventName } from "../../constants/AnalyticsEventName";

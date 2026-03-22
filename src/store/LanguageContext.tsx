@@ -1,10 +1,11 @@
 import { createContext, FC, ReactNode, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Language, LanguageCode } from "../types";
+import { Language } from "../types";
 import { MAIN_LANG, TRANSLATION_LANG, useUserStorage } from ".";
 import { useTypedMMKV } from "../hooks";
 import { useMMKV } from "react-native-mmkv";
 import { useAuth } from "../api/auth/AuthProvider";
+import { LanguageCode } from "../constants/Language";
 
 interface LanguageContextProps {
   languages: Language[];

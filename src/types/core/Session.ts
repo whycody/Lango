@@ -1,13 +1,10 @@
-import { SessionModel, SessionModelVersion } from "./User";
 import { SyncMetadata } from "../sync/SyncMetadata";
-import { LanguageCode } from "../../constants/LanguageCode";
-
-export enum SessionMode {
-  STUDY = "STUDY",
-  RANDOM = "RANDOM",
-  OLDEST = "OLDEST",
-  UNKNOWN = "UNKNOWN",
-}
+import { LanguageCode } from "../../constants/Language";
+import {
+  SessionMode,
+  SessionModel,
+  SessionModelVersion,
+} from "../../constants/Session";
 
 export type Session = SyncMetadata & {
   id: string;

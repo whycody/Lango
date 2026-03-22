@@ -2,7 +2,6 @@ import { apiCall } from "./auth/apiHandler";
 import DeviceInfo from "react-native-device-info";
 import {
   Evaluation,
-  LanguageCode,
   LanguageLevel,
   LanguageLevelRange,
   Session,
@@ -11,6 +10,7 @@ import {
   User,
   Word,
 } from "../types";
+import { LanguageCode } from "../constants/Language";
 
 const getDeviceId = async () => {
   try {

@@ -1,5 +1,5 @@
+import { SessionModel, SessionModelVersion } from "../../constants/Session";
 import { SessionWord } from "./Word";
-import { SessionModel, SessionModelVersion } from "./User";
 
 export type WordSet = {
   sessionWords: SessionWord[];

@@ -1,9 +1,8 @@
 import {
   PICKED_SESSION_MODEL_VERSION,
   SessionModel,
-  WordSet,
-  WordSetStrategy,
-} from "../../types";
+} from "../../constants/Session";
+import { WordSet, WordSetStrategy } from "../../types";
 import {
   mapSuggestionsToSessionWords,
   mapWordsToSessionWords,

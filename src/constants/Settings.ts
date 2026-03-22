@@ -1,4 +1,4 @@
-import { LanguageTypes } from "./LanguageTypes";
+import { LanguageTypes } from "./Language";
 
 export enum SettingsItems {
   MAIN_LANGUAGE = LanguageTypes.MAIN,
@@ -8,4 +8,10 @@ export enum SettingsItems {
   NOTIFICATIONS = "notifications",
   FLASHCARD_SIDE = "flashcard_side",
   SESSION_SPEECH_SYNTHESIZER = "session_speech_synthesizer",
+}
+
+export enum SettingsSections {
+  LANGUAGE,
+  PREFERENCES,
+  SESSION,
 }

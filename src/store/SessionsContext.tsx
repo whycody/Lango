@@ -10,13 +10,7 @@ import React, {
 import { useSessionsRepository } from "../hooks";
 import uuid from "react-native-uuid";
 import { fetchUpdatedSessions, syncSessionsOnServer } from "../api/apiClient";
-import {
-  LanguageCode,
-  Session,
-  SessionMode,
-  SessionModel,
-  SessionModelVersion,
-} from "../types";
+import { Session } from "../types";
 import { useAuth } from "../api/auth/AuthProvider";
 import {
   findChangedItems,
@@ -28,6 +22,12 @@ import {
 } from "../utils/sync";
 import { useAppInitializer } from ".";
 import { getTodayDate } from "../utils/dateUtil";
+import {
+  SessionMode,
+  SessionModel,
+  SessionModelVersion,
+} from "../constants/Session";
+import { LanguageCode } from "../constants/Language";
 
 interface SessionsContextProps {
   sessions: Session[];

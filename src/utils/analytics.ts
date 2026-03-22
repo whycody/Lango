@@ -5,12 +5,13 @@ import {
   setUserProperties,
 } from "@react-native-firebase/analytics";
 import { getApp } from "@react-native-firebase/app";
-import { PICKED_SESSION_MODEL_VERSION, User } from "../types";
 import { getCurrentStreak } from "./streakUtils";
 import {
   AnalyticsEventName,
   AnalyticsEventPayloadMap,
 } from "../constants/AnalyticsEventName";
+import { PICKED_SESSION_MODEL_VERSION } from "../constants/Session";
+import { User } from "../types";
 
 const analyticsInstance = getAnalytics(getApp());
 

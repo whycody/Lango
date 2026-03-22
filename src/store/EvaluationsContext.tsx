@@ -13,7 +13,7 @@ import {
   syncEvaluationsOnServer,
 } from "../api/apiClient";
 import uuid from "react-native-uuid";
-import { Evaluation, EvaluationGrade } from "../types";
+import { Evaluation } from "../types";
 import {
   findChangedItems,
   findLatestUpdatedAt,
@@ -23,6 +23,7 @@ import {
   updateLocalItems,
 } from "../utils/sync";
 import { useAppInitializer } from ".";
+import { EvaluationGrade } from "../constants/Evaluation";
 
 interface EvaluationsContextProps {
   evaluations: Evaluation[] | null;

@@ -10,17 +10,19 @@ import { CustomText, SquareFlag } from "..";
 import {
   FlatList,
   Pressable,
+  StyleProp,
   StyleSheet,
   TextInputProps,
   View,
+  ViewStyle,
 } from "react-native";
 import { MARGIN_HORIZONTAL } from "../../../constants/margins";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import { useVoiceInput } from "../../../hooks";
-import { LanguageCode } from "../../../constants/LanguageCode";
 import { trackEvent } from "../../../utils/analytics";
 import { AnalyticsEventName } from "../../../constants/AnalyticsEventName";
+import { LanguageCode } from "../../../constants/Language";
 
 type WordInputProps = TextInputProps & {
   id: string;
@@ -31,7 +33,7 @@ type WordInputProps = TextInputProps & {
   languageCode: LanguageCode;
   onMicrophonePermissionsNotGranted?: () => void;
   suggestions?: string[];
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 };
 
 type WordInputRef = {

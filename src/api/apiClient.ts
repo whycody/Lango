@@ -22,16 +22,21 @@ const getDeviceId = async () => {
     }
 };
 
+const getTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const createAuthData = async (data: Record<string, unknown> = {}) => ({
+    ...data,
+    deviceId: await getDeviceId(),
+    timezone: getTimezone(),
+});
+
 export const getUserInfo: () => Promise<User | null> = async () => {
-    return await apiCall(
-        {
-            data: {},
-            method: 'GET',
-            url: '/users/users',
-        },
-        false,
-        10000,
-    );
+    try {
+        return await apiCall({ data: {}, method: 'GET', url: '/users/users' }, false, 10000);
+    } catch (e) {
+        console.error('GET /users/users', e);
+        return null;
+    }
 };
 
 export const updateUserLanguages = async (
@@ -53,16 +58,8 @@ export const updateUserLanguages = async (
 
 export const signInWithGoogle = async (idToken: string) => {
     try {
-        const deviceId = await getDeviceId();
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        return await apiCall(
-            {
-                data: { deviceId, idToken, timezone },
-                method: 'POST',
-                url: '/auth/login/google',
-            },
-            true,
-        );
+        const data = await createAuthData({ idToken });
+        return await apiCall({ data, method: 'POST', url: '/auth/login/google' }, true);
     } catch (e) {
         console.error('POST /auth/login/google', e);
         return null;
@@ -71,16 +68,8 @@ export const signInWithGoogle = async (idToken: string) => {
 
 export const signInWithFacebook = async (accessToken: string) => {
     try {
-        const deviceId = await getDeviceId();
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        return await apiCall(
-            {
-                data: { accessToken, deviceId, timezone },
-                method: 'POST',
-                url: '/auth/login/facebook',
-            },
-            true,
-        );
+        const data = await createAuthData({ accessToken });
+        return await apiCall({ data, method: 'POST', url: '/auth/login/facebook' }, true);
     } catch (e) {
         console.error('POST /auth/login/facebook', e);
         return null;
@@ -89,18 +78,10 @@ export const signInWithFacebook = async (accessToken: string) => {
 
 export const signInWithApple = async (accessToken: string, fullName: string) => {
     try {
-        const deviceId = await getDeviceId();
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        return await apiCall(
-            {
-                data: { accessToken, deviceId, fullName, timezone },
-                method: 'POST',
-                url: '/auth/login/apple',
-            },
-            true,
-        );
+        const data = await createAuthData({ accessToken, fullName });
+        return await apiCall({ data, method: 'POST', url: '/auth/login/apple' }, true);
     } catch (e) {
-        console.error('POST /auth/login/facebook', e);
+        console.error('POST /auth/login/apple', e);
         return null;
     }
 };
@@ -109,15 +90,8 @@ export const refreshTokens = async (
     refreshToken: string,
 ): Promise<{ accessToken: string; refreshToken: string } | null> => {
     try {
-        const deviceId = await getDeviceId();
-        return await apiCall(
-            {
-                data: { deviceId, refreshToken },
-                method: 'POST',
-                url: '/auth/auth/refresh',
-            },
-            true,
-        );
+        const data = await createAuthData({ refreshToken });
+        return await apiCall({ data, method: 'POST', url: '/auth/auth/refresh' }, true);
     } catch (e) {
         console.error('POST /auth/auth/refresh', e);
         return null;
@@ -126,15 +100,8 @@ export const refreshTokens = async (
 
 export const signOut = async () => {
     try {
-        const deviceId = await getDeviceId();
-        return await apiCall(
-            {
-                data: { deviceId },
-                method: 'POST',
-                url: '/auth/auth/logout',
-            },
-            true,
-        );
+        const data = await createAuthData();
+        return await apiCall({ data, method: 'POST', url: '/auth/auth/logout' }, true);
     } catch (e) {
         console.error('POST /auth/auth/logout', e);
         return null;
@@ -143,14 +110,7 @@ export const signOut = async () => {
 
 export const updateNotificationsEnabled = async (enabled: boolean) => {
     try {
-        return await apiCall(
-            {
-                data: { enabled },
-                method: 'PATCH',
-                url: '/notifications',
-            },
-            true,
-        );
+        return await apiCall({ data: { enabled }, method: 'PATCH', url: '/notifications' }, true);
     } catch (e) {
         console.error('PATCH /notifications', e);
         return null;
@@ -175,22 +135,15 @@ export const updateLanguageLevels = async (languageLevels: LanguageLevel[]) => {
 
 export const registerDeviceToken = async (token: string) => {
     try {
-        const deviceId = await getDeviceId();
-        return await apiCall(
-            {
-                data: { deviceId, token },
-                method: 'POST',
-                url: '/notifications/devices',
-            },
-            true,
-        );
+        const data = await createAuthData({ token });
+        return await apiCall({ data, method: 'POST', url: '/notifications/devices' }, true);
     } catch (e) {
         console.error('POST /notifications/devices', e);
         return null;
     }
 };
 
-export const syncWordsOnServer = async (words: Word[]): Promise<SyncResult[]> => {
+export const syncWordsOnServer = async (words: Word[]): Promise<SyncResult[] | null> => {
     try {
         return await apiCall({
             data: words,
@@ -216,7 +169,7 @@ export const fetchUpdatedWords = async (since: string): Promise<Word[]> => {
     }
 };
 
-export const syncSessionsOnServer = async (sessions: Session[]): Promise<SyncResult[]> => {
+export const syncSessionsOnServer = async (sessions: Session[]): Promise<SyncResult[] | null> => {
     try {
         return await apiCall({
             data: sessions,
@@ -255,7 +208,9 @@ export const fetchUpdatedEvaluations = async (since: string): Promise<Evaluation
     }
 };
 
-export const syncEvaluationsOnServer = async (evaluations: Evaluation[]): Promise<SyncResult[]> => {
+export const syncEvaluationsOnServer = async (
+    evaluations: Evaluation[],
+): Promise<SyncResult[] | null> => {
     try {
         return await apiCall({
             data: evaluations,
@@ -289,7 +244,9 @@ export const fetchUpdatedSuggestions = async (
     }
 };
 
-export const syncSuggestionsOnServer = async (suggestions: Suggestion[]): Promise<SyncResult[]> => {
+export const syncSuggestionsOnServer = async (
+    suggestions: Suggestion[],
+): Promise<SyncResult[] | null> => {
     try {
         return await apiCall({
             data: suggestions,

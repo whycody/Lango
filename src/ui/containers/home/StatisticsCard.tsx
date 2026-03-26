@@ -3,7 +3,8 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
-import { useSessions, useStatistics, useWords, WordSource } from '../../../store';
+import { WordSource } from '../../../constants/Word';
+import { useSessions, useStatistics, useWords } from '../../../store';
 import { Word } from '../../../types';
 import { Header } from '../../components';
 import { StatisticItem } from '../../components/home';

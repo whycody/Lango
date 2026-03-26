@@ -1,6 +1,7 @@
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 
-import { useAuth, useSessions } from '.';
+import { useAuth } from './AuthContext';
+import { useSessions } from './SessionsContext';
 
 interface StatisticsContextProps {
     numberOfSessions: number;

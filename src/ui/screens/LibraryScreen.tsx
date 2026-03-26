@@ -8,7 +8,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LibraryItems } from '../../constants/Library';
 import { useDynamicStatusBar } from '../../hooks';
-import { ScreenName } from '../../navigation/AppStack';
+import { ScreenName } from '../../navigation/navigationTypes';
 import { useAuth, useLanguage, useWords } from '../../store';
 import { LibraryNavProp } from '../../types';
 import { trackEvent } from '../../utils/analytics';

@@ -3,16 +3,11 @@ import {
     getAllEvaluations,
     saveEvaluations,
 } from '../../database/EvaluationsRepository';
-import { useAuth } from '../../store';
 import { Evaluation } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useEvaluationsRepository = () => {
-    const { user } = useAuth();
-
-    const getUserId = () => {
-        if (!user?.userId) throw new Error('User not logged in');
-        return user.userId;
-    };
+    const getUserId = useRepositoryUserId();
 
     return {
         createTables: () => createTables(getUserId()),

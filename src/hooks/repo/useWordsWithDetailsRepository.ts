@@ -1,12 +1,10 @@
 import { getAllWordsWithDetails } from '../../database/WordsWithDetailsRepository';
-import { useAuth } from '../../store';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useWordsWithDetailsRepository = () => {
-    const userId = useAuth().user.userId;
-
-    if (!userId) throw new Error('User not logged in');
+    const getUserId = useRepositoryUserId();
 
     return {
-        getAllWordsWithDetails: () => getAllWordsWithDetails(userId),
+        getAllWordsWithDetails: () => getAllWordsWithDetails(getUserId()),
     };
 };

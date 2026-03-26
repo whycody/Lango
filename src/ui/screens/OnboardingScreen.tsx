@@ -14,7 +14,7 @@ import { LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { ActionButton } from '../components';
 import { LanguageLevelPicker, LanguagePicker, OnboardingScreenContainer } from '../containers';
-import { WelcomeScreen } from '.';
+import { WelcomeScreen } from './WelcomeScreen';
 
 const screenHeight = Dimensions.get('window').height;
 

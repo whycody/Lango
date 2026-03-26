@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
-import { ImpactFeedbackStyle } from 'expo-haptics';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 
+import { LanguageCode } from '../constants/Language';
 import { speechLocaleMap } from '../constants/SpeechLocaleMap';
 import { useHaptics } from './useHaptics';
 
@@ -9,7 +9,7 @@ let activeVoiceId: string | null = null;
 
 type UseVoiceInputParams = {
     id?: string;
-    languageCode?: string;
+    languageCode?: LanguageCode;
     onEnd?: (result: string) => void;
     onPermissionDenied?: () => void;
     onResult?: (text: string) => void;
@@ -24,7 +24,7 @@ export const useVoiceInput = ({
 }: UseVoiceInputParams) => {
     const [recording, setRecording] = useState<string | false>(false);
     const transcriptRef = useRef('');
-    const haptics = useHaptics();
+    const { triggerHaptics } = useHaptics();
 
     useSpeechRecognitionEvent('start', () => {
         transcriptRef.current = '';
@@ -81,7 +81,7 @@ export const useVoiceInput = ({
             return;
         }
 
-        haptics.triggerHaptics(ImpactFeedbackStyle.Rigid);
+        triggerHaptics('rigid');
 
         if (recording) {
             stop();

@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { useMMKV } from 'react-native-mmkv';
 
 import { LanguageCode } from '../constants/Language';
-import { useTypedMMKV } from '../hooks';
+import { useTypedMMKV } from '../hooks/useTypedMKKV';
 import { Language } from '../types';
-import { MAIN_LANG, TRANSLATION_LANG, useUserStorage } from '.';
+import { MAIN_LANG, TRANSLATION_LANG } from './AppInitializerContext';
 import { useAuth } from './AuthContext';
+import { useUserStorage } from './UserStorageContext';
 
 interface LanguageContextProps {
     applicationLang: LanguageCode;

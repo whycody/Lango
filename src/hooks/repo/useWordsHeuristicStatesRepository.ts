@@ -5,16 +5,11 @@ import {
     updateWordHeuristicState,
 } from '../../database/WordsHeuristicStatesRepository';
 import { WordsStatesRepository } from '../../database/WordsStatesRepository';
-import { useAuth } from '../../store';
 import { WordHeuristicState } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useWordsHeuristicStatesRepository = (): WordsStatesRepository<WordHeuristicState> => {
-    const { user } = useAuth();
-
-    const getUserId = () => {
-        if (!user?.userId) throw new Error('User not logged in');
-        return user.userId;
-    };
+    const getUserId = useRepositoryUserId();
 
     return {
         createTables: () => createHeuristicTable(getUserId()),

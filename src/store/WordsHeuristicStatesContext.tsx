@@ -9,9 +9,12 @@ import React, {
     useState,
 } from 'react';
 
-import { useWordsHeuristicStatesRepository } from '../hooks';
+import { useWordsHeuristicStatesRepository } from '../hooks/repo';
 import { Evaluation, Word, WordHeuristicState } from '../types';
-import { useAppInitializer, useEvaluations, useWords } from '.';
+import { getCurrentISO } from '../utils/dateUtil';
+import { useAppInitializer } from './AppInitializerContext';
+import { useEvaluations } from './EvaluationsContext';
+import { useWords } from './WordsContext';
 
 interface WordsHeuristicContextProps {
     langWordsHeuristicStates: WordHeuristicState[];
@@ -67,15 +70,18 @@ export const WordsHeuristicProvider: FC<{ children: ReactNode }> = ({ children }
         }
     }, [wordsHeuristicStates]);
 
-    const getInitialState = (wordId: string): WordHeuristicState => ({
-        EF: 2.5,
-        interval: 1,
-        lastReviewDate: new Date().toISOString(),
-        nextReviewDate: new Date().toISOString(),
-        repetitionsCount: 0,
-        studyCount: 0,
-        wordId,
-    });
+    const getInitialState = (wordId: string): WordHeuristicState => {
+        const now = getCurrentISO();
+        return {
+            EF: 2.5,
+            interval: 1,
+            lastReviewDate: now,
+            nextReviewDate: now,
+            repetitionsCount: 0,
+            studyCount: 0,
+            wordId,
+        };
+    };
 
     const getWordsToSync = (
         words: Word[],

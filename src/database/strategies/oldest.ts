@@ -1,6 +1,6 @@
 import { SessionModel, SessionModelVersion } from '../../constants/Session';
 import { WordSet, WordSetStrategy } from '../../types';
-import { mapWordsToSessionWords } from '../../utils/sessionWordMapper';
+import { mapWordsToSessionWords } from '../../utils/strategiesUtils';
 
 export const oldestStrategy: WordSetStrategy = (
     size,

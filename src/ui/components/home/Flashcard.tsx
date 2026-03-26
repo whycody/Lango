@@ -2,14 +2,14 @@ import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'rea
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Foundation } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import FlipCard from 'react-native-flip-card';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
+import { WordSource } from '../../../constants/Word';
 import { useHaptics } from '../../../hooks';
-import { useLanguage, useWords, WordSource } from '../../../store';
+import { useLanguage, useWords } from '../../../store';
 import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { CustomText, SquareFlag } from '..';
@@ -62,12 +62,12 @@ export const Flashcard = forwardRef(
             }, 200);
         }, [setNewFlashcardIsReady, newFlashcardIsReady, readyToFlip]);
 
-        const handleFlip = async (add: boolean = true) => {
+        const handleFlip = (add: boolean = true) => {
             if (!flippable) return;
             if (!add) setFlip(prev => !prev);
             setFlippable(false);
             setNewFlashcardIsReady(false);
-            await triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
+            triggerHaptics('rigid');
             if (add) {
                 const addWord = wordsContext.addWord(
                     suggestion.word,

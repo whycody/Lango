@@ -1,14 +1,9 @@
 import { createTables, getAllWords, saveWords, updateWord } from '../../database/WordsRepository';
-import { useAuth } from '../../store';
 import { Word } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useWordsRepository = () => {
-    const { user } = useAuth();
-
-    const getUserId = () => {
-        if (!user?.userId) throw new Error('User not logged in');
-        return user.userId;
-    };
+    const getUserId = useRepositoryUserId();
 
     return {
         createTables: () => createTables(getUserId()),

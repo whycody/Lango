@@ -1,5 +1,3 @@
-import DeviceInfo from 'react-native-device-info';
-
 import { LanguageCode } from '../constants/Language';
 import {
     Evaluation,
@@ -11,24 +9,8 @@ import {
     User,
     Word,
 } from '../types';
+import { createAuthData } from '../utils/authUtils';
 import { apiCall } from './apiHandler';
-
-const getDeviceId = async () => {
-    try {
-        return await DeviceInfo.getUniqueId();
-    } catch (e) {
-        console.error('Error getting device ID:', e);
-        return '';
-    }
-};
-
-const getTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-const createAuthData = async (data: Record<string, unknown> = {}) => ({
-    ...data,
-    deviceId: await getDeviceId(),
-    timezone: getTimezone(),
-});
 
 export const getUserInfo: () => Promise<User | null> = async () => {
     try {
@@ -82,18 +64,6 @@ export const signInWithApple = async (accessToken: string, fullName: string) => 
         return await apiCall({ data, method: 'POST', url: '/auth/login/apple' }, true);
     } catch (e) {
         console.error('POST /auth/login/apple', e);
-        return null;
-    }
-};
-
-export const refreshTokens = async (
-    refreshToken: string,
-): Promise<{ accessToken: string; refreshToken: string } | null> => {
-    try {
-        const data = await createAuthData({ refreshToken });
-        return await apiCall({ data, method: 'POST', url: '/auth/auth/refresh' }, true);
-    } catch (e) {
-        console.error('POST /auth/auth/refresh', e);
         return null;
     }
 };

@@ -18,7 +18,8 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
-import { useUserPreferences, useWords, useWordsWithDetails, WordSource } from '../../store';
+import { WordSource } from '../../constants/Word';
+import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil';

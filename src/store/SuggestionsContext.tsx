@@ -11,8 +11,9 @@ import React, {
 import debounce from 'lodash.debounce';
 
 import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from '../api/apiClient';
-import { useSuggestionsRepository } from '../hooks';
+import { useSuggestionsRepository } from '../hooks/repo/';
 import { Suggestion } from '../types';
+import { getCurrentISO } from '../utils/dateUtil';
 import {
     findChangedItems,
     findLatestUpdatedAt,
@@ -21,7 +22,9 @@ import {
     syncInBatches,
     updateLocalItems,
 } from '../utils/sync';
-import { useAppInitializer, useAuth, useLanguage } from '.';
+import { useAppInitializer } from './AppInitializerContext';
+import { useAuth } from './AuthContext';
+import { useLanguage } from './LanguageContext';
 
 interface SuggestionsContextProps {
     increaseSuggestionsDisplayCount: (ids: string[]) => Promise<void>;
@@ -73,7 +76,7 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
                     return {
                         ...suggestion,
                         displayCount: suggestion.displayCount + 1,
-                        locallyUpdatedAt: new Date().toISOString(),
+                        locallyUpdatedAt: getCurrentISO(),
                         synced: false,
                     };
                 }
@@ -92,7 +95,7 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
                     return {
                         ...suggestion,
                         added: prop == 'added' ? true : suggestion.added,
-                        locallyUpdatedAt: new Date().toISOString(),
+                        locallyUpdatedAt: getCurrentISO(),
                         skipped: prop == 'skipped' ? true : suggestion.skipped,
                         synced: false,
                     };

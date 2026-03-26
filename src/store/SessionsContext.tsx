@@ -12,9 +12,9 @@ import uuid from 'react-native-uuid';
 import { fetchUpdatedSessions, syncSessionsOnServer } from '../api/apiClient';
 import { LanguageCode } from '../constants/Language';
 import { SessionMode, SessionModel, SessionModelVersion } from '../constants/Session';
-import { useSessionsRepository } from '../hooks';
+import { useSessionsRepository } from '../hooks/repo';
 import { Session } from '../types';
-import { getTodayDate } from '../utils/dateUtil';
+import { getCurrentISO, getTodayDate } from '../utils/dateUtil';
 import {
     findChangedItems,
     findLatestUpdatedAt,
@@ -23,7 +23,8 @@ import {
     syncInBatches,
     updateLocalItems,
 } from '../utils/sync';
-import { useAppInitializer, useAuth } from '.';
+import { useAppInitializer } from './AppInitializerContext';
+import { useAuth } from './AuthContext';
 
 interface SessionsContextProps {
     addSession: (
@@ -80,7 +81,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         translationLang: LanguageCode,
         finished: boolean,
     ): Session => {
-        const now = new Date().toISOString();
+        const now = getCurrentISO();
         return {
             averageScore,
             date: now,

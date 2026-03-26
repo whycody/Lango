@@ -11,8 +11,9 @@ import uuid from 'react-native-uuid';
 
 import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from '../api/apiClient';
 import { EvaluationGrade } from '../constants/Evaluation';
-import { useEvaluationsRepository } from '../hooks';
+import { useEvaluationsRepository } from '../hooks/repo';
 import { Evaluation } from '../types';
+import { getCurrentISO } from '../utils/dateUtil';
 import {
     findChangedItems,
     findLatestUpdatedAt,
@@ -21,7 +22,7 @@ import {
     syncInBatches,
     updateLocalItems,
 } from '../utils/sync';
-import { useAppInitializer } from '.';
+import { useAppInitializer } from './AppInitializerContext';
 
 interface EvaluationsContextProps {
     addEvaluations: (
@@ -51,7 +52,7 @@ export const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) =
         sessionId: string,
         grade: EvaluationGrade,
     ): Evaluation => {
-        const now = new Date().toISOString();
+        const now = getCurrentISO();
         return {
             date: now,
             grade,

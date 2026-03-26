@@ -2,7 +2,6 @@ import React, { forwardRef, RefObject, useCallback, useEffect, useState } from '
 import { StyleSheet, View } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
@@ -55,17 +54,17 @@ export const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSession
         ]);
 
         const handleFlashcardSideItemPress = (flashcardSide: FlashcardSide) => {
-            triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
+            triggerHaptics('soft');
             setFlashcardSide(flashcardSide);
         };
 
         const handleSessionModeItemPress = (mode: SessionMode) => {
-            triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
+            triggerHaptics('soft');
             setSessionMode(mode);
         };
 
         const handleSessionLengthItemPress = (length: SessionLength) => {
-            triggerHaptics(Haptics.ImpactFeedbackStyle.Soft);
+            triggerHaptics('soft');
             setSessionLength(length);
         };
 

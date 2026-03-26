@@ -1,4 +1,5 @@
 import { Suggestion } from '../types';
+import { getCurrentISO } from '../utils/dateUtil';
 import { getDb } from './utils/db';
 
 const columns: Array<keyof Suggestion> = [
@@ -78,7 +79,7 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
                             added: row.added === 1,
                             displayCount: row.displayCount || 0,
                             id: row.id,
-                            locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
+                            locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             mainLang: row.mainLang,
                             skipped: row.skipped === 1,
                             synced: row.synced === 1,

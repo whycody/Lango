@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
-import { CustomText } from '.';
+import { CustomText } from './CustomText';
 
 interface HeaderProps {
     style?: StyleProp<ViewStyle>;

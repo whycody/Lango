@@ -4,13 +4,13 @@ import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RouteProp, useTheme } from '@react-navigation/native';
-import { ImpactFeedbackStyle } from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { useHaptics } from '../hooks';
 import { CustomText } from '../ui/components';
-import { HomeScreen, LibraryScreen } from '../ui/screens';
+import { HomeScreen } from '../ui/screens/HomeScreen';
+import { LibraryScreen } from '../ui/screens/LibraryScreen';
 import { HandleFlashcardBottomSheet } from '../ui/sheets';
 import { trackEvent } from '../utils/analytics';
 
@@ -136,7 +136,7 @@ const TabsNavigator = () => {
                                 onPressIn={animateIn}
                                 onPressOut={animateOut}
                                 onPress={() => {
-                                    haptics.triggerHaptics(ImpactFeedbackStyle.Rigid);
+                                    haptics.triggerHaptics('rigid');
                                     trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, {
                                         mode: 'add',
                                         source: 'main_screen',

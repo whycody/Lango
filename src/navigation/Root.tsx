@@ -1,8 +1,11 @@
 import React from 'react';
 
-import { LanguageProvider, useAppInitializer, useAuth } from '../store';
+import { useAppInitializer } from '../store/AppInitializerContext';
+import { useAuth } from '../store/AuthContext';
+import { LanguageProvider } from '../store/LanguageContext';
 import { LoadingView } from '../ui/containers/login';
-import { LoginScreen, OnboardingScreen } from '../ui/screens';
+import { LoginScreen } from '../ui/screens/LoginScreen';
+import { OnboardingScreen } from '../ui/screens/OnboardingScreen';
 import AppStack from './AppStack';
 
 const Root = () => {

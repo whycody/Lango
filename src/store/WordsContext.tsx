@@ -11,8 +11,10 @@ import React, {
 import uuid from 'react-native-uuid';
 
 import { fetchUpdatedWords, syncWordsOnServer } from '../api/apiClient';
-import { useWordsRepository } from '../hooks';
+import { WordSource } from '../constants/Word';
+import { useWordsRepository } from '../hooks/repo';
 import { Word } from '../types';
+import { getCurrentISO } from '../utils/dateUtil';
 import {
     findChangedItems,
     findLatestUpdatedAt,
@@ -21,7 +23,8 @@ import {
     syncInBatches,
     updateLocalItems,
 } from '../utils/sync';
-import { useAppInitializer, useLanguage } from '.';
+import { useAppInitializer } from './AppInitializerContext';
+import { useLanguage } from './LanguageContext';
 
 interface WordsContextProps {
     addWord: (text: string, translation: string, source?: WordSource) => Word | null;
@@ -33,11 +36,6 @@ interface WordsContextProps {
     removeWord: (id: string) => void;
     syncWords: () => Promise<void>;
     words: Word[];
-}
-
-export enum WordSource {
-    LANGO = 'lango',
-    USER = 'user',
 }
 
 const WordsContext = createContext<WordsContextProps>({
@@ -71,20 +69,23 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         [words, mainLang, translationLang],
     );
 
-    const createWord = (text: string, translation: string, source: WordSource): Word => ({
-        active: true,
-        addDate: new Date().toISOString(),
-        id: uuid.v4(),
-        locallyUpdatedAt: new Date().toISOString(),
-        mainLang,
-        removed: false,
-        source,
-        synced: false,
-        text,
-        translation,
-        translationLang,
-        updatedAt: null,
-    });
+    const createWord = (text: string, translation: string, source: WordSource): Word => {
+        const now = getCurrentISO();
+        return {
+            active: true,
+            addDate: now,
+            id: uuid.v4(),
+            locallyUpdatedAt: now,
+            mainLang,
+            removed: false,
+            source,
+            synced: false,
+            text,
+            translation,
+            translationLang,
+            updatedAt: null,
+        };
+    };
 
     const findExistingWord = (text: string, translation: string): Word | undefined =>
         words.find(w => w.text === text && w.translation === translation);
@@ -114,7 +115,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         source: WordSource,
     ): Word[] => {
         const map = new Map(words.map(w => [`${w.text}__${w.translation}`, w]));
-        const now = new Date().toISOString();
+        const now = getCurrentISO();
 
         const result: Word[] = [];
 
@@ -153,7 +154,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
 
     const editWord = (updatedWord: Partial<Word> & { id: string }) => {
-        const updatedAt = new Date().toISOString();
+        const updatedAt = getCurrentISO();
 
         const updatedWords = words.map(word =>
             word.id === updatedWord.id
@@ -178,7 +179,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (word.id === id) {
                 return {
                     ...word,
-                    locallyUpdatedAt: new Date().toISOString(),
+                    locallyUpdatedAt: getCurrentISO(),
                     removed: true,
                     synced: false,
                 };

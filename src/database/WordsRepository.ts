@@ -1,4 +1,5 @@
 import { Word } from '../types';
+import { getCurrentISO } from '../utils/dateUtil';
 import { getDb } from './utils/db';
 
 export const WORDS_COLUMNS: Array<keyof Word> = [
@@ -54,7 +55,7 @@ export const saveWords = async (userId: string, words: Word[]) => {
                     return word[col] ? 1 : 0;
                 }
                 if (col === 'addDate') {
-                    return word.addDate ?? new Date().toISOString();
+                    return word.addDate ?? getCurrentISO();
                 }
                 if (col === 'updatedAt') {
                     return word.updatedAt ?? word.locallyUpdatedAt;
@@ -89,7 +90,7 @@ export const getAllWords = async (userId: string): Promise<Word[]> => {
                         words.push({
                             ...row,
                             active: row.active === 1,
-                            locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
+                            locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             removed: row.removed === 1,
                             synced: row.synced === 1,
                         } satisfies Word);

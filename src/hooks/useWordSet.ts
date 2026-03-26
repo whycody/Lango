@@ -1,20 +1,30 @@
 import { useMemo } from 'react';
 
 import { SessionMode, SessionModel } from '../constants/Session';
-import { strategies } from '../database/strategies';
 import {
-    useAuth,
-    useEvaluations,
-    useSessions,
-    useSuggestions,
-    useWords,
-    useWordsHeuristicStates,
-    useWordsMLStatesContext,
-} from '../store';
-import { Session, Suggestion, Word, WordSet, WordSetStrategy } from '../types';
-import { enhanceWords } from '../utils/enhanceWords';
-import { mapSuggestionsToSessionWords, mapWordsToSessionWords } from '../utils/sessionWordMapper';
-import { shuffle } from '../utils/shuffle';
+    heuristicStrategy,
+    hybridStrategy,
+    mlStrategy,
+    oldestStrategy,
+    randomStrategy,
+} from '../database/strategies';
+import { useAuth } from '../store/AuthContext';
+import { useEvaluations } from '../store/EvaluationsContext';
+import { useSessions } from '../store/SessionsContext';
+import { useSuggestions } from '../store/SuggestionsContext';
+import { useWords } from '../store/WordsContext';
+import { useWordsHeuristicStates } from '../store/WordsHeuristicStatesContext';
+import { useWordsMLStatesContext } from '../store/WordsMLStatesContext';
+import { Session, WordSet, WordSetStrategy } from '../types';
+import { buildFallbackSet, enhanceWords } from '../utils/strategiesUtils';
+
+const STRATEGIES = {
+    HEURISTIC: heuristicStrategy,
+    HYBRID: hybridStrategy,
+    ML: mlStrategy,
+    OLDEST: oldestStrategy,
+    RANDOM: randomStrategy,
+};
 
 const getLastSessionModel = (sessions?: Session[]): SessionModel | undefined =>
     sessions
@@ -24,25 +34,19 @@ const getLastSessionModel = (sessions?: Session[]): SessionModel | undefined =>
         )[0]?.sessionModel;
 
 const resolveStrategy = (mode: SessionMode, model: SessionModel): WordSetStrategy => {
-    if (mode === SessionMode.OLDEST) return strategies.OLDEST;
-    if (mode === SessionMode.RANDOM) return strategies.RANDOM;
+    if (mode === SessionMode.OLDEST) return STRATEGIES.OLDEST;
+    if (mode === SessionMode.RANDOM) return STRATEGIES.RANDOM;
 
     switch (model) {
         case SessionModel.HEURISTIC:
-            return strategies.HEURISTIC;
+            return STRATEGIES.HEURISTIC;
         case SessionModel.ML:
-            return strategies.ML;
+            return STRATEGIES.ML;
         case SessionModel.HYBRID:
         default:
-            return strategies.HYBRID;
+            return STRATEGIES.HYBRID;
     }
 };
-
-const buildFallbackSet = (size: number, words: Word[], suggestions: Suggestion[]) =>
-    shuffle([
-        ...mapWordsToSessionWords(words),
-        ...mapSuggestionsToSessionWords(shuffle(suggestions).slice(0, size - words.length)),
-    ]);
 
 export const useWordSet = (size: number, mode: SessionMode): WordSet => {
     const { langWords } = useWords();
@@ -79,7 +83,7 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
             };
         }
 
-        const enhanced = enhanceWords(shuffle(strategy.sessionWords), langWordsMLStates);
+        const enhanced = enhanceWords(strategy.sessionWords, langWordsMLStates);
 
         return {
             model: strategy.model,

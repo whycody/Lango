@@ -10,7 +10,7 @@ import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
 import { useDynamicStatusBar } from '../../hooks';
-import { ScreenName } from '../../navigation/AppStack';
+import { ScreenName } from '../../navigation/navigationTypes';
 import {
     useAuth,
     useEvaluations,

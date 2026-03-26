@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import { useMMKV } from 'react-native-mmkv';
 
-import { useAuth } from '.';
+import { useAuth } from './AuthContext';
 
 type UserStorageContextType = {
     storage: ReturnType<typeof useMMKV> | null;

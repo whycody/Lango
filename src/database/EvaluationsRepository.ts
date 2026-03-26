@@ -1,4 +1,5 @@
 import { Evaluation } from '../types';
+import { getCurrentISO } from '../utils/dateUtil';
 import { getDb } from './utils/db';
 
 const columns: Array<keyof Evaluation> = [
@@ -67,7 +68,7 @@ export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> =
                             date: row.date,
                             grade: row.grade,
                             id: row.id,
-                            locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
+                            locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             sessionId: row.sessionId,
                             synced: row.synced === 1,
                             updatedAt: row.updatedAt || null,

@@ -8,8 +8,9 @@ import { FullWindowOverlay } from 'react-native-screens';
 
 import { LanguageCode } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { WordSource } from '../../constants/Word';
 import { useVoiceInput } from '../../hooks';
-import { useLanguage, useWords, WordSource } from '../../store';
+import { useLanguage, useWords } from '../../store';
 import { Word } from '../../types';
 import TranslationUtils from '../../utils/translationUtils';
 import { ActionButton, CustomText, Header } from '../components';

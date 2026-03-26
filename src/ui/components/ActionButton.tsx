@@ -10,10 +10,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
 
 import { useHaptics } from '../../hooks';
-import { CustomText } from '.';
+import { CustomText } from './CustomText';
 
 interface ActionButtonProps {
     active?: boolean;
@@ -41,7 +40,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
     const opacityAnim = useRef(new Animated.Value(1)).current;
 
     const handlePress = () => {
-        triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
+        triggerHaptics('rigid');
         onPress?.();
     };
 

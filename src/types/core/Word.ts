@@ -1,5 +1,5 @@
 import { LanguageCode } from '../../constants/Language';
-import { WordSource } from '../../store';
+import { WordSource } from '../../constants/Word';
 import { SyncMetadata } from '../sync/SyncMetadata';
 
 export type Word = SyncMetadata & {

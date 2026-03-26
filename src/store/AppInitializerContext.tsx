@@ -1,16 +1,14 @@
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { runMigrations } from '../database/migrations/migrations';
-import {
-    useEvaluationsRepository,
-    useSessionsRepository,
-    useSuggestionsRepository,
-    useWordsHeuristicStatesRepository,
-    useWordsMLStatesRepository,
-    useWordsRepository,
-} from '../hooks';
+import { useEvaluationsRepository } from '../hooks/repo/useEvaluationsRepository';
+import { useSessionsRepository } from '../hooks/repo/useSessionsRepository';
+import { useSuggestionsRepository } from '../hooks/repo/useSuggestionsRepository';
+import { useWordsHeuristicStatesRepository } from '../hooks/repo/useWordsHeuristicStatesRepository';
+import { useWordsMLStatesRepository } from '../hooks/repo/useWordsMLStatesRepository';
+import { useWordsRepository } from '../hooks/repo/useWordsRepository';
 import { InitialLoad } from '../types';
-import { useAuth } from '.';
+import { useAuth } from './AuthContext';
 
 interface AppInitializerContextProps {
     initialLoad: InitialLoad | null;

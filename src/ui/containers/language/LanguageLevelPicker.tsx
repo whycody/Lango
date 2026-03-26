@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { ImpactFeedbackStyle } from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 
 import { LANGUAGE_LEVEL_KEYS } from '../../../constants/Language';
@@ -40,7 +39,7 @@ export const LanguageLevelPicker: FC<LanguageLevelPickerProps> = ({
 
     const handleLanguageLevelPress = (level: LanguageLevelRange) => {
         onLevelPick?.(level);
-        haptics.triggerHaptics(ImpactFeedbackStyle.Rigid);
+        haptics.triggerHaptics('rigid');
         if (!updateUserData) return;
         updateUserLanguageLevels({ language: language.languageCode, level });
         setMainLang(language.languageCode);

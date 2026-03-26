@@ -3,7 +3,7 @@ import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import appBuildNumbers from '../../../app.json';
-import { CustomText } from '.';
+import { CustomText } from './CustomText';
 
 type VersionFooterProps = {
     small?: boolean;

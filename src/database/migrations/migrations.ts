@@ -1,7 +1,5 @@
 import { getDb } from '../utils/db';
-import { migrateV0ToV1 } from './migrateV0ToV1';
-import { migrateV1ToV2 } from './migrateV1ToV2';
-import { migrateV2ToV3 } from './migrateV2ToV3';
+import { migrateV0ToV1, migrateV1ToV2, migrateV2ToV3 } from '.';
 
 export const runMigrations = async (userId: string) => {
     const db = await getDb(userId);
@@ -30,7 +28,7 @@ export const runMigrations = async (userId: string) => {
         version = 2;
     }
 
-    if (version < 2) {
+    if (version < 3) {
         await migrateV2ToV3(userId);
         version = 3;
     }

@@ -2,7 +2,6 @@ import { memo } from 'react';
 import { Platform, Pressable, StyleSheet, Switch, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
@@ -26,7 +25,7 @@ export const LibraryItem = memo<LibraryItemProps>(
 
         const handlePress = () => {
             onPress?.();
-            triggerHaptics(Haptics.ImpactFeedbackStyle.Light);
+            triggerHaptics('light');
         };
 
         return (

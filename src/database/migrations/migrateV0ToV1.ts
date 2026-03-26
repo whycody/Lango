@@ -5,7 +5,7 @@ import { EvaluationGrade } from '../../constants/Evaluation';
 import { LanguageCode } from '../../constants/Language';
 import { SessionMode, SessionModel } from '../../constants/Session';
 import { Evaluation, Session, Word } from '../../types';
-import { toLocalDateString } from '../../utils/dateUtil';
+import { getCurrentISO, toLocalDateString } from '../../utils/dateUtil';
 import { saveEvaluations } from '../EvaluationsRepository';
 import { saveSessions } from '../SessionRepository';
 import { saveWords } from '../WordsRepository';
@@ -45,10 +45,8 @@ export const migrateV0ToV1 = async (userId: string) => {
         saveWords(userId, words),
         saveSessions(userId, sessions),
         saveEvaluations(userId, evaluations),
-    ]);
+    ]);  
 };
-
-const now = () => new Date().toISOString();
 
 const loadAndClear = async <T>(key: string, parser: (raw: any) => T[]): Promise<T[]> => {
     const stored = await AsyncStorage.getItem(key);
@@ -58,7 +56,7 @@ const loadAndClear = async <T>(key: string, parser: (raw: any) => T[]): Promise<
 };
 
 const mapStoredWordsToWords = (stored: AsyncStorageWord[]): Word[] => {
-    const timestamp = now();
+    const timestamp = getCurrentISO();
     // @ts-ignore
     return stored.map(word => ({
         active: true,
@@ -79,7 +77,7 @@ const mapStoredWordsToWords = (stored: AsyncStorageWord[]): Word[] => {
 const mapGroupedEvaluationsToSessions = (
     grouped: Record<string, AsyncStorageEvaluation[]>,
 ): Session[] => {
-    const timestamp = now();
+    const timestamp = getCurrentISO();
     return Object.entries(grouped).map(([date, evaluations]) => {
         const averageScore = evaluations.reduce((sum, e) => sum + e.grade, 0) / evaluations.length;
         return {
@@ -102,7 +100,7 @@ const mapStoredEvaluationsToEvaluations = (
     stored: AsyncStorageEvaluation[],
     sessions: Session[],
 ): Evaluation[] => {
-    const timestamp = now();
+    const timestamp = getCurrentISO();
     return stored.map(e => ({
         date: e.date,
         grade: e.grade,

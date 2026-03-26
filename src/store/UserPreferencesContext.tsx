@@ -3,8 +3,8 @@ import { PermissionStatus } from 'expo-notifications';
 
 import { SessionMode } from '../constants/Session';
 import { FlashcardSide, FlashcardSortingMethod, SessionLength } from '../constants/UserPreferences';
-import { useTypedMMKV } from '../hooks';
-import { useUserStorage } from '.';
+import { useTypedMMKV } from '../hooks/useTypedMKKV';
+import { useUserStorage } from './UserStorageContext';
 
 interface UserPreferencesContextProps {
     askLaterNotifications: number | null;
@@ -86,7 +86,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
         storage,
     );
     const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(VIBRATIONS_KEY, true, storage);
-    const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(
+    const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV(
         ASK_LATER_NOTIFICATIONS_KEY,
         0,
         storage,

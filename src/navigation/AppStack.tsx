@@ -3,40 +3,22 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-    EvaluationsProvider,
-    LanguageProvider,
-    SessionsProvider,
-    StatisticsProvider,
-    SuggestionsProvider,
-    UserPreferencesProvider,
-    WordsHeuristicProvider,
-    WordsMLStatesProvider,
-    WordsProvider,
-    WordsWithDetailsProvider,
-} from '../store';
-import {
-    FlashcardsScreen,
-    SessionScreen,
-    SessionScreenParams,
-    SettingsScreen,
-} from '../ui/screens';
+import { EvaluationsProvider } from '../store/EvaluationsContext';
+import { LanguageProvider } from '../store/LanguageContext';
+import { SessionsProvider } from '../store/SessionsContext';
+import { StatisticsProvider } from '../store/StatisticsContext';
+import { SuggestionsProvider } from '../store/SuggestionsContext';
+import { UserPreferencesProvider } from '../store/UserPreferencesContext';
+import { WordsProvider } from '../store/WordsContext';
+import { WordsHeuristicProvider } from '../store/WordsHeuristicStatesContext';
+import { WordsMLStatesProvider } from '../store/WordsMLStatesContext';
+import { WordsWithDetailsProvider } from '../store/WordsWithDetailsContext';
+import { FlashcardsScreen } from '../ui/screens/FlashcardsScreen';
+import { SessionScreen } from '../ui/screens/SessionScreen';
+import { SettingsScreen } from '../ui/screens/SettingsScreen';
 import { DarkTheme } from '../ui/themes';
+import { RootStackParamList, ScreenName } from './navigationTypes';
 import TabsNavigator from './TabsNavigator';
-
-export type RootStackParamList = {
-    Flashcards: undefined;
-    Session: SessionScreenParams;
-    Settings: undefined;
-    Tabs: undefined;
-};
-
-export enum ScreenName {
-    Flashcards = 'Flashcards',
-    Session = 'Session',
-    Settings = 'Settings',
-    Tabs = 'Tabs',
-}
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

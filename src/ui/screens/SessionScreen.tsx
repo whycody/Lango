@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useRoute, useTheme } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
@@ -16,8 +15,9 @@ import { EvaluationGrade } from '../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
+import { WordSource } from '../../constants/Word';
 import { useHaptics, useWordSet } from '../../hooks';
-import { ScreenName } from '../../navigation/AppStack';
+import { ScreenName } from '../../navigation/navigationTypes';
 import {
     useEvaluations,
     useLanguage,
@@ -25,7 +25,6 @@ import {
     useSuggestions,
     useUserPreferences,
     useWords,
-    WordSource,
 } from '../../store';
 import { SessionWord, Word } from '../../types';
 import { WordUpdate } from '../../types/utils/WordUpdate';
@@ -265,7 +264,7 @@ export const SessionScreen = ({ navigation }) => {
         if (now - lastPressTime < 300) return;
         setLastPressTime(now);
 
-        triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
+        triggerHaptics('rigid');
 
         const currentCard = cards[currentIndex];
         const { id, type } = currentCard;
@@ -298,7 +297,7 @@ export const SessionScreen = ({ navigation }) => {
         incrementCurrentIndex();
         confettiRef.current?.play(0);
         saveProgress(true);
-        triggerHaptics(Haptics.ImpactFeedbackStyle.Heavy);
+        triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
         finishSessionBottomSheetRef.current?.present();
     };

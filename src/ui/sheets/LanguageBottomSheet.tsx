@@ -9,7 +9,7 @@ import { LanguageTypes } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { Language } from '../../types';
 import { ActionButton } from '../components';
-import { LanguagePicker } from '../containers';
+import { LanguagePicker } from '../containers/language';
 import { PickLanguageLevelBottomSheet } from './PickLanguageLevelBottomSheet';
 
 type LanguageBottomSheetProps = {

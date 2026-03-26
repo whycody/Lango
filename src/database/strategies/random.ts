@@ -1,10 +1,10 @@
 import { SessionModel, SessionModelVersion } from '../../constants/Session';
 import { WordSet, WordSetStrategy } from '../../types';
-import { mapWordsToSessionWords } from '../../utils/sessionWordMapper';
+import { mapWordsToSessionWords, shuffle } from '../../utils/strategiesUtils';
 
 export const randomStrategy: WordSetStrategy = (size, words): WordSet => {
     const active = words.filter(w => w.active);
-    const shuffled = mapWordsToSessionWords([...active].sort(() => Math.random() - 0.5));
+    const shuffled = mapWordsToSessionWords(shuffle(active));
     return {
         model: SessionModel.NONE,
         sessionWords: shuffled.slice(0, size),

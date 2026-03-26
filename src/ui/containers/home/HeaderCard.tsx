@@ -18,8 +18,9 @@ import {
     useWords,
     useWordsHeuristicStates,
 } from '../../../store';
+import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
-import { getCurrentStreak, Streak } from '../../../utils/streakUtils';
+import { getCurrentStreak } from '../../../utils/streakUtils';
 import { ActionButton, CustomText, SquareFlag } from '../../components';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
 

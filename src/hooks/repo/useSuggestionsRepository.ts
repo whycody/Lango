@@ -4,16 +4,11 @@ import {
     getAllSuggestions,
     saveSuggestions,
 } from '../../database/SuggestionsRepository';
-import { useAuth } from '../../store';
 import { Suggestion } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useSuggestionsRepository = () => {
-    const { user } = useAuth();
-
-    const getUserId = () => {
-        if (!user?.userId) throw new Error('User not logged in');
-        return user.userId;
-    };
+    const getUserId = useRepositoryUserId();
 
     return {
         createTables: () => createTables(getUserId()),

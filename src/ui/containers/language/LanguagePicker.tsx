@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { FlatList, StyleSheet, View, ViewStyle } from 'react-native';
-import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 
 import { LanguageCode, LanguageTypes } from '../../../constants/Language';
@@ -76,7 +75,7 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
                 setters[languageType](language.languageCode);
             }
 
-            triggerHaptics(Haptics.ImpactFeedbackStyle.Rigid);
+            triggerHaptics('rigid');
             onLanguagePick?.(language, userEvaluatedLanguageLevel);
         },
         [

@@ -2,13 +2,14 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import * as Updates from 'expo-updates';
 
-import { refreshTokens } from './apiClient';
+import { createAuthData } from '../utils/authUtils';
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
+
 const subscribers: {
     reject: (err: any) => void;
     resolve: () => void;
@@ -22,6 +23,25 @@ const apiUrl =
     !profile || ['test', 'development'].includes(profile)
         ? process.env.API_DEV_URL
         : process.env.API_URL;
+
+console.log(process.env.API_DEV_URL);
+
+const requestRefreshTokens = async (
+    refreshToken: string,
+): Promise<{ accessToken: string; refreshToken: string }> => {
+    const data = await createAuthData({ refreshToken });
+    return (
+        await axios({
+            data,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            method: 'POST',
+            timeout: 10000,
+            url: `${apiUrl}/auth/auth/refresh`,
+        })
+    ).data;
+};
 
 export const removeAccessToken = async (): Promise<void> => {
     accessToken = null;
@@ -81,7 +101,7 @@ const refreshAccessToken = async (): Promise<void> => {
 
     refreshPromise = (async () => {
         try {
-            const response = await refreshTokens(refreshToken);
+            const response = await requestRefreshTokens(refreshToken);
             await setAccessToken(response.accessToken);
             await setRefreshToken(response.refreshToken);
             onRefreshed();
@@ -146,16 +166,9 @@ export const apiCall = async <T>(
         return (await axios(axiosConfig)).data;
     } catch (error: any) {
         if (error.response?.status === 401) {
-            if (!refreshed) {
-                if (isRefreshing) {
-                    await subscribeTokenRefresh();
-                } else {
-                    await refreshAccessToken();
-                }
-                return apiCall(options, true);
-            } else {
-                throw getAPIError('Unauthorized', 401);
-            }
+            if (refreshed) throw getAPIError('Unauthorized', 401);
+            isRefreshing ? await subscribeTokenRefresh() : await refreshAccessToken();
+            return apiCall(options, true);
         }
 
         throw error;

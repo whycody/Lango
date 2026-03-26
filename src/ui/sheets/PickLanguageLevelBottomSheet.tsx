@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useLanguage } from '../../store';
 import { Language } from '../../types';
-import { LanguageLevelPicker } from '../containers';
+import { LanguageLevelPicker } from '../containers/language/LanguageLevelPicker';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
 export const PickLanguageLevelBottomSheet = forwardRef<

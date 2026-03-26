@@ -1,14 +1,9 @@
 import { createTables, getAllSessions, saveSessions } from '../../database/SessionRepository';
-import { useAuth } from '../../store';
 import { Session } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useSessionsRepository = () => {
-    const { user } = useAuth();
-
-    const getUserId = () => {
-        if (!user?.userId) throw new Error('User not logged in');
-        return user.userId;
-    };
+    const getUserId = useRepositoryUserId();
 
     return {
         createTables: () => createTables(getUserId()),

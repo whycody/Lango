@@ -1,7 +1,9 @@
 import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { WordMLState, WordWithDetails } from '../types';
-import { useLanguage, useWords, useWordsMLStatesContext } from '.';
+import { useLanguage } from './LanguageContext';
+import { useWords } from './WordsContext';
+import { useWordsMLStatesContext } from './WordsMLStatesContext';
 
 interface WordsWithDetailsContextProps {
     langWordsWithDetails: WordWithDetails[];

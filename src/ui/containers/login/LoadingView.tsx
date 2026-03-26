@@ -4,7 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CustomText } from '../../components';
+import { CustomText } from '../../components/CustomText';
 
 type LoadingViewProps = {};
 

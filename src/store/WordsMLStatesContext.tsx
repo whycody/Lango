@@ -10,10 +10,12 @@ import React, {
 } from 'react';
 
 import { EvaluationGrade } from '../constants/Evaluation';
-import { useWordsMLStatesRepository } from '../hooks';
+import { useWordsMLStatesRepository } from '../hooks/repo/useWordsMLStatesRepository';
 import { Evaluation, Word, WordMLState } from '../types';
 import { score } from '../utils/model';
-import { useAppInitializer, useEvaluations, useWords } from '.';
+import { useAppInitializer } from './AppInitializerContext';
+import { useEvaluations } from './EvaluationsContext';
+import { useWords } from './WordsContext';
 
 interface WordsMLStatesContextProps {
     langWordsMLStates: WordMLState[] | null;

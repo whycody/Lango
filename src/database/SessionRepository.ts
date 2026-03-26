@@ -1,4 +1,5 @@
 import { Session } from '../types';
+import { getCurrentISO } from '../utils/dateUtil';
 import { getDb } from './utils/db';
 
 const columns: Array<keyof Session> = [
@@ -79,7 +80,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
                             finished: row.finished === 1,
                             id: row.id,
                             localDay: row.localDay,
-                            locallyUpdatedAt: row.locallyUpdatedAt || new Date().toISOString(),
+                            locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             mainLang: row.mainLang,
                             mode: row.mode,
                             sessionModel: row.sessionModel,

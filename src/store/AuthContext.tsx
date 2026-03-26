@@ -23,7 +23,7 @@ import {
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { UserProvider } from '../constants/User';
 import { LanguageLevel, User, UserUpdatePayload } from '../types';
-import { LoadingView } from '../ui/containers';
+import { LoadingView } from '../ui/containers/login/LoadingView';
 import { setAnalyticsUserData, trackEvent } from '../utils/analytics';
 import { registerNotificationsToken } from '../utils/registerNotificationsToken';
 

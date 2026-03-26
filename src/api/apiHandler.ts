@@ -24,7 +24,7 @@ const apiUrl =
         ? process.env.API_DEV_URL
         : process.env.API_URL;
 
-console.log(process.env.API_DEV_URL);
+console.log(apiUrl);
 
 const requestRefreshTokens = async (
     refreshToken: string,

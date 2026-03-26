@@ -25,6 +25,7 @@ const Tab = createBottomTabNavigator<TabsParamList>();
 const TabsNavigator = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
+    const styles = getStyles(colors);
     const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);
     const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
@@ -80,7 +81,7 @@ const TabsNavigator = () => {
 
     const renderTabLabel = (route: TabRouteProp, focused: boolean, color: string) => (
         <CustomText
-            style={[{ color, fontSize: 12 }, !focused && { opacity: 0.6 }]}
+            style={[styles.tabLabel, { color }, !focused && styles.tabLabelInactive]}
             weight={focused ? 'Bold' : 'Regular'}
         >
             {t(route.name.toLowerCase())}
@@ -99,6 +100,15 @@ const TabsNavigator = () => {
             toValue: 1,
             useNativeDriver: true,
         }).start();
+    };
+
+    const handleAddTabPress = () => {
+        haptics.triggerHaptics('rigid');
+        trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, {
+            mode: 'add',
+            source: 'main_screen',
+        });
+        flashcardBottomSheetRef.current?.present();
     };
 
     return (
@@ -133,26 +143,11 @@ const TabsNavigator = () => {
                             <Pressable
                                 {...props}
                                 style={[props.style, styles.fabWrapper]}
+                                onPress={handleAddTabPress}
                                 onPressIn={animateIn}
                                 onPressOut={animateOut}
-                                onPress={() => {
-                                    haptics.triggerHaptics('rigid');
-                                    trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, {
-                                        mode: 'add',
-                                        source: 'main_screen',
-                                    });
-                                    flashcardBottomSheetRef.current?.present();
-                                }}
                             >
-                                <View
-                                    style={[
-                                        styles.fab,
-                                        {
-                                            backgroundColor: colors.primary300,
-                                            borderColor: colors.card,
-                                        },
-                                    ]}
-                                >
+                                <View style={styles.fab}>
                                     <Animated.View style={plusStyle}>
                                         <Entypo color={colors.card} name="plus" size={24} />
                                     </Animated.View>
@@ -176,39 +171,48 @@ const TabsNavigator = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    fab: {
-        alignItems: 'center',
-        borderRadius: 35,
-        borderWidth: 5,
-        elevation: 6,
-        height: 64,
-        justifyContent: 'center',
-        width: 64,
-    },
-    fabContainer: {
-        alignItems: 'center',
-        alignSelf: 'center',
-        borderRadius: 30,
-        elevation: 6,
-        height: 60,
-        justifyContent: 'center',
-        position: 'absolute',
-        top: -25,
-        width: 60,
-    },
-    fabWrapper: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        top: -20,
-    },
-    tabBarStyle: {
-        borderTopWidth: 0,
-        height: 60,
-        paddingBottom: 6,
-        paddingHorizontal: 20,
-        paddingTop: 8,
-    },
-});
+const getStyles = (colors: any) =>
+    StyleSheet.create({
+        fab: {
+            alignItems: 'center',
+            backgroundColor: colors.primary300,
+            borderColor: colors.card,
+            borderRadius: 35,
+            borderWidth: 5,
+            elevation: 6,
+            height: 64,
+            justifyContent: 'center',
+            width: 64,
+        },
+        fabContainer: {
+            alignItems: 'center',
+            alignSelf: 'center',
+            borderRadius: 30,
+            elevation: 6,
+            height: 60,
+            justifyContent: 'center',
+            position: 'absolute',
+            top: -25,
+            width: 60,
+        },
+        fabWrapper: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            top: -20,
+        },
+        tabBarStyle: {
+            borderTopWidth: 0,
+            height: 60,
+            paddingBottom: 6,
+            paddingHorizontal: 20,
+            paddingTop: 8,
+        },
+        tabLabel: {
+            fontSize: 12,
+        },
+        tabLabelInactive: {
+            opacity: 0.6,
+        },
+    });
 
 export default TabsNavigator;

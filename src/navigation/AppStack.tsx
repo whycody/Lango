@@ -27,6 +27,17 @@ const AppStack = () => {
     const insets = useSafeAreaInsets();
     const styles = getStyles(insets.bottom);
 
+    const screenOptions = {
+        headerShown: false,
+        navigationBarColor: colors.card,
+        statusBarTranslucent: true,
+    };
+
+    const modalScreenOptions = {
+        animationDuration: 100,
+        presentation: 'modal' as const,
+    };
+
     return (
         <View style={styles.root}>
             <LanguageProvider>
@@ -41,21 +52,14 @@ const AppStack = () => {
                                                 <WordsWithDetailsProvider>
                                                     <BottomSheetModalProvider>
                                                         <Stack.Navigator
-                                                            screenOptions={{
-                                                                headerShown: false,
-                                                                navigationBarColor: colors.card,
-                                                                statusBarTranslucent: true,
-                                                            }}
+                                                            screenOptions={screenOptions}
                                                         >
                                                             <Stack.Screen
                                                                 component={TabsNavigator}
                                                                 name={ScreenName.Tabs}
                                                             />
                                                             <Stack.Group
-                                                                screenOptions={{
-                                                                    animationDuration: 100,
-                                                                    presentation: 'modal',
-                                                                }}
+                                                                screenOptions={modalScreenOptions}
                                                             >
                                                                 <Stack.Screen
                                                                     component={SettingsScreen}
@@ -67,10 +71,7 @@ const AppStack = () => {
                                                                 name={ScreenName.Session}
                                                             />
                                                             <Stack.Group
-                                                                screenOptions={{
-                                                                    animationDuration: 100,
-                                                                    presentation: 'modal',
-                                                                }}
+                                                                screenOptions={modalScreenOptions}
                                                             >
                                                                 <Stack.Screen
                                                                     component={FlashcardsScreen}

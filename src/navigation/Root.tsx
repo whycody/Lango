@@ -17,12 +17,13 @@ const Root = () => {
 
     if (authLoading || initLoading) return <LoadingView />;
 
-    if (!user.mainLang || !user.translationLang)
+    if (!user.mainLang || !user.translationLang) {
         return (
             <LanguageProvider>
                 <OnboardingScreen />
             </LanguageProvider>
         );
+    }
 
     return <AppStack />;
 };

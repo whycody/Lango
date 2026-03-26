@@ -21,4 +21,5 @@ export * from './utils/LibraryNavProp';
 export * from './utils/SettingItem';
 export * from './utils/Streak';
 export * from './utils/WordSetStrategy';
+export * from './utils/WordUpdate';
 export * from './utils/WordWithDetails';

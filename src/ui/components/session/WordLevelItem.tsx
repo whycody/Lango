@@ -154,7 +154,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
                                 ]}
                             />
                         ) : (
-                            <View key={i} style={[styles.rectangle, { opacity: 1 }]} />
+                            <View key={i} style={styles.rectangle} />
                         ),
                     )}
                 </View>

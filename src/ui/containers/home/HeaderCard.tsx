@@ -152,7 +152,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                     size={30}
                 />
                 <CustomText
-                    style={[styles.streakText, !streak.active && { color: colors.primary600 }]}
+                    style={[styles.streakText, !streak.active && styles.inactiveStreak]}
                     weight={'Bold'}
                 >
                     {streak.numberOfDays.toString()}
@@ -198,6 +198,9 @@ const getStyles = (colors: any) =>
         flag: {
             paddingLeft: 5,
             paddingVertical: 5,
+        },
+        inactiveStreak: {
+            color: colors.primary600,
         },
         mainText: {
             color: colors.primary,

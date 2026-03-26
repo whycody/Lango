@@ -53,13 +53,13 @@ export const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
                     description={t('words')}
                     icon={'layers-outline'}
                     label={studyStats.numberOfWords.toString()}
-                    style={[styles.statisticsItem, { marginRight: 6 }]}
+                    style={[styles.statisticsItem, styles.marginRight]}
                 />
                 <StatisticItem
                     description={t('sessions')}
                     icon={'repeat-outline'}
                     label={studyStats.numberOfSessions.toString()}
-                    style={[styles.statisticsItem, { marginLeft: 6 }]}
+                    style={[styles.statisticsItem, styles.marginLeft]}
                 />
             </View>
             <View style={styles.statisticsRow}>
@@ -67,13 +67,13 @@ export const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
                     description={t('studyDays')}
                     icon={'calendar-outline'}
                     label={studyStats.numberOfStudyDays.toString()}
-                    style={[styles.statisticsItem, { marginRight: 6 }]}
+                    style={[styles.statisticsItem, styles.marginRight]}
                 />
                 <StatisticItem
                     description={t('langoWords')}
                     icon={'layers-outline'}
                     label={studyStats.numberOfLangoWords.toString()}
-                    style={[styles.statisticsItem, { marginLeft: 6 }]}
+                    style={[styles.statisticsItem, styles.marginLeft]}
                 />
             </View>
         </View>
@@ -81,6 +81,12 @@ export const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
 };
 
 const styles = StyleSheet.create({
+    marginLeft: {
+        marginLeft: 6,
+    },
+    marginRight: {
+        marginRight: 6,
+    },
     root: {
         paddingBottom: MARGIN_VERTICAL + MARGIN_HORIZONTAL / 2,
         paddingHorizontal: MARGIN_HORIZONTAL,

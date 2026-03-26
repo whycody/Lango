@@ -5,7 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import { PermissionStatus } from 'expo-notifications';
 import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageTypes } from '../../constants/Language';
@@ -21,11 +21,13 @@ import { CustomText, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
 import { LanguageBottomSheet } from '../sheets';
 
+const keyExtractor = (item: SettingItem) => item.id.toString();
+
 export const SettingsScreen = () => {
     const { colors } = useTheme();
-    const styles = getStyles(colors);
-    const { t } = useTranslation();
     const insets = useSafeAreaInsets();
+    const styles = getStyles(colors, insets);
+    const { t } = useTranslation();
     const { applicationLang, languages, mainLang, translationLang } = useLanguage();
     const { updateUserNotificationsEnabled, user } = useAuth();
     const languageBottomSheetRef = useRef<BottomSheetModal>();
@@ -243,13 +245,15 @@ export const SettingsScreen = () => {
     );
 
     const renderSectionHeader = (title: string) =>
-        !title ? (
-            <></>
-        ) : (
+        title ? (
             <CustomText style={styles.section} weight="Bold">
                 {title}
             </CustomText>
+        ) : (
+            <></>
         );
+
+    const renderListFooterComponent = () => <VersionFooter style={styles.footer} />;
 
     const sections = useMemo(() => {
         return Object.values(SettingsSections).map((section: number) => ({
@@ -269,8 +273,8 @@ export const SettingsScreen = () => {
             <View style={styles.root}>
                 <View style={style} />
                 <SectionList
-                    ListFooterComponent={<VersionFooter style={styles.footer} />}
-                    keyExtractor={item => item.id.toString()}
+                    ListFooterComponent={renderListFooterComponent}
+                    keyExtractor={keyExtractor}
                     renderItem={renderSettingsItem}
                     renderSectionHeader={({ section }) => renderSectionHeader(section.title)}
                     sections={sections}
@@ -278,10 +282,7 @@ export const SettingsScreen = () => {
                     stickySectionHeadersEnabled={false}
                     ListHeaderComponent={
                         <>
-                            <CustomText
-                                style={[styles.title, { paddingTop: insets.top }]}
-                                weight="Bold"
-                            >
+                            <CustomText style={styles.title} weight="Bold">
                                 {t('settings')}
                             </CustomText>
                             <CustomText style={styles.subtitle}>
@@ -296,7 +297,7 @@ export const SettingsScreen = () => {
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: any, insets: EdgeInsets) =>
     StyleSheet.create({
         footer: {
             marginVertical: MARGIN_VERTICAL / 2,
@@ -327,5 +328,6 @@ const getStyles = (colors: any) =>
             fontSize: 24,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
+            paddingTop: insets.top,
         },
     });

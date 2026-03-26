@@ -84,6 +84,9 @@ export const Flashcard = forwardRef(
             setTimeout(() => setReadyToFlip(true), 1000);
         };
 
+        const gradientStart = { x: 0, y: 0 };
+        const gradientEnd = { x: 1, y: 1 };
+
         return (
             <View
                 pointerEvents={flippable && suggestion ? 'auto' : 'none'}
@@ -92,8 +95,8 @@ export const Flashcard = forwardRef(
                 <FlipCard flip={flip} onFlipStart={() => handleFlip(true)}>
                     <LinearGradient
                         colors={[colors.cardAccent, colors.cardAccent600]}
-                        end={{ x: 1, y: 1 }}
-                        start={{ x: 0, y: 0 }}
+                        end={gradientEnd}
+                        start={gradientStart}
                         style={[styles.root, style]}
                     >
                         <View style={styles.flagsContainer}>
@@ -105,14 +108,8 @@ export const Flashcard = forwardRef(
                         </View>
                         <CustomText
                             numberOfLines={1}
+                            style={[styles.word, !suggestion?.word && styles.inactiveWord]}
                             weight={'SemiBold'}
-                            style={[
-                                styles.word,
-                                !suggestion?.word && {
-                                    backgroundColor: colors.primary600,
-                                    opacity: 0.5,
-                                },
-                            ]}
                         >
                             {suggestion?.word}
                         </CustomText>
@@ -125,9 +122,9 @@ export const Flashcard = forwardRef(
                     </LinearGradient>
                     <LinearGradient
                         colors={[colors.cardAccent, colors.cardAccent600]}
-                        end={{ x: 1, y: 1 }}
-                        start={{ x: 0, y: 0 }}
-                        style={[styles.root, style, { justifyContent: 'center' }]}
+                        end={gradientEnd}
+                        start={gradientStart}
+                        style={[styles.root, style]}
                     >
                         <CustomText style={styles.successText} weight={'SemiBold'}>
                             {backText}
@@ -153,6 +150,10 @@ const getStyles = (colors: any) =>
             flexDirection: 'row',
             marginBottom: 6,
         },
+        inactiveWord: {
+            backgroundColor: colors.primary600,
+            opacity: 0.5,
+        },
         mainFlag: {
             marginRight: 6,
         },
@@ -169,6 +170,7 @@ const getStyles = (colors: any) =>
         root: {
             backgroundColor: colors.cardAccent,
             height: 86,
+            justifyContent: 'center',
             padding: 12,
         },
         successText: {

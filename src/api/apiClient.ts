@@ -80,7 +80,7 @@ export const signOut = async () => {
 
 export const updateNotificationsEnabled = async (enabled: boolean) => {
     try {
-        return await apiCall({ data: { enabled }, method: 'PATCH', url: '/notifications' }, true);
+        return await apiCall({ data: { enabled }, method: 'PATCH', url: '/notifications' });
     } catch (e) {
         console.error('PATCH /notifications', e);
         return null;

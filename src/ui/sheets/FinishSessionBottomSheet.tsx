@@ -5,7 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
-import { WordUpdate } from '../../types/utils/WordUpdate';
+import { WordUpdate } from '../../types';
 import { ActionButton, CustomText } from '../components';
 
 type FinishSessionBottomSheetProps = {

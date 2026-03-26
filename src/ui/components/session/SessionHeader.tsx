@@ -33,7 +33,7 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
                 color={colors.primary300}
                 name={'exit-to-app'}
                 size={21}
-                style={[{ transform: [{ rotate: '180deg' }] }, styles.icon]}
+                style={[styles.transform, styles.icon]}
                 onPress={onSessionExit}
             />
             <CustomText style={styles.progressText} weight={'SemiBold'}>
@@ -84,5 +84,8 @@ const getStyles = (colors: any) =>
             paddingHorizontal: 10,
             textAlign: 'center',
             textTransform: 'uppercase',
+        },
+        transform: {
+            transform: [{ rotate: '180deg' }],
         },
     });

@@ -26,8 +26,7 @@ import {
     useUserPreferences,
     useWords,
 } from '../../store';
-import { SessionWord, Word } from '../../types';
-import { WordUpdate } from '../../types/utils/WordUpdate';
+import { SessionWord, Word, WordUpdate } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { CustomText } from '../components';
 import { Card, SessionHeader, WordLevelItem } from '../components/session';

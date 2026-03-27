@@ -19,7 +19,6 @@ const columns: Array<keyof Session> = [
     'locallyUpdatedAt',
 ];
 
-/* First version of Session table, now it includes a few more fields */
 export const createTables = async (userId: string) => {
     const db = await getDb(userId);
     await db.transaction(tx => {

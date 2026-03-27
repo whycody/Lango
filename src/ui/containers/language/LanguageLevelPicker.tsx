@@ -40,7 +40,7 @@ export const LanguageLevelPicker: FC<LanguageLevelPickerProps> = ({
     const handleLanguageLevelPress = (level: LanguageLevelRange) => {
         onLevelPick?.(level);
         haptics.triggerHaptics('rigid');
-        if (!updateUserData) return;
+        if (!updateUserData || !language) return;
         updateUserLanguageLevels({ language: language.languageCode, level });
         setMainLang(language.languageCode);
     };

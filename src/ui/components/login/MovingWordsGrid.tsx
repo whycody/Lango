@@ -1,23 +1,23 @@
-import React from 'react';
+import React, { FC, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Marquee } from '@animatereactnative/marquee';
 
 import { CustomText } from '..';
 
-export const MarqueeRow = ({
-    loading,
-    reverse,
-    words,
-}: {
+type MarqueeRowProps = {
     loading: boolean;
     reverse?: boolean;
     words: string[];
-}) => {
+};
+
+export const MarqueeRow: FC<MarqueeRowProps> = ({ loading, reverse, words }) => {
+    const randomizedSpeed = useMemo(() => 0.2 + Math.random(), [loading]);
+
     return (
         <Marquee
             frameRate={10}
             reverse={reverse}
-            speed={loading ? 0 : 0.2 + Math.random()}
+            speed={loading ? 0 : randomizedSpeed}
             style={styles.marquee}
         >
             <View style={styles.row}>

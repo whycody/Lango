@@ -10,6 +10,7 @@ const columns: Array<keyof Session> = [
     'mainLang',
     'translationLang',
     'sessionModel',
+    'sessionModelVersion',
     'averageScore',
     'wordsCount',
     'finished',
@@ -25,17 +26,18 @@ export const createTables = async (userId: string) => {
         tx.executeSql(`
         CREATE TABLE IF NOT EXISTS sessions
         (
-            id               TEXT PRIMARY KEY,
-            date             TEXT,
-            localDay         TEXT,
-            mode             TEXT,
-            sessionModel     TEXT,
-            averageScore     REAL,
-            wordsCount       INTEGER,
-            finished         INTEGER,
-            synced           INTEGER,
-            updatedAt        TEXT,
-            locallyUpdatedAt TEXT
+            id                   TEXT PRIMARY KEY,
+            date                 TEXT,
+            localDay             TEXT,
+            mode                 TEXT,
+            sessionModel         TEXT,
+            sessionModelVersion  TEXT,
+            averageScore         REAL,
+            wordsCount           INTEGER,
+            finished             INTEGER,
+            synced               INTEGER,
+            updatedAt            TEXT,
+            locallyUpdatedAt     TEXT
         )
     `);
     });
@@ -48,13 +50,12 @@ export const saveSessions = async (userId: string, sessions: Session[]) => {
             const values = columns.map(col => {
                 if (col === 'finished') return session.finished ? 1 : 0;
                 if (col === 'synced') return session.synced ? 1 : 0;
-                return session[col as keyof Session] || null;
+                return session[col as keyof Session] ?? null;
             });
             const placeholders = columns.map(() => '?').join(', ');
 
             tx.executeSql(
-                `REPLACE INTO sessions (${columns.join(', ')})
-         VALUES (${placeholders})`,
+                `REPLACE INTO sessions (${columns.join(', ')}) VALUES (${placeholders})`,
                 values,
             );
         });
@@ -66,8 +67,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
     return new Promise((resolve, reject) => {
         db.transaction(tx => {
             tx.executeSql(
-                `SELECT *
-         FROM sessions`,
+                `SELECT * FROM sessions`,
                 [],
                 (_, results) => {
                     const rows = results.rows;

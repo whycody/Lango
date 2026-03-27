@@ -4,7 +4,7 @@ import { useMMKV } from 'react-native-mmkv';
 import { useAuth } from './AuthContext';
 
 type UserStorageContextType = {
-    storage: ReturnType<typeof useMMKV> | null;
+    storage: ReturnType<typeof useMMKV>;
 };
 
 const UserStorageContext = createContext<UserStorageContextType>({
@@ -14,7 +14,7 @@ const UserStorageContext = createContext<UserStorageContextType>({
 export const UserStorageProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAuth();
 
-    const storage = user?.userId ? useMMKV({ id: `user-${user.userId}` }) : null;
+    const storage = user?.userId ? useMMKV({ id: `user-${user.userId}` }) : useMMKV();
 
     return (
         <UserStorageContext.Provider value={{ storage }}>{children}</UserStorageContext.Provider>

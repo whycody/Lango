@@ -52,10 +52,7 @@ export const saveSuggestions = async (userId: string, suggestions: Suggestion[])
             });
             const placeholders = columns.map(() => '?').join(', ');
             tx.executeSql(
-                `INSERT OR
-         REPLACE
-         INTO suggestions (${columns.join(', ')})
-         VALUES (${placeholders})`,
+                `INSERT OR REPLACE INTO suggestions (${columns.join(', ')}) VALUES (${placeholders})`,
                 values,
             );
         });
@@ -67,8 +64,7 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
     return new Promise((resolve, reject) => {
         db.transaction(tx => {
             tx.executeSql(
-                `SELECT *
-         FROM suggestions`,
+                `SELECT * FROM suggestions`,
                 [],
                 (_, results) => {
                     const rows = results.rows;
@@ -85,7 +81,7 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
                             synced: row.synced === 1,
                             translation: row.translation,
                             translationLang: row.translationLang,
-                            updatedAt: row.updatedAt,
+                            updatedAt: row.updatedAt || row.locallyUpdatedAt || getCurrentISO(),
                             userId: row.userId,
                             word: row.word,
                         });

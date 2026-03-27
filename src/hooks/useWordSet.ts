@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 
-import { SessionMode, SessionModel } from '../constants/Session';
+import {
+    PICKED_SESSION_MODEL_VERSION,
+    SessionMode,
+    SessionModel,
+    SessionModelVersion,
+} from '../constants/Session';
 import {
     heuristicStrategy,
     hybridStrategy,
@@ -48,6 +53,34 @@ const resolveStrategy = (mode: SessionMode, model: SessionModel): WordSetStrateg
     }
 };
 
+const getFallbackModelAndVersion = (
+    mode: SessionMode,
+    model: SessionModel,
+    lastSessionModel?: SessionModel,
+) => {
+    switch (mode) {
+        case SessionMode.OLDEST:
+            return { model: SessionModel.NONE, version: SessionModelVersion.O1 };
+        case SessionMode.RANDOM:
+            return { model: SessionModel.NONE, version: SessionModelVersion.R1 };
+        default:
+            break;
+    }
+
+    switch (model) {
+        case SessionModel.HEURISTIC:
+            return { model: SessionModel.HEURISTIC, version: SessionModelVersion.H1 };
+        case SessionModel.ML:
+            return { model: SessionModel.ML, version: PICKED_SESSION_MODEL_VERSION };
+        default:
+            break;
+    }
+
+    return lastSessionModel === SessionModel.HEURISTIC
+        ? { model: SessionModel.ML, version: PICKED_SESSION_MODEL_VERSION }
+        : { model: SessionModel.HEURISTIC, version: SessionModelVersion.H1 };
+};
+
 export const useWordSet = (size: number, mode: SessionMode): WordSet => {
     const { langWords } = useWords();
     const { langSuggestions } = useSuggestions();
@@ -60,6 +93,19 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
     return useMemo(() => {
         const lastSessionModel = getLastSessionModel(sessions);
         const currentModel = user.sessionModel || SessionModel.HYBRID;
+        const shouldUseFallback = langWords.length < size || !evaluations?.length;
+
+        if (shouldUseFallback) {
+            const fallbackMeta = getFallbackModelAndVersion(mode, currentModel, lastSessionModel);
+            const fallbackSet = buildFallbackSet(size, langWords, langSuggestions);
+            const enhanced = enhanceWords(fallbackSet, langWordsMLStates);
+
+            return {
+                model: fallbackMeta.model,
+                sessionWords: enhanced,
+                version: fallbackMeta.version,
+            };
+        }
 
         const strategyFactory = resolveStrategy(mode, currentModel);
 
@@ -72,16 +118,6 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
             langWordsHeuristicStates,
             lastSessionModel,
         );
-
-        if (langWords.length < size || !evaluations?.length) {
-            const fallbackSet = buildFallbackSet(size, langWords, langSuggestions);
-            const enhanced = enhanceWords(fallbackSet, langWordsMLStates);
-            return {
-                model: strategy.model,
-                sessionWords: enhanced,
-                version: strategy.version,
-            };
-        }
 
         const enhanced = enhanceWords(strategy.sessionWords, langWordsMLStates);
 

@@ -1,181 +1,264 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { fetchUpdatedWords, syncWordsOnServer } from "../api/apiClient";
-import { useWordsRepository } from "../hooks/repo/useWordsRepository";
+import React, {
+    createContext,
+    FC,
+    ReactNode,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import uuid from 'react-native-uuid';
+
+import { fetchUpdatedWords, syncWordsOnServer } from '../api/apiClient';
+import { WordSource } from '../constants/Word';
+import { useWordsRepository } from '../hooks/repo';
 import { Word } from '../types';
-import { useLanguage } from "./LanguageContext";
+import { getCurrentISO } from '../utils/dateUtil';
 import {
-  findChangedItems,
-  findLatestUpdatedAt,
-  getUnsyncedItems,
-  mergeLocalAndServer,
-  syncInBatches,
-  updateLocalItems
-} from "../utils/sync";
-import { useAppInitializer } from "./AppInitializerContext";
+    findChangedItems,
+    findLatestUpdatedAt,
+    getUnsyncedItems,
+    mergeLocalAndServer,
+    syncInBatches,
+    updateLocalItems,
+} from '../utils/sync';
+import { useAppInitializer } from './AppInitializerContext';
+import { useLanguage } from './LanguageContext';
 
 interface WordsContextProps {
-  words: Word[];
-  loading: boolean;
-  langWords: Word[];
-  addWord: (text: string, translation: string, source?: WordSource) => Word | null;
-  getWord: (id: string) => Word | undefined;
-  editWord: (updatedWord: Partial<Word>) => void;
-  removeWord: (id: string) => void;
-  syncWords: () => Promise<void>;
-}
-
-export enum WordSource {
-  USER = 'user',
-  LANGO = 'lango',
+    addWord: (text: string, translation: string, source?: WordSource) => Word | null;
+    addWords: (wordsToAdd: { text: string; translation: string }[], source: WordSource) => Word[];
+    editWord: (updatedWord: Partial<Word> & { id: string }) => void;
+    getWord: (id: string) => Word | undefined;
+    langWords: Word[];
+    loading: boolean;
+    removeWord: (id: string) => void;
+    syncWords: () => Promise<void>;
+    words: Word[];
 }
 
 const WordsContext = createContext<WordsContextProps>({
-  words: [],
-  loading: true,
-  langWords: [],
-  addWord: () => null,
-  getWord: () => undefined,
-  editWord: () => [],
-  removeWord: () => [],
-  syncWords: () => Promise.resolve(),
+    addWord: () => null,
+    addWords: () => [],
+    editWord: () => [],
+    getWord: () => undefined,
+    langWords: [],
+    loading: true,
+    removeWord: () => [],
+    syncWords: () => Promise.resolve(),
+    words: [],
 });
 
 export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const { initialLoad } = useAppInitializer();
-  const [loading, setLoading] = useState(false);
-  const [words, setWords] = useState<Word[]>(initialLoad.words);
-  const { mainLang, translationLang } = useLanguage();
-  const { saveWords, getAllWords, updateWord } = useWordsRepository();
-  const syncing = useRef(false);
+    const { initialLoad } = useAppInitializer();
+    const [loading, setLoading] = useState(false);
+    const [words, setWords] = useState<Word[]>(initialLoad.words);
+    const { mainLang, translationLang } = useLanguage();
+    const { getAllWords, saveWords, updateWord } = useWordsRepository();
+    const syncing = useRef(false);
 
-  const langWords = useMemo(() => words.filter((word) =>
-    !word.removed && word.mainLang == mainLang && word.translationLang == translationLang
-  ), [words, mainLang, translationLang]);
-
-  const createWord = (text: string, translation: string, source: WordSource): Word => ({
-    id: uuid.v4(),
-    text,
-    translation,
-    mainLang,
-    translationLang,
-    source,
-    addDate: new Date().toISOString(),
-    active: true,
-    removed: false,
-    synced: false,
-    updatedAt: null,
-    locallyUpdatedAt: new Date().toISOString(),
-  });
-
-  const addWord = (text: string, translation: string, source: WordSource) => {
-    const word = words.find((word) => word.text === text && word.translation === translation);
-    if (word) {
-      editWord({ id: word.id, removed: false });
-      return null;
-    }
-    const newWord = createWord(text, translation, source);
-    const updatedWords = [newWord, ...words];
-    syncWords(updatedWords);
-    setWords(updatedWords);
-    saveWords([newWord]);
-    return newWord;
-  };
-
-  const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
-
-  const editWord = (updatedWord: Partial<Word>) => {
-    const updatedAt = new Date().toISOString();
-    const updatedWords = words.map(word =>
-      word.id === updatedWord.id ? { ...word, ...updatedWord, synced: false, locallyUpdatedAt: updatedAt } : word
+    const langWords = useMemo(
+        () =>
+            words.filter(
+                word =>
+                    !word.removed &&
+                    word.mainLang == mainLang &&
+                    word.translationLang == translationLang,
+            ),
+        [words, mainLang, translationLang],
     );
 
-    updateWord(updatedWords.find(word => word.id === updatedWord.id)!);
-    setWords(updatedWords);
-    syncWords(updatedWords);
-  };
+    const createWord = (text: string, translation: string, source: WordSource): Word => {
+        const now = getCurrentISO();
+        return {
+            active: true,
+            addDate: now,
+            id: uuid.v4(),
+            locallyUpdatedAt: now,
+            mainLang,
+            removed: false,
+            source,
+            synced: false,
+            text,
+            translation,
+            translationLang,
+            updatedAt: null,
+        };
+    };
 
-  const removeWord = (id: string) => {
-    const updatedWords = words.map(word => {
-      if (word.id === id) {
-        return { ...word, synced: false, removed: true, locallyUpdatedAt: new Date().toISOString() };
-      }
-      return word;
-    });
+    const findExistingWord = (text: string, translation: string): Word | undefined =>
+        words.find(w => w.text === text && w.translation === translation);
 
-    updateWord(updatedWords.find(word => word.id === id)!);
-    setWords(updatedWords);
-    syncWords(updatedWords);
-  };
+    const reviveWord = (word: Word): Word => {
+        editWord({ id: word.id, removed: false });
+        return { ...word, removed: false };
+    };
 
-  const syncWords = async (inputWords?: Word[]) => {
-    try {
-      if (syncing.current) return;
-      syncing.current = true;
-      const wordsList = inputWords ?? (await getAllWords());
-      const unsyncedWords = getUnsyncedItems<Word>(wordsList);
-      const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
+    const addWord = (text: string, translation: string, source: WordSource): Word | null => {
+        const existing = findExistingWord(text, translation);
 
-      const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
-      const serverWords = await fetchNewWords(updatedWords);
-      const mergedWords = mergeLocalAndServer<Word>(updatedWords, serverWords);
-      const changedWords = findChangedItems<Word>(wordsList, mergedWords);
+        if (existing) return existing.removed ? reviveWord(existing) : null;
 
-      if (changedWords.length > 0) {
-        setWords(mergedWords);
-        await saveWords(changedWords);
-      }
-    } catch (error) {
-      console.log("Error syncing words:", error);
-    } finally {
-      syncing.current = false;
-    }
-  };
+        const newWord = createWord(text, translation, source);
+        const updatedWords = [newWord, ...words];
 
-  const fetchNewWords = async (updatedWords: Word[]): Promise<Word[]> => {
-    const latestUpdatedAt = findLatestUpdatedAt<Word>(updatedWords);
-    return await fetchUpdatedWords(latestUpdatedAt);
-  };
+        setWords(updatedWords);
+        syncWords(updatedWords);
+        saveWords([newWord]);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      await syncWords();
-    } catch (error) {
-      console.log('Error loading words from storage:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
+        return newWord;
+    };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+    const addWords = (
+        wordsToAdd: { text: string; translation: string }[],
+        source: WordSource,
+    ): Word[] => {
+        const map = new Map(words.map(w => [`${w.text}__${w.translation}`, w]));
+        const now = getCurrentISO();
 
-  return (
-    <WordsContext.Provider
-      value={{
-        words,
-        loading,
-        langWords,
-        addWord,
-        getWord,
-        editWord,
-        removeWord,
-        syncWords,
-      }}
-    >
-      {children}
-    </WordsContext.Provider>
-  );
+        const result: Word[] = [];
+
+        for (const { text, translation } of wordsToAdd) {
+            const key = `${text}__${translation}`;
+            const existing = map.get(key);
+
+            if (existing) {
+                result.push(
+                    existing.removed
+                        ? {
+                              ...existing,
+                              locallyUpdatedAt: now,
+                              removed: false,
+                              synced: false,
+                          }
+                        : existing,
+                );
+                continue;
+            }
+
+            const newWord = createWord(text, translation, source);
+            map.set(key, newWord);
+            result.push(newWord);
+        }
+
+        const updatedWords = [...result, ...words.filter(w => !result.some(r => r.id === w.id))];
+
+        setWords(updatedWords);
+        syncWords(updatedWords);
+        saveWords(result);
+
+        return result;
+    };
+
+    const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
+
+    const editWord = (updatedWord: Partial<Word> & { id: string }) => {
+        const updatedAt = getCurrentISO();
+
+        const updatedWords = words.map(word =>
+            word.id === updatedWord.id
+                ? {
+                      ...word,
+                      ...updatedWord,
+                      locallyUpdatedAt: updatedAt,
+                      synced: false,
+                  }
+                : word,
+        );
+
+        const changed = updatedWords.find(w => w.id === updatedWord.id)!;
+
+        setWords(updatedWords);
+        syncWords(updatedWords);
+        updateWord(changed);
+    };
+
+    const removeWord = (id: string) => {
+        const updatedWords = words.map(word => {
+            if (word.id === id) {
+                return {
+                    ...word,
+                    locallyUpdatedAt: getCurrentISO(),
+                    removed: true,
+                    synced: false,
+                };
+            }
+            return word;
+        });
+
+        updateWord(updatedWords.find(word => word.id === id)!);
+        setWords(updatedWords);
+        syncWords(updatedWords);
+    };
+
+    const syncWords = async (inputWords?: Word[]) => {
+        try {
+            if (syncing.current) return;
+            syncing.current = true;
+            const wordsList = inputWords ?? (await getAllWords());
+            const unsyncedWords = getUnsyncedItems<Word>(wordsList);
+            const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
+
+            const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
+            const serverWords = await fetchNewWords(updatedWords);
+            const mergedWords = mergeLocalAndServer<Word>(updatedWords, serverWords);
+            const changedWords = findChangedItems<Word>(wordsList, mergedWords);
+
+            if (changedWords.length > 0) {
+                setWords(mergedWords);
+                await saveWords(changedWords);
+            }
+        } catch (error) {
+            console.log('Error syncing words:', error);
+        } finally {
+            syncing.current = false;
+        }
+    };
+
+    const fetchNewWords = async (updatedWords: Word[]): Promise<Word[]> => {
+        const latestUpdatedAt = findLatestUpdatedAt<Word>(updatedWords);
+        return await fetchUpdatedWords(latestUpdatedAt);
+    };
+
+    const loadData = async () => {
+        try {
+            setLoading(true);
+            await syncWords();
+        } catch (error) {
+            console.log('Error loading words from storage:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    return (
+        <WordsContext.Provider
+            value={{
+                addWord,
+                addWords,
+                editWord,
+                getWord,
+                langWords,
+                loading,
+                removeWord,
+                syncWords,
+                words,
+            }}
+        >
+            {children}
+        </WordsContext.Provider>
+    );
 };
 
 export const useWords = (): WordsContextProps => {
-  const context = useContext(WordsContext);
-  if (!context) {
-    throw new Error("useWords must be used within a WordsProvider");
-  }
-  return context;
+    const context = useContext(WordsContext);
+    if (!context) {
+        throw new Error('useWords must be used within a WordsProvider');
+    }
+    return context;
 };
-
-export default WordsProvider;

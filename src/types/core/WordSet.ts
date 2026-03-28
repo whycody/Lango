@@ -1,8 +1,8 @@
-import { Word } from "./Word";
-import { SessionModel, SessionModelVersion } from "./User";
+import { SessionModel, SessionModelVersion } from '../../constants/Session';
+import { SessionWord } from './Word';
 
 export type WordSet = {
-  words: Word[];
-  model: SessionModel;
-  version: SessionModelVersion
-}
+    model: SessionModel;
+    sessionWords: SessionWord[];
+    version: SessionModelVersion;
+};

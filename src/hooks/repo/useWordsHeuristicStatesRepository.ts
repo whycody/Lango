@@ -1,25 +1,20 @@
 import {
-  createHeuristicTable,
-  getAllWordsHeuristicStates,
-  saveWordsHeuristicStates,
-  updateWordHeuristicState,
-} from "../../database/WordsHeuristicStatesRepository";
-import { useAuth } from "../../api/auth/AuthProvider";
-import { WordHeuristicState } from "../../types";
-import { WordsStatesRepository } from "../../database/WordsStatesRepository";
+    createHeuristicTable,
+    getAllWordsHeuristicStates,
+    saveWordsHeuristicStates,
+    updateWordHeuristicState,
+} from '../../database/WordsHeuristicStatesRepository';
+import { WordsStatesRepository } from '../../database/WordsStatesRepository';
+import { WordHeuristicState } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useWordsHeuristicStatesRepository = (): WordsStatesRepository<WordHeuristicState> => {
-  const { user } = useAuth();
+    const getUserId = useRepositoryUserId();
 
-  const getUserId = () => {
-    if (!user?.userId) throw new Error("User not logged in");
-    return user.userId;
-  };
-
-  return {
-    createTables: () => createHeuristicTable(getUserId()),
-    save: (items) => saveWordsHeuristicStates(getUserId(), items),
-    getAllWordsStates: () => getAllWordsHeuristicStates(getUserId()),
-    update: (item) => updateWordHeuristicState(getUserId(), item),
-  };
+    return {
+        createTables: () => createHeuristicTable(getUserId()),
+        getAllWordsStates: () => getAllWordsHeuristicStates(getUserId()),
+        save: items => saveWordsHeuristicStates(getUserId(), items),
+        update: item => updateWordHeuristicState(getUserId(), item),
+    };
 };

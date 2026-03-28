@@ -1,6 +1,7 @@
-import { EvaluationGrade } from "../core/Evaluation";
+import { EvaluationGrade } from '../../constants/Evaluation';
 
 export type WordUpdate = {
-  flashcardId: string;
-  grade: EvaluationGrade;
+    flashcardId: string;
+    grade: EvaluationGrade;
+    type: 'word' | 'suggestion';
 };

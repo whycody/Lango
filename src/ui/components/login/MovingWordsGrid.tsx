@@ -1,47 +1,59 @@
-import React from 'react';
+import React, { FC, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Marquee } from "@animatereactnative/marquee";
-import CustomText from "../CustomText";
+import { Marquee } from '@animatereactnative/marquee';
 
-const MarqueeRow = ({ loading, words, reverse }: { loading: boolean, words: string[]; reverse?: boolean }) => {
+import { CustomText } from '..';
 
-  return (
-    <Marquee
-      speed={loading ? 0 : 0.2 + Math.random()}
-      style={{ marginTop: 10 }}
-      reverse={reverse}
-      frameRate={10}
-    >
-      <View style={{ flexDirection: 'row' }}>
-        {words.map((word, i) => (
-          <View key={i} style={styles.wordBox}>
-            <CustomText weight={"Bold"} style={styles.wordText}>
-              {word}
-            </CustomText>
-          </View>
-        ))}
-      </View>
-    </Marquee>
-  );
+type MarqueeRowProps = {
+    loading: boolean;
+    reverse?: boolean;
+    words: string[];
+};
+
+export const MarqueeRow: FC<MarqueeRowProps> = ({ loading, reverse, words }) => {
+    const randomizedSpeed = useMemo(() => 0.2 + Math.random(), [loading]);
+
+    return (
+        <Marquee
+            frameRate={10}
+            reverse={reverse}
+            speed={loading ? 0 : randomizedSpeed}
+            style={styles.marquee}
+        >
+            <View style={styles.row}>
+                {words.map((word, i) => (
+                    <View key={i} style={styles.wordBox}>
+                        <CustomText style={styles.wordText} weight={'Bold'}>
+                            {word}
+                        </CustomText>
+                    </View>
+                ))}
+            </View>
+        </Marquee>
+    );
 };
 
 const styles = StyleSheet.create({
-  marqueeContent: {
-    flexDirection: 'row',
-  },
-  wordBox: {
-    flex: 1,
-    backgroundColor: '#2F4878',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 17,
-    marginRight: 10,
-  },
-  wordText: {
-    color: '#A0D5FF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+    marquee: {
+        marginTop: 10,
+    },
+    marqueeContent: {
+        flexDirection: 'row',
+    },
+    row: {
+        flexDirection: 'row',
+    },
+    wordBox: {
+        backgroundColor: '#2F4878',
+        flex: 1,
+        flexDirection: 'row',
+        marginRight: 10,
+        paddingHorizontal: 20,
+        paddingVertical: 17,
+    },
+    wordText: {
+        color: '#A0D5FF',
+        fontSize: 16,
+        fontWeight: '600',
+    },
 });
-
-export default MarqueeRow;

@@ -1,56 +1,141 @@
-import { useMemo } from "react";
-import { useWords } from "../store/WordsContext";
-import { useWordsMLStatesContext } from "../store/WordsMLStatesContext";
-import { useAuth } from "../api/auth/AuthProvider";
-import { useSessions } from "../store/SessionsContext";
-import { SessionMode, SessionModel, SessionModelVersion, WordSet, WordSetStrategy } from "../types";
-import { strategies } from "../database/strategies";
-import { useWordsHeuristicStates } from "../store/WordsHeuristicStatesContext";
-import { useEvaluations } from "../store/EvaluationsContext";
-import { shuffle } from "../utils/shuffle";
+import { useMemo } from 'react';
 
-export const useWordSet = (size: number, mode: SessionMode): WordSet => {
-  const { langWords } = useWords();
-  const { evaluations } = useEvaluations();
-  const { langWordsMLStates } = useWordsMLStatesContext();
-  const { langWordsHeuristicStates } = useWordsHeuristicStates();
-  const { sessions } = useSessions();
-  const { user } = useAuth();
+import {
+    PICKED_SESSION_MODEL_VERSION,
+    SessionMode,
+    SessionModel,
+    SessionModelVersion,
+} from '../constants/Session';
+import {
+    heuristicStrategy,
+    hybridStrategy,
+    mlStrategy,
+    oldestStrategy,
+    randomStrategy,
+} from '../database/strategies';
+import { useAuth } from '../store/AuthContext';
+import { useEvaluations } from '../store/EvaluationsContext';
+import { useSessions } from '../store/SessionsContext';
+import { useSuggestions } from '../store/SuggestionsContext';
+import { useWords } from '../store/WordsContext';
+import { useWordsHeuristicStates } from '../store/WordsHeuristicStatesContext';
+import { useWordsMLStatesContext } from '../store/WordsMLStatesContext';
+import { Session, WordSet, WordSetStrategy } from '../types';
+import { buildFallbackSet, enhanceWords } from '../utils/strategiesUtils';
 
-  return useMemo(() => {
-    if (!langWords || !langWordsMLStates || !langWordsHeuristicStates) {
-      return { words: [], model: SessionModel.NONE, version: SessionModelVersion.NONE };
-    }
+const STRATEGIES = {
+    HEURISTIC: heuristicStrategy,
+    HYBRID: hybridStrategy,
+    ML: mlStrategy,
+    OLDEST: oldestStrategy,
+    RANDOM: randomStrategy,
+};
 
-    const lastSession = sessions
-      ?.filter(s => s.mode === SessionMode.STUDY)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-    const lastSessionModel = lastSession?.sessionModel;
+const getLastSessionModel = (sessions?: Session[]): SessionModel | undefined =>
+    sessions
+        ?.filter((s: Session) => s.mode === SessionMode.STUDY)
+        .sort(
+            (a: Session, b: Session) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        )[0]?.sessionModel;
 
-    const currentModel = user.sessionModel || SessionModel.HYBRID;
+const resolveStrategy = (mode: SessionMode, model: SessionModel): WordSetStrategy => {
+    if (mode === SessionMode.OLDEST) return STRATEGIES.OLDEST;
+    if (mode === SessionMode.RANDOM) return STRATEGIES.RANDOM;
 
-    const getStrategy: WordSetStrategy = (() => {
-      if (mode == SessionMode.OLDEST)
-        return strategies.OLDEST;
-      else if (mode == SessionMode.RANDOM)
-        return strategies.RANDOM;
-      switch (currentModel) {
+    switch (model) {
         case SessionModel.HEURISTIC:
-          return strategies.HEURISTIC;
+            return STRATEGIES.HEURISTIC;
         case SessionModel.ML:
-          return strategies.ML;
+            return STRATEGIES.ML;
         case SessionModel.HYBRID:
         default:
-          return strategies.HYBRID;
-      }
-    })();
-
-    const strategy = getStrategy(size, langWords, evaluations, langWordsMLStates, langWordsHeuristicStates, lastSessionModel);
-
-    return {
-      words: shuffle(strategy.words),
-      model: strategy.model,
-      version: strategy.version
+            return STRATEGIES.HYBRID;
     }
-  }, [user.sessionModel, langWords, evaluations.length, langWordsMLStates, langWordsHeuristicStates, sessions, size, mode]);
+};
+
+const getFallbackModelAndVersion = (
+    mode: SessionMode,
+    model: SessionModel,
+    lastSessionModel?: SessionModel,
+) => {
+    switch (mode) {
+        case SessionMode.OLDEST:
+            return { model: SessionModel.NONE, version: SessionModelVersion.O1 };
+        case SessionMode.RANDOM:
+            return { model: SessionModel.NONE, version: SessionModelVersion.R1 };
+        default:
+            break;
+    }
+
+    switch (model) {
+        case SessionModel.HEURISTIC:
+            return { model: SessionModel.HEURISTIC, version: SessionModelVersion.H1 };
+        case SessionModel.ML:
+            return { model: SessionModel.ML, version: PICKED_SESSION_MODEL_VERSION };
+        default:
+            break;
+    }
+
+    return lastSessionModel === SessionModel.HEURISTIC
+        ? { model: SessionModel.ML, version: PICKED_SESSION_MODEL_VERSION }
+        : { model: SessionModel.HEURISTIC, version: SessionModelVersion.H1 };
+};
+
+export const useWordSet = (size: number, mode: SessionMode): WordSet => {
+    const { langWords } = useWords();
+    const { langSuggestions } = useSuggestions();
+    const { evaluations } = useEvaluations();
+    const { langWordsMLStates } = useWordsMLStatesContext();
+    const { langWordsHeuristicStates } = useWordsHeuristicStates();
+    const { sessions } = useSessions();
+    const { user } = useAuth();
+
+    return useMemo(() => {
+        const lastSessionModel = getLastSessionModel(sessions);
+        const currentModel = user.sessionModel || SessionModel.HYBRID;
+        const shouldUseFallback = langWords.length < size || !evaluations?.length;
+
+        if (shouldUseFallback) {
+            const fallbackMeta = getFallbackModelAndVersion(mode, currentModel, lastSessionModel);
+            const fallbackSet = buildFallbackSet(size, langWords, langSuggestions);
+            const enhanced = enhanceWords(fallbackSet, langWordsMLStates);
+
+            return {
+                model: fallbackMeta.model,
+                sessionWords: enhanced,
+                version: fallbackMeta.version,
+            };
+        }
+
+        const strategyFactory = resolveStrategy(mode, currentModel);
+
+        const strategy = strategyFactory(
+            size,
+            langWords,
+            langSuggestions,
+            evaluations,
+            langWordsMLStates,
+            langWordsHeuristicStates,
+            lastSessionModel,
+            user.suggestionsInSession,
+        );
+
+        const enhanced = enhanceWords(strategy.sessionWords, langWordsMLStates);
+
+        return {
+            model: strategy.model,
+            sessionWords: enhanced,
+            version: strategy.version,
+        };
+    }, [
+        user.sessionModel,
+        langWords,
+        langSuggestions,
+        evaluations?.length ?? 0,
+        langWordsMLStates,
+        langWordsHeuristicStates,
+        sessions,
+        size,
+        mode,
+    ]);
 };

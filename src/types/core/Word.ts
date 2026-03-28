@@ -1,15 +1,37 @@
-import { SyncMetadata } from "../sync/SyncMetadata";
-import { LanguageCode } from "../../constants/LanguageCode";
-import { WordSource } from "../../store/WordsContext";
+import { LanguageCode } from '../../constants/Language';
+import { WordSource } from '../../constants/Word';
+import { SyncMetadata } from '../sync/SyncMetadata';
 
 export type Word = SyncMetadata & {
-  id: string;
-  text: string;
-  translation: string;
-  mainLang: LanguageCode;
-  translationLang: LanguageCode;
-  source: WordSource;
-  addDate: string;
-  active: boolean;
-  removed: boolean;
-}
+    active: boolean;
+    addDate: string;
+    id: string;
+    mainLang: LanguageCode;
+    removed: boolean;
+    source: WordSource;
+    text: string;
+    translation: string;
+    translationLang: LanguageCode;
+};
+
+export type SessionWord = {
+    addDate: string;
+    id: string;
+    mainLang: LanguageCode;
+    tags: WordTag[];
+    text: string;
+    translation: string;
+    translationLang: LanguageCode;
+    type: 'suggestion' | 'word';
+};
+
+export type WordTag =
+    | 'streak'
+    | 'improving'
+    | 'in_progress'
+    | 'recently_added'
+    | 'long_time_no_see'
+    | 'frequently_repeated'
+    | 'well_known'
+    | 'often_mistaken'
+    | 'struggling';

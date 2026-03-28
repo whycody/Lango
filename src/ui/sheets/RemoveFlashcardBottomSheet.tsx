@@ -1,90 +1,114 @@
-import React, { forwardRef, useCallback } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { useTheme } from "@react-navigation/native";
-import { useTranslation } from "react-i18next";
-import CustomText from "../components/CustomText";
-import { Platform, StyleSheet } from "react-native";
-import ActionButton from "../components/ActionButton";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import Header from "../components/Header";
-import { FullWindowOverlay } from "react-native-screens";
-import FlashcardListItem from "../components/items/FlashcardListItem";
-import { useWordsWithDetails } from "../../store/WordsWithDetailsContext";
+import React, { forwardRef, RefObject, useCallback } from 'react';
+import { Platform, StyleSheet } from 'react-native';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { FullWindowOverlay } from 'react-native-screens';
 
-type AcceptationBottomSheetProps = {
-  flashcardId: string;
-  onRemove: () => void;
-  onCancel: () => void;
-  onChangeIndex?: (index: number) => void;
-}
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { useWordsWithDetails } from '../../store';
+import { ActionButton, CustomText, Header } from '../components';
+import { FlashcardListItem } from '../components/flashcards';
 
-export const RemoveFlashcardBottomSheet = forwardRef<BottomSheetModal, AcceptationBottomSheetProps>((props, ref) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors);
-  const { t } = useTranslation();
-  const wordsWithDetailsContext = useWordsWithDetails();
+type RemoveFlashcardBottomSheetProps = {
+    flashcardId: string;
+    onCancel: () => void;
+    onChangeIndex?: (index: number) => void;
+    onRemove: () => void;
+};
 
-  const flashcard = wordsWithDetailsContext.wordsWithDetails.find((word) => word.id === props.flashcardId);
+export const RemoveFlashcardBottomSheet = forwardRef<
+    BottomSheetModal,
+    RemoveFlashcardBottomSheetProps
+>((props, ref: RefObject<BottomSheetModal>) => {
+    const { colors } = useTheme();
+    const styles = getStyles(colors);
+    const { t } = useTranslation();
+    const wordsWithDetailsContext = useWordsWithDetails();
 
-  const renderBackdrop = useCallback((props: any) =>
-    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+    const flashcard = wordsWithDetailsContext.wordsWithDetails.find(
+        word => word.id === props.flashcardId,
+    );
 
-  const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
-    <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
+    const renderBackdrop = useCallback(
+        (props: any) => (
+            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
+        ),
+        [],
+    );
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      backdropComponent={renderBackdrop}
-      containerComponent={renderContainerComponent}
-      backgroundStyle={{ backgroundColor: colors.card }}
-      onChange={(index: number) => props.onChangeIndex?.(index)}
-      handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
-    >
-      <BottomSheetView style={styles.root}>
-        <Header title={t('removingFlashcard')} subtitle={t('removingFlashcardDesc')} style={styles.header}/>
-        <FlashcardListItem
-          id={props.flashcardId}
-          level={flashcard?.gradeThreeProb ?? 0}
-          text={flashcard?.text}
-          translation={flashcard?.translation}
-          style={{ backgroundColor: colors.background }}
-        />
-        <ActionButton
-          onPress={props.onRemove}
-          label={t('continue')}
-          primary={true}
-          style={styles.button}
-        />
-        <CustomText
-          style={styles.actionText}
-          weight={'SemiBold'}
-          onPress={props.onCancel}
+    const renderContainerComponent =
+        Platform.OS === 'ios'
+            ? useCallback(
+                  ({ children }: any) => <FullWindowOverlay>{children}</FullWindowOverlay>,
+                  [],
+              )
+            : undefined;
+
+    return (
+        <BottomSheetModal
+            backdropComponent={renderBackdrop}
+            backgroundStyle={styles.bottomSheetModal}
+            containerComponent={renderContainerComponent}
+            handleIndicatorStyle={styles.handleIndicatorStyle}
+            ref={ref}
+            onChange={(index: number) => props.onChangeIndex?.(index)}
         >
-          {t('cancel')}
-        </CustomText>
-      </BottomSheetView>
-    </BottomSheetModal>
-  );
+            <BottomSheetView style={styles.root}>
+                <Header
+                    style={styles.header}
+                    subtitle={t('removingFlashcardDesc')}
+                    title={t('removingFlashcard')}
+                />
+                <FlashcardListItem
+                    id={props.flashcardId}
+                    level={flashcard?.gradeThreeProb ?? 0}
+                    style={styles.item}
+                    text={flashcard?.text}
+                    translation={flashcard?.translation}
+                />
+                <ActionButton
+                    label={t('continue')}
+                    primary={true}
+                    style={styles.button}
+                    onPress={props.onRemove}
+                />
+                <CustomText style={styles.actionText} weight={'SemiBold'} onPress={props.onCancel}>
+                    {t('cancel')}
+                </CustomText>
+            </BottomSheetView>
+        </BottomSheetModal>
+    );
 });
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: MARGIN_HORIZONTAL,
-    paddingVertical: MARGIN_VERTICAL / 2,
-  },
-  button: {
-    marginHorizontal: MARGIN_HORIZONTAL,
-    marginTop: MARGIN_VERTICAL
-  },
-  actionText: {
-    color: colors.primary,
-    fontSize: 13,
-    textAlign: 'center',
-    paddingVertical: MARGIN_VERTICAL,
-    paddingHorizontal: MARGIN_HORIZONTAL,
-  },
-});
+const getStyles = (colors: any) =>
+    StyleSheet.create({
+        actionText: {
+            color: colors.primary,
+            fontSize: 13,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingVertical: MARGIN_VERTICAL,
+            textAlign: 'center',
+        },
+        bottomSheetModal: {
+            backgroundColor: colors.card,
+        },
+        button: {
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL,
+        },
+        handleIndicatorStyle: {
+            backgroundColor: colors.primary,
+            borderRadius: 0,
+        },
+        header: {
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingVertical: MARGIN_VERTICAL / 2,
+        },
+        item: {
+            backgroundColor: colors.background,
+        },
+        root: {
+            flex: 1,
+        },
+    });

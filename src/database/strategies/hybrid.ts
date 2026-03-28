@@ -1,10 +1,38 @@
-import { SessionModel, WordSet, WordSetStrategy } from "../../types";
-import { mlStrategy } from "./ml";
-import { heuristicStrategy } from "./heuristic";
+import { SessionModel } from '../../constants/Session';
+import { WordSet, WordSetStrategy } from '../../types';
+import { heuristicStrategy } from './heuristic';
+import { mlStrategy } from './ml';
 
-export const hybridStrategy: WordSetStrategy = (size, words, evaluations, mlStates, heuristicStates, lastSessionModel): WordSet => {
-  if (lastSessionModel === SessionModel.HEURISTIC) {
-    return mlStrategy(size, words, evaluations, mlStates, heuristicStates);
-  }
-  return heuristicStrategy(size, words, evaluations, mlStates, heuristicStates);
+export const hybridStrategy: WordSetStrategy = (
+    size,
+    words,
+    suggestions,
+    evaluations,
+    mlStates,
+    heuristicStates,
+    lastSessionModel,
+    includeSuggestions,
+): WordSet => {
+    if (lastSessionModel === SessionModel.HEURISTIC) {
+        return mlStrategy(
+            size,
+            words,
+            suggestions,
+            evaluations,
+            mlStates,
+            heuristicStates,
+            lastSessionModel,
+            includeSuggestions,
+        );
+    }
+    return heuristicStrategy(
+        size,
+        words,
+        suggestions,
+        evaluations,
+        mlStates,
+        heuristicStates,
+        lastSessionModel,
+        includeSuggestions,
+    );
 };

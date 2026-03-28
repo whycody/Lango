@@ -1,82 +1,99 @@
-import React, { forwardRef, useCallback, useMemo } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useTheme } from "@react-navigation/native";
-import { StyleSheet } from "react-native";
-import { MARGIN_HORIZONTAL } from "../../constants/margins";
-import { useTranslation } from "react-i18next";
-import Header from "../components/Header";
-import { FlashList } from "@shopify/flash-list";
-import { FlashcardSortingMethod, useUserPreferences } from "../../store/UserPreferencesContext";
-import { getSortingMethodLabel } from "../../utils/sortingUtil";
-import SortingMethodItem from "../components/items/SortingMethodItem";
+import React, { forwardRef, RefObject, useCallback, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useTheme } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { useTranslation } from 'react-i18next';
+
+import { MARGIN_HORIZONTAL } from '../../constants/margins';
+import { FlashcardSortingMethod } from '../../constants/UserPreferences';
+import { useUserPreferences } from '../../store';
+import { getSortingMethodLabel } from '../../utils/sortingUtil';
+import { Header } from '../components';
+import { SortingMethodItem } from '../components/flashcards';
 
 type SortingMethodBottomSheetProps = {
-  onChangeIndex?: (index: number) => void;
-}
+    onChangeIndex?: (index: number) => void;
+};
 
-export const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMethodBottomSheetProps>((props, ref) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors);
-  const { t } = useTranslation();
-  const { flashcardsSortingMethod, setFlashcardsSortingMethod } = useUserPreferences();
+export const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMethodBottomSheetProps>(
+    (props, ref: RefObject<BottomSheetModal>) => {
+        const { colors } = useTheme();
+        const styles = getStyles(colors);
+        const { t } = useTranslation();
+        const { flashcardsSortingMethod, setFlashcardsSortingMethod } = useUserPreferences();
 
-  const renderBackdrop = useCallback((props: any) =>
-    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+        const renderBackdrop = useCallback(
+            (props: any) => (
+                <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
+            ),
+            [],
+        );
 
-  const sortingMethods = useMemo(() =>
-    Object.values(FlashcardSortingMethod).filter(v => typeof v === "number") as FlashcardSortingMethod[], []);
+        const sortingMethods = useMemo(
+            () =>
+                Object.values(FlashcardSortingMethod).filter(
+                    v => typeof v === 'number',
+                ) as FlashcardSortingMethod[],
+            [],
+        );
 
-  const handlePress = useCallback((method: FlashcardSortingMethod) => {
-    setFlashcardsSortingMethod(method);
-    ref.current?.dismiss();
-  }, [])
+        const handlePress = useCallback((method: FlashcardSortingMethod) => {
+            setFlashcardsSortingMethod(method);
+            ref.current?.dismiss();
+        }, []);
 
-  const renderItem = useCallback(({ item, index }: { item: FlashcardSortingMethod; index: number }) => (
-    <SortingMethodItem
-      id={item}
-      onPress={handlePress}
-      label={getSortingMethodLabel(item)}
-      checked={flashcardsSortingMethod === item}
-      index={index}
-    />
-  ), [handlePress, flashcardsSortingMethod]);
+        const renderItem = useCallback(
+            ({ index, item }: { index: number; item: FlashcardSortingMethod }) => (
+                <SortingMethodItem
+                    checked={flashcardsSortingMethod === item}
+                    id={item}
+                    index={index}
+                    label={getSortingMethodLabel(item)}
+                    onPress={handlePress}
+                />
+            ),
+            [handlePress, flashcardsSortingMethod],
+        );
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      index={0}
-      onChange={(index: number) => props.onChangeIndex?.(index)}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={styles.bottomSheetModal}
-      handleIndicatorStyle={styles.handleIndicatorStyle}
-    >
-      <BottomSheetScrollView>
-        <Header
-          title={t('sorting.title')}
-          subtitle={t('sorting.desc')}
-          style={styles.header}
-        />
-        <FlashList
-          data={sortingMethods}
-          estimatedItemSize={55}
-          extraData={flashcardsSortingMethod}
-          renderItem={renderItem}
-        />
-      </BottomSheetScrollView>
-    </BottomSheetModal>
-  );
-});
+        return (
+            <BottomSheetModal
+                backdropComponent={renderBackdrop}
+                backgroundStyle={styles.bottomSheetModal}
+                handleIndicatorStyle={styles.handleIndicatorStyle}
+                index={0}
+                ref={ref}
+                onChange={(index: number) => props.onChangeIndex?.(index)}
+            >
+                <BottomSheetScrollView>
+                    <Header
+                        style={styles.header}
+                        subtitle={t('sorting.desc')}
+                        title={t('sorting.title')}
+                    />
+                    <FlashList
+                        data={sortingMethods}
+                        estimatedItemSize={55}
+                        extraData={flashcardsSortingMethod}
+                        renderItem={renderItem}
+                    />
+                </BottomSheetScrollView>
+            </BottomSheetModal>
+        );
+    },
+);
 
-const getStyles = (colors: any) => StyleSheet.create({
-  header: {
-    marginVertical: 10,
-    paddingHorizontal: MARGIN_HORIZONTAL,
-  },
-  bottomSheetModal: {
-    backgroundColor: colors.card
-  },
-  handleIndicatorStyle: {
-    backgroundColor: colors.primary,
-    borderRadius: 0
-  }
-});
+const getStyles = (colors: any) =>
+    StyleSheet.create({
+        bottomSheetModal: {
+            backgroundColor: colors.card,
+        },
+        handleIndicatorStyle: {
+            backgroundColor: colors.primary,
+            borderRadius: 0,
+        },
+        header: {
+            marginVertical: 10,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+    });

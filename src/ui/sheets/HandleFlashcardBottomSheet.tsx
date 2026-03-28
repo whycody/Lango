@@ -1,299 +1,370 @@
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useTheme } from "@react-navigation/native";
-import { Keyboard, Platform, StyleSheet, View } from "react-native";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import CustomText from "../components/CustomText";
-import ActionButton from "../components/ActionButton";
-import { useTranslation } from "react-i18next";
-import { useWords, WordSource } from "../../store/WordsContext";
-import WordInput from "../components/WordInput";
-import Alert from "../components/Alert";
-import Header from "../components/Header";
-import { FullWindowOverlay } from "react-native-screens";
-import axios from "axios";
-import TranslationUtils from "../../utils/translationUtils";
-import { LanguageCode, Word } from "../../types";
-import { useLanguage } from "../../store/LanguageContext";
-import { useVoiceInput } from "../../hooks/useVoiceInput";
-import { MicrophonePermissionBottomSheet } from "./MicrophonePermissionBottomSheet";
+import React, { forwardRef, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { Keyboard, Platform, StyleSheet, View } from 'react-native';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useTheme } from '@react-navigation/native';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import { FullWindowOverlay } from 'react-native-screens';
+
+import { LanguageCode } from '../../constants/Language';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { WordSource } from '../../constants/Word';
+import { useVoiceInput } from '../../hooks';
+import { useLanguage, useWords } from '../../store';
+import { Word } from '../../types';
+import TranslationUtils from '../../utils/translationUtils';
+import { ActionButton, CustomText, Header } from '../components';
+import { Alert, WordInput } from '../components/flashcards';
+import { MicrophonePermissionBottomSheet } from './MicrophonePermissionBottomSheet';
 
 type WordTranslations = {
-  word: string;
-  translations: string[];
-  from: LanguageCode,
-  to: LanguageCode
-}
+    from: LanguageCode;
+    to: LanguageCode;
+    translations: string[];
+    word: string;
+};
 
-interface HandleFlashcardBottomSheetProps {
-  flashcardId?: string;
-  onWordEdit?: (id: string, word: string, translation: string) => void;
-  onChangeIndex?: (index: number) => void;
-}
+type HandleFlashcardBottomSheetProps = {
+    flashcardId?: string;
+    onChangeIndex?: (index: number) => void;
+    onWordEdit?: (id: string, word: string, translation: string) => void;
+};
 
-export const HandleFlashcardBottomSheet = forwardRef<BottomSheetModal, HandleFlashcardBottomSheetProps>((props, ref) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors);
-  const { t } = useTranslation();
-  const wordsContext = useWords();
+export const HandleFlashcardBottomSheet = forwardRef<
+    BottomSheetModal,
+    HandleFlashcardBottomSheetProps
+>((props, ref: RefObject<BottomSheetModal>) => {
+    const { colors } = useTheme();
+    const styles = getStyles(colors);
+    const { t } = useTranslation();
+    const wordsContext = useWords();
 
-  const wordInputRef = useRef<any>(null);
-  const translationInputRef = useRef<any>(null);
-  const microphonePermissionSheetRef = useRef<BottomSheetModal>(null);
+    const wordInputRef = useRef<any>(null);
+    const translationInputRef = useRef<any>(null);
+    const microphonePermissionSheetRef = useRef<BottomSheetModal>(null);
 
-  const flashcard: Word | null = props.flashcardId ? wordsContext.getWord(props.flashcardId) : null;
-  const [word, setWord] = useState(flashcard?.text);
-  const [translation, setTranslation] = useState(flashcard?.translation);
+    const flashcard: Word | null = props.flashcardId
+        ? wordsContext.getWord(props.flashcardId)
+        : null;
+    const [word, setWord] = useState(flashcard?.text);
+    const [translation, setTranslation] = useState(flashcard?.translation);
 
-  const [currentWord, setCurrentWord] = useState<string>('');
-  const [currentTranslation, setCurrentTranslation] = useState<string>('');
-  const [wordTranslations, setWordTranslations] = useState<WordTranslations[]>([]);
+    const [currentWord, setCurrentWord] = useState<string>('');
+    const [currentTranslation, setCurrentTranslation] = useState<string>('');
+    const [wordTranslations, setWordTranslations] = useState<WordTranslations[]>([]);
 
-  const [status, setStatus] = useState<'error' | 'success' | null>(null);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [buttonsActive, setButtonsActive] = useState(true);
-  const { mainLang, translationLang } = useLanguage();
-  const voice = useVoiceInput({});
+    const [status, setStatus] = useState<'error' | 'success' | null>(null);
+    const [statusMessage, setStatusMessage] = useState<string | null>(null);
+    const [buttonsActive, setButtonsActive] = useState(true);
+    const { mainLang, translationLang } = useLanguage();
+    const voice = useVoiceInput({});
 
-  const translationsOfWord = wordTranslations && wordTranslations
-    .find(wt => wt.word.toLowerCase() === currentWord.toLowerCase() && wt.from == mainLang && wt.to == translationLang)
-  const translationsOfTranslation = wordTranslations && wordTranslations
-    .find(wt => wt.word.toLowerCase() === currentTranslation.toLowerCase() && wt.from == translationLang && wt.to == mainLang)
+    const translationsOfWord =
+        wordTranslations &&
+        wordTranslations.find(
+            wt =>
+                wt.word.toLowerCase() === currentWord.toLowerCase() &&
+                wt.from == mainLang &&
+                wt.to == translationLang,
+        );
+    const translationsOfTranslation =
+        wordTranslations &&
+        wordTranslations.find(
+            wt =>
+                wt.word.toLowerCase() === currentTranslation.toLowerCase() &&
+                wt.from == translationLang &&
+                wt.to == mainLang,
+        );
 
-  const translationSuggestions = translationsOfWord ? translationsOfWord.translations : [];
-  const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
+    const translationSuggestions = translationsOfWord ? translationsOfWord.translations : [];
+    const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
 
-  const renderBackdrop = useCallback((props: any) =>
-    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+    const renderBackdrop = useCallback(
+        (props: any) => (
+            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
+        ),
+        [],
+    );
 
-  const clearInputs = () => {
-    setWord('');
-    setTranslation('');
-    setCurrentWord('');
-    setCurrentTranslation('');
-    wordInputRef.current?.clearWord();
-    translationInputRef.current?.clearWord();
-  }
+    const clearInputs = () => {
+        setWord('');
+        setTranslation('');
+        setCurrentWord('');
+        setCurrentTranslation('');
+        wordInputRef.current?.clearWord();
+        translationInputRef.current?.clearWord();
+    };
 
-  const clearStatus = () => {
-    setStatus(null);
-    setStatusMessage(null);
-  }
+    const clearStatus = () => {
+        setStatus(null);
+        setStatusMessage(null);
+    };
 
-  useEffect(() => {
-    if (!props.flashcardId) {
-      clearInputs()
-    } else {
-      const flashcard: Word = wordsContext.getWord(props.flashcardId);
-      setWord(flashcard.text);
-      setTranslation(flashcard.translation);
-    }
-  }, [props.flashcardId]);
+    useEffect(() => {
+        if (!props.flashcardId) {
+            clearInputs();
+        } else {
+            const flashcard: Word = wordsContext.getWord(props.flashcardId);
+            setWord(flashcard.text);
+            setTranslation(flashcard.translation);
+        }
+    }, [props.flashcardId]);
 
-  const getCurrentWordAndTranslation = () => {
-    const currentWordInput = wordInputRef.current?.getWord();
-    const currentTranslationInput = translationInputRef.current?.getWord();
+    const getCurrentWordAndTranslation = () => {
+        const currentWordInput = wordInputRef.current?.getWord();
+        const currentTranslationInput = translationInputRef.current?.getWord();
 
-    const word = currentWordInput.length > 0 ?
-      currentWordInput.trim() : wordSuggestions.length > 0 ? wordSuggestions[0].trim() : '';
-    const translation = currentTranslationInput.length > 0 ?
-      currentTranslationInput.trim() : translationSuggestions.length > 0 ? translationSuggestions[0].trim() : '';
+        const word =
+            currentWordInput.length > 0
+                ? currentWordInput.trim()
+                : wordSuggestions.length > 0
+                  ? wordSuggestions[0].trim()
+                  : '';
+        const translation =
+            currentTranslationInput.length > 0
+                ? currentTranslationInput.trim()
+                : translationSuggestions.length > 0
+                  ? translationSuggestions[0].trim()
+                  : '';
 
-    return { word, translation };
-  }
+        return { translation, word };
+    };
 
-  const validateInputs = () => {
-    const { word, translation } = getCurrentWordAndTranslation();
-    if (word && translation) return true;
-    setStatus('error');
-    setStatusMessage(t('bothInputs'));
-    return false;
-  }
+    const validateInputs = () => {
+        const { translation, word } = getCurrentWordAndTranslation();
+        if (word && translation) return true;
+        setStatus('error');
+        setStatusMessage(t('bothInputs'));
+        return false;
+    };
 
-  const editFlashcard = () => {
-    if (!validateInputs()) return;
-    scheduleDismiss();
-    const { word, translation } = getCurrentWordAndTranslation();
-    wordsContext.editWord({ id: props.flashcardId, text: word, translation: translation });
-    props.onWordEdit?.(props.flashcardId, word, translation);
-    setStatusMessage(t('editWord', { word: word }));
-  }
+    const editFlashcard = () => {
+        if (!validateInputs()) return;
+        scheduleDismiss();
+        const { translation, word } = getCurrentWordAndTranslation();
+        wordsContext.editWord({
+            id: props.flashcardId,
+            text: word,
+            translation,
+        });
+        props.onWordEdit?.(props.flashcardId, word, translation);
+        setStatusMessage(t('editWord', { word }));
+    };
 
-  const addFlashcard = (multiple: boolean) => {
-    if (!validateInputs()) return;
-    const { word, translation } = getCurrentWordAndTranslation();
-    wordsContext.addWord(word, translation, WordSource.USER);
-    setStatusMessage(t('addNewWord', { word }));
-    if (!multiple) {
-      scheduleDismiss();
-    } else {
-      setCurrentTranslation('');
-      setCurrentWord('');
-      setTimeout(() => {
-        clearInputs();
+    const addFlashcard = (multiple: boolean) => {
+        if (!validateInputs()) return;
+        const { translation, word } = getCurrentWordAndTranslation();
+        const newWord = wordsContext.addWord(word, translation, WordSource.USER);
+
+        if (!newWord) {
+            setStatus('error');
+            setStatusMessage(t('alreadyExists'));
+            return;
+        }
+
+        setStatusMessage(t('addNewWord', { word }));
+        if (!multiple) {
+            scheduleDismiss();
+        } else {
+            setCurrentTranslation('');
+            setCurrentWord('');
+            setTimeout(() => {
+                clearInputs();
+                setStatus('success');
+                wordInputRef.current?.focus();
+            }, 10);
+        }
+    };
+
+    const scheduleDismiss = () => {
         setStatus('success');
-        wordInputRef.current?.focus();
-      }, 10);
-    }
-  }
+        setTimeout(() => Keyboard.dismiss(), 950);
+        setTimeout(() => ref.current?.dismiss(), 1000);
+        setButtonsActive(false);
+    };
 
-  const scheduleDismiss = () => {
-    setStatus('success');
-    setTimeout(() => Keyboard.dismiss(), 950);
-    setTimeout(() => ref.current?.dismiss(), 1000);
-    setButtonsActive(false);
-  }
+    const handleSheetDismiss = () => {
+        clearStatus();
+        setButtonsActive(true);
+        if (!props.flashcardId) clearInputs();
+    };
 
-  const handleSheetDismiss = () => {
-    clearStatus();
-    setButtonsActive(true);
-    if (!props.flashcardId) clearInputs();
-  }
+    const abortControllerRef = useRef(new AbortController());
 
-  const abortControllerRef = useRef(new AbortController());
+    const translateWord = async (text, from = mainLang, to = translationLang) => {
+        abortControllerRef.current && abortControllerRef.current.abort();
+        abortControllerRef.current = new AbortController();
 
-  const translateWord = async (text, from = mainLang, to = translationLang) => {
-    abortControllerRef.current && abortControllerRef.current.abort();
-    abortControllerRef.current = new AbortController();
+        try {
+            const translations = await TranslationUtils.translateText(
+                text,
+                from,
+                to,
+                abortControllerRef.current,
+            );
+            setWordTranslations(prev => [
+                ...prev,
+                {
+                    from,
+                    to,
+                    translations: [translations.toLowerCase()],
+                    word: text,
+                },
+            ]);
+        } catch (error) {
+            if (!axios.isCancel(error)) {
+                console.error(
+                    'Błąd:',
+                    error?.response?.status,
+                    error?.response?.data || error?.message,
+                );
+            }
+        }
+    };
 
-    try {
-      const translations = await TranslationUtils.translateText(text, from, to, abortControllerRef.current);
-      setWordTranslations((prev) =>
-        [...prev,
-          {
-            word: text,
-            translations: [translations.toLowerCase()],
-            from,
-            to,
-          }
-        ]
-      );
-    } catch (error) {
-      if (!axios.isCancel(error)) {
-        console.error("Błąd:", error?.response?.status, error?.response?.data || error?.message);
-      }
-    }
-  };
+    const handleChangeIndex = (index: number) => {
+        if (index === -1) {
+            voice.stop();
+        }
 
-  const handleChangeIndex = (index: number) => {
-    if (index === -1) {
-      voice.stop()
-    }
+        props.onChangeIndex?.(index);
+    };
 
-    props.onChangeIndex?.(index);
-  }
+    useEffect(() => {
+        if (mainLang == translationLang) return;
+        if (!!word && !translation) translateWord(word);
+        if (!!translation && !word) translateWord(translation, translationLang, mainLang);
+    }, [word, translation, mainLang, translationLang]);
 
-  useEffect(() => {
-    if (mainLang == translationLang) return;
-    if (!!word && !translation) translateWord(word);
-    if (!!translation && !word) translateWord(translation, translationLang, mainLang);
-  }, [word, translation, mainLang, translationLang]);
+    const renderContainerComponent =
+        Platform.OS === 'ios'
+            ? useCallback(
+                  ({ children }: any) => <FullWindowOverlay>{children}</FullWindowOverlay>,
+                  [],
+              )
+            : undefined;
 
-  const renderContainerComponent = Platform.OS === "ios" ? useCallback(({ children }: any) => (
-    <FullWindowOverlay>{children}</FullWindowOverlay>), []) : undefined;
-
-  return (
-    <>
-      <MicrophonePermissionBottomSheet
-        ref={microphonePermissionSheetRef}
-      />
-      <BottomSheetModal
-        ref={ref}
-        index={0}
-        backdropComponent={renderBackdrop}
-        onChange={handleChangeIndex}
-        containerComponent={renderContainerComponent}
-        backgroundStyle={{ backgroundColor: colors.card }}
-        handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
-        keyboardBlurBehavior={'restore'}
-        onDismiss={handleSheetDismiss}
-      >
-        <BottomSheetScrollView style={styles.root} keyboardShouldPersistTaps="always">
-          <Header
-            title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
-            subtitle={t('wordAndTranslation')}
-            style={{ marginVertical: 10 }}
-          />
-          {status && statusMessage &&
-            <Alert
-              title={status == 'success' ? t('success') : t('invalidData')}
-              message={statusMessage}
-              type={status}
-            />
-          }
-          <WordInput
-            ref={wordInputRef}
-            id={'main-input'}
-            word={word}
-            suggestions={wordSuggestions}
-            onWordCommit={setWord}
-            onWordChange={setCurrentWord}
-            active={buttonsActive}
-            cursorColor={!buttonsActive ? 'transparent' : colors.primary}
-            languageCode={mainLang}
-            style={styles.wordInput}
-            pointerEvents="box-only"
-            onMicrophonePermissionsNotGranted={() => microphonePermissionSheetRef.current.present()}
-          />
-          <WordInput
-            ref={translationInputRef}
-            id={'translation-input'}
-            word={translation}
-            suggestions={translationSuggestions}
-            onWordCommit={setTranslation}
-            onWordChange={setCurrentTranslation}
-            active={buttonsActive}
-            languageCode={translationLang}
-            style={styles.wordInput}
-            pointerEvents="box-only"
-            onMicrophonePermissionsNotGranted={() => microphonePermissionSheetRef.current.present()}
-          />
-          <ActionButton
-            onPress={() => props.flashcardId ? editFlashcard() : addFlashcard(false)}
-            label={props.flashcardId ? t('edit') : t('add_1')}
-            primary={true}
-            active={buttonsActive}
-            style={styles.button}
-            icon={props.flashcardId ? 'save-sharp' : undefined}
-          />
-          {props.flashcardId ? <View style={{ height: MARGIN_VERTICAL }}/> :
-            <CustomText
-              style={styles.actionText}
-              weight={'SemiBold'}
-              onPress={() => {
-                if (buttonsActive) addFlashcard(true);
-              }}
+    return (
+        <>
+            <MicrophonePermissionBottomSheet ref={microphonePermissionSheetRef} />
+            <BottomSheetModal
+                backdropComponent={renderBackdrop}
+                backgroundStyle={styles.bottomSheetModal}
+                containerComponent={renderContainerComponent}
+                handleIndicatorStyle={styles.handleIndicatorStyle}
+                index={0}
+                keyboardBlurBehavior={'restore'}
+                ref={ref}
+                onChange={handleChangeIndex}
+                onDismiss={handleSheetDismiss}
             >
-              {t('addAnother')}
-            </CustomText>}
-        </BottomSheetScrollView>
-      </BottomSheetModal>
-    </>
-  );
+                <BottomSheetScrollView keyboardShouldPersistTaps="always" style={styles.root}>
+                    <Header
+                        style={styles.headerMargin}
+                        subtitle={t('wordAndTranslation')}
+                        title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
+                    />
+                    {status && statusMessage && (
+                        <Alert
+                            message={statusMessage}
+                            title={status == 'success' ? t('success') : t('invalidData')}
+                            type={status}
+                        />
+                    )}
+                    <WordInput
+                        active={buttonsActive}
+                        cursorColor={!buttonsActive ? 'transparent' : colors.primary}
+                        id={'main-input'}
+                        languageCode={mainLang}
+                        pointerEvents="box-only"
+                        ref={wordInputRef}
+                        style={styles.wordInput}
+                        suggestions={wordSuggestions}
+                        word={word}
+                        onWordChange={setCurrentWord}
+                        onWordCommit={setWord}
+                        onMicrophonePermissionsNotGranted={() =>
+                            microphonePermissionSheetRef.current.present()
+                        }
+                    />
+                    <WordInput
+                        active={buttonsActive}
+                        id={'translation-input'}
+                        languageCode={translationLang}
+                        pointerEvents="box-only"
+                        ref={translationInputRef}
+                        style={styles.wordInput}
+                        suggestions={translationSuggestions}
+                        word={translation}
+                        onWordChange={setCurrentTranslation}
+                        onWordCommit={setTranslation}
+                        onMicrophonePermissionsNotGranted={() =>
+                            microphonePermissionSheetRef.current.present()
+                        }
+                    />
+                    <ActionButton
+                        active={buttonsActive}
+                        icon={props.flashcardId ? 'save-sharp' : undefined}
+                        label={props.flashcardId ? t('edit') : t('add_1')}
+                        primary={true}
+                        style={styles.button}
+                        onPress={() => (props.flashcardId ? editFlashcard() : addFlashcard(false))}
+                    />
+                    {props.flashcardId ? (
+                        <View style={styles.bottomSpacer} />
+                    ) : (
+                        <CustomText
+                            style={styles.actionText}
+                            weight={'SemiBold'}
+                            onPress={() => {
+                                if (buttonsActive) addFlashcard(true);
+                            }}
+                        >
+                            {t('addAnother')}
+                        </CustomText>
+                    )}
+                </BottomSheetScrollView>
+            </BottomSheetModal>
+        </>
+    );
 });
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    paddingHorizontal: MARGIN_HORIZONTAL,
-  },
-  header: {
-    paddingTop: MARGIN_VERTICAL,
-  },
-  sessionItemsContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    marginTop: 12,
-  },
-  button: {
-    marginTop: MARGIN_VERTICAL
-  },
-  actionText: {
-    color: colors.primary,
-    fontSize: 13,
-    textAlign: 'center',
-    paddingVertical: MARGIN_VERTICAL
-  },
-  wordInput: {
-    marginTop: 15
-  }
-});
+const getStyles = (colors: any) =>
+    StyleSheet.create({
+        actionText: {
+            color: colors.primary,
+            fontSize: 13,
+            paddingVertical: MARGIN_VERTICAL,
+            textAlign: 'center',
+        },
+        bottomSheetModal: {
+            backgroundColor: colors.card,
+        },
+        bottomSpacer: {
+            height: MARGIN_VERTICAL,
+        },
+        button: {
+            marginTop: MARGIN_VERTICAL,
+        },
+        handleIndicatorStyle: {
+            backgroundColor: colors.primary,
+            borderRadius: 0,
+        },
+        header: {
+            paddingTop: MARGIN_VERTICAL,
+        },
+        headerMargin: {
+            marginVertical: 10,
+        },
+        root: {
+            paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+        sessionItemsContainer: {
+            flex: 1,
+            flexDirection: 'row',
+            marginTop: 12,
+        },
+        wordInput: {
+            marginTop: 15,
+        },
+    });

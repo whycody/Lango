@@ -1,9 +1,10 @@
-import { CompositeNavigationProp, NavigationProp } from "@react-navigation/native";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { TabsParamList } from "../../navigation/TabsNavigator";
-import { RootStackParamList } from "../../navigation/AppStack";
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { CompositeNavigationProp, NavigationProp } from '@react-navigation/native';
+
+import { RootStackParamList } from '../../navigation/navigationTypes';
+import { TabsParamList } from '../../navigation/TabsNavigator';
 
 export type LibraryNavProp = CompositeNavigationProp<
-  BottomTabNavigationProp<TabsParamList, "Library">,
-  NavigationProp<RootStackParamList>
+    BottomTabNavigationProp<TabsParamList, 'Library'>,
+    NavigationProp<RootStackParamList>
 >;

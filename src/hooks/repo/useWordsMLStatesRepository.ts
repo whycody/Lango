@@ -1,25 +1,20 @@
 import {
-  createTables,
-  getAllWordsMLStates,
-  saveWordsMLStates,
-  updateWordMLState,
-} from "../../database/WordsMLStatesRepository";
-import { WordMLState } from "../../types";
-import { useAuth } from "../../api/auth/AuthProvider";
-import { WordsStatesRepository } from "../../database/WordsStatesRepository";
+    createTables,
+    getAllWordsMLStates,
+    saveWordsMLStates,
+    updateWordMLState,
+} from '../../database/WordsMLStatesRepository';
+import { WordsStatesRepository } from '../../database/WordsStatesRepository';
+import { WordMLState } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useWordsMLStatesRepository = (): WordsStatesRepository<WordMLState> => {
-  const { user } = useAuth();
+    const getUserId = useRepositoryUserId();
 
-  const getUserId = () => {
-    if (!user?.userId) throw new Error("User not logged in");
-    return user.userId;
-  };
-
-  return {
-    createTables: () => createTables(getUserId()),
-    save: (items) => saveWordsMLStates(getUserId(), items),
-    getAllWordsStates: () => getAllWordsMLStates(getUserId()),
-    update: (item) => updateWordMLState(getUserId(), item),
-  };
+    return {
+        createTables: () => createTables(getUserId()),
+        getAllWordsStates: () => getAllWordsMLStates(getUserId()),
+        save: items => saveWordsMLStates(getUserId(), items),
+        update: item => updateWordMLState(getUserId(), item),
+    };
 };

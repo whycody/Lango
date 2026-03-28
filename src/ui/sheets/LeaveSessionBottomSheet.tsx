@@ -1,80 +1,96 @@
-import React, { forwardRef, useCallback } from "react";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useTheme } from "@react-navigation/native";
-import { StyleSheet } from "react-native";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import CustomText from "../components/CustomText";
-import ActionButton from "../components/ActionButton";
-import { useTranslation } from "react-i18next";
+import React, { forwardRef, RefObject, useCallback } from 'react';
+import { StyleSheet } from 'react-native';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
-type FinishSessionBottomSheetProps = {
-  leaveSession: () => void;
-  onChangeIndex?: (index: number) => void;
-}
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { ActionButton, CustomText } from '../components';
 
-export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottomSheetProps>((props, ref) => {
-  const { colors } = useTheme();
-  const styles = getStyles(colors);
-  const { t } = useTranslation();
+type LeaveSessionBottomSheetProps = {
+    leaveSession: () => void;
+    onChangeIndex?: (index: number) => void;
+};
 
-  const renderBackdrop = useCallback((props: any) =>
-    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, [])
+export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, LeaveSessionBottomSheetProps>(
+    (props, ref: RefObject<BottomSheetModal>) => {
+        const { colors } = useTheme();
+        const styles = getStyles(colors);
+        const { t } = useTranslation();
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      index={0}
-      onChange={(index: number) => props.onChangeIndex?.(index)}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.card }}
-      handleIndicatorStyle={{ backgroundColor: colors.primary, borderRadius: 0 }}
-    >
-      <BottomSheetScrollView style={styles.root}>
-        <CustomText weight={"Bold"} style={styles.title}>{t('finishingSession')}</CustomText>
-        <CustomText style={styles.subtitle}>{t('finishingSessionDesc')}</CustomText>
+        const renderBackdrop = useCallback(
+            (props: any) => (
+                <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
+            ),
+            [],
+        );
 
-        <ActionButton
-          onPress={props.leaveSession}
-          label={t('finish')}
-          primary={true}
-          style={styles.button}
-        />
-        <CustomText
-          style={styles.actionText}
-          weight={'SemiBold'}
-          onPress={() => ref.current?.dismiss()}
-        >
-          {t('cancel')}
-        </CustomText>
-      </BottomSheetScrollView>
-    </BottomSheetModal>
-  );
-});
+        return (
+            <BottomSheetModal
+                backdropComponent={renderBackdrop}
+                backgroundStyle={styles.bottomSheetModal}
+                handleIndicatorStyle={styles.handleIndicatorStyle}
+                index={0}
+                ref={ref}
+                onChange={(index: number) => props.onChangeIndex?.(index)}
+            >
+                <BottomSheetScrollView style={styles.root}>
+                    <CustomText style={styles.title} weight={'Bold'}>
+                        {t('finishingSession')}
+                    </CustomText>
+                    <CustomText style={styles.subtitle}>{t('finishingSessionDesc')}</CustomText>
 
-const getStyles = (colors: any) => StyleSheet.create({
-  root: {
-    paddingHorizontal: MARGIN_HORIZONTAL,
-  },
-  header: {
-    paddingTop: MARGIN_VERTICAL,
-  },
-  title: {
-    color: colors.primary300,
-    fontSize: 18,
-    marginTop: 12,
-  },
-  subtitle: {
-    color: colors.primary600,
-    fontSize: 15,
-    marginTop: MARGIN_VERTICAL / 2,
-  },
-  actionText: {
-    color: colors.primary,
-    fontSize: 13,
-    textAlign: 'center',
-    paddingVertical: MARGIN_VERTICAL
-  },
-  button: {
-    marginTop: MARGIN_VERTICAL
-  }
-});
+                    <ActionButton
+                        label={t('finish')}
+                        primary={true}
+                        style={styles.button}
+                        onPress={props.leaveSession}
+                    />
+                    <CustomText
+                        style={styles.actionText}
+                        weight={'SemiBold'}
+                        onPress={() => ref.current?.dismiss()}
+                    >
+                        {t('cancel')}
+                    </CustomText>
+                </BottomSheetScrollView>
+            </BottomSheetModal>
+        );
+    },
+);
+
+const getStyles = (colors: any) =>
+    StyleSheet.create({
+        actionText: {
+            color: colors.primary,
+            fontSize: 13,
+            paddingVertical: MARGIN_VERTICAL,
+            textAlign: 'center',
+        },
+        bottomSheetModal: {
+            backgroundColor: colors.card,
+        },
+        button: {
+            marginTop: MARGIN_VERTICAL,
+        },
+        handleIndicatorStyle: {
+            backgroundColor: colors.primary,
+            borderRadius: 0,
+        },
+        header: {
+            paddingTop: MARGIN_VERTICAL,
+        },
+        root: {
+            paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+        subtitle: {
+            color: colors.primary600,
+            fontSize: 15,
+            marginTop: MARGIN_VERTICAL / 2,
+        },
+        title: {
+            color: colors.primary300,
+            fontSize: 18,
+            marginTop: 12,
+        },
+    });

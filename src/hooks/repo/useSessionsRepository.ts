@@ -1,18 +1,13 @@
-import { createTables, getAllSessions, saveSessions } from "../../database/SessionRepository";
-import { Session } from "../../types";
-import { useAuth } from "../../api/auth/AuthProvider";
+import { createTables, getAllSessions, saveSessions } from '../../database/SessionRepository';
+import { Session } from '../../types';
+import { useRepositoryUserId } from './useRepositoryUserId';
 
 export const useSessionsRepository = () => {
-  const { user } = useAuth();
+    const getUserId = useRepositoryUserId();
 
-  const getUserId = () => {
-    if (!user?.userId) throw new Error("User not logged in");
-    return user.userId;
-  };
-
-  return {
-    createTables: () => createTables(getUserId()),
-    saveSessions: (sessions: Session[]) => saveSessions(getUserId(), sessions),
-    getAllSessions: () => getAllSessions(getUserId()),
-  };
+    return {
+        createTables: () => createTables(getUserId()),
+        getAllSessions: () => getAllSessions(getUserId()),
+        saveSessions: (sessions: Session[]) => saveSessions(getUserId(), sessions),
+    };
 };

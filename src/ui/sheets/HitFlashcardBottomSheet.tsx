@@ -1,71 +1,78 @@
-import React, { forwardRef, useEffect, useState } from "react";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useTranslation } from "react-i18next";
-import FlipCard from "react-native-flip-card";
-import Card from "../components/Card";
-import { StyleSheet } from "react-native";
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../constants/margins";
-import { GenericBottomSheet } from "./GenericBottomSheet";
+import React, { forwardRef, RefObject, useEffect, useRef, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useTranslation } from 'react-i18next';
+import FlipCard from 'react-native-flip-card';
 
-export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, {
-  onChangeIndex?: (index: number) => void
-}>((props, ref) => {
-  const { t } = useTranslation();
-  const styles = getStyles();
-  const [flip, setFlip] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { Card } from '../components/session';
+import { GenericBottomSheet } from './GenericBottomSheet';
 
-  useEffect(() => {
-    if (!isVisible) return;
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [flip, isVisible]);
+type HitFlashcardBottomSheetProps = {
+    onChangeIndex?: (index: number) => void;
+};
 
-  const onFlipStart = () => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
-  }
+export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, HitFlashcardBottomSheetProps>(
+    (props, ref: RefObject<BottomSheetModal>) => {
+        const { t } = useTranslation();
+        const styles = getStyles();
+        const [flip, setFlip] = useState(false);
+        const [isVisible, setIsVisible] = useState(false);
+        const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleChangeIndex = (index?: number) => {
-    setIsVisible(index !== undefined && index >= 0);
-    if (props.onChangeIndex) props.onChangeIndex(index);
-  };
+        useEffect(() => {
+            if (!isVisible) return;
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
+            return () => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            };
+        }, [flip, isVisible]);
 
-  return (
-    <GenericBottomSheet
-      ref={ref}
-      title={t('hit_flashcard_bottom_sheet.title')}
-      description={t('hit_flashcard_bottom_sheet.desc')}
-      primaryActionLabel={t('hit_flashcard_bottom_sheet.got_it')}
-      onPrimaryButtonPress={() => ref && typeof ref !== 'function' && ref.current?.dismiss()}
-      onChangeIndex={handleChangeIndex}
-    >
-      <FlipCard
-        style={styles.exampleCard}
-        onFlipStart={onFlipStart}
-        flipVertical={false}
-        flip={flip}
-        flipHorizontal
-        alignHeight
-        alignWidth
-      >
-        <Card text={t('hit_flashcard_bottom_sheet.word')}/>
-        <Card text={t('hit_flashcard_bottom_sheet.translation')}/>
-      </FlipCard>
-    </GenericBottomSheet>
-  );
-});
+        const onFlipStart = () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
+        };
 
-const getStyles = () => StyleSheet.create({
-  exampleCard: {
-    width: '100%',
-    height: 350,
-    alignSelf: 'center',
-    marginTop: MARGIN_VERTICAL,
-    marginHorizontal: MARGIN_HORIZONTAL,
-  },
-});
+        const handleChangeIndex = (index?: number) => {
+            setIsVisible(index !== undefined && index >= 0);
+            if (props.onChangeIndex) props.onChangeIndex(index);
+        };
+
+        return (
+            <GenericBottomSheet
+                description={t('hit_flashcard_bottom_sheet.desc')}
+                primaryActionLabel={t('hit_flashcard_bottom_sheet.got_it')}
+                ref={ref}
+                title={t('hit_flashcard_bottom_sheet.title')}
+                onChangeIndex={handleChangeIndex}
+                onPrimaryButtonPress={() =>
+                    ref && typeof ref !== 'function' && ref.current?.dismiss()
+                }
+            >
+                <FlipCard
+                    alignHeight
+                    alignWidth
+                    flipHorizontal
+                    flip={flip}
+                    flipVertical={false}
+                    style={styles.exampleCard}
+                    onFlipStart={onFlipStart}
+                >
+                    <Card text={t('hit_flashcard_bottom_sheet.word')} />
+                    <Card text={t('hit_flashcard_bottom_sheet.translation')} />
+                </FlipCard>
+            </GenericBottomSheet>
+        );
+    },
+);
+
+const getStyles = () =>
+    StyleSheet.create({
+        exampleCard: {
+            alignSelf: 'center',
+            height: 350,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL,
+        },
+    });

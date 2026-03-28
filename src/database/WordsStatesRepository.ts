@@ -1,6 +1,6 @@
 export interface WordsStatesRepository<T> {
-  createTables(): Promise<void>;
-  save(items: T[]): Promise<void>;
-  getAllWordsStates(): Promise<T[]>;
-  update(item: T): Promise<void>;
+    createTables(): Promise<void>;
+    getAllWordsStates(): Promise<T[]>;
+    save(items: T[]): Promise<void>;
+    update(item: T): Promise<void>;
 }

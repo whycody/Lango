@@ -95,8 +95,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
 
     const sendUserUpdates = async (payload?: UserUpdatePayload) => {
-        if (!payload || (!payload.notificationsEnabled && !payload.languageLevels?.length))
+        if (!payload || (!payload.notificationsEnabled && !payload.languageLevels?.length)) {
             return false;
+        }
 
         let updated = false;
 

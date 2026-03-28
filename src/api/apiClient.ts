@@ -13,12 +13,7 @@ import { createAuthData } from '../utils/authUtils';
 import { apiCall } from './apiHandler';
 
 export const getUserInfo: () => Promise<User | null> = async () => {
-    try {
-        return await apiCall({ data: {}, method: 'GET', url: '/users/users' }, false, 10000);
-    } catch (e) {
-        console.error('GET /users/users', e);
-        return null;
-    }
+    return await apiCall({ data: {}, method: 'GET', url: '/users/users' }, false, 10000);
 };
 
 export const updateUserLanguages = async (

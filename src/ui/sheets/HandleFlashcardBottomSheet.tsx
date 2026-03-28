@@ -154,7 +154,14 @@ export const HandleFlashcardBottomSheet = forwardRef<
     const addFlashcard = (multiple: boolean) => {
         if (!validateInputs()) return;
         const { translation, word } = getCurrentWordAndTranslation();
-        wordsContext.addWord(word, translation, WordSource.USER);
+        const newWord = wordsContext.addWord(word, translation, WordSource.USER);
+
+        if (!newWord) {
+            setStatus('error');
+            setStatusMessage(t('alreadyExists'));
+            return;
+        }
+
         setStatusMessage(t('addNewWord', { word }));
         if (!multiple) {
             scheduleDismiss();

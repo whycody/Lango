@@ -56,6 +56,7 @@
     "editWord": "The flashcard has been edited: *{{word}}*.",
     "invalidData": "Invalid data",
     "bothInputs": "You have to fill both inputs.",
+    "alreadyExists": "This flashcard already exists in your dictionary.",
     "success": "Success",
     "failure": "Failure",
     "soFar": "So far, you have added *{{wordsCount}}* words to your vocabulary.",

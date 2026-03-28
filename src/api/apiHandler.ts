@@ -107,8 +107,6 @@ const refreshAccessToken = async (): Promise<void> => {
             onRefreshed();
         } catch (error) {
             console.error('Error with refreshing token:', error);
-            await removeAccessToken();
-            await removeRefreshToken();
             onRefreshFailed(error);
             throw getAPIError('Cannot refresh token', 401);
         } finally {

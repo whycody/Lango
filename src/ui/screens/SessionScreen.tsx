@@ -19,6 +19,7 @@ import { WordSource } from '../../constants/Word';
 import { useHaptics, useWordSet } from '../../hooks';
 import { ScreenName } from '../../navigation/navigationTypes';
 import {
+    useDebouncedSyncSuggestions,
     useEvaluations,
     useLanguage,
     useSessions,
@@ -59,7 +60,7 @@ export const SessionScreen = ({ navigation }) => {
     const sessionsContext = useSessions();
     const evaluationsContext = useEvaluations();
     const { addWords } = useWords();
-    const { skipSuggestions } = useSuggestions();
+    const { skipSuggestions, syncSuggestions } = useSuggestions();
 
     const userPreferences = useUserPreferences();
     const { mainLang, translationLang } = useLanguage();
@@ -375,17 +376,21 @@ export const SessionScreen = ({ navigation }) => {
             return { grade: update.grade, sessionId, wordId };
         });
 
+    const debouncedSyncSuggestions = useDebouncedSyncSuggestions(syncSuggestions, 1000);
+
     const saveProgress = useCallback(
         (finished: boolean) => {
-            skipSuggestions(skippedSuggestionsIds, 'skipped');
+            skipSuggestions(skippedSuggestionsIds, 'skipped').then(debouncedSyncSuggestions);
 
             if (wordsUpdates.length === 0) return;
 
             const suggestionUpdates = getSuggestionUpdates(wordsUpdates);
-            skipSuggestions(
-                suggestionUpdates.map(u => u.flashcardId),
-                'added',
-            );
+            if (suggestionUpdates.length > 0) {
+                skipSuggestions(
+                    suggestionUpdates.map(u => u.flashcardId),
+                    'added',
+                ).then(debouncedSyncSuggestions);
+            }
 
             const avgGrade = calculateAvgGrade(wordsUpdates);
             const { mainLang, translationLang } = wordSet.sessionWords[0];

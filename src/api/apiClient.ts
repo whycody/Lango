@@ -73,6 +73,19 @@ export const signOut = async () => {
     }
 };
 
+export const updateSuggestionsInSession = async (enabled: boolean) => {
+    try {
+        return await apiCall({
+            data: { enabled },
+            method: 'PATCH',
+            url: '/users/suggestions-in-session',
+        });
+    } catch (e) {
+        console.error('PATCH /users/suggestions-in-session', e);
+        return null;
+    }
+};
+
 export const updateNotificationsEnabled = async (enabled: boolean) => {
     try {
         return await apiCall({ data: { enabled }, method: 'PATCH', url: '/notifications' });

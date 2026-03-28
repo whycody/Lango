@@ -19,6 +19,7 @@ export type UserStats = {
 export type UserUpdatePayload = {
     languageLevels?: LanguageLevel[];
     notificationsEnabled?: boolean;
+    suggestionsInSession?: boolean;
 };
 
 export type User = {
@@ -31,6 +32,7 @@ export type User = {
     provider: UserProvider;
     sessionModel: SessionModel;
     stats: UserStats;
+    suggestionsInSession: boolean;
     translationLang: LanguageCode | null;
     userId: string;
 };

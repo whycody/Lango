@@ -11,9 +11,28 @@ export const hybridStrategy: WordSetStrategy = (
     mlStates,
     heuristicStates,
     lastSessionModel,
+    includeSuggestions,
 ): WordSet => {
     if (lastSessionModel === SessionModel.HEURISTIC) {
-        return mlStrategy(size, words, suggestions, evaluations, mlStates, heuristicStates);
+        return mlStrategy(
+            size,
+            words,
+            suggestions,
+            evaluations,
+            mlStates,
+            heuristicStates,
+            lastSessionModel,
+            includeSuggestions,
+        );
     }
-    return heuristicStrategy(size, words, suggestions, evaluations, mlStates, heuristicStates);
+    return heuristicStrategy(
+        size,
+        words,
+        suggestions,
+        evaluations,
+        mlStates,
+        heuristicStates,
+        lastSessionModel,
+        includeSuggestions,
+    );
 };

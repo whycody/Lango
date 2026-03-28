@@ -14,6 +14,8 @@ export const mlStrategy: WordSetStrategy = (
     _evaluations,
     wordsMLStates,
     _wordsHeuristicStates,
+    _lastSessionModel,
+    includeSuggestions,
 ): WordSet => {
     const statesMap = new Map((wordsMLStates ?? []).map(s => [s.wordId, s]));
     const activeWords = words.filter(w => w.active);
@@ -24,6 +26,14 @@ export const mlStrategy: WordSetStrategy = (
     const sortedCandidates = [...scoredCandidates].sort((a, b) => a.score - b.score);
     const candidates = sortedCandidates.slice(0, size);
     const candidateWords = candidates.map(candidate => candidate.word);
+
+    if (!includeSuggestions) {
+        return {
+            model: SessionModel.ML,
+            sessionWords: shuffle(mapWordsToSessionWords(candidateWords)),
+            version: PICKED_SESSION_MODEL_VERSION,
+        };
+    }
 
     const wellKnownCount = candidates.filter(candidate => candidate.score >= 0.75).length;
 

@@ -13,6 +13,7 @@ import {
     signOut,
     updateLanguageLevels,
     updateNotificationsEnabled,
+    updateSuggestionsInSession,
 } from '../api/apiClient';
 import {
     removeAccessToken,
@@ -36,6 +37,7 @@ interface AuthContextType {
     logout: () => void;
     updateUserLanguageLevels: (languageLevels: LanguageLevel) => Promise<void>;
     updateUserNotificationsEnabled: (notificationsEnabled: boolean) => Promise<void>;
+    updateUserSuggestionsInSession: (suggestionsInSession: boolean) => Promise<void>;
     user: User | null;
 }
 
@@ -101,6 +103,16 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         let updated = false;
 
+        if (payload?.suggestionsInSession !== undefined) {
+            const res = await updateNotificationsEnabled(userUpdatePayload.suggestionsInSession);
+            if (res) {
+                setUserUpdatePayload(payload =>
+                    payload ? { ...payload, suggestionsInSession: undefined } : null,
+                );
+                updated = true;
+            }
+        }
+
         if (payload?.notificationsEnabled !== undefined) {
             const res = await updateNotificationsEnabled(userUpdatePayload.notificationsEnabled);
             if (res) {
@@ -123,6 +135,23 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
 
         return updated;
+    };
+
+    const updateUserSuggestionsInSession = async (suggestionsInSession: boolean) => {
+        setUser(user => (user ? { ...user, suggestionsInSession } : null));
+        const updated = await updateSuggestionsInSession(suggestionsInSession);
+        if (updated) {
+            await getSession();
+        } else {
+            setUserUpdatePayload(
+                userUpdatePayload
+                    ? {
+                          ...userUpdatePayload,
+                          suggestionsInSession,
+                      }
+                    : { suggestionsInSession },
+            );
+        }
     };
 
     const updateUserNotificationsEnabled = async (notificationsEnabled: boolean) => {
@@ -359,6 +388,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 logout,
                 updateUserLanguageLevels,
                 updateUserNotificationsEnabled,
+                updateUserSuggestionsInSession,
                 user,
             }}
         >

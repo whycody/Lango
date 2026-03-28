@@ -117,6 +117,7 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
             langWordsMLStates,
             langWordsHeuristicStates,
             lastSessionModel,
+            user.suggestionsInSession,
         );
 
         const enhanced = enhanceWords(strategy.sessionWords, langWordsMLStates);

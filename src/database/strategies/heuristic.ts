@@ -14,6 +14,8 @@ export const heuristicStrategy: WordSetStrategy = (
     _evaluations,
     _wordsMLStates,
     wordsHeuristicStates,
+    _lastSessionModel,
+    includeSuggestions,
 ): WordSet => {
     const now = Date.now();
     const sortedCandidates = [...wordsHeuristicStates].sort(
@@ -24,6 +26,15 @@ export const heuristicStrategy: WordSetStrategy = (
     const candidateWords = candidates
         .map(candidate => activeWordsById.get(candidate.wordId))
         .filter(Boolean) as Word[];
+
+    if (!includeSuggestions) {
+        return {
+            model: SessionModel.HEURISTIC,
+            sessionWords: shuffle(mapWordsToSessionWords(candidateWords)),
+            version: SessionModelVersion.H1,
+        };
+    }
+
     const wellKnownCount = candidates.filter(
         candidate => candidate.studyCount > 2 && new Date(candidate.nextReviewDate).getTime() > now,
     ).length;

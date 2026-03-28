@@ -9,4 +9,5 @@ export type WordSetStrategy = (
     wordsMLStates: WordMLState[],
     wordsHeuristicStates: WordHeuristicState[],
     lastSessionModel?: SessionModel,
+    includeSuggestions?: boolean,
 ) => WordSet;

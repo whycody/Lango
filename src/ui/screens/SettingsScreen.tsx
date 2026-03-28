@@ -29,7 +29,7 @@ export const SettingsScreen = () => {
     const styles = getStyles(colors, insets);
     const { t } = useTranslation();
     const { applicationLang, languages, mainLang, translationLang } = useLanguage();
-    const { updateUserNotificationsEnabled, user } = useAuth();
+    const { updateUserNotificationsEnabled, updateUserSuggestionsInSession, user } = useAuth();
     const languageBottomSheetRef = useRef<BottomSheetModal>();
     const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
     const userPreferences = useUserPreferences();
@@ -134,6 +134,14 @@ export const SettingsScreen = () => {
                 section: SettingsSections.PREFERENCES,
             },
             {
+                description: t(`turned_${user.suggestionsInSession ? 'on' : 'off'}_m`),
+                enabled: user.suggestionsInSession,
+                icon: 'create-sharp',
+                id: SettingsItems.SUGGESTIONS_IN_SESSION,
+                label: t('new_words_suggestions'),
+                section: SettingsSections.SESSION,
+            },
+            {
                 description:
                     userPreferences.flashcardSide == FlashcardSide.WORD
                         ? t('word')
@@ -218,6 +226,9 @@ export const SettingsScreen = () => {
                             ? FlashcardSide.TRANSLATION
                             : FlashcardSide.WORD,
                     );
+                    break;
+                case SettingsItems.SUGGESTIONS_IN_SESSION:
+                    updateUserSuggestionsInSession(!user.suggestionsInSession);
                     break;
                 case SettingsItems.SESSION_SPEECH_SYNTHESIZER:
                     userPreferences.setSessionSpeechSynthesizer(

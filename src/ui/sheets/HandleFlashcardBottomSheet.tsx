@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard, Platform, StyleSheet, View } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -33,7 +33,7 @@ type HandleFlashcardBottomSheetProps = {
 export const HandleFlashcardBottomSheet = forwardRef<
     BottomSheetModal,
     HandleFlashcardBottomSheetProps
->((props, ref: RefObject<BottomSheetModal>) => {
+>((props, ref: ForwardedRef<BottomSheetModal>) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const { t } = useTranslation();
@@ -176,10 +176,14 @@ export const HandleFlashcardBottomSheet = forwardRef<
         }
     };
 
+    const dismiss = () => {
+        ref && typeof ref !== 'function' && ref.current?.dismiss();
+    };
+
     const scheduleDismiss = () => {
         setStatus('success');
         setTimeout(() => Keyboard.dismiss(), 950);
-        setTimeout(() => ref.current?.dismiss(), 1000);
+        setTimeout(() => dismiss(), 1000);
         setButtonsActive(false);
     };
 

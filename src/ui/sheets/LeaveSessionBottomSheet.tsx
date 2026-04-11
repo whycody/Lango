@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useCallback } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -13,7 +13,7 @@ type LeaveSessionBottomSheetProps = {
 };
 
 export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, LeaveSessionBottomSheetProps>(
-    (props, ref: RefObject<BottomSheetModal>) => {
+    (props, ref: ForwardedRef<BottomSheetModal>) => {
         const { colors } = useTheme();
         const styles = getStyles(colors);
         const { t } = useTranslation();
@@ -24,6 +24,10 @@ export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, LeaveSession
             ),
             [],
         );
+
+        const dismiss = () => {
+            ref && typeof ref !== 'function' && ref.current?.dismiss();
+        };
 
         return (
             <BottomSheetModal
@@ -46,11 +50,7 @@ export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, LeaveSession
                         style={styles.button}
                         onPress={props.leaveSession}
                     />
-                    <CustomText
-                        style={styles.actionText}
-                        weight={'SemiBold'}
-                        onPress={() => ref.current?.dismiss()}
-                    >
+                    <CustomText style={styles.actionText} weight={'SemiBold'} onPress={dismiss}>
                         {t('cancel')}
                     </CustomText>
                 </BottomSheetScrollView>

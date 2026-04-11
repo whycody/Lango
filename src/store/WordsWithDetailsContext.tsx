@@ -5,6 +5,17 @@ import { useLanguage } from './LanguageContext';
 import { useWords } from './WordsContext';
 import { useWordsMLStatesContext } from './WordsMLStatesContext';
 
+const defaultWordMLState: Omit<WordMLState, 'wordId'> = {
+    gradesAverage: 0,
+    gradesTrend: 0,
+    gradeThreeProb: 0,
+    hoursSinceLastRepetition: 0,
+    predictedGrade: 1,
+    repetitionsCount: 0,
+    studyDuration: 0,
+    studyStreak: 0,
+};
+
 interface WordsWithDetailsContextProps {
     langWordsWithDetails: WordWithDetails[];
     wordsWithDetails: WordWithDetails[] | null;
@@ -27,14 +38,18 @@ export const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children
 
     const loadData = () => {
         const statesByWordId: Record<string, WordMLState> = {};
-        for (const s of wordsMLStates) {
+        for (const s of wordsMLStates || []) {
             statesByWordId[s.wordId] = s;
         }
 
         setWordsWithDetails(
             langWords.map(w => {
-                const state: WordMLState = statesByWordId[w.id];
-                return { ...w, ...state } satisfies WordWithDetails;
+                const state = statesByWordId[w.id];
+                return {
+                    ...w,
+                    ...defaultWordMLState,
+                    ...(state ?? {}),
+                } satisfies WordWithDetails;
             }),
         );
     };

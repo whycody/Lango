@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useCallback, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -19,7 +19,7 @@ type LanguageBottomSheetProps = {
 };
 
 export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>(
-    (props, ref: RefObject<BottomSheetModal>) => {
+    (props, ref: ForwardedRef<BottomSheetModal>) => {
         const { colors } = useTheme();
         const styles = getStyles(colors);
         const { allLanguages, languageType = LanguageTypes.MAIN, onChangeIndex } = props;

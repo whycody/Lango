@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -19,7 +19,7 @@ type SessionSettingsBottomSheetProps = {
 export const SessionSettingsBottomSheet = forwardRef<
     BottomSheetModal,
     SessionSettingsBottomSheetProps
->((props, ref: RefObject<BottomSheetModal>) => {
+>((props, ref: ForwardedRef<BottomSheetModal>) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const userPreferences = useUserPreferences();

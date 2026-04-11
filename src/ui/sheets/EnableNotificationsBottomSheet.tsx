@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useCallback } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -19,7 +19,7 @@ type EnableNotificationsBottomSheetProps = {
 export const EnableNotificationsBottomSheet = forwardRef<
     BottomSheetModal,
     EnableNotificationsBottomSheetProps
->((props, ref: RefObject<BottomSheetModal>) => {
+>((props, ref: ForwardedRef<BottomSheetModal>) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const { t } = useTranslation();
@@ -31,6 +31,10 @@ export const EnableNotificationsBottomSheet = forwardRef<
         ),
         [],
     );
+
+    const dismiss = () => {
+        ref && typeof ref !== 'function' && ref.current?.dismiss();
+    };
 
     const askForNotificationPermission = async () => {
         const granted = await ensureNotificationsPermission();
@@ -44,13 +48,13 @@ export const EnableNotificationsBottomSheet = forwardRef<
 
         trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS);
         await registerNotificationsToken();
-        ref.current?.dismiss();
+        dismiss();
     };
 
     const handleAskLater = () => {
         const askLaterUntil = Date.now() + 48 * 60 * 60 * 1000;
         setAskLaterNotifications(askLaterUntil);
-        ref.current?.dismiss();
+        dismiss();
     };
 
     return (

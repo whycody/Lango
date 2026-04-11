@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useEffect, useRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ type HitFlashcardBottomSheetProps = {
 };
 
 export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, HitFlashcardBottomSheetProps>(
-    (props, ref: RefObject<BottomSheetModal>) => {
+    (props, ref: ForwardedRef<BottomSheetModal>) => {
         const { t } = useTranslation();
         const styles = getStyles();
         const [flip, setFlip] = useState(false);

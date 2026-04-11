@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useEffect } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect } from 'react';
 import { AppState } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { ExpoSpeechRecognitionModule } from 'expo-speech-recognition';
@@ -14,7 +14,7 @@ type MicrophonePermissionBottomSheetProps = {
 export const MicrophonePermissionBottomSheet = forwardRef<
     BottomSheetModal,
     MicrophonePermissionBottomSheetProps
->((props, ref: RefObject<BottomSheetModal>) => {
+>((props, ref: ForwardedRef<BottomSheetModal>) => {
     const { t } = useTranslation();
 
     useEffect(() => {

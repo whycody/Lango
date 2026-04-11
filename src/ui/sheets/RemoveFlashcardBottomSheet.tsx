@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useCallback } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -20,7 +20,7 @@ type RemoveFlashcardBottomSheetProps = {
 export const RemoveFlashcardBottomSheet = forwardRef<
     BottomSheetModal,
     RemoveFlashcardBottomSheetProps
->((props, ref: RefObject<BottomSheetModal>) => {
+>((props, ref: ForwardedRef<BottomSheetModal>) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const { t } = useTranslation();

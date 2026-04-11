@@ -1,4 +1,4 @@
-import React, { forwardRef, RefObject, useCallback, useMemo } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -17,7 +17,7 @@ type SortingMethodBottomSheetProps = {
 };
 
 export const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMethodBottomSheetProps>(
-    (props, ref: RefObject<BottomSheetModal>) => {
+    (props, ref: ForwardedRef<BottomSheetModal>) => {
         const { colors } = useTheme();
         const styles = getStyles(colors);
         const { t } = useTranslation();
@@ -38,10 +38,17 @@ export const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMeth
             [],
         );
 
-        const handlePress = useCallback((method: FlashcardSortingMethod) => {
-            setFlashcardsSortingMethod(method);
-            ref.current?.dismiss();
-        }, []);
+        const dismiss = () => {
+            ref && typeof ref !== 'function' && ref.current?.dismiss();
+        };
+
+        const handlePress = useCallback(
+            (method: FlashcardSortingMethod) => {
+                setFlashcardsSortingMethod(method);
+                dismiss();
+            },
+            [ref, setFlashcardsSortingMethod],
+        );
 
         const renderItem = useCallback(
             ({ index, item }: { index: number; item: FlashcardSortingMethod }) => (

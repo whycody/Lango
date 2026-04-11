@@ -206,6 +206,9 @@ export const SessionScreen = ({ navigation }) => {
                         userHasEverSkippedSuggestion={userPreferences.userHasEverSkippedSuggestion}
                         word={word}
                         wordIndex={wordIndex}
+                        example={
+                            word.example && (flipped ? word.example.source : word.example.target)
+                        }
                         onBackPress={decrementCurrentIndex}
                         onContinuePress={handleContinuePress}
                         onEditPress={handleEditPress}
@@ -221,6 +224,9 @@ export const SessionScreen = ({ navigation }) => {
                         userHasEverSkippedSuggestion={userPreferences.userHasEverSkippedSuggestion}
                         word={word}
                         wordIndex={wordIndex}
+                        example={
+                            word.example && (flipped ? word.example.target : word.example.source)
+                        }
                         onBackPress={decrementCurrentIndex}
                         onContinuePress={handleContinuePress}
                         onEditPress={handleEditPress}

@@ -16,6 +16,7 @@ interface CardProps {
     onEditPress?: (id: string) => void;
     onPlayAudio?: (word: SessionWord, frontSide: boolean) => void;
     text: string;
+    example?: string | null;
     userHasEverSkippedSuggestion?: boolean;
     word?: SessionWord;
     wordIndex?: number;
@@ -23,6 +24,7 @@ interface CardProps {
 
 export const Card = memo<CardProps>(props => {
     const {
+        example,
         frontSide = true,
         onBackPress,
         onContinuePress,
@@ -94,6 +96,7 @@ export const Card = memo<CardProps>(props => {
                         </CustomText>
                     ))}
                 </View>
+                {example && <CustomText style={styles.exampleText}>{example}</CustomText>}
             </View>
             <View style={styles.cardIconsContainer}>
                 <Ionicons
@@ -134,6 +137,12 @@ const getStyles = (colors: any) =>
         },
         exampleFlashcardText: {
             marginTop: MARGIN_VERTICAL * 2,
+        },
+        exampleText: {
+            color: colors.primary600,
+            fontSize: 14,
+            marginHorizontal: MARGIN_HORIZONTAL * 2,
+            textAlign: 'center',
         },
         icon: {
             margin: MARGIN_HORIZONTAL / 2,

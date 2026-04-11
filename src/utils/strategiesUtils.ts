@@ -29,6 +29,7 @@ export const allocateWordsAndSuggestions = (
 export const mapWordsToSessionWords = (words: Word[]): SessionWord[] => {
     return words.map(w => ({
         addDate: w.addDate,
+        example: null,
         id: w.id,
         mainLang: w.mainLang,
         tags: [],
@@ -42,6 +43,7 @@ export const mapWordsToSessionWords = (words: Word[]): SessionWord[] => {
 export const mapSuggestionsToSessionWords = (suggestions: Suggestion[]): SessionWord[] => {
     return suggestions.map(s => ({
         addDate: s.updatedAt,
+        example: s.example,
         id: s.id,
         mainLang: s.mainLang,
         tags: [],

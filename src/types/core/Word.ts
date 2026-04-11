@@ -1,6 +1,7 @@
 import { LanguageCode } from '../../constants/Language';
 import { WordSource } from '../../constants/Word';
 import { SyncMetadata } from '../sync/SyncMetadata';
+import { SuggestionExample } from './Suggestion';
 
 export type Word = SyncMetadata & {
     active: boolean;
@@ -23,6 +24,7 @@ export type SessionWord = {
     translation: string;
     translationLang: LanguageCode;
     type: 'suggestion' | 'word';
+    example: SuggestionExample | null;
 };
 
 export type WordTag =

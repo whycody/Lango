@@ -214,7 +214,7 @@ export const fetchUpdatedSuggestions = async (
                 url: `/suggestions/?since=${since}&mainLang=${mainLang}&translationLang=${translationLang}`,
             },
             false,
-            20000,
+            30000,
         );
     } catch (e) {
         console.error(`GET /suggestions/?since=${since}`, e);

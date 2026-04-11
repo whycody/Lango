@@ -7,6 +7,7 @@ const columns: Array<keyof Suggestion> = [
     'userId',
     'word',
     'translation',
+    'example',
     'mainLang',
     'translationLang',
     'displayCount',
@@ -17,6 +18,7 @@ const columns: Array<keyof Suggestion> = [
     'locallyUpdatedAt',
 ];
 
+/* First version of Suggestions table, now it includes a few more fields */
 export const createTables = async (userId: string) => {
     const db = await getDb(userId);
     await db.transaction(tx => {
@@ -48,6 +50,8 @@ export const saveSuggestions = async (userId: string, suggestions: Suggestion[])
                 if (col === 'synced') return suggestion.synced ? 1 : 0;
                 if (col === 'skipped') return suggestion.skipped ? 1 : 0;
                 if (col === 'added') return suggestion.added ? 1 : 0;
+                if (col === 'example')
+                    return suggestion.example ? JSON.stringify(suggestion.example) : null;
                 return suggestion[col as keyof Suggestion] ?? null;
             });
             const placeholders = columns.map(() => '?').join(', ');
@@ -74,6 +78,7 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
                         suggestions.push({
                             added: row.added === 1,
                             displayCount: row.displayCount || 0,
+                            example: row.example ? JSON.parse(row.example) : null,
                             id: row.id,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             mainLang: row.mainLang,

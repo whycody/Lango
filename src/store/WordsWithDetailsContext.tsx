@@ -33,7 +33,7 @@ export const WordsWithDetailsProvider: FC<{ children: ReactNode }> = ({ children
 
         setWordsWithDetails(
             langWords.map(w => {
-                const state = statesByWordId[w.id];
+                const state: WordMLState = statesByWordId[w.id];
                 return { ...w, ...state } satisfies WordWithDetails;
             }),
         );

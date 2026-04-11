@@ -4,7 +4,7 @@ import { useMMKV } from 'react-native-mmkv';
 import { useAuth } from './AuthContext';
 
 type UserStorageContextType = {
-    storage: ReturnType<typeof useMMKV>;
+    storage: ReturnType<typeof useMMKV> | null;
 };
 
 const UserStorageContext = createContext<UserStorageContextType>({
@@ -23,6 +23,7 @@ export const UserStorageProvider = ({ children }: { children: React.ReactNode })
 
 export const useUserStorage = () => {
     const context = useContext(UserStorageContext);
-    if (!context) throw new Error('useUserStorage must be used within a UserStorageProvider');
+    if (!context.storage)
+        throw new Error('useUserStorage must be used within a UserStorageProvider');
     return context;
 };

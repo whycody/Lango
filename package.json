@@ -16,7 +16,7 @@
   "dependencies": {
     "@animatereactnative/marquee": "~0.5.2",
     "@expo/vector-icons": "^15.0.2",
-    "@gorhom/bottom-sheet": "5.2.6",
+    "@gorhom/bottom-sheet": "5.2.9",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-firebase/analytics": "^23.8.6",
     "@react-native-firebase/app": "^23.8.6",

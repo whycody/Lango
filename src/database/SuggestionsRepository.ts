@@ -18,6 +18,16 @@ const columns: Array<keyof Suggestion> = [
     'locallyUpdatedAt',
 ];
 
+const parseExample = (value: string | null) => {
+    if (!value) return null;
+
+    try {
+        return JSON.parse(value);
+    } catch {
+        return null;
+    }
+};
+
 /* First version of Suggestions table, now it includes a few more fields */
 export const createTables = async (userId: string) => {
     const db = await getDb(userId);
@@ -78,7 +88,7 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
                         suggestions.push({
                             added: row.added === 1,
                             displayCount: row.displayCount || 0,
-                            example: row.example ? JSON.parse(row.example) : null,
+                            example: parseExample(row.example),
                             id: row.id,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             mainLang: row.mainLang,

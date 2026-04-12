@@ -22,7 +22,9 @@ import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { LanguageCode } from './src/constants/Language';
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync().catch(() => {
+    // Ignore splash-screen startup errors to avoid unhandled promise rejections.
+});
 
 export default function App() {
     const { i18n } = useTranslation();

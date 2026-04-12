@@ -1,6 +1,15 @@
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React, {
+    ForwardedRef,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { DetentChangeEvent, DidPresentEvent, TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +34,8 @@ export const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSession
     (props, ref: ForwardedRef<BottomSheetModal>) => {
         const { colors } = useTheme();
         const styles = getStyles(colors);
+        const trueSheetRef = useRef<TrueSheet>(null);
+        const scrollRef = useRef<ScrollView>(null);
         const userPreferences = useUserPreferences();
         const [flashcardSide, setFlashcardSide] = useState<FlashcardSide>(
             userPreferences.flashcardSide,
@@ -36,11 +47,25 @@ export const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSession
         const { triggerHaptics } = useHaptics();
         const { t } = useTranslation();
 
-        const renderBackdrop = useCallback(
-            (props: any) => (
-                <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-            ),
+        useImperativeHandle(
+            ref,
+            () =>
+                ({
+                    close: () => trueSheetRef.current?.dismiss(),
+                    dismiss: () => trueSheetRef.current?.dismiss(),
+                    present: () => trueSheetRef.current?.present(),
+                }) as unknown as BottomSheetModal,
             [],
+        );
+
+        const handleDetentChange = useCallback(
+            (event: DetentChangeEvent) => props.onChangeIndex?.(event.nativeEvent.index),
+            [props],
+        );
+
+        const handleDidPresent = useCallback(
+            (event: DidPresentEvent) => props.onChangeIndex?.(event.nativeEvent.index),
+            [props],
         );
 
         useEffect(() => {
@@ -76,15 +101,19 @@ export const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSession
         };
 
         return (
-            <BottomSheetModal
-                backdropComponent={renderBackdrop}
-                backgroundStyle={styles.bottomSheetModal}
-                handleIndicatorStyle={styles.handleIndicatorStyle}
-                index={0}
-                ref={ref}
-                onChange={(index: number) => props.onChangeIndex?.(index)}
+            <TrueSheet
+                backgroundColor={colors.card}
+                cornerRadius={24}
+                detents={['auto', 1]}
+                dimmed={true}
+                dismissible={true}
+                ref={trueSheetRef}
+                scrollable={true}
+                onDetentChange={handleDetentChange}
+                onDidDismiss={() => props.onChangeIndex?.(-1)}
+                onDidPresent={handleDidPresent}
             >
-                <BottomSheetScrollView style={styles.root}>
+                <ScrollView ref={scrollRef} style={styles.root}>
                     <Header style={styles.header} title={t('startSession')} />
                     <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
                     <View style={styles.sessionItemsContainer}>
@@ -142,23 +171,16 @@ export const StartSessionBottomSheet = forwardRef<BottomSheetModal, StartSession
                         style={styles.button}
                         onPress={handleActionButtonPress}
                     />
-                </BottomSheetScrollView>
-            </BottomSheetModal>
+                </ScrollView>
+            </TrueSheet>
         );
     },
 );
 
 const getStyles = (colors: any) =>
     StyleSheet.create({
-        bottomSheetModal: {
-            backgroundColor: colors.card,
-        },
         button: {
             marginVertical: MARGIN_VERTICAL,
-        },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
         },
         header: {
             paddingTop: MARGIN_VERTICAL / 2,

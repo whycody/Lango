@@ -32,61 +32,51 @@ export const FlipCard = ({
 }: FlipCardProps) => {
     const sides = React.Children.toArray(children);
     const isControlled = flip !== undefined;
-    const [isFlipped, setIsFlipped] = useState(Boolean(flip));
-    const lockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const pressBlockedUntilRef = useRef(0);
+    const [isFlipped, setIsFlipped] = useState(flip);
+    const unlockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isLockedRef = useRef(false);
     const rotate = useRef(new Animated.Value(Number(Boolean(flip)))).current;
 
-    useEffect(() => {
-        if (!isControlled) return;
-        if (flip === undefined) return;
-        const next = Boolean(flip);
-        if (next === isFlipped) return;
+    const clearUnlockTimeout = () => {
+        if (!unlockTimeoutRef.current) return;
+        clearTimeout(unlockTimeoutRef.current);
+        unlockTimeoutRef.current = null;
+    };
+
+    const animateToFlip = (next: boolean) => {
         setIsFlipped(next);
         Animated.spring(rotate, {
             friction,
             toValue: Number(next),
             useNativeDriver,
         }).start(() => onFlipEnd?.(next));
+    };
+
+    useEffect(() => {
+        if (!isControlled) return;
+        if (flip === isFlipped) return;
+        animateToFlip(flip);
     }, [flip, friction, isControlled, onFlipEnd, rotate, useNativeDriver]);
 
     useEffect(
         () => () => {
-            if (lockTimeoutRef.current) {
-                clearTimeout(lockTimeoutRef.current);
-                lockTimeoutRef.current = null;
-            }
+            clearUnlockTimeout();
         },
         [],
     );
 
     const toggle = () => {
-        const now = Date.now();
-        if (!clickable || now < pressBlockedUntilRef.current) return;
-        pressBlockedUntilRef.current = now + 250;
+        if (!clickable || isLockedRef.current) return;
+        isLockedRef.current = true;
         const next = !isFlipped;
         onFlipStart?.(isFlipped);
 
-        if (isControlled) {
-            setIsFlipped(next);
-            Animated.spring(rotate, {
-                friction,
-                toValue: Number(next),
-                useNativeDriver,
-            }).start(() => onFlipEnd?.(next));
-            if (lockTimeoutRef.current) clearTimeout(lockTimeoutRef.current);
-            lockTimeoutRef.current = setTimeout(() => {
-                pressBlockedUntilRef.current = Date.now();
-            }, 300);
-            return;
-        }
+        animateToFlip(next);
 
-        setIsFlipped(next);
-        Animated.spring(rotate, {
-            friction,
-            toValue: Number(next),
-            useNativeDriver,
-        }).start(() => onFlipEnd?.(next));
+        clearUnlockTimeout();
+        unlockTimeoutRef.current = setTimeout(() => {
+            isLockedRef.current = false;
+        }, 300);
     };
 
     const [frontTransform, backTransform] = useMemo(() => {

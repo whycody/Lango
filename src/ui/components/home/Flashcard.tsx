@@ -4,7 +4,6 @@ import { Foundation } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import FlipCard from 'react-native-flip-card';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { WordSource } from '../../../constants/Word';
@@ -13,6 +12,7 @@ import { useLanguage, useWords } from '../../../store';
 import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { CustomText, SquareFlag } from '..';
+import { FlipCard } from '../session';
 
 interface FlashcardProps {
     onFlashcardPress?: (add: boolean) => void;
@@ -55,7 +55,7 @@ export const Flashcard = forwardRef(
             if (!newFlashcardIsReady || !readyToFlip) return;
             setNewFlashcardIsReady(false);
             setReadyToFlip(false);
-            setFlip(prevState => !prevState);
+            setFlip(false);
             setTimeout(() => {
                 setBackText(getRandomMessage());
                 setFlippable(true);
@@ -64,7 +64,7 @@ export const Flashcard = forwardRef(
 
         const handleFlip = (add: boolean = true) => {
             if (!flippable) return;
-            if (!add) setFlip(prev => !prev);
+            setFlip(true);
             setFlippable(false);
             setNewFlashcardIsReady(false);
             triggerHaptics('rigid');
@@ -92,12 +92,16 @@ export const Flashcard = forwardRef(
                 pointerEvents={flippable && suggestion ? 'auto' : 'none'}
                 style={styles.container}
             >
-                <FlipCard flip={flip} onFlipStart={() => handleFlip(true)}>
+                <FlipCard
+                    flip={flip}
+                    style={[styles.root, style]}
+                    onFlipStart={() => handleFlip(true)}
+                >
                     <LinearGradient
                         colors={[colors.cardAccent, colors.cardAccent600]}
                         end={gradientEnd}
                         start={gradientStart}
-                        style={[styles.root, style]}
+                        style={styles.face}
                     >
                         <View style={styles.flagsContainer}>
                             <SquareFlag
@@ -124,7 +128,7 @@ export const Flashcard = forwardRef(
                         colors={[colors.cardAccent, colors.cardAccent600]}
                         end={gradientEnd}
                         start={gradientStart}
-                        style={[styles.root, style]}
+                        style={styles.face}
                     >
                         <CustomText style={styles.successText} weight={'SemiBold'}>
                             {backText}
@@ -140,6 +144,14 @@ const getStyles = (colors: any) =>
     StyleSheet.create({
         container: {
             flex: 1,
+        },
+        face: {
+            backfaceVisibility: 'hidden',
+            backgroundColor: colors.cardAccent,
+            flex: 1,
+            justifyContent: 'center',
+            overflow: 'hidden',
+            padding: 12,
         },
         flag: {
             height: 30,
@@ -168,10 +180,8 @@ const getStyles = (colors: any) =>
             width: 22,
         },
         root: {
-            backgroundColor: colors.cardAccent,
             height: 86,
-            justifyContent: 'center',
-            padding: 12,
+            overflow: 'hidden',
         },
         successText: {
             color: colors.primary300,

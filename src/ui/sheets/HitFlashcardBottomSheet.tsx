@@ -2,10 +2,9 @@ import React, { ForwardedRef, forwardRef, useEffect, useRef, useState } from 're
 import { StyleSheet } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useTranslation } from 'react-i18next';
-import FlipCard from 'react-native-flip-card';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
-import { Card } from '../components/session';
+import { Card, FlipCard } from '../components/session';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
 type HitFlashcardBottomSheetProps = {
@@ -62,8 +61,6 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, HitFlashcard
                 }
             >
                 <FlipCard
-                    alignHeight
-                    alignWidth
                     flipHorizontal
                     flip={flip}
                     flipVertical={false}
@@ -81,7 +78,7 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, HitFlashcard
 const getStyles = () =>
     StyleSheet.create({
         exampleCard: {
-            alignSelf: 'center',
+            alignSelf: 'stretch',
             height: 350,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,

@@ -54,7 +54,6 @@
     "react-native-device-info": "^14.0.4",
     "react-native-edge-to-edge": "^1.7.0",
     "react-native-fbsdk-next": "~13.4.1",
-    "react-native-flip-card": "~3.5.7",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-keyboard-controller": "^1.19.3",
     "react-native-localize": "~3.2.1",
@@ -99,7 +98,6 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
-          "react-native-flip-card",
           "react-native-sqlite-storage"
         ],
         "listUnknownPackages": false

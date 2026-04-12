@@ -5,7 +5,6 @@ import { useRoute, useTheme } from '@react-navigation/native';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
-import FlipCard from 'react-native-flip-card';
 import PagerView from 'react-native-pager-view';
 import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +29,7 @@ import {
 import { SessionWord, Word, WordUpdate } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { CustomText } from '../components';
-import { Card, SessionHeader, WordLevelItem } from '../components/session';
+import { Card, FlipCard, SessionHeader, WordLevelItem } from '../components/session';
 import {
     FinishSessionBottomSheet,
     HandleFlashcardBottomSheet,
@@ -89,7 +88,10 @@ export const SessionScreen = ({ navigation }) => {
     const [editId, setEditId] = useState<string | null>(null);
     const [numberOfSession, setNumberOfSession] = useState(0);
     const [lastPressTime, setLastPressTime] = useState<number>(0);
-    const [scaleValues] = useState(cards.map(() => new Animated.Value(1)));
+    const [scaleValues] = useState(
+        cards.map((_, index) => new Animated.Value(index === 0 ? 1 : 0.8)),
+    );
+    const prevActiveIndexRef = useRef(0);
 
     const [wordsUpdates, setWordsUpdates] = useState<WordUpdate[]>([]);
     const [skippedSuggestionsIds, setSkippedSuggestionsIds] = useState<string[]>([]);
@@ -181,20 +183,13 @@ export const SessionScreen = ({ navigation }) => {
     const renderCard = (word: SessionWord, wordIndex: number) => {
         const isActive = currentIndex === wordIndex;
 
-        Animated.spring(scaleValues[wordIndex], {
-            friction: 6,
-            toValue: isActive ? 1 : 0.8,
-            useNativeDriver: true,
-        }).start();
-
         return (
             <FlipCard
-                alignHeight={true}
-                alignWidth={true}
+                clickable={isActive}
                 flipHorizontal={true}
                 flipVertical={false}
-                friction={6}
                 style={styles.card}
+                useNativeDriver={true}
                 onFlipStart={(isFlipped: boolean) => handleFlipPress(wordIndex, !isFlipped)}
             >
                 <Animated.View
@@ -236,6 +231,30 @@ export const SessionScreen = ({ navigation }) => {
             </FlipCard>
         );
     };
+
+    useEffect(() => {
+        const previousIndex = prevActiveIndexRef.current;
+        const currentScale = scaleValues[currentIndex];
+        const previousScale = scaleValues[previousIndex];
+
+        if (previousIndex !== currentIndex && previousScale) {
+            Animated.spring(previousScale, {
+                friction: 6,
+                toValue: 0.8,
+                useNativeDriver: true,
+            }).start();
+        }
+
+        if (currentScale) {
+            Animated.spring(currentScale, {
+                friction: 6,
+                toValue: 1,
+                useNativeDriver: true,
+            }).start();
+        }
+
+        prevActiveIndexRef.current = currentIndex;
+    }, [currentIndex, scaleValues]);
 
     useEffect(() => {
         const word = cards[currentIndex];
@@ -514,7 +533,11 @@ export const SessionScreen = ({ navigation }) => {
             >
                 {cards.map((word, index) => (
                     <View key={word.id + numberOfSession} style={styles.pagerViewItem}>
-                        {renderCard(word, index)}
+                        {Math.abs(index - currentIndex) <= 1 ? (
+                            renderCard(word, index)
+                        ) : (
+                            <View style={styles.cardPlaceholder} />
+                        )}
                     </View>
                 ))}
             </PagerView>
@@ -567,13 +590,19 @@ const getStyles = (colors: any, insets: EdgeInsets) =>
             backgroundColor: colors.card,
         },
         card: {
-            height: '100%',
+            alignSelf: 'stretch',
+            flex: 1,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginVertical: MARGIN_VERTICAL,
         },
         cardContent: {
             flex: 1,
             width: '100%',
+        },
+        cardPlaceholder: {
+            flex: 1,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginVertical: MARGIN_VERTICAL,
         },
         container: {
             flex: 1,

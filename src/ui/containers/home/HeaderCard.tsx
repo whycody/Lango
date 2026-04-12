@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { AppState, BackHandler, Pressable, StyleSheet, View } from 'react-native';
+import { AppState, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from 'react-native-paper';
@@ -23,6 +24,8 @@ import { trackEvent } from '../../../utils/analytics';
 import { getCurrentStreak } from '../../../utils/streakUtils';
 import { ActionButton, CustomText, SquareFlag } from '../../components';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
+import { START_SESSION_BOTTOM_SHEET } from '../../sheets/StartSessionBottomSheet';
+import { CustomTheme } from '../../Theme';
 
 type HeaderCardProps = {
     navigateToSessionScreen(
@@ -34,7 +37,7 @@ type HeaderCardProps = {
 
 export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
     const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
     const { langSuggestions } = useSuggestions();
     const { langWords } = useWords();
@@ -48,8 +51,6 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
 
     const styles = getStyles(colors);
     const languageSheetRef = useRef<BottomSheetModal>(null);
-    const sessionSheetRef = useRef<BottomSheetModal>(null);
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
     const last50Words = langWords
         .sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
@@ -71,19 +72,6 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
               ) / 100;
     const wellKnownWords = langWordsHeuristicStates.filter(word => word.studyCount > 2).length;
 
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (bottomSheetIsShown) {
-                languageSheetRef.current?.dismiss();
-                sessionSheetRef.current?.dismiss();
-                return true;
-            }
-        };
-
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-        return () => subscription.remove();
-    }, [bottomSheetIsShown]);
-
     useLayoutEffect(() => {
         setStreak(getCurrentStreak(studyDaysList));
     }, [studyDaysList]);
@@ -99,7 +87,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
 
     const handleActionButtonPress = () => {
         trackEvent(AnalyticsEventName.START_SESSION_SHEET_OPEN);
-        sessionSheetRef.current.present();
+        TrueSheet.present(START_SESSION_BOTTOM_SHEET);
     };
 
     const handleSessionStart = (
@@ -107,7 +95,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ) => {
-        sessionSheetRef.current.close();
+        TrueSheet.dismiss(START_SESSION_BOTTOM_SHEET);
         navigateToSessionScreen(length, mode, flashcardSide);
     };
 
@@ -133,15 +121,8 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
 
     return (
         <View style={styles.root}>
-            <StartSessionBottomSheet
-                ref={sessionSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
-                onSessionStart={handleSessionStart}
-            />
-            <LanguageBottomSheet
-                ref={languageSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
-            />
+            <StartSessionBottomSheet onSessionStart={handleSessionStart} />
+            <LanguageBottomSheet ref={languageSheetRef} />
             <View style={styles.container}>
                 <CustomText style={styles.mainText} weight={'Bold'}>
                     {expo.name}

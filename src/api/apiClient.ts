@@ -6,6 +6,7 @@ import {
     Session,
     Suggestion,
     SyncResult,
+    TranslateResponse,
     User,
     Word,
 } from '../types';
@@ -235,4 +236,20 @@ export const syncSuggestionsOnServer = async (
         console.error('POST /suggestions/sync', e);
         return null;
     }
+};
+
+export const translateText = async (
+    text: string,
+    from: string,
+    to: string,
+    signal?: AbortSignal,
+): Promise<string> => {
+    const response = await apiCall<TranslateResponse>({
+        data: { from, text, to },
+        method: 'POST',
+        signal,
+        url: '/translations/translate',
+    });
+
+    return response.translation;
 };

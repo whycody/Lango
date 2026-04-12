@@ -23,3 +23,6 @@ export * from './utils/Streak';
 export * from './utils/WordSetStrategy';
 export * from './utils/WordUpdate';
 export * from './utils/WordWithDetails';
+
+// api
+export * from './api/Translate';

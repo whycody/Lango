@@ -120,6 +120,7 @@ export const apiCall = async <T>(
     options: {
         data?: object | string;
         method: string;
+        signal?: AbortSignal;
         url: string;
     },
     refreshed: boolean = false,
@@ -145,6 +146,7 @@ export const apiCall = async <T>(
         const axiosConfig: AxiosRequestConfig = {
             headers,
             method: options.method,
+            signal: options.signal,
             timeout,
             url: fullUrl,
         };
@@ -164,7 +166,7 @@ export const apiCall = async <T>(
         if (error.response?.status === 401) {
             if (refreshed) throw getAPIError('Unauthorized', 401);
             isRefreshing ? await subscribeTokenRefresh() : await refreshAccessToken();
-            return apiCall(options, true);
+            return apiCall(options, true, timeout);
         }
 
         throw error;

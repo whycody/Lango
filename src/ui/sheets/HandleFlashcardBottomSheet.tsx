@@ -6,13 +6,13 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { FullWindowOverlay } from 'react-native-screens';
 
+import { translateText } from '../../api/apiClient';
 import { LanguageCode } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { useVoiceInput } from '../../hooks';
 import { useLanguage, useWords } from '../../store';
 import { Word } from '../../types';
-import TranslationUtils from '../../utils/translationUtils';
 import { ActionButton, CustomText, Header } from '../components';
 import { Alert, WordInput } from '../components/flashcards';
 import { MicrophonePermissionBottomSheet } from './MicrophonePermissionBottomSheet';
@@ -44,10 +44,10 @@ export const HandleFlashcardBottomSheet = forwardRef<
     const microphonePermissionSheetRef = useRef<BottomSheetModal>(null);
 
     const flashcard: Word | null = props.flashcardId
-        ? wordsContext.getWord(props.flashcardId)
+        ? (wordsContext.getWord(props.flashcardId) ?? null)
         : null;
-    const [word, setWord] = useState(flashcard?.text);
-    const [translation, setTranslation] = useState(flashcard?.translation);
+    const [word, setWord] = useState(flashcard?.text ?? '');
+    const [translation, setTranslation] = useState(flashcard?.translation ?? '');
 
     const [currentWord, setCurrentWord] = useState<string>('');
     const [currentTranslation, setCurrentTranslation] = useState<string>('');
@@ -104,9 +104,11 @@ export const HandleFlashcardBottomSheet = forwardRef<
         if (!props.flashcardId) {
             clearInputs();
         } else {
-            const flashcard: Word = wordsContext.getWord(props.flashcardId);
-            setWord(flashcard.text);
-            setTranslation(flashcard.translation);
+            const currentFlashcard = wordsContext.getWord(props.flashcardId);
+            if (!currentFlashcard) return;
+
+            setWord(currentFlashcard.text);
+            setTranslation(currentFlashcard.translation);
         }
     }, [props.flashcardId]);
 
@@ -139,7 +141,7 @@ export const HandleFlashcardBottomSheet = forwardRef<
     };
 
     const editFlashcard = () => {
-        if (!validateInputs()) return;
+        if (!validateInputs() || !props.flashcardId) return;
         scheduleDismiss();
         const { translation, word } = getCurrentWordAndTranslation();
         wordsContext.editWord({
@@ -195,16 +197,16 @@ export const HandleFlashcardBottomSheet = forwardRef<
 
     const abortControllerRef = useRef(new AbortController());
 
-    const translateWord = async (text, from = mainLang, to = translationLang) => {
+    const translateWord = async (text: string, from = mainLang, to = translationLang) => {
         abortControllerRef.current && abortControllerRef.current.abort();
         abortControllerRef.current = new AbortController();
 
         try {
-            const translations = await TranslationUtils.translateText(
+            const translations = await translateText(
                 text,
                 from,
                 to,
-                abortControllerRef.current,
+                abortControllerRef.current.signal,
             );
             setWordTranslations(prev => [
                 ...prev,
@@ -215,13 +217,17 @@ export const HandleFlashcardBottomSheet = forwardRef<
                     word: text,
                 },
             ]);
-        } catch (error) {
+        } catch (error: unknown) {
             if (!axios.isCancel(error)) {
-                console.error(
-                    'Błąd:',
-                    error?.response?.status,
-                    error?.response?.data || error?.message,
-                );
+                if (axios.isAxiosError(error)) {
+                    console.error(
+                        'Błąd:',
+                        error.response?.status,
+                        error.response?.data ?? error.message,
+                    );
+                } else {
+                    console.error('Błąd:', error);
+                }
             }
         }
     };
@@ -288,7 +294,7 @@ export const HandleFlashcardBottomSheet = forwardRef<
                         onWordChange={setCurrentWord}
                         onWordCommit={setWord}
                         onMicrophonePermissionsNotGranted={() =>
-                            microphonePermissionSheetRef.current.present()
+                            microphonePermissionSheetRef.current?.present()
                         }
                     />
                     <WordInput
@@ -303,7 +309,7 @@ export const HandleFlashcardBottomSheet = forwardRef<
                         onWordChange={setCurrentTranslation}
                         onWordCommit={setTranslation}
                         onMicrophonePermissionsNotGranted={() =>
-                            microphonePermissionSheetRef.current.present()
+                            microphonePermissionSheetRef.current?.present()
                         }
                     />
                     <ActionButton

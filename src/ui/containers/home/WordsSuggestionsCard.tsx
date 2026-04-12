@@ -20,7 +20,14 @@ export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) =
     const { colors } = useTheme();
     const styles = getStyles(colors);
 
-    const suggestionsContext = useSuggestions();
+    const {
+        increaseSuggestionsDisplayCount,
+        langSuggestions,
+        skipSuggestions,
+        suggestions,
+        syncSuggestions,
+    } = useSuggestions();
+
     const { mainLang, translationLang } = useLanguage();
     const [firstFlashcard, setFirstFlashcard] = useState<Suggestion>();
     const [secondFlashcard, setSecondFlashcard] = useState<Suggestion>();
@@ -28,56 +35,34 @@ export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) =
     const secondFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
 
     useEffect(() => {
-        const pickedFlashcards =
-            firstFlashcard && secondFlashcard
-                ? suggestionsContext.suggestions.filter(suggestion =>
-                      [firstFlashcard.id, secondFlashcard.id].includes(suggestion.id),
-                  )
-                : [];
-
-        const pickedFlashcardsAreOutdated = pickedFlashcards.some(
-            suggestion => suggestion.added || suggestion.skipped,
-        );
+        const firstSuggestion = suggestions.find(s => s.id === firstFlashcard?.id);
+        const secondSuggestion = suggestions.find(s => s.id === secondFlashcard?.id);
 
         const flashcardIsValid = (flashcard: Suggestion | undefined) =>
             flashcard &&
             flashcard.mainLang == mainLang &&
-            flashcard.translationLang == translationLang;
+            flashcard.translationLang == translationLang &&
+            !flashcard.added &&
+            !flashcard.skipped;
 
-        if (
-            suggestionsContext.langSuggestions.length > 0 &&
-            !pickedFlashcardsAreOutdated &&
-            flashcardIsValid(firstFlashcard) &&
-            flashcardIsValid(secondFlashcard)
-        )
-            return;
+        if (flashcardIsValid(firstSuggestion) && flashcardIsValid(secondSuggestion)) return;
 
-        const sortedSuggestions = suggestionsContext.langSuggestions
+        const sortedSuggestions = langSuggestions
             .slice()
             .sort((a, b) => a.displayCount - b.displayCount);
-        const [firstSuggestion, secondSuggestion] = sortedSuggestions.slice(0, 2);
+        const [firstNewSuggestion, secondNewSuggestion] = sortedSuggestions.slice(0, 2);
 
-        setFirstFlashcard(firstSuggestion);
-        setSecondFlashcard(secondSuggestion);
+        setFirstFlashcard(firstNewSuggestion);
+        setSecondFlashcard(secondNewSuggestion);
 
-        if (!firstSuggestion && !secondSuggestion) return;
+        if (!firstNewSuggestion && !secondNewSuggestion) return;
 
-        suggestionsContext.increaseSuggestionsDisplayCount(
-            [firstSuggestion, secondSuggestion].filter(Boolean).map(s => s.id),
+        increaseSuggestionsDisplayCount(
+            [firstNewSuggestion, secondNewSuggestion].filter(Boolean).map(s => s.id),
         );
-    }, [
-        suggestionsContext.langSuggestions,
-        suggestionsContext.suggestions,
-        firstFlashcard,
-        secondFlashcard,
-        mainLang,
-        translationLang,
-    ]);
+    }, [langSuggestions, suggestions, firstFlashcard, secondFlashcard, mainLang, translationLang]);
 
-    const debouncedSyncSuggestions = useDebouncedSyncSuggestions(
-        suggestionsContext.syncSuggestions,
-        3000,
-    );
+    const debouncedSyncSuggestions = useDebouncedSyncSuggestions(syncSuggestions, 3000);
 
     const flipFlashcards = () => {
         trackEvent(AnalyticsEventName.SUGGESTIONS_SKIPPED);
@@ -90,20 +75,20 @@ export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) =
         const suggestionId = first ? firstFlashcard?.id : secondFlashcard?.id;
         if (!suggestionId) return;
 
-        await suggestionsContext.skipSuggestions([suggestionId], add ? 'added' : 'skipped');
+        await skipSuggestions([suggestionId], add ? 'added' : 'skipped');
         const currentFlashcardIds = [firstFlashcard?.id, secondFlashcard?.id].filter(
             (id): id is string => !!id,
         );
         const currentFlashcardIdsSet = new Set(currentFlashcardIds);
 
-        const filteredSuggestions = suggestionsContext.langSuggestions.filter(
+        const filteredSuggestions = langSuggestions.filter(
             suggestion => !currentFlashcardIdsSet.has(suggestion.id),
         );
 
         const newSuggestion = filteredSuggestions[first ? 0 : 1];
 
         if (newSuggestion) {
-            await suggestionsContext.increaseSuggestionsDisplayCount([newSuggestion.id]);
+            await increaseSuggestionsDisplayCount([newSuggestion.id]);
         }
 
         first ? setFirstFlashcard(newSuggestion) : setSecondFlashcard(newSuggestion);

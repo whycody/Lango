@@ -47,7 +47,7 @@ export const SuggestionsContext = createContext<SuggestionsContextProps>({
 export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { initialLoad } = useAppInitializer();
     const { deleteSuggestions, getAllSuggestions, saveSuggestions } = useSuggestionsRepository();
-    const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad.suggestions);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>(initialLoad?.suggestions ?? []);
     const [loading, setLoading] = useState(false);
     const { mainLang, translationLang } = useLanguage();
     const { user } = useAuth();
@@ -164,7 +164,7 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
     };
 
     const loadData = async () => {
-        const userDeterminedLanguageLevel = user.languageLevels?.some(
+        const userDeterminedLanguageLevel = user?.languageLevels?.some(
             level => level.language == mainLang,
         );
         if (mainLang == translationLang || !userDeterminedLanguageLevel) return;
@@ -183,7 +183,7 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
         if (syncing.current || (langSuggestions.length >= 20 && syncedOnMount.current)) return;
         syncedOnMount.current = true;
         loadData();
-    }, [user.languageLevels, mainLang, translationLang, langSuggestions.length]);
+    }, [user?.languageLevels, mainLang, translationLang, langSuggestions.length]);
 
     return (
         <SuggestionsContext.Provider

@@ -76,6 +76,7 @@
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.36.0",
     "@react-native-community/cli": "20.0.0",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/react-native-sqlite-storage": "^6.0.5",
     "@typescript-eslint/eslint-plugin": "^8.44.1",
     "@typescript-eslint/parser": "^8.44.1",

@@ -68,7 +68,7 @@ export const Flashcard = forwardRef(
             setFlippable(false);
             setNewFlashcardIsReady(false);
             triggerHaptics('rigid');
-            if (add) {
+            if (add && suggestion) {
                 const addWord = wordsContext.addWord(
                     suggestion.word,
                     suggestion.translation,
@@ -80,7 +80,7 @@ export const Flashcard = forwardRef(
                 });
                 if (!addWord) setBackText(t('wordNotAdded'));
             } else setBackText(t('change_flashcard'));
-            setTimeout(() => onFlashcardPress(add), 150);
+            setTimeout(() => onFlashcardPress?.(add), 150);
             setTimeout(() => setReadyToFlip(true), 1000);
         };
 

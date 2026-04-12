@@ -20,17 +20,28 @@ export const HitFlashcardBottomSheet = forwardRef<BottomSheetModal, HitFlashcard
         const [isVisible, setIsVisible] = useState(false);
         const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+        const clearFlipTimeout = () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
+        };
+
+        useEffect(() => clearFlipTimeout, []);
+
+        useEffect(() => {
+            if (!isVisible) clearFlipTimeout();
+        }, [isVisible]);
+
         useEffect(() => {
             if (!isVisible) return;
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            clearFlipTimeout();
             timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
-            return () => {
-                if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            };
+            return clearFlipTimeout;
         }, [flip, isVisible]);
 
         const onFlipStart = () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            clearFlipTimeout();
             timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
         };
 

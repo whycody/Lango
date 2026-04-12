@@ -27,5 +27,6 @@ export default ({ config }) => {
                   ? (process.env.GOOGLE_SERVICES_IOS_DEV ?? 'config/GoogleService-Info-Dev.plist')
                   : (process.env.GOOGLE_SERVICES_IOS ?? 'config/GoogleService-Info.plist'),
         },
+        plugins: [...(config.plugins || []), 'expo-font'],
     };
 };

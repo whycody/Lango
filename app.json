@@ -1,12 +1,9 @@
 {
     "expo": {
-        "sdkVersion": "52.0.0",
-        "jsEngine": "hermes",
         "name": "Lango",
         "slug": "lango",
         "version": "1.3.10",
         "orientation": "portrait",
-        "newArchEnabled": true,
         "icon": "./assets/logo.png",
         "userInterfaceStyle": "light",
         "runtimeVersion": "1.3",
@@ -90,7 +87,6 @@
                 "backgroundColor": "#07071b"
             },
             "googleServicesFile": "./config/google-services.json",
-            "edgeToEdgeEnabled": true,
             "package": "com.whycody.lango"
         },
         "web": {

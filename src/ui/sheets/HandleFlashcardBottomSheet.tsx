@@ -37,15 +37,13 @@ export const HandleFlashcardBottomSheet = forwardRef<
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const { t } = useTranslation();
-    const wordsContext = useWords();
+    const { addWord, editWord, getWord } = useWords();
 
     const wordInputRef = useRef<any>(null);
     const translationInputRef = useRef<any>(null);
     const microphonePermissionSheetRef = useRef<BottomSheetModal>(null);
 
-    const flashcard: Word | null = props.flashcardId
-        ? (wordsContext.getWord(props.flashcardId) ?? null)
-        : null;
+    const flashcard: Word | null = props.flashcardId ? (getWord(props.flashcardId) ?? null) : null;
     const [word, setWord] = useState(flashcard?.text ?? '');
     const [translation, setTranslation] = useState(flashcard?.translation ?? '');
 
@@ -104,7 +102,7 @@ export const HandleFlashcardBottomSheet = forwardRef<
         if (!props.flashcardId) {
             clearInputs();
         } else {
-            const currentFlashcard = wordsContext.getWord(props.flashcardId);
+            const currentFlashcard = getWord(props.flashcardId);
             if (!currentFlashcard) return;
 
             setWord(currentFlashcard.text);
@@ -144,7 +142,7 @@ export const HandleFlashcardBottomSheet = forwardRef<
         if (!validateInputs() || !props.flashcardId) return;
         scheduleDismiss();
         const { translation, word } = getCurrentWordAndTranslation();
-        wordsContext.editWord({
+        editWord({
             id: props.flashcardId,
             text: word,
             translation,
@@ -156,7 +154,7 @@ export const HandleFlashcardBottomSheet = forwardRef<
     const addFlashcard = (multiple: boolean) => {
         if (!validateInputs()) return;
         const { translation, word } = getCurrentWordAndTranslation();
-        const newWord = wordsContext.addWord(word, translation, WordSource.USER);
+        const newWord = addWord(word, translation, WordSource.USER);
 
         if (!newWord) {
             setStatus('error');

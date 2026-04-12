@@ -1,58 +1,38 @@
-import { LanguageCode } from "../../constants/LanguageCode";
-
-export enum SessionModel {
-  HEURISTIC = 'heuristic',
-  ML = 'ml',
-  HYBRID = 'hybrid',
-  NONE = 'none',
-}
-
-export enum SessionModelVersion {
-  NONE = 'none',
-  H1 = 'h1',
-  ML1 = 'ml1',
-  ML2 = 'ml2',
-  O1 = 'o1',
-  R1 = 'r1',
-}
+import { LanguageCode } from '../../constants/Language';
+import { SessionModel } from '../../constants/Session';
+import { UserProvider } from '../../constants/User';
 
 export type LanguageLevelRange = 1 | 2 | 3 | 4 | 5;
 
 export type LanguageLevel = {
-  language: LanguageCode;
-  level: LanguageLevelRange;
+    language: LanguageCode;
+    level: LanguageLevelRange;
 };
 
-export const PICKED_SESSION_MODEL_VERSION = SessionModelVersion.ML2;
-
 export type UserStats = {
-  studyDays: string[];
-  sessionCount: number;
-  evaluationCount: number;
-  averageScore: number;
-}
-
-export enum UserProvider {
-  GOOGLE = 'google',
-  FACEBOOK = 'facebook',
-  APPLE = 'apple',
-}
+    averageScore: number;
+    evaluationCount: number;
+    sessionCount: number;
+    studyDays: string[];
+};
 
 export type UserUpdatePayload = {
-  notificationsEnabled?: boolean;
-  languageLevels?: LanguageLevel[];
+    languageLevels?: LanguageLevel[];
+    notificationsEnabled?: boolean;
+    suggestionsInSession?: boolean;
 };
 
 export type User = {
-  userId: string;
-  name: string;
-  email: string;
-  picture: string;
-  provider: UserProvider;
-  mainLang: LanguageCode | null;
-  translationLang: LanguageCode | null;
-  sessionModel: SessionModel;
-  notificationsEnabled: boolean;
-  languageLevels: LanguageLevel[];
-  stats: UserStats;
+    email: string;
+    languageLevels: LanguageLevel[];
+    mainLang: LanguageCode | null;
+    name: string;
+    notificationsEnabled: boolean;
+    picture: string;
+    provider: UserProvider;
+    sessionModel: SessionModel;
+    stats: UserStats;
+    suggestionsInSession: boolean;
+    translationLang: LanguageCode | null;
+    userId: string;
 };

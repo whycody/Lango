@@ -1,29 +1,48 @@
-import { useMMKVBoolean, useMMKVNumber, useMMKVString } from 'react-native-mmkv'
+import { MMKV, useMMKVBoolean, useMMKVNumber, useMMKVString } from 'react-native-mmkv';
 
-type MMKVValue = string | number | boolean
+export function useTypedMMKV<T extends string>(
+    key: string,
+    defaultValue: T,
+    storage: MMKV,
+): [T, (value: T) => void];
 
-export function useTypedMMKV<T extends MMKVValue>(
-  key: string,
-  defaultValue: T,
-  storage: any
+export function useTypedMMKV<T extends number>(
+    key: string,
+    defaultValue: T,
+    storage: MMKV,
+): [T, (value: T) => void];
+
+export function useTypedMMKV<T extends boolean>(
+    key: string,
+    defaultValue: T,
+    storage: MMKV,
+): [T, (value: T) => void];
+
+export function useTypedMMKV<T extends string | number | boolean>(
+    key: string,
+    defaultValue: T,
+    storage: MMKV,
 ): [T, (value: T) => void] {
-  if (typeof defaultValue === 'string') {
-    const [value, setValue] = useMMKVString(key, storage)
+    const [stringValue, setStringValue] = useMMKVString(key, storage);
+    const [numberValue, setNumberValue] = useMMKVNumber(key, storage);
+    const [booleanValue, setBooleanValue] = useMMKVBoolean(key, storage);
+
+    if (typeof defaultValue === 'string') {
+        return [
+            (stringValue ?? defaultValue) as T,
+            value => setStringValue(value as unknown as string),
+        ];
+    }
+
+    if (typeof defaultValue === 'number') {
+        return [
+            (numberValue ?? defaultValue) as T,
+            value => setNumberValue(value as unknown as number),
+        ];
+    }
+
     return [
-      (value ?? defaultValue) as T,
-      (v: T) => setValue(v as string)
-    ] as const
-  } else if (typeof defaultValue === 'number') {
-    const [value, setValue] = useMMKVNumber(key, storage)
-    return [
-      (value ?? defaultValue) as T,
-      (v: T) => setValue(v as number)
-    ] as const
-  } else {
-    const [value, setValue] = useMMKVBoolean(key, storage)
-    return [
-      (value ?? defaultValue) as T,
-      (v: T) => setValue(v as boolean)
-    ] as const
-  }
+        (booleanValue ?? defaultValue) as T,
+        value => setBooleanValue(value as unknown as boolean),
+    ];
 }

@@ -1,15 +1,15 @@
-import { Theme } from "@react-navigation/native";
+import { Theme } from '@react-navigation/native';
 
 export type CustomTheme = Theme & {
-  colors: {
-    primary300: string;
-    primary600: string;
-    cardAccent: string;
-    cardAccent300: string;
-    cardAccent600: string;
-    red: string;
-    red600: string;
-    yellow600: string;
-    green600: string;
-  };
-}
+    colors: {
+        cardAccent: string;
+        cardAccent300: string;
+        cardAccent600: string;
+        green600: string;
+        primary300: string;
+        primary600: string;
+        red: string;
+        red600: string;
+        yellow600: string;
+    };
+};

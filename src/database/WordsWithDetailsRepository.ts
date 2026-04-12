@@ -1,15 +1,15 @@
 import { WordWithDetails } from '../types';
-import { WORDS, WORDS_COLUMNS } from "./WordsRepository";
-import { WORD_ML_STATE, WORD_ML_STATE_COLUMNS } from "./WordsMLStatesRepository";
-import { getDb } from "./utils/db";
+import { getDb } from './utils/db';
+import { WORD_ML_STATE, WORD_ML_STATE_COLUMNS } from './WordsMLStatesRepository';
+import { WORDS, WORDS_COLUMNS } from './WordsRepository';
 
 export const getAllWordsWithDetails = async (userId: string): Promise<WordWithDetails[]> => {
-  const db = await getDb(userId);
+    const db = await getDb(userId);
 
-  return new Promise((resolve, reject) => {
-    db.readTransaction(tx => {
-      tx.executeSql(
-        `
+    return new Promise((resolve, reject) => {
+        db.readTransaction(tx => {
+            tx.executeSql(
+                `
             SELECT ${WORDS_COLUMNS.map(c => `w.${c}`).join(', ')},
                    ${WORD_ML_STATE_COLUMNS.map(c => `d.${c}`).join(', ')}
             FROM ${WORDS} w
@@ -17,19 +17,19 @@ export const getAllWordsWithDetails = async (userId: string): Promise<WordWithDe
             WHERE w.REMOVED IS 0
             ORDER BY w.locallyUpdatedAt DESC
         `,
-        [],
-        (_, { rows }) => {
-          const result: WordWithDetails[] = [];
-          for (let i = 0; i < rows.length; i++) {
-            result.push(rows.item(i) satisfies WordWithDetails);
-          }
-          resolve(result);
-        },
-        (_, error) => {
-          reject(error);
-          return true;
-        }
-      );
+                [],
+                (_, { rows }) => {
+                    const result: WordWithDetails[] = [];
+                    for (let i = 0; i < rows.length; i++) {
+                        result.push(rows.item(i) satisfies WordWithDetails);
+                    }
+                    resolve(result);
+                },
+                (_, error) => {
+                    reject(error);
+                    return true;
+                },
+            );
+        });
     });
-  });
 };

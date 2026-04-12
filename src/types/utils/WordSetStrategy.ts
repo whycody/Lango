@@ -1,15 +1,13 @@
-import { Word } from "../core/Word";
-import { Evaluation } from "../core/Evaluation";
-import { WordMLState } from "../states/WordMLState";
-import { WordHeuristicState } from "../states/WordHeuristicState";
-import { SessionModel } from "../core/User";
-import { WordSet } from "../core/WordSet";
+import { SessionModel } from '../../constants/Session';
+import { Evaluation, Suggestion, Word, WordHeuristicState, WordMLState, WordSet } from '..';
 
 export type WordSetStrategy = (
-  size: number,
-  words: Word[],
-  evaluations: Evaluation[],
-  wordsMLStates: WordMLState[],
-  wordsHeuristicStates: WordHeuristicState[],
-  lastSessionModel?: SessionModel
+    size: number,
+    words: Word[],
+    suggestions: Suggestion[],
+    evaluations: Evaluation[],
+    wordsMLStates: WordMLState[],
+    wordsHeuristicStates: WordHeuristicState[],
+    lastSessionModel?: SessionModel,
+    includeSuggestions?: boolean,
 ) => WordSet;

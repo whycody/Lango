@@ -1,4 +1,4 @@
 export type SyncResult = {
-  id: string;
-  updatedAt: string;
+    id: string;
+    updatedAt: string;
 };

@@ -1,9 +1,9 @@
 export type WordHeuristicState = {
-  wordId: string;
-  interval: number;
-  repetitionsCount: number;
-  studyCount: number;
-  lastReviewDate: string;
-  nextReviewDate: string;
-  EF: number;
+    EF: number;
+    interval: number;
+    lastReviewDate: string;
+    nextReviewDate: string;
+    repetitionsCount: number;
+    studyCount: number;
+    wordId: string;
 };

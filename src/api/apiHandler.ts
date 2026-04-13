@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import * as Updates from 'expo-updates';
+import Config from 'react-native-config';
 
 import { createAuthData } from '../utils/authUtils';
 
@@ -20,9 +21,7 @@ const REFRESH_TOKEN = 'refreshToken';
 
 const profile = Updates.channel;
 const apiUrl =
-    !profile || ['test', 'development'].includes(profile)
-        ? process.env.API_DEV_URL
-        : process.env.API_URL;
+    !profile || ['test', 'development'].includes(profile) ? Config.API_DEV_URL : Config.API_URL;
 
 const requestRefreshTokens = async (
     refreshToken: string,

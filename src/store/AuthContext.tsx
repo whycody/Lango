@@ -2,6 +2,7 @@ import React, { createContext, FC, ReactNode, useContext, useEffect, useState } 
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import axios, { AxiosError } from 'axios';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import Config from 'react-native-config';
 import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 import { useMMKV, useMMKVObject } from 'react-native-mmkv';
 
@@ -42,9 +43,9 @@ interface AuthContextType {
 }
 
 GoogleSignin.configure({
-    iosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
+    iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
     scopes: ['profile', 'email'],
-    webClientId: process.env.GOOGLE_WEB_CLIENT_ID,
+    webClientId: Config.GOOGLE_WEB_CLIENT_ID,
 });
 
 export const AuthContext = createContext<AuthContextType | null>(null);

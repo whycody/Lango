@@ -76,12 +76,8 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
     const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
 
     const clearInputs = () => {
-        setWord('');
-        setTranslation('');
         setCurrentWord('');
         setCurrentTranslation('');
-        wordInputRef.current?.clearWord();
-        translationInputRef.current?.clearWord();
     };
 
     const clearStatus = () => {
@@ -98,22 +94,21 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
 
             setWord(currentFlashcard.text);
             setTranslation(currentFlashcard.translation);
+            setCurrentWord(currentFlashcard.text);
+            setCurrentTranslation(currentFlashcard.translation);
         }
     }, [flashcardId]);
 
     const getCurrentWordAndTranslation = () => {
-        const currentWordInput = wordInputRef.current?.getWord();
-        const currentTranslationInput = translationInputRef.current?.getWord();
-
         const word =
-            currentWordInput.length > 0
-                ? currentWordInput.trim()
+            currentWord.length > 0
+                ? currentWord.trim()
                 : wordSuggestions.length > 0
                   ? wordSuggestions[0].trim()
                   : '';
         const translation =
-            currentTranslationInput.length > 0
-                ? currentTranslationInput.trim()
+            currentTranslation.length > 0
+                ? currentTranslation.trim()
                 : translationSuggestions.length > 0
                   ? translationSuggestions[0].trim()
                   : '';
@@ -180,7 +175,25 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
         if (!flashcardId) clearInputs();
     };
 
+    const wordDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const translationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const abortControllerRef = useRef(new AbortController());
+
+    useEffect(() => {
+        if (wordDebounceRef.current) clearTimeout(wordDebounceRef.current);
+        wordDebounceRef.current = setTimeout(() => setWord(currentWord), 450);
+        return () => {
+            if (wordDebounceRef.current) clearTimeout(wordDebounceRef.current);
+        };
+    }, [currentWord]);
+
+    useEffect(() => {
+        if (translationDebounceRef.current) clearTimeout(translationDebounceRef.current);
+        translationDebounceRef.current = setTimeout(() => setTranslation(currentTranslation), 450);
+        return () => {
+            if (translationDebounceRef.current) clearTimeout(translationDebounceRef.current);
+        };
+    }, [currentTranslation]);
 
     const translateWord = async (text: string, from = mainLang, to = translationLang) => {
         abortControllerRef.current && abortControllerRef.current.abort();
@@ -267,9 +280,8 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                         ref={wordInputRef}
                         style={styles.wordInput}
                         suggestions={wordSuggestions}
-                        word={word}
+                        word={currentWord}
                         onWordChange={setCurrentWord}
-                        onWordCommit={setWord}
                         onMicrophonePermissionsNotGranted={() =>
                             microphonePermissionSheetRef.current?.present()
                         }
@@ -282,9 +294,8 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                         ref={translationInputRef}
                         style={styles.wordInput}
                         suggestions={translationSuggestions}
-                        word={translation}
+                        word={currentTranslation}
                         onWordChange={setCurrentTranslation}
-                        onWordCommit={setTranslation}
                         onMicrophonePermissionsNotGranted={() =>
                             microphonePermissionSheetRef.current?.present()
                         }

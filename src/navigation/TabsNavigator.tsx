@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Animated, BackHandler, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -29,23 +29,9 @@ const TabsNavigator = () => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
     const haptics = useHaptics();
     const iconScale = useRef(new Animated.Value(1)).current;
-
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (bottomSheetIsShown) {
-                TrueSheet.dismiss(TABS_HANDLE_FLASHCARD_BOTTOM_SHEET);
-                return true;
-            }
-            return false;
-        };
-
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-        return () => subscription.remove();
-    }, [bottomSheetIsShown]);
 
     type TabRouteProp = RouteProp<TabsParamList, keyof TabsParamList>;
 
@@ -138,10 +124,9 @@ const TabsNavigator = () => {
                     component={View}
                     name="Add"
                     options={{
-                        tabBarButton: props => (
+                        tabBarButton: ({ style }) => (
                             <Pressable
-                                {...props}
-                                style={[props.style, styles.fabWrapper]}
+                                style={[style, styles.fabWrapper]}
                                 onPress={handleAddTabPress}
                                 onPressIn={animateIn}
                                 onPressOut={animateOut}

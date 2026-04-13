@@ -32,12 +32,13 @@ import {
     RemoveFlashcardBottomSheet,
     SortingMethodBottomSheet,
 } from '../sheets';
+import { CustomTheme } from '../Theme';
 
 const FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'flashcards-handle-flashcard-bottom-sheet';
 
 export const FlashcardsScreen = () => {
     const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
     const wordsContext = useWords();

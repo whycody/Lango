@@ -21,7 +21,9 @@ const REFRESH_TOKEN = 'refreshToken';
 
 const profile = Updates.channel;
 const apiUrl =
-    !profile || ['test', 'development'].includes(profile) ? Config.API_DEV_URL : Config.API_URL;
+    !profile || ['test', 'development'].includes(profile)
+        ? process.env.API_DEV_URL
+        : process.env.API_URL;
 
 const requestRefreshTokens = async (
     refreshToken: string,

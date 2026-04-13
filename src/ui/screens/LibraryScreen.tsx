@@ -2,7 +2,6 @@ import { FlatList, Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import Config from 'react-native-config';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
@@ -98,11 +97,11 @@ export const LibraryScreen = () => {
                 break;
             case LibraryItems.PRIVACY_POLICY:
                 trackEvent(AnalyticsEventName.OPEN_PRIVACY_POLICY);
-                Linking.openURL(`${Config.SITE_URL}/privacy_policy`);
+                Linking.openURL(`${process.env.SITE_URL}/privacy_policy`);
                 break;
             case LibraryItems.USE_CONDITIONS:
                 trackEvent(AnalyticsEventName.OPEN_USE_CONDITIONS);
-                Linking.openURL(`${Config.SITE_URL}/terms_of_service`);
+                Linking.openURL(`${process.env.SITE_URL}/terms_of_service`);
                 break;
             case LibraryItems.SETTINGS:
                 trackEvent(AnalyticsEventName.NAVIGATE_SETTINGS);

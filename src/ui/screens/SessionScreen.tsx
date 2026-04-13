@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useRoute, useTheme } from '@react-navigation/native';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
@@ -44,6 +45,8 @@ export type SessionScreenParams = {
     mode: SessionMode;
 };
 
+const SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET = 'session-handle-flashcard-bottom-sheet';
+
 export const SessionScreen = ({ navigation }) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
@@ -73,7 +76,6 @@ export const SessionScreen = ({ navigation }) => {
 
     const leaveSessionBottomSheetRef = useRef<BottomSheetModal>(null);
     const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
-    const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
     const sessionSettingsBottomSheetRef = useRef<BottomSheetModal>(null);
     const hitFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -123,7 +125,7 @@ export const SessionScreen = ({ navigation }) => {
     }, [bottomSheetIsShown]);
 
     const hideBottomSheets = () => {
-        handleFlashcardBottomSheetRef.current?.dismiss();
+        TrueSheet.dismiss(SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET);
         leaveSessionBottomSheetRef.current?.dismiss();
         finishSessionBottomSheetRef.current?.dismiss();
         sessionSettingsBottomSheetRef.current?.dismiss();
@@ -144,7 +146,7 @@ export const SessionScreen = ({ navigation }) => {
             mode: 'edit',
             source: 'session_screen',
         });
-        handleFlashcardBottomSheetRef.current.present();
+        TrueSheet.present(SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET);
     }, []);
 
     const handleContinuePress = useCallback((id: string) => {
@@ -487,8 +489,7 @@ export const SessionScreen = ({ navigation }) => {
             />
             <HandleFlashcardBottomSheet
                 flashcardId={editId}
-                ref={handleFlashcardBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
+                sheetName={SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET}
                 onWordEdit={handleWordEdit}
             />
             <FinishSessionBottomSheet

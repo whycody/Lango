@@ -1,12 +1,12 @@
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, Platform, StyleSheet, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React, { useEffect, useRef, useState } from 'react';
+import { Keyboard, StyleSheet, View } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { FullWindowOverlay } from 'react-native-screens';
 
 import { translateText } from '../../api/apiClient';
+import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { LanguageCode } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
@@ -26,14 +26,12 @@ type WordTranslations = {
 
 type HandleFlashcardBottomSheetProps = {
     flashcardId?: string;
-    onChangeIndex?: (index: number) => void;
+    sheetName: string;
     onWordEdit?: (id: string, word: string, translation: string) => void;
 };
 
-export const HandleFlashcardBottomSheet = forwardRef<
-    BottomSheetModal,
-    HandleFlashcardBottomSheetProps
->((props, ref: ForwardedRef<BottomSheetModal>) => {
+export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProps) => {
+    const { flashcardId, onWordEdit, sheetName } = props;
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const { t } = useTranslation();
@@ -41,9 +39,9 @@ export const HandleFlashcardBottomSheet = forwardRef<
 
     const wordInputRef = useRef<any>(null);
     const translationInputRef = useRef<any>(null);
-    const microphonePermissionSheetRef = useRef<BottomSheetModal>(null);
+    const microphonePermissionSheetRef = useRef<any>(null);
 
-    const flashcard: Word | null = props.flashcardId ? (getWord(props.flashcardId) ?? null) : null;
+    const flashcard: Word | null = flashcardId ? (getWord(flashcardId) ?? null) : null;
     const [word, setWord] = useState(flashcard?.text ?? '');
     const [translation, setTranslation] = useState(flashcard?.translation ?? '');
 
@@ -77,13 +75,6 @@ export const HandleFlashcardBottomSheet = forwardRef<
     const translationSuggestions = translationsOfWord ? translationsOfWord.translations : [];
     const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
 
-    const renderBackdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-        ),
-        [],
-    );
-
     const clearInputs = () => {
         setWord('');
         setTranslation('');
@@ -99,16 +90,16 @@ export const HandleFlashcardBottomSheet = forwardRef<
     };
 
     useEffect(() => {
-        if (!props.flashcardId) {
+        if (!flashcardId) {
             clearInputs();
         } else {
-            const currentFlashcard = getWord(props.flashcardId);
+            const currentFlashcard = getWord(flashcardId);
             if (!currentFlashcard) return;
 
             setWord(currentFlashcard.text);
             setTranslation(currentFlashcard.translation);
         }
-    }, [props.flashcardId]);
+    }, [flashcardId]);
 
     const getCurrentWordAndTranslation = () => {
         const currentWordInput = wordInputRef.current?.getWord();
@@ -139,15 +130,15 @@ export const HandleFlashcardBottomSheet = forwardRef<
     };
 
     const editFlashcard = () => {
-        if (!validateInputs() || !props.flashcardId) return;
+        if (!validateInputs() || !flashcardId) return;
         scheduleDismiss();
         const { translation, word } = getCurrentWordAndTranslation();
         editWord({
-            id: props.flashcardId,
+            id: flashcardId,
             text: word,
             translation,
         });
-        props.onWordEdit?.(props.flashcardId, word, translation);
+        onWordEdit?.(flashcardId, word, translation);
         setStatusMessage(t('editWord', { word }));
     };
 
@@ -176,21 +167,17 @@ export const HandleFlashcardBottomSheet = forwardRef<
         }
     };
 
-    const dismiss = () => {
-        ref && typeof ref !== 'function' && ref.current?.dismiss();
-    };
-
     const scheduleDismiss = () => {
         setStatus('success');
         setTimeout(() => Keyboard.dismiss(), 950);
-        setTimeout(() => dismiss(), 1000);
+        setTimeout(() => TrueSheet.dismiss(sheetName), 1000);
         setButtonsActive(false);
     };
 
     const handleSheetDismiss = () => {
         clearStatus();
         setButtonsActive(true);
-        if (!props.flashcardId) clearInputs();
+        if (!flashcardId) clearInputs();
     };
 
     const abortControllerRef = useRef(new AbortController());
@@ -230,47 +217,39 @@ export const HandleFlashcardBottomSheet = forwardRef<
         }
     };
 
-    const handleChangeIndex = (index: number) => {
-        if (index === -1) {
-            voice.stop();
-        }
-
-        props.onChangeIndex?.(index);
-    };
-
     useEffect(() => {
         if (mainLang == translationLang) return;
         if (!!word && !translation) translateWord(word);
         if (!!translation && !word) translateWord(translation, translationLang, mainLang);
     }, [word, translation, mainLang, translationLang]);
 
-    const renderContainerComponent =
-        Platform.OS === 'ios'
-            ? useCallback(
-                  ({ children }: any) => <FullWindowOverlay>{children}</FullWindowOverlay>,
-                  [],
-              )
-            : undefined;
+    const handleDidDismiss = () => {
+        voice.stop();
+        handleSheetDismiss();
+    };
+
+    const handleActionButtonPress = () => {
+        if (!buttonsActive) return;
+        addFlashcard(true);
+    };
 
     return (
         <>
             <MicrophonePermissionBottomSheet ref={microphonePermissionSheetRef} />
-            <BottomSheetModal
-                backdropComponent={renderBackdrop}
-                backgroundStyle={styles.bottomSheetModal}
-                containerComponent={renderContainerComponent}
-                handleIndicatorStyle={styles.handleIndicatorStyle}
-                index={0}
-                keyboardBlurBehavior={'restore'}
-                ref={ref}
-                onChange={handleChangeIndex}
-                onDismiss={handleSheetDismiss}
+            <TrueSheet
+                backgroundColor={colors.card}
+                cornerRadius={24}
+                detents={['auto']}
+                dimmed={true}
+                grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
+                name={sheetName}
+                onDidDismiss={handleDidDismiss}
             >
-                <BottomSheetScrollView keyboardShouldPersistTaps="always" style={styles.root}>
+                <View style={styles.root}>
                     <Header
                         style={styles.headerMargin}
                         subtitle={t('wordAndTranslation')}
-                        title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
+                        title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
                     />
                     {status && statusMessage && (
                         <Alert
@@ -312,30 +291,28 @@ export const HandleFlashcardBottomSheet = forwardRef<
                     />
                     <ActionButton
                         active={buttonsActive}
-                        icon={props.flashcardId ? 'save-sharp' : undefined}
-                        label={props.flashcardId ? t('edit') : t('add_1')}
+                        icon={flashcardId ? 'save-sharp' : undefined}
+                        label={flashcardId ? t('edit') : t('add_1')}
                         primary={true}
                         style={styles.button}
-                        onPress={() => (props.flashcardId ? editFlashcard() : addFlashcard(false))}
+                        onPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
                     />
-                    {props.flashcardId ? (
-                        <View style={styles.bottomSpacer} />
-                    ) : (
+                    {!flashcardId ? (
                         <CustomText
                             style={styles.actionText}
                             weight={'SemiBold'}
-                            onPress={() => {
-                                if (buttonsActive) addFlashcard(true);
-                            }}
+                            onPress={handleActionButtonPress}
                         >
                             {t('addAnother')}
                         </CustomText>
+                    ) : (
+                        <View style={styles.bottomSpacer} />
                     )}
-                </BottomSheetScrollView>
-            </BottomSheetModal>
+                </View>
+            </TrueSheet>
         </>
     );
-});
+};
 
 const getStyles = (colors: any) =>
     StyleSheet.create({
@@ -345,32 +322,19 @@ const getStyles = (colors: any) =>
             paddingVertical: MARGIN_VERTICAL,
             textAlign: 'center',
         },
-        bottomSheetModal: {
-            backgroundColor: colors.card,
-        },
         bottomSpacer: {
             height: MARGIN_VERTICAL,
         },
         button: {
             marginTop: MARGIN_VERTICAL,
         },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
-        },
-        header: {
-            paddingTop: MARGIN_VERTICAL,
-        },
+        header: {},
         headerMargin: {
             marginVertical: 10,
         },
         root: {
             paddingHorizontal: MARGIN_HORIZONTAL,
-        },
-        sessionItemsContainer: {
-            flex: 1,
-            flexDirection: 'row',
-            marginTop: 12,
+            paddingTop: MARGIN_VERTICAL,
         },
         wordInput: {
             marginTop: 15,

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +33,8 @@ import {
     SortingMethodBottomSheet,
 } from '../sheets';
 
+const FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'flashcards-handle-flashcard-bottom-sheet';
+
 export const FlashcardsScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
@@ -45,7 +48,6 @@ export const FlashcardsScreen = () => {
     ).length;
     const { flashcardsSortingMethod } = useUserPreferences();
 
-    const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
     const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
     const sortingMethodBottomSheetRef = useRef<BottomSheetModal>(null);
     const [editFlashcardId, setEditFlashcardId] = useState<string | null>(null);
@@ -97,7 +99,7 @@ export const FlashcardsScreen = () => {
                 return true;
             }
             if (bottomSheetIsShown) {
-                handleFlashcardBottomSheetRef.current?.dismiss();
+                TrueSheet.dismiss(FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET);
                 removeFlashcardBottomSheetRef.current?.dismiss();
                 sortingMethodBottomSheetRef.current?.dismiss();
                 return true;
@@ -128,7 +130,7 @@ export const FlashcardsScreen = () => {
             mode: 'add',
             source: 'flashcards_screen',
         });
-        handleFlashcardBottomSheetRef.current.present();
+        TrueSheet.present(FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     };
 
     const handlePress = useCallback(
@@ -145,7 +147,7 @@ export const FlashcardsScreen = () => {
             mode: 'edit',
             source: 'flashcards_screen',
         });
-        handleFlashcardBottomSheetRef.current.present();
+        TrueSheet.present(FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     }, []);
 
     const handleCancel = () => {
@@ -322,8 +324,7 @@ export const FlashcardsScreen = () => {
             />
             <HandleFlashcardBottomSheet
                 flashcardId={editFlashcardId}
-                ref={handleFlashcardBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
+                sheetName={FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET}
             />
             <SortingMethodBottomSheet
                 ref={sortingMethodBottomSheetRef}

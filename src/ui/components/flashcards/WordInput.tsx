@@ -4,12 +4,12 @@ import {
     Pressable,
     StyleProp,
     StyleSheet,
+    TextInput,
     TextInputProps,
     View,
     ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
@@ -17,6 +17,7 @@ import { LanguageCode } from '../../../constants/Language';
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { useVoiceInput } from '../../../hooks';
 import { trackEvent } from '../../../utils/analytics';
+import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 
 type WordInputProps = TextInputProps & {
@@ -50,7 +51,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
         word,
         ...rest
     } = props;
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const [focused, setFocused] = useState(false);
 
@@ -118,8 +119,8 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
     const handleSuggestionPress = (suggestion: string) => {
         setCurrentSuggestions([]);
         setInternalWord(suggestion);
-        onWordChange(suggestion);
-        onWordCommit(suggestion);
+        onWordChange?.(suggestion);
+        onWordCommit?.(suggestion);
     };
 
     return (
@@ -127,7 +128,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
             <View style={[styles.root, style]}>
                 <SquareFlag languageCode={languageCode} size={30} style={styles.flag} />
                 <View style={styles.inputContainer}>
-                    <BottomSheetTextInput
+                    <TextInput
                         autoCapitalize={'none'}
                         autoCorrect={true}
                         cursorColor={active ? colors.primary : 'transparent'}
@@ -191,7 +192,7 @@ const getStyles = (colors: any) =>
             flex: 1,
             fontFamily: `Montserrat-Regular`,
             fontSize: 16,
-            lineHeight: 30,
+            lineHeight: 21,
             minHeight: 42,
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
         },

@@ -10,6 +10,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { Language } from '../../types';
 import { ActionButton } from '../components';
 import { LanguagePicker } from '../containers/language';
+import { CustomTheme } from '../Theme';
 import { PickLanguageLevelBottomSheet } from './PickLanguageLevelBottomSheet';
 
 type LanguageBottomSheetProps = {
@@ -20,7 +21,7 @@ type LanguageBottomSheetProps = {
 
 export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSheetProps>(
     (props, ref: ForwardedRef<BottomSheetModal>) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { allLanguages, languageType = LanguageTypes.MAIN, onChangeIndex } = props;
         const [pickedLanguage, setPickedLanguage] = useState<Language | null>(null);
@@ -90,7 +91,7 @@ export const LanguageBottomSheet = forwardRef<BottomSheetModal, LanguageBottomSh
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         bottomSheetModal: {
             backgroundColor: colors.card,

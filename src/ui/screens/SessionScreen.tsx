@@ -38,6 +38,7 @@ import {
     LeaveSessionBottomSheet,
     SessionSettingsBottomSheet,
 } from '../sheets';
+import { CustomTheme } from '../Theme';
 
 export type SessionScreenParams = {
     flashcardSide: FlashcardSide;
@@ -49,7 +50,7 @@ const SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET = 'session-handle-flashcard-bottom-s
 
 export const SessionScreen = ({ navigation }) => {
     const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
 
@@ -585,7 +586,7 @@ export const SessionScreen = ({ navigation }) => {
     );
 };
 
-const getStyles = (colors: any, insets: EdgeInsets) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         bottomBarContainer: {
             backgroundColor: colors.card,

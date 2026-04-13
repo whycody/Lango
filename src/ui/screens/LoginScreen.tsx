@@ -9,6 +9,7 @@ import { MARGIN_VERTICAL } from '../../constants/margins';
 import { UserProvider } from '../../constants/User';
 import { ActionButton, CustomText, VersionFooter } from '../components';
 import { MarqueeRow } from '../components/login';
+import { CustomTheme } from '../Theme';
 
 type LoginProps = {
     authError: string | null;
@@ -17,7 +18,7 @@ type LoginProps = {
 };
 
 export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
     const styles = getStyles(colors);
     const insets = useSafeAreaInsets();
@@ -103,7 +104,7 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         button: {
             height: 45,

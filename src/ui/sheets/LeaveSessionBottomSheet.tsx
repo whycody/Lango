@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { ActionButton, CustomText } from '../components';
+import { CustomTheme } from '../Theme';
 
 type LeaveSessionBottomSheetProps = {
     leaveSession: () => void;
@@ -14,7 +15,7 @@ type LeaveSessionBottomSheetProps = {
 
 export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, LeaveSessionBottomSheetProps>(
     (props, ref: ForwardedRef<BottomSheetModal>) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { t } = useTranslation();
 
@@ -59,7 +60,7 @@ export const LeaveSessionBottomSheet = forwardRef<BottomSheetModal, LeaveSession
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
             color: colors.primary,

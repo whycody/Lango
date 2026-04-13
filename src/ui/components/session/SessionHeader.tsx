@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { SessionLength } from '../../../constants/UserPreferences';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 type SessionHeaderProps = {
@@ -23,7 +24,7 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
     onSettingsPressed,
     progress,
 }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
 
@@ -60,7 +61,7 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         headerContainer: {
             alignItems: 'center',

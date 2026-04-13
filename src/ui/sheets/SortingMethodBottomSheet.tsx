@@ -11,6 +11,7 @@ import { useUserPreferences } from '../../store';
 import { getSortingMethodLabel } from '../../utils/sortingUtil';
 import { Header } from '../components';
 import { SortingMethodItem } from '../components/flashcards';
+import { CustomTheme } from '../Theme';
 
 type SortingMethodBottomSheetProps = {
     onChangeIndex?: (index: number) => void;
@@ -18,7 +19,7 @@ type SortingMethodBottomSheetProps = {
 
 export const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMethodBottomSheetProps>(
     (props, ref: ForwardedRef<BottomSheetModal>) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { t } = useTranslation();
         const { flashcardsSortingMethod, setFlashcardsSortingMethod } = useUserPreferences();
@@ -90,7 +91,7 @@ export const SortingMethodBottomSheet = forwardRef<BottomSheetModal, SortingMeth
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         bottomSheetModal: {
             backgroundColor: colors.card,

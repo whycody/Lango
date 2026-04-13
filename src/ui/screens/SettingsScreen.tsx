@@ -20,11 +20,12 @@ import { ensureNotificationsPermission } from '../../utils/ensureNotificationPer
 import { CustomText, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
 import { LanguageBottomSheet } from '../sheets';
+import { CustomTheme } from '../Theme';
 
 const keyExtractor = (item: SettingItem) => item.id.toString();
 
 export const SettingsScreen = () => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
     const { t } = useTranslation();
@@ -308,7 +309,7 @@ export const SettingsScreen = () => {
     );
 };
 
-const getStyles = (colors: any, insets: EdgeInsets) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         footer: {
             marginVertical: MARGIN_VERTICAL / 2,

@@ -7,13 +7,14 @@ import { useTranslation } from 'react-i18next';
 import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { useAuth } from '../../store';
 import { CustomText } from '../components';
+import { CustomTheme } from '../Theme';
 
 interface WelcomeScreenProps {
     onAnimationEnd?: () => void;
 }
 
 export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const { user } = useAuth();
     const styles = getStyles(colors);
     const { t } = useTranslation();
@@ -128,7 +129,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         lottie: {
             height: '100%',

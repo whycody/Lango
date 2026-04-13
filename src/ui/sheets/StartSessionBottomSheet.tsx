@@ -11,6 +11,7 @@ import { useHaptics } from '../../hooks';
 import { useUserPreferences } from '../../store';
 import { ActionButton, CustomText, Header } from '../components';
 import { SessionLengthItem, SessionModeItem } from '../components/session';
+import { CustomTheme } from '../Theme';
 
 type StartSessionBottomSheetProps = {
     onSessionStart: (
@@ -23,7 +24,7 @@ type StartSessionBottomSheetProps = {
 export const START_SESSION_BOTTOM_SHEET = 'start-session-bottom-sheet';
 
 export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const userPreferences = useUserPreferences();
     const [flashcardSide, setFlashcardSide] = useState<FlashcardSide>(
@@ -137,7 +138,7 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         button: {
             marginVertical: MARGIN_VERTICAL,

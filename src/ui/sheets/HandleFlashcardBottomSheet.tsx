@@ -15,6 +15,7 @@ import { useLanguage, useWords } from '../../store';
 import { Word } from '../../types';
 import { ActionButton, CustomText, Header } from '../components';
 import { Alert, WordInput } from '../components/flashcards';
+import { CustomTheme } from '../Theme';
 import { MicrophonePermissionBottomSheet } from './MicrophonePermissionBottomSheet';
 
 type WordTranslations = {
@@ -30,16 +31,17 @@ type HandleFlashcardBottomSheetProps = {
     onWordEdit?: (id: string, word: string, translation: string) => void;
 };
 
+const MICROPHONE_PERMISSION_SHEET_NAME = 'handle-flashcard-microphone-permission';
+
 export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProps) => {
     const { flashcardId, onWordEdit, sheetName } = props;
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
     const { addWord, editWord, getWord } = useWords();
 
     const wordInputRef = useRef<any>(null);
     const translationInputRef = useRef<any>(null);
-    const microphonePermissionSheetRef = useRef<any>(null);
 
     const flashcard: Word | null = flashcardId ? (getWord(flashcardId) ?? null) : null;
     const [word, setWord] = useState(flashcard?.text ?? '');
@@ -248,7 +250,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
 
     return (
         <>
-            <MicrophonePermissionBottomSheet ref={microphonePermissionSheetRef} />
+            <MicrophonePermissionBottomSheet sheetName={MICROPHONE_PERMISSION_SHEET_NAME} />
             <TrueSheet
                 backgroundColor={colors.card}
                 cornerRadius={24}
@@ -283,7 +285,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                         word={currentWord}
                         onWordChange={setCurrentWord}
                         onMicrophonePermissionsNotGranted={() =>
-                            microphonePermissionSheetRef.current?.present()
+                            TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
                         }
                     />
                     <WordInput
@@ -297,7 +299,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                         word={currentTranslation}
                         onWordChange={setCurrentTranslation}
                         onMicrophonePermissionsNotGranted={() =>
-                            microphonePermissionSheetRef.current?.present()
+                            TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
                         }
                     />
                     <ActionButton
@@ -325,7 +327,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
             color: colors.primary,

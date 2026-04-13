@@ -1,40 +1,29 @@
-import React, { ForwardedRef, forwardRef, useCallback } from 'react';
-import { StyleSheet } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
+import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useUserPreferences } from '../../store';
 import { trackEvent } from '../../utils/analytics';
 import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { ActionButton, CustomText } from '../components/';
+import { CustomTheme } from '../Theme';
 
 type EnableNotificationsBottomSheetProps = {
-    onChangeIndex?: (index: number) => void;
+    sheetName: string;
 };
 
-export const EnableNotificationsBottomSheet = forwardRef<
-    BottomSheetModal,
-    EnableNotificationsBottomSheetProps
->((props, ref: ForwardedRef<BottomSheetModal>) => {
-    const { colors } = useTheme();
+export const EnableNotificationsBottomSheet = (props: EnableNotificationsBottomSheetProps) => {
+    const { sheetName } = props;
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
     const { setAskLaterNotifications } = useUserPreferences();
-
-    const renderBackdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-        ),
-        [],
-    );
-
-    const dismiss = () => {
-        ref && typeof ref !== 'function' && ref.current?.dismiss();
-    };
 
     const askForNotificationPermission = async () => {
         const granted = await ensureNotificationsPermission();
@@ -48,26 +37,25 @@ export const EnableNotificationsBottomSheet = forwardRef<
 
         trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS);
         await registerNotificationsToken();
-        dismiss();
+        TrueSheet.dismiss(sheetName);
     };
 
     const handleAskLater = () => {
         const askLaterUntil = Date.now() + 48 * 60 * 60 * 1000;
         setAskLaterNotifications(askLaterUntil);
-        dismiss();
+        TrueSheet.dismiss(sheetName);
     };
 
     return (
-        <BottomSheetModal
-            backdropComponent={renderBackdrop}
-            backgroundStyle={styles.bottomSheetModal}
-            enablePanDownToClose={false}
-            handleIndicatorStyle={styles.handleIndicatorStyle}
-            index={0}
-            ref={ref}
-            onChange={(index: number) => props.onChangeIndex?.(index)}
+        <TrueSheet
+            backgroundColor={colors.card}
+            cornerRadius={24}
+            detents={['auto']}
+            dimmed={true}
+            grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
+            name={sheetName}
         >
-            <BottomSheetScrollView style={styles.root}>
+            <View style={styles.root}>
                 <CustomText style={styles.title} weight={'Bold'}>
                     {t('turn_on_notifications_title')}
                 </CustomText>
@@ -82,12 +70,12 @@ export const EnableNotificationsBottomSheet = forwardRef<
                 <CustomText style={styles.actionText} weight={'SemiBold'} onPress={handleAskLater}>
                     {t('ask_later')}
                 </CustomText>
-            </BottomSheetScrollView>
-        </BottomSheetModal>
+            </View>
+        </TrueSheet>
     );
-});
+};
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
             color: colors.primary,
@@ -95,18 +83,12 @@ const getStyles = (colors: any) =>
             paddingVertical: MARGIN_VERTICAL,
             textAlign: 'center',
         },
-        bottomSheetModal: {
-            backgroundColor: colors.card,
-        },
         button: {
             marginTop: MARGIN_VERTICAL,
         },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
-        },
         root: {
             paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingTop: MARGIN_VERTICAL,
         },
         subtitle: {
             color: colors.primary600,

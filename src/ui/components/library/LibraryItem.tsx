@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 interface LibraryItemProps {
@@ -19,7 +20,7 @@ interface LibraryItemProps {
 
 export const LibraryItem = memo<LibraryItemProps>(
     ({ description, enabled, icon, index, label, onPress, style }) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors, index);
         const { triggerHaptics } = useHaptics();
 
@@ -65,7 +66,7 @@ export const LibraryItem = memo<LibraryItemProps>(
     },
 );
 
-const getStyles = (colors: any, index: number) =>
+const getStyles = (colors: CustomTheme['colors'], index: number) =>
     StyleSheet.create({
         description: {
             color: colors.primary600,

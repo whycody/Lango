@@ -358,7 +358,7 @@ export const FlashcardsScreen = () => {
     );
 };
 
-const getStyles = (colors: any, insets: EdgeInsets) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         backIcon: {
             marginRight: 10,

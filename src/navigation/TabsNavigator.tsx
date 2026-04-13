@@ -155,7 +155,7 @@ const TabsNavigator = () => {
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         fab: {
             alignItems: 'center',

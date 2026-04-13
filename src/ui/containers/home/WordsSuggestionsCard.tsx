@@ -10,6 +10,7 @@ import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { ActionButton, Header } from '../../components';
 import { Flashcard } from '../../components/home';
+import { CustomTheme } from '../../Theme';
 
 type WordsSuggestionsCardProps = {
     style?: StyleProp<ViewStyle>;
@@ -17,7 +18,7 @@ type WordsSuggestionsCardProps = {
 
 export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) => {
     const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
 
     const {
@@ -122,7 +123,7 @@ export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) =
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionButton: {
             marginTop: 16,

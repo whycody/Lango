@@ -3,6 +3,8 @@ import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
+import { CustomTheme } from '../../Theme';
+
 interface ListFilterProps extends Omit<TextInputProps, 'style'> {
     isSearching: boolean;
     onClear: () => void;
@@ -10,7 +12,7 @@ interface ListFilterProps extends Omit<TextInputProps, 'style'> {
 
 export const ListFilter = forwardRef<TextInput, ListFilterProps>(
     ({ isSearching, onClear, ...props }, ref) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
         return (
@@ -41,7 +43,7 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         clearIcon: {
             marginLeft: 5,

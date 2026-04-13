@@ -58,7 +58,7 @@ export const SessionLengthItem: FC<SessionLengthItemProps> = ({
     );
 };
 
-const getStyles = (colors: any, selected: boolean) =>
+const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
     StyleSheet.create({
         pressable: {
             flex: 1,

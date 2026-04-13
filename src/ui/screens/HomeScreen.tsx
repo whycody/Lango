@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BackHandler, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import { PermissionStatus } from 'expo-notifications';
@@ -25,6 +26,9 @@ import { checkUpdates } from '../../utils/checkUpdates';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
+import { CustomTheme } from '../Theme';
+
+const ENABLE_NOTIFICATIONS_SHEET_NAME = 'enable-notifications-sheet';
 
 export const HomeScreen = ({ navigation }) => {
     const auth = useAuth();
@@ -35,11 +39,10 @@ export const HomeScreen = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const { onScroll, style } = useDynamicStatusBar(100, 0.5);
     const insets = useSafeAreaInsets();
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, insets);
 
     const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
-    const enableNotificationsRef = useRef<BottomSheetModal>(null);
     const pickLanguageLevelRef = useRef<BottomSheetModal>(null);
     const { askLaterNotifications } = useUserPreferences();
     const { languages, mainLang, translationLang } = useLanguage();
@@ -68,7 +71,7 @@ export const HomeScreen = ({ navigation }) => {
     useEffect(() => {
         const checkNotifications = async () => {
             const { status } = await Notifications.getPermissionsAsync();
-            if (status == PermissionStatus.GRANTED && user.notificationsEnabled)
+            if (status == PermissionStatus.GRANTED && user?.notificationsEnabled)
                 registerNotificationsToken();
             if (
                 (askLaterNotifications && Date.now() < askLaterNotifications) ||
@@ -76,7 +79,7 @@ export const HomeScreen = ({ navigation }) => {
             )
                 return;
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
-            enableNotificationsRef.current?.present();
+            TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
         };
 
         checkNotifications();
@@ -123,13 +126,10 @@ export const HomeScreen = ({ navigation }) => {
 
     return (
         <>
+            <EnableNotificationsBottomSheet sheetName={ENABLE_NOTIFICATIONS_SHEET_NAME} />
             <PickLanguageLevelBottomSheet
                 language={languages.find(l => l.languageCode === mainLang)}
                 ref={pickLanguageLevelRef}
-                onChangeIndex={handleBottomSheetChangeIndex}
-            />
-            <EnableNotificationsBottomSheet
-                ref={enableNotificationsRef}
                 onChangeIndex={handleBottomSheetChangeIndex}
             />
             <View style={style} />
@@ -159,7 +159,7 @@ export const HomeScreen = ({ navigation }) => {
     );
 };
 
-const getStyles = (colors: any, insets: EdgeInsets) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         darkBackground: {
             backgroundColor: colors.card,

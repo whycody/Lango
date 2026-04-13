@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { SessionWord } from '../../../types';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 interface CardProps {
@@ -36,7 +37,7 @@ export const Card = memo<CardProps>(props => {
         wordIndex,
     } = props;
 
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
     const styles = getStyles(colors);
 
@@ -127,7 +128,7 @@ export const Card = memo<CardProps>(props => {
     );
 });
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         cardIconsContainer: {
             alignItems: 'center',

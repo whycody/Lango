@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { WordUpdate } from '../../types';
 import { ActionButton, CustomText } from '../components';
+import { CustomTheme } from '../Theme';
 
 type FinishSessionBottomSheetProps = {
     endSession: () => void;
@@ -17,7 +18,7 @@ type FinishSessionBottomSheetProps = {
 
 export const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessionBottomSheetProps>(
     (props, ref: ForwardedRef<BottomSheetModal>) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { t } = useTranslation();
 
@@ -115,7 +116,7 @@ export const FinishSessionBottomSheet = forwardRef<BottomSheetModal, FinishSessi
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
             color: colors.primary,

@@ -9,6 +9,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useWordsWithDetails } from '../../store';
 import { ActionButton, CustomText, Header } from '../components';
 import { FlashcardListItem } from '../components/flashcards';
+import { CustomTheme } from '../Theme';
 
 type RemoveFlashcardBottomSheetProps = {
     flashcardId: string;
@@ -21,7 +22,7 @@ export const RemoveFlashcardBottomSheet = forwardRef<
     BottomSheetModal,
     RemoveFlashcardBottomSheetProps
 >((props, ref: ForwardedRef<BottomSheetModal>) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
     const wordsWithDetailsContext = useWordsWithDetails();
@@ -81,7 +82,7 @@ export const RemoveFlashcardBottomSheet = forwardRef<
     );
 });
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
             color: colors.primary,

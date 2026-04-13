@@ -58,7 +58,7 @@ export const SessionModeItem: FC<SessionModeItemProps> = ({ mode, onPress, selec
     );
 };
 
-const getStyles = (colors: any, selected: boolean) =>
+const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
     StyleSheet.create({
         icon: {
             paddingRight: 5,

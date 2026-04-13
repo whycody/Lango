@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 interface SessionSpeechSynthesizerItemProps {
@@ -20,7 +21,7 @@ export const SessionSpeechSynthesizerItem: FC<SessionSpeechSynthesizerItemProps>
     style,
     synthesizerOn,
 }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, selected);
     const { t } = useTranslation();
 
@@ -43,7 +44,7 @@ export const SessionSpeechSynthesizerItem: FC<SessionSpeechSynthesizerItemProps>
     );
 };
 
-const getStyles = (colors: any, selected: boolean) =>
+const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
     StyleSheet.create({
         icon: {
             paddingRight: 5,

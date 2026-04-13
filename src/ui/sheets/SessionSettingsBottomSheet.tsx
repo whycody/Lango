@@ -10,6 +10,7 @@ import { useHaptics } from '../../hooks';
 import { useLanguage, useUserPreferences } from '../../store';
 import { ActionButton, CustomText, Header } from '../components';
 import { SessionModeItem, SessionSpeechSynthesizerItem } from '../components/session';
+import { CustomTheme } from '../Theme';
 
 type SessionSettingsBottomSheetProps = {
     onChangeIndex?: (index: number) => void;
@@ -20,7 +21,7 @@ export const SessionSettingsBottomSheet = forwardRef<
     BottomSheetModal,
     SessionSettingsBottomSheetProps
 >((props, ref: ForwardedRef<BottomSheetModal>) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const userPreferences = useUserPreferences();
     const [flashcardSide, setFlashcardSide] = useState<FlashcardSide>(
@@ -136,7 +137,7 @@ export const SessionSettingsBottomSheet = forwardRef<
     );
 });
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
             color: colors.primary,

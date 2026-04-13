@@ -144,7 +144,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
     );
 });
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         flag: {
             marginRight: 10,

@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { ActionButton, CustomText } from '../components';
+import { CustomTheme } from '../Theme';
 
 type GenericBottomSheetProps = {
     allowDismiss?: boolean;
@@ -37,7 +38,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
         },
         ref: ForwardedRef<BottomSheetModal>,
     ) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
         const renderBackdrop = useCallback(
@@ -101,7 +102,7 @@ export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomShee
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
             color: colors.primary,

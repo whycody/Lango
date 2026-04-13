@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { Language } from '../../../types';
+import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 
 type LanguageItemProps = {
@@ -19,7 +20,7 @@ type LanguageItemProps = {
 
 export const LanguageItem = memo<LanguageItemProps>(
     ({ checked, index, language, onPress, showIcon = true, style }) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
         return (
@@ -57,7 +58,7 @@ export const LanguageItem = memo<LanguageItemProps>(
 
 LanguageItem.displayName = 'LanguageItem';
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         container: {
             alignItems: 'center',

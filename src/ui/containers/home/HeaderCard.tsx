@@ -162,7 +162,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionButton: {
             marginTop: 32,

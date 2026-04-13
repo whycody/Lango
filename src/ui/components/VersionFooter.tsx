@@ -3,6 +3,7 @@ import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import appBuildNumbers from '../../../app.json';
+import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 
 type VersionFooterProps = {
@@ -11,7 +12,7 @@ type VersionFooterProps = {
 };
 
 export const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const version = appBuildNumbers.expo.version;
 
@@ -31,7 +32,7 @@ export const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) 
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         image: {
             alignSelf: 'center',

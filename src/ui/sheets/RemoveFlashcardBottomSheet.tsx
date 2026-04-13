@@ -1,10 +1,10 @@
-import React, { ForwardedRef, forwardRef, useCallback } from 'react';
-import { Platform, StyleSheet } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { FullWindowOverlay } from 'react-native-screens';
 
+import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useWordsWithDetails } from '../../store';
 import { ActionButton, CustomText, Header } from '../components';
@@ -12,61 +12,41 @@ import { FlashcardListItem } from '../components/flashcards';
 import { CustomTheme } from '../Theme';
 
 type RemoveFlashcardBottomSheetProps = {
-    flashcardId: string;
+    flashcardId?: string;
     onCancel: () => void;
-    onChangeIndex?: (index: number) => void;
     onRemove: () => void;
+    sheetName: string;
 };
 
-export const RemoveFlashcardBottomSheet = forwardRef<
-    BottomSheetModal,
-    RemoveFlashcardBottomSheetProps
->((props, ref: ForwardedRef<BottomSheetModal>) => {
+export const RemoveFlashcardBottomSheet = (props: RemoveFlashcardBottomSheetProps) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
     const wordsWithDetailsContext = useWordsWithDetails();
 
-    const flashcard = wordsWithDetailsContext.wordsWithDetails.find(
+    const flashcard = (wordsWithDetailsContext.wordsWithDetails ?? []).find(
         word => word.id === props.flashcardId,
     );
 
-    const renderBackdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-        ),
-        [],
-    );
-
-    const renderContainerComponent =
-        Platform.OS === 'ios'
-            ? useCallback(
-                  ({ children }: any) => <FullWindowOverlay>{children}</FullWindowOverlay>,
-                  [],
-              )
-            : undefined;
-
     return (
-        <BottomSheetModal
-            backdropComponent={renderBackdrop}
-            backgroundStyle={styles.bottomSheetModal}
-            containerComponent={renderContainerComponent}
-            handleIndicatorStyle={styles.handleIndicatorStyle}
-            ref={ref}
-            onChange={(index: number) => props.onChangeIndex?.(index)}
+        <TrueSheet
+            backgroundColor={colors.card}
+            detents={['auto']}
+            grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
+            name={props.sheetName}
         >
-            <BottomSheetView style={styles.root}>
+            <View style={styles.root}>
                 <Header
                     style={styles.header}
                     subtitle={t('removingFlashcardDesc')}
                     title={t('removingFlashcard')}
                 />
                 <FlashcardListItem
-                    id={props.flashcardId}
+                    id={props.flashcardId ?? ''}
                     level={flashcard?.gradeThreeProb ?? 0}
                     style={styles.item}
-                    text={flashcard?.text}
-                    translation={flashcard?.translation}
+                    text={flashcard?.text ?? ''}
+                    translation={flashcard?.translation ?? ''}
                 />
                 <ActionButton
                     label={t('continue')}
@@ -77,10 +57,10 @@ export const RemoveFlashcardBottomSheet = forwardRef<
                 <CustomText style={styles.actionText} weight={'SemiBold'} onPress={props.onCancel}>
                     {t('cancel')}
                 </CustomText>
-            </BottomSheetView>
-        </BottomSheetModal>
+            </View>
+        </TrueSheet>
     );
-});
+};
 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
@@ -91,16 +71,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingVertical: MARGIN_VERTICAL,
             textAlign: 'center',
         },
-        bottomSheetModal: {
-            backgroundColor: colors.card,
-        },
         button: {
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
-        },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
         },
         header: {
             paddingHorizontal: MARGIN_HORIZONTAL,
@@ -110,6 +83,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             backgroundColor: colors.background,
         },
         root: {
-            flex: 1,
+            paddingTop: MARGIN_VERTICAL,
         },
     });

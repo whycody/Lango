@@ -1,26 +1,24 @@
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
+import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { FlashcardSide } from '../../constants/UserPreferences';
 import { useHaptics } from '../../hooks';
 import { useLanguage, useUserPreferences } from '../../store';
 import { ActionButton, CustomText, Header } from '../components';
-import { SessionModeItem, SessionSpeechSynthesizerItem } from '../components/session';
+import { SessionModeItem } from '../components/session/SessionModeItem';
+import { SessionSpeechSynthesizerItem } from '../components/session/SessionSpeechSynthesizerItem';
 import { CustomTheme } from '../Theme';
 
 type SessionSettingsBottomSheetProps = {
-    onChangeIndex?: (index: number) => void;
-    onSettingsSave: () => void;
+    sheetName: string;
 };
 
-export const SessionSettingsBottomSheet = forwardRef<
-    BottomSheetModal,
-    SessionSettingsBottomSheetProps
->((props, ref: ForwardedRef<BottomSheetModal>) => {
+export const SessionSettingsBottomSheet = (props: SessionSettingsBottomSheetProps) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const userPreferences = useUserPreferences();
@@ -40,24 +38,13 @@ export const SessionSettingsBottomSheet = forwardRef<
         setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
     }, [userPreferences.flashcardSide, userPreferences.sessionSpeechSynthesizer]);
 
-    const handleChangingIndex = (index: number) => {
-        if (index == -1) {
-            if (!saved.current) {
-                setFlashcardSide(userPreferences.flashcardSide);
-                setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
-            }
-            saved.current = false;
+    const handleDidDismiss = () => {
+        if (!saved.current) {
+            setFlashcardSide(userPreferences.flashcardSide);
+            setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
         }
-
-        props.onChangeIndex?.(index);
+        saved.current = false;
     };
-
-    const renderBackdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-        ),
-        [],
-    );
 
     const handleFlashcardSideItemPress = (flashcardSide: FlashcardSide) => {
         triggerHaptics('soft');
@@ -73,19 +60,18 @@ export const SessionSettingsBottomSheet = forwardRef<
         saved.current = true;
         userPreferences.setFlashcardSide(flashcardSide);
         userPreferences.setSessionSpeechSynthesizer(sessionSpeechSynthesizer);
-        props.onSettingsSave();
+        TrueSheet.dismiss(props.sheetName);
     };
 
     return (
-        <BottomSheetModal
-            backdropComponent={renderBackdrop}
-            backgroundStyle={styles.bottomSheetModal}
-            handleIndicatorStyle={styles.handleIndicatorStyle}
-            index={0}
-            ref={ref}
-            onChange={handleChangingIndex}
+        <TrueSheet
+            backgroundColor={colors.card}
+            detents={['auto']}
+            grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
+            name={props.sheetName}
+            onDidDismiss={handleDidDismiss}
         >
-            <BottomSheetScrollView style={styles.root}>
+            <View style={styles.root}>
                 <Header style={styles.header} title={t('sessions_settings')} />
                 <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
                 <View style={styles.sessionItemsContainer}>
@@ -128,14 +114,14 @@ export const SessionSettingsBottomSheet = forwardRef<
                 <CustomText
                     style={styles.actionText}
                     weight={'SemiBold'}
-                    onPress={props.onSettingsSave}
+                    onPress={() => TrueSheet.dismiss(props.sheetName)}
                 >
                     {t('cancel')}
                 </CustomText>
-            </BottomSheetScrollView>
-        </BottomSheetModal>
+            </View>
+        </TrueSheet>
     );
-});
+};
 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
@@ -145,24 +131,17 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingVertical: MARGIN_VERTICAL,
             textAlign: 'center',
         },
-        bottomSheetModal: {
-            backgroundColor: colors.card,
-        },
         button: {
             marginTop: MARGIN_VERTICAL,
-        },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
         },
         header: {
             paddingTop: MARGIN_VERTICAL / 2,
         },
         root: {
             paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingTop: MARGIN_VERTICAL,
         },
         sessionItemsContainer: {
-            flex: 1,
             flexDirection: 'row',
             gap: 6,
             marginTop: 5,

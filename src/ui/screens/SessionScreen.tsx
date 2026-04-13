@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useRoute, useTheme } from '@react-navigation/native';
+import { useFocusEffect, useRoute, useTheme } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
 import { WordSource } from '../../constants/Word';
 import { useHaptics, useWordSet } from '../../hooks';
-import { ScreenName } from '../../navigation/navigationTypes';
+import { RootStackParamList, ScreenName } from '../../navigation/navigationTypes';
 import {
     useDebouncedSyncSuggestions,
     useEvaluations,
@@ -47,8 +47,14 @@ export type SessionScreenParams = {
 };
 
 const SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET = 'session-handle-flashcard-bottom-sheet';
+const SESSION_HIT_FLASHCARD_BOTTOM_SHEET = 'session-hit-flashcard-bottom-sheet';
+const SESSION_LEAVE_SESSION_BOTTOM_SHEET = 'session-leave-session-bottom-sheet';
+const SESSION_FINISH_SESSION_BOTTOM_SHEET = 'session-finish-session-bottom-sheet';
+const SESSION_SETTINGS_BOTTOM_SHEET = 'session-settings-bottom-sheet';
 
-export const SessionScreen = ({ navigation }) => {
+type SessionScreenProps = NativeStackScreenProps<RootStackParamList, ScreenName.Session>;
+
+export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
@@ -71,14 +77,9 @@ export const SessionScreen = ({ navigation }) => {
 
     const wordSet = useWordSet(length * 10, mode);
 
-    const confettiRef = useRef<LottieView>();
-    const pagerRef = useRef(null);
+    const confettiRef = useRef<LottieView>(null);
+    const pagerRef = useRef<PagerView>(null);
     const isInitial = useRef(true);
-
-    const leaveSessionBottomSheetRef = useRef<BottomSheetModal>(null);
-    const finishSessionBottomSheetRef = useRef<BottomSheetModal>(null);
-    const sessionSettingsBottomSheetRef = useRef<BottomSheetModal>(null);
-    const hitFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
 
     const [version, setVersion] = useState(wordSet.version);
     const [model, setModel] = useState(wordSet.model);
@@ -87,8 +88,7 @@ export const SessionScreen = ({ navigation }) => {
     const [progress, setProgress] = useState(0);
     const [flipped, setFlipped] = useState(flashcardSide === FlashcardSide.TRANSLATION);
 
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
-    const [editId, setEditId] = useState<string | null>(null);
+    const [editId, setEditId] = useState<string | undefined>();
     const [numberOfSession, setNumberOfSession] = useState(0);
     const [lastPressTime, setLastPressTime] = useState<number>(0);
     const [scaleValues] = useState(
@@ -109,29 +109,21 @@ export const SessionScreen = ({ navigation }) => {
         setFlipped(userPreferences.flashcardSide === FlashcardSide.TRANSLATION);
     }, [userPreferences.flashcardSide]);
 
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (bottomSheetIsShown) {
-                hideBottomSheets();
+    useFocusEffect(
+        useCallback(() => {
+            const handleBackPress = () => {
+                trackEvent(AnalyticsEventName.LEAVE_SESSION_SHEET_OPEN);
+                TrueSheet.present(SESSION_LEAVE_SESSION_BOTTOM_SHEET);
                 return true;
-            }
+            };
 
-            trackEvent(AnalyticsEventName.LEAVE_SESSION_SHEET_OPEN);
-            leaveSessionBottomSheetRef.current?.present();
-            return true;
-        };
+            const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
 
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-        return () => subscription.remove();
-    }, [bottomSheetIsShown]);
-
-    const hideBottomSheets = () => {
-        TrueSheet.dismiss(SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET);
-        leaveSessionBottomSheetRef.current?.dismiss();
-        finishSessionBottomSheetRef.current?.dismiss();
-        sessionSettingsBottomSheetRef.current?.dismiss();
-        hitFlashcardBottomSheetRef.current?.dismiss();
-    };
+            return () => {
+                subscription.remove();
+            };
+        }, []),
+    );
 
     const decrementCurrentIndex = useCallback(() => {
         setCurrentIndex(prev => (prev == 0 ? prev : prev - 1));
@@ -284,7 +276,7 @@ export const SessionScreen = ({ navigation }) => {
 
     const handleLevelPress = (level: EvaluationGrade) => {
         if (!userPreferences.userHasEverHitFlashcard) {
-            hitFlashcardBottomSheetRef.current?.present();
+            TrueSheet.present(SESSION_HIT_FLASHCARD_BOTTOM_SHEET);
             return;
         }
 
@@ -327,17 +319,20 @@ export const SessionScreen = ({ navigation }) => {
         saveProgress(true);
         triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
-        finishSessionBottomSheetRef.current?.present();
+        TrueSheet.present(SESSION_FINISH_SESSION_BOTTOM_SHEET);
     };
 
     useEffect(() => {
         setProgress(currentIndex);
-        pagerRef.current.setPage(currentIndex);
+        pagerRef.current?.setPage?.(currentIndex);
     }, [currentIndex]);
 
     const endSession = () => {
-        finishSessionBottomSheetRef.current?.dismiss();
-        navigation.navigate(ScreenName.Tabs);
+        TrueSheet.dismiss(SESSION_FINISH_SESSION_BOTTOM_SHEET);
+        navigation.reset({
+            index: 0,
+            routes: [{ name: ScreenName.Tabs }],
+        });
     };
 
     const startNewSession = () => {
@@ -356,11 +351,12 @@ export const SessionScreen = ({ navigation }) => {
         setCards(wordSet.sessionWords);
         setTimeout(() => {
             setCurrentIndex(0);
-            finishSessionBottomSheetRef.current?.dismiss();
+            TrueSheet.dismiss(SESSION_FINISH_SESSION_BOTTOM_SHEET);
         }, 200);
     };
 
     const handleSessionExit = () => {
+        TrueSheet.dismiss(SESSION_LEAVE_SESSION_BOTTOM_SHEET);
         saveProgress(false);
         trackEvent(AnalyticsEventName.SESSION_SKIPPED, {
             evaluatedCount: wordsUpdates.length,
@@ -368,7 +364,10 @@ export const SessionScreen = ({ navigation }) => {
             length,
             mode,
         });
-        navigation.navigate(ScreenName.Tabs);
+        navigation.reset({
+            index: 0,
+            routes: [{ name: ScreenName.Tabs }],
+        });
     };
 
     const getSuggestionUpdates = (updates: WordUpdate[]) =>
@@ -467,12 +466,12 @@ export const SessionScreen = ({ navigation }) => {
 
     const handleSessionExitPress = () => {
         trackEvent(AnalyticsEventName.LEAVE_SESSION_SHEET_OPEN);
-        leaveSessionBottomSheetRef.current?.present();
+        TrueSheet.present(SESSION_LEAVE_SESSION_BOTTOM_SHEET);
     };
 
     const handleSessionSettingsPress = () => {
         trackEvent(AnalyticsEventName.SESSION_SETTINGS_SHEET_OPEN);
-        sessionSettingsBottomSheetRef.current?.present();
+        TrueSheet.present(SESSION_SETTINGS_BOTTOM_SHEET);
     };
 
     return (
@@ -485,8 +484,7 @@ export const SessionScreen = ({ navigation }) => {
             />
             <LeaveSessionBottomSheet
                 leaveSession={handleSessionExit}
-                ref={leaveSessionBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
+                sheetName={SESSION_LEAVE_SESSION_BOTTOM_SHEET}
             />
             <HandleFlashcardBottomSheet
                 flashcardId={editId}
@@ -496,19 +494,11 @@ export const SessionScreen = ({ navigation }) => {
             <FinishSessionBottomSheet
                 endSession={endSession}
                 flashcardUpdates={wordsUpdates}
-                ref={finishSessionBottomSheetRef}
+                sheetName={SESSION_FINISH_SESSION_BOTTOM_SHEET}
                 startNewSession={startNewSession}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
             />
-            <SessionSettingsBottomSheet
-                ref={sessionSettingsBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
-                onSettingsSave={() => sessionSettingsBottomSheetRef.current.dismiss()}
-            />
-            <HitFlashcardBottomSheet
-                ref={hitFlashcardBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
-            />
+            <SessionSettingsBottomSheet sheetName={SESSION_SETTINGS_BOTTOM_SHEET} />
+            <HitFlashcardBottomSheet sheetName={SESSION_HIT_FLASHCARD_BOTTOM_SHEET} />
             <View style={[styles.sessionHeaderContainer, { backgroundColor: colors.card }]}>
                 <SessionHeader
                     cardsSetLength={cards.length}

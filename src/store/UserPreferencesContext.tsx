@@ -1,5 +1,6 @@
 import { createContext, FC, ReactNode, useContext } from 'react';
 import { PermissionStatus } from 'expo-notifications';
+import { useMMKV } from 'react-native-mmkv';
 
 import { SessionMode } from '../constants/Session';
 import { FlashcardSide, FlashcardSortingMethod, SessionLength } from '../constants/UserPreferences';
@@ -64,7 +65,8 @@ const USER_HAS_SKIPPED_SUGGESTION = 'userHasEverSkippedSuggestion';
 const NOTIFICATION_PERMISSION_STATUS = 'lastUserNotificationPermissionStatus';
 
 export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const { storage } = useUserStorage();
+    const userStorage = useUserStorage();
+    const storage = userStorage.storage ?? useMMKV();
     const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(
         FLASHCARD_SIDE_KEY,
         FlashcardSide.WORD,
@@ -80,13 +82,17 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
         SessionLength.MEDIUM,
         storage,
     );
-    const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV(
+    const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV<boolean>(
         SESSION_SPEECH_SYNTHESIZER_KEY,
         true,
         storage,
     );
-    const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV(VIBRATIONS_KEY, true, storage);
-    const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV(
+    const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV<boolean>(
+        VIBRATIONS_KEY,
+        true,
+        storage,
+    );
+    const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(
         ASK_LATER_NOTIFICATIONS_KEY,
         0,
         storage,
@@ -97,12 +103,12 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
             FlashcardSortingMethod.ADD_DATE_DESC,
             storage,
         );
-    const [userHasEverHitFlashcard, setUserHasEverHitFlashcard] = useTypedMMKV(
+    const [userHasEverHitFlashcard, setUserHasEverHitFlashcard] = useTypedMMKV<boolean>(
         USER_HAS_EVER_HIT_FLASHCARD,
         false,
         storage,
     );
-    const [userHasEverSkippedSuggestion, setUserHasEverSkippedSuggestion] = useTypedMMKV(
+    const [userHasEverSkippedSuggestion, setUserHasEverSkippedSuggestion] = useTypedMMKV<boolean>(
         USER_HAS_SKIPPED_SUGGESTION,
         false,
         storage,

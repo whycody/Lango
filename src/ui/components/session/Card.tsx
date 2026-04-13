@@ -197,8 +197,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             backgroundColor: colors.cardAccent,
             color: colors.primary600,
             fontSize: 9,
+            height: 18,
             paddingHorizontal: 5,
-            paddingVertical: 1,
+            textAlignVertical: 'center',
         },
         tagsContainer: {
             alignSelf: 'center',

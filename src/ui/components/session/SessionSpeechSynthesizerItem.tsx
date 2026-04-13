@@ -54,7 +54,6 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
         },
         root: {
             alignItems: 'center',
-            flex: 1,
             justifyContent: 'center',
             opacity: selected ? 1 : 0.4,
             paddingHorizontal: 15,

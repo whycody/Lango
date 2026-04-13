@@ -4,6 +4,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
+import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
@@ -68,9 +69,8 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
     return (
         <TrueSheet
             backgroundColor={colors.card}
-            cornerRadius={24}
             detents={['auto']}
-            dimmed={true}
+            grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
             name={START_SESSION_BOTTOM_SHEET}
         >
             <View style={styles.root}>

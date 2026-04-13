@@ -1,17 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { BackHandler, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useCallback, useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useTheme } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { CompositeNavigationProp, NavigationProp, useTheme } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
-import { PermissionStatus } from 'expo-notifications';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
 import { useDynamicStatusBar } from '../../hooks';
-import { ScreenName } from '../../navigation/navigationTypes';
+import { RootStackParamList, ScreenName } from '../../navigation/navigationTypes';
+import { TabsParamList } from '../../navigation/TabsNavigator';
 import {
     useAuth,
     useEvaluations,
@@ -23,14 +23,21 @@ import {
 } from '../../store';
 import { trackEvent } from '../../utils/analytics';
 import { checkUpdates } from '../../utils/checkUpdates';
+import { isNotificationPermissionGranted } from '../../utils/ensureNotificationPermission';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const ENABLE_NOTIFICATIONS_SHEET_NAME = 'enable-notifications-sheet';
+const HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME = 'home-pick-language-level-sheet';
 
-export const HomeScreen = ({ navigation }) => {
+type HomeScreenNavProp = CompositeNavigationProp<
+    BottomTabNavigationProp<TabsParamList, 'Home'>,
+    NavigationProp<RootStackParamList>
+>;
+
+export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) => {
     const auth = useAuth();
     const words = useWords();
     const sessions = useSessions();
@@ -42,8 +49,6 @@ export const HomeScreen = ({ navigation }) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, insets);
 
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
-    const pickLanguageLevelRef = useRef<BottomSheetModal>(null);
     const { askLaterNotifications } = useUserPreferences();
     const { languages, mainLang, translationLang } = useLanguage();
     const { user } = useAuth();
@@ -70,12 +75,14 @@ export const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         const checkNotifications = async () => {
-            const { status } = await Notifications.getPermissionsAsync();
-            if (status == PermissionStatus.GRANTED && user?.notificationsEnabled)
+            const permissions = await Notifications.getPermissionsAsync();
+            const hasNotificationPermission = isNotificationPermissionGranted(permissions);
+
+            if (hasNotificationPermission && user?.notificationsEnabled)
                 registerNotificationsToken();
             if (
                 (askLaterNotifications && Date.now() < askLaterNotifications) ||
-                status == PermissionStatus.GRANTED
+                hasNotificationPermission
             )
                 return;
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
@@ -86,22 +93,10 @@ export const HomeScreen = ({ navigation }) => {
     }, [askLaterNotifications]);
 
     useEffect(() => {
-        if (!user.languageLevels?.some(level => level.language == mainLang)) {
-            pickLanguageLevelRef.current?.present();
+        if (!user?.languageLevels?.some(level => level.language == mainLang)) {
+            TrueSheet.present(HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME);
         }
-    }, []);
-
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (bottomSheetIsShown) {
-                enableNotificationsRef.current?.dismiss();
-                return true;
-            }
-        };
-
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-        return () => subscription.remove();
-    }, [bottomSheetIsShown]);
+    }, [user, mainLang]);
 
     const onRefresh = useCallback(async () => {
         trackEvent(AnalyticsEventName.HOME_REFRESH);
@@ -120,17 +115,12 @@ export const HomeScreen = ({ navigation }) => {
 
     const languagesAreTheSame = mainLang === translationLang;
 
-    const handleBottomSheetChangeIndex = (index: number) => {
-        setBottomSheetIsShown(index >= 0);
-    };
-
     return (
         <>
             <EnableNotificationsBottomSheet sheetName={ENABLE_NOTIFICATIONS_SHEET_NAME} />
             <PickLanguageLevelBottomSheet
                 language={languages.find(l => l.languageCode === mainLang)}
-                ref={pickLanguageLevelRef}
-                onChangeIndex={handleBottomSheetChangeIndex}
+                sheetName={HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME}
             />
             <View style={style} />
             <ScrollView

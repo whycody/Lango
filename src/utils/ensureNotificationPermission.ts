@@ -1,20 +1,37 @@
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
 import { alertOpenSettings } from './alertOpenSettings';
 
-export const ensureNotificationsPermission = async (): Promise<boolean> => {
-    let { canAskAgain, status } = await Notifications.getPermissionsAsync();
+const IOS_GRANTED_STATUSES = new Set([
+    Notifications.IosAuthorizationStatus.AUTHORIZED,
+    Notifications.IosAuthorizationStatus.PROVISIONAL,
+    Notifications.IosAuthorizationStatus.EPHEMERAL,
+]);
 
-    if (status !== 'granted' && canAskAgain) {
-        const req = await Notifications.requestPermissionsAsync();
-        status = req.status;
-        canAskAgain = req.canAskAgain;
+export const isNotificationPermissionGranted = (
+    permissions: Notifications.NotificationPermissionsStatus,
+) => {
+    if (Platform.OS === 'ios') {
+        const iosStatus =
+            permissions.ios?.status ?? Notifications.IosAuthorizationStatus.NOT_DETERMINED;
+        return IOS_GRANTED_STATUSES.has(iosStatus);
     }
 
-    if (status !== 'granted' && !canAskAgain) {
+    return (permissions.android?.importance ?? 0) > 0;
+};
+
+export const ensureNotificationsPermission = async (): Promise<boolean> => {
+    let permissions = await Notifications.getPermissionsAsync();
+
+    if (!isNotificationPermissionGranted(permissions)) {
+        permissions = await Notifications.requestPermissionsAsync();
+    }
+
+    if (!isNotificationPermissionGranted(permissions)) {
         alertOpenSettings('notifications');
         return false;
     }
 
-    return status === 'granted';
+    return true;
 };

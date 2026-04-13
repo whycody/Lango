@@ -253,9 +253,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
             <MicrophonePermissionBottomSheet sheetName={MICROPHONE_PERMISSION_SHEET_NAME} />
             <TrueSheet
                 backgroundColor={colors.card}
-                cornerRadius={24}
                 detents={['auto']}
-                dimmed={true}
                 grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
                 name={sheetName}
                 onDidDismiss={handleDidDismiss}

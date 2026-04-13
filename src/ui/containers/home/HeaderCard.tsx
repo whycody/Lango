@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AppState, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +34,8 @@ type HeaderCardProps = {
     ): void;
 };
 
+const HOME_LANGUAGE_SHEET_NAME = 'home-language-sheet';
+
 export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
@@ -50,7 +51,6 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
     });
 
     const styles = getStyles(colors);
-    const languageSheetRef = useRef<BottomSheetModal>(null);
 
     const last50Words = langWords
         .sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
@@ -116,13 +116,13 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
             source: 'main_screen',
             type: 'main',
         });
-        languageSheetRef.current.present();
+        TrueSheet.present(HOME_LANGUAGE_SHEET_NAME);
     };
 
     return (
         <View style={styles.root}>
             <StartSessionBottomSheet onSessionStart={handleSessionStart} />
-            <LanguageBottomSheet ref={languageSheetRef} />
+            <LanguageBottomSheet sheetName={HOME_LANGUAGE_SHEET_NAME} />
             <View style={styles.container}>
                 <CustomText style={styles.mainText} weight={'Bold'}>
                     {expo.name}

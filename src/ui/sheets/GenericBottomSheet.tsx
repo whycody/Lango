@@ -1,106 +1,88 @@
-import React, { ForwardedRef, forwardRef, ReactNode, useCallback } from 'react';
+import React, { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 
+import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
-import { ActionButton, CustomText } from '../components';
+import { ActionButton } from '../components/ActionButton';
+import { CustomText } from '../components/CustomText';
 import { CustomTheme } from '../Theme';
 
 type GenericBottomSheetProps = {
     allowDismiss?: boolean;
     children?: ReactNode;
     description?: string;
-    onChangeIndex?: (index: number) => void;
     onPrimaryButtonPress?: () => void;
     onSecondaryButtonPress?: () => void;
     primaryActionLabel?: string;
-    primaryButtonEnabled?: boolean;
     secondaryActionLabel?: string;
-    stackBehavior?: 'replace' | 'push' | 'switch';
+    primaryButtonEnabled?: boolean;
+    sheetName: string;
     title?: string;
 };
 
-export const GenericBottomSheet = forwardRef<BottomSheetModal, GenericBottomSheetProps>(
-    (
-        {
-            allowDismiss = true,
-            children,
-            description,
-            onChangeIndex,
-            onPrimaryButtonPress,
-            onSecondaryButtonPress,
-            primaryActionLabel,
-            primaryButtonEnabled,
-            secondaryActionLabel,
-            stackBehavior = 'push',
-            title,
-        },
-        ref: ForwardedRef<BottomSheetModal>,
-    ) => {
-        const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors);
+export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
+    const {
+        allowDismiss = true,
+        children,
+        description,
+        onPrimaryButtonPress,
+        onSecondaryButtonPress,
+        primaryActionLabel,
+        primaryButtonEnabled,
+        secondaryActionLabel,
+        sheetName,
+        title,
+    } = props;
 
-        const renderBackdrop = useCallback(
-            (props: any) => (
-                <BottomSheetBackdrop
-                    appearsOnIndex={0}
-                    disappearsOnIndex={-1}
-                    pressBehavior={allowDismiss ? 'close' : 'none'}
-                    {...props}
-                />
-            ),
-            [],
-        );
+    const { colors } = useTheme() as CustomTheme;
+    const styles = getStyles(colors);
 
-        return (
-            <BottomSheetModal
-                backdropComponent={renderBackdrop}
-                backgroundStyle={styles.bottomSheetModal}
-                enablePanDownToClose={allowDismiss}
-                handleIndicatorStyle={styles.handleIndicatorStyle}
-                index={0}
-                ref={ref}
-                stackBehavior={stackBehavior}
-                onChange={(index: number) => onChangeIndex?.(index)}
-            >
-                <BottomSheetScrollView>
-                    {title && (
-                        <CustomText style={styles.title} weight="Bold">
-                            {title}
-                        </CustomText>
-                    )}
+    return (
+        <TrueSheet
+            backgroundColor={colors.card}
+            detents={['auto']}
+            dismissible={allowDismiss}
+            grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
+            name={sheetName}
+        >
+            <View style={styles.trueSheetRoot}>
+                {title && (
+                    <CustomText style={styles.title} weight="Bold">
+                        {title}
+                    </CustomText>
+                )}
 
-                    {description && <CustomText style={styles.subtitle}>{description}</CustomText>}
+                {description && <CustomText style={styles.subtitle}>{description}</CustomText>}
 
-                    {children}
+                {children}
 
-                    {primaryActionLabel && (
-                        <ActionButton
-                            active={primaryButtonEnabled}
-                            label={primaryActionLabel}
-                            primary={true}
-                            style={styles.button}
-                            onPress={() => onPrimaryButtonPress?.()}
-                        />
-                    )}
+                {primaryActionLabel && (
+                    <ActionButton
+                        active={primaryButtonEnabled}
+                        label={primaryActionLabel}
+                        primary={true}
+                        style={styles.button}
+                        onPress={() => onPrimaryButtonPress?.()}
+                    />
+                )}
 
-                    {secondaryActionLabel && (
-                        <CustomText
-                            style={styles.actionText}
-                            weight="SemiBold"
-                            onPress={() => onSecondaryButtonPress?.()}
-                        >
-                            {secondaryActionLabel}
-                        </CustomText>
-                    )}
-
+                {secondaryActionLabel ? (
+                    <CustomText
+                        style={styles.actionText}
+                        weight="SemiBold"
+                        onPress={() => onSecondaryButtonPress?.()}
+                    >
+                        {secondaryActionLabel}
+                    </CustomText>
+                ) : (
                     <View style={styles.spacer} />
-                </BottomSheetScrollView>
-            </BottomSheetModal>
-        );
-    },
-);
+                )}
+            </View>
+        </TrueSheet>
+    );
+};
 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
@@ -108,19 +90,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
             color: colors.primary,
             fontSize: 13,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL,
+            paddingVertical: MARGIN_VERTICAL,
             textAlign: 'center',
-        },
-        bottomSheetModal: {
-            backgroundColor: colors.card,
         },
         button: {
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
-        },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
         },
         spacer: {
             height: MARGIN_VERTICAL,
@@ -136,5 +111,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             fontSize: 18,
             marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+        trueSheetRoot: {
+            paddingTop: MARGIN_VERTICAL,
         },
     });

@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import * as Updates from 'expo-updates';
-import Config from 'react-native-config';
 
 import { createAuthData } from '../utils/authUtils';
 

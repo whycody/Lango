@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { StyleSheet } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTranslation } from 'react-i18next';
+import { FlatList } from 'react-native-gesture-handler';
 
-import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { FlashcardSortingMethod } from '../../constants/UserPreferences';
 import { useUserPreferences } from '../../store';
 import { getSortingMethodLabel } from '../../utils/sortingUtil';
-import { Header } from '../components';
 import { SortingMethodItem } from '../components/flashcards';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
@@ -30,6 +29,7 @@ export const SortingMethodBottomSheet = (props: SortingMethodBottomSheetProps) =
     const handlePress = useCallback(
         (method: FlashcardSortingMethod) => {
             setFlashcardsSortingMethod(method);
+            TrueSheet.dismiss(props.sheetName);
         },
         [props.sheetName, setFlashcardsSortingMethod],
     );
@@ -51,9 +51,10 @@ export const SortingMethodBottomSheet = (props: SortingMethodBottomSheetProps) =
         <GenericBottomSheet
             description={t('sorting.desc')}
             sheetName={props.sheetName}
+            style={styles.sheet}
             title={t('sorting.title')}
         >
-            <FlashList
+            <FlatList
                 data={sortingMethods}
                 extraData={flashcardsSortingMethod}
                 renderItem={renderItem}
@@ -63,8 +64,7 @@ export const SortingMethodBottomSheet = (props: SortingMethodBottomSheetProps) =
 };
 
 const styles = StyleSheet.create({
-    header: {
-        marginVertical: 10,
-        paddingHorizontal: MARGIN_HORIZONTAL,
+    sheet: {
+        marginTop: 10,
     },
 });

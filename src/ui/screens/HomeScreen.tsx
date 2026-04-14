@@ -93,10 +93,13 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     }, [askLaterNotifications]);
 
     useEffect(() => {
-        if (!user?.languageLevels?.some(level => level.language == mainLang)) {
+        if (
+            translationLang !== mainLang &&
+            !user?.languageLevels?.some(level => level.language == mainLang)
+        ) {
             TrueSheet.present(HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME);
         }
-    }, [user, mainLang]);
+    }, []);
 
     const onRefresh = useCallback(async () => {
         trackEvent(AnalyticsEventName.HOME_REFRESH);

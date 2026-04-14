@@ -198,6 +198,7 @@ export const FlashcardsScreen = () => {
             </View>
         );
     }, [flashcards.length, numberOfWords, langoWords]);
+
     const renderSubheader = useMemo(() => {
         return (
             <View style={styles.subHeaderContainer}>

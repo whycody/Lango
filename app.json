@@ -11,10 +11,10 @@
             "backgroundColor": "#0f0f30"
         },
         "locales": {
-            "en": "./languages/en.json",
-            "pl": "./languages/pl.json",
-            "es": "./languages/es.json",
-            "it": "./languages/it.json"
+            "en": "./assets/locales/en.json",
+            "pl": "./assets/locales/pl.json",
+            "es": "./assets/locales/es.json",
+            "it": "./assets/locales/it.json"
         },
         "plugins": [
             [

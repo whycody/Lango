@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 
@@ -13,13 +14,16 @@ type GenericBottomSheetProps = {
     allowDismiss?: boolean;
     children?: ReactNode;
     description?: string;
+    onDidDismiss?: () => void;
     onPrimaryButtonPress?: () => void;
     onSecondaryButtonPress?: () => void;
+    primaryActionIcon?: keyof typeof Ionicons.glyphMap;
     primaryActionLabel?: string;
     secondaryActionLabel?: string;
     primaryButtonEnabled?: boolean;
     sheetName: string;
     title?: string;
+    style?: StyleProp<ViewStyle>;
 };
 
 export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
@@ -27,12 +31,15 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
         allowDismiss = true,
         children,
         description,
+        onDidDismiss,
         onPrimaryButtonPress,
         onSecondaryButtonPress,
+        primaryActionIcon,
         primaryActionLabel,
         primaryButtonEnabled,
         secondaryActionLabel,
         sheetName,
+        style,
         title,
     } = props;
 
@@ -46,6 +53,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
             dismissible={allowDismiss}
             grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
             name={sheetName}
+            onDidDismiss={onDidDismiss}
         >
             <View style={styles.trueSheetRoot}>
                 {title && (
@@ -54,13 +62,18 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
                     </CustomText>
                 )}
 
-                {description && <CustomText style={styles.subtitle}>{description}</CustomText>}
+                {description && (
+                    <CustomText style={[styles.subtitle, !!children && styles.subtitleSmall]}>
+                        {description}
+                    </CustomText>
+                )}
 
-                {children}
+                <View style={style}>{children}</View>
 
                 {primaryActionLabel && (
                     <ActionButton
                         active={primaryButtonEnabled}
+                        icon={primaryActionIcon}
                         label={primaryActionLabel}
                         primary={true}
                         style={styles.button}
@@ -105,6 +118,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             fontSize: 15,
             marginTop: MARGIN_VERTICAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+        subtitleSmall: {
+            marginTop: MARGIN_VERTICAL / 4,
         },
         title: {
             color: colors.primary300,

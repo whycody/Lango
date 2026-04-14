@@ -1,18 +1,17 @@
 import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
 import { useHaptics } from '../../hooks';
 import { useUserPreferences } from '../../store';
-import { ActionButton, CustomText, Header } from '../components';
+import { CustomText } from '../components';
 import { SessionLengthItem, SessionModeItem } from '../components/session';
 import { CustomTheme } from '../Theme';
+import { GenericBottomSheet } from './GenericBottomSheet';
 
 type StartSessionBottomSheetProps = {
     onSessionStart: (
@@ -67,91 +66,77 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
     };
 
     return (
-        <TrueSheet
-            backgroundColor={colors.card}
-            detents={['auto']}
-            grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
-            name={START_SESSION_BOTTOM_SHEET}
+        <GenericBottomSheet
+            primaryActionIcon={'play-sharp'}
+            primaryActionLabel={t('startSession')}
+            sheetName={START_SESSION_BOTTOM_SHEET}
+            title={t('startSession')}
+            onPrimaryButtonPress={handleActionButtonPress}
         >
-            <View style={styles.root}>
-                <Header style={styles.header} title={t('startSession')} />
-                <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
-                <View style={styles.sessionItemsContainer}>
-                    <SessionModeItem
-                        mode={FlashcardSide.WORD}
-                        selected={flashcardSide === FlashcardSide.WORD}
-                        onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
-                    />
-                    <SessionModeItem
-                        mode={FlashcardSide.TRANSLATION}
-                        selected={flashcardSide === FlashcardSide.TRANSLATION}
-                        onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
-                    />
-                </View>
-                <CustomText style={styles.subtitle}>{t('choose_session_mode')}</CustomText>
-                <View style={styles.sessionItemsContainer}>
-                    <SessionModeItem
-                        mode={SessionMode.STUDY}
-                        selected={sessionMode === SessionMode.STUDY}
-                        onPress={() => handleSessionModeItemPress(SessionMode.STUDY)}
-                    />
-                    <SessionModeItem
-                        mode={SessionMode.RANDOM}
-                        selected={sessionMode === SessionMode.RANDOM}
-                        onPress={() => handleSessionModeItemPress(SessionMode.RANDOM)}
-                    />
-                    <SessionModeItem
-                        mode={SessionMode.OLDEST}
-                        selected={sessionMode === SessionMode.OLDEST}
-                        onPress={() => handleSessionModeItemPress(SessionMode.OLDEST)}
-                    />
-                </View>
-                <CustomText style={styles.subtitle}>{t('sessionLength')}</CustomText>
-                <View style={styles.sessionItemsContainer}>
-                    <SessionLengthItem
-                        length={SessionLength.SHORT}
-                        selected={sessionLength === SessionLength.SHORT}
-                        style={styles.sessionLengthItem}
-                        onPress={() => handleSessionLengthItemPress(1)}
-                    />
-                    <SessionLengthItem
-                        length={SessionLength.MEDIUM}
-                        selected={sessionLength === SessionLength.MEDIUM}
-                        style={styles.sessionLengthItem}
-                        onPress={() => handleSessionLengthItemPress(2)}
-                    />
-                    <SessionLengthItem
-                        length={SessionLength.LONG}
-                        selected={sessionLength === SessionLength.LONG}
-                        onPress={() => handleSessionLengthItemPress(3)}
-                    />
-                </View>
-                <ActionButton
-                    icon={'play-sharp'}
-                    label={t('startSession')}
-                    primary={true}
-                    style={styles.button}
-                    onPress={handleActionButtonPress}
+            <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
+            <View style={styles.sessionItemsContainer}>
+                <SessionModeItem
+                    mode={FlashcardSide.WORD}
+                    selected={flashcardSide === FlashcardSide.WORD}
+                    onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
+                />
+                <SessionModeItem
+                    mode={FlashcardSide.TRANSLATION}
+                    selected={flashcardSide === FlashcardSide.TRANSLATION}
+                    onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
                 />
             </View>
-        </TrueSheet>
+            <CustomText style={styles.subtitle}>{t('choose_session_mode')}</CustomText>
+            <View style={styles.sessionItemsContainer}>
+                <SessionModeItem
+                    mode={SessionMode.STUDY}
+                    selected={sessionMode === SessionMode.STUDY}
+                    onPress={() => handleSessionModeItemPress(SessionMode.STUDY)}
+                />
+                <SessionModeItem
+                    mode={SessionMode.RANDOM}
+                    selected={sessionMode === SessionMode.RANDOM}
+                    onPress={() => handleSessionModeItemPress(SessionMode.RANDOM)}
+                />
+                <SessionModeItem
+                    mode={SessionMode.OLDEST}
+                    selected={sessionMode === SessionMode.OLDEST}
+                    onPress={() => handleSessionModeItemPress(SessionMode.OLDEST)}
+                />
+            </View>
+            <CustomText style={styles.subtitle}>{t('sessionLength')}</CustomText>
+            <View style={styles.sessionItemsContainer}>
+                <SessionLengthItem
+                    length={SessionLength.SHORT}
+                    selected={sessionLength === SessionLength.SHORT}
+                    style={styles.sessionLengthItem}
+                    onPress={() => handleSessionLengthItemPress(1)}
+                />
+                <SessionLengthItem
+                    length={SessionLength.MEDIUM}
+                    selected={sessionLength === SessionLength.MEDIUM}
+                    style={styles.sessionLengthItem}
+                    onPress={() => handleSessionLengthItemPress(2)}
+                />
+                <SessionLengthItem
+                    length={SessionLength.LONG}
+                    selected={sessionLength === SessionLength.LONG}
+                    onPress={() => handleSessionLengthItemPress(3)}
+                />
+            </View>
+        </GenericBottomSheet>
     );
 };
 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
-        button: {
-            marginVertical: MARGIN_VERTICAL,
-        },
         header: {
             marginTop: MARGIN_VERTICAL * 1.5,
-        },
-        root: {
-            paddingHorizontal: MARGIN_HORIZONTAL,
         },
         sessionItemsContainer: {
             flexDirection: 'row',
             gap: 6,
+            marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 5,
         },
         sessionLengthItem: {
@@ -160,6 +145,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         subtitle: {
             color: colors.primary600,
             fontSize: 14,
+            marginHorizontal: MARGIN_HORIZONTAL,
             paddingBottom: 3,
             paddingTop: 15,
         },

@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 import { translateText } from '../../api/apiClient';
-import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { LanguageCode } from '../../constants/Language';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { useVoiceInput } from '../../hooks';
 import { useLanguage, useWords } from '../../store';
 import { Word } from '../../types';
-import { ActionButton, CustomText, Header } from '../components';
 import { Alert, WordInput } from '../components/flashcards';
 import { CustomTheme } from '../Theme';
+import { GenericBottomSheet } from './GenericBottomSheet';
 import { MicrophonePermissionBottomSheet } from './MicrophonePermissionBottomSheet';
 
 type WordTranslations = {
@@ -251,103 +250,62 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
     return (
         <>
             <MicrophonePermissionBottomSheet sheetName={MICROPHONE_PERMISSION_SHEET_NAME} />
-            <TrueSheet
-                backgroundColor={colors.card}
-                detents={['auto']}
-                grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
-                name={sheetName}
+            <GenericBottomSheet
+                description={t('wordAndTranslation')}
+                primaryActionIcon={flashcardId ? 'save-sharp' : undefined}
+                primaryActionLabel={flashcardId ? t('edit') : t('add_1')}
+                primaryButtonEnabled={buttonsActive}
+                secondaryActionLabel={!flashcardId ? t('addAnother') : undefined}
+                sheetName={sheetName}
+                style={styles.bottomSheet}
+                title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
                 onDidDismiss={handleDidDismiss}
+                onPrimaryButtonPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
+                onSecondaryButtonPress={handleActionButtonPress}
             >
-                <View style={styles.root}>
-                    <Header
-                        style={styles.headerMargin}
-                        subtitle={t('wordAndTranslation')}
-                        title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
+                {status && statusMessage && (
+                    <Alert
+                        message={statusMessage}
+                        title={status == 'success' ? t('success') : t('invalidData')}
+                        type={status}
                     />
-                    {status && statusMessage && (
-                        <Alert
-                            message={statusMessage}
-                            title={status == 'success' ? t('success') : t('invalidData')}
-                            type={status}
-                        />
-                    )}
-                    <WordInput
-                        active={buttonsActive}
-                        cursorColor={!buttonsActive ? 'transparent' : colors.primary}
-                        id={'main-input'}
-                        languageCode={mainLang}
-                        pointerEvents="box-only"
-                        ref={wordInputRef}
-                        style={styles.wordInput}
-                        suggestions={wordSuggestions}
-                        word={currentWord}
-                        onWordChange={setCurrentWord}
-                        onMicrophonePermissionsNotGranted={() =>
-                            TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
-                        }
-                    />
-                    <WordInput
-                        active={buttonsActive}
-                        id={'translation-input'}
-                        languageCode={translationLang}
-                        pointerEvents="box-only"
-                        ref={translationInputRef}
-                        style={styles.wordInput}
-                        suggestions={translationSuggestions}
-                        word={currentTranslation}
-                        onWordChange={setCurrentTranslation}
-                        onMicrophonePermissionsNotGranted={() =>
-                            TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
-                        }
-                    />
-                    <ActionButton
-                        active={buttonsActive}
-                        icon={flashcardId ? 'save-sharp' : undefined}
-                        label={flashcardId ? t('edit') : t('add_1')}
-                        primary={true}
-                        style={styles.button}
-                        onPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
-                    />
-                    {!flashcardId ? (
-                        <CustomText
-                            style={styles.actionText}
-                            weight={'SemiBold'}
-                            onPress={handleActionButtonPress}
-                        >
-                            {t('addAnother')}
-                        </CustomText>
-                    ) : (
-                        <View style={styles.bottomSpacer} />
-                    )}
-                </View>
-            </TrueSheet>
+                )}
+                <WordInput
+                    active={buttonsActive}
+                    id={'main-input'}
+                    languageCode={mainLang}
+                    pointerEvents="box-only"
+                    ref={wordInputRef}
+                    suggestions={wordSuggestions}
+                    word={currentWord}
+                    onWordChange={setCurrentWord}
+                    onMicrophonePermissionsNotGranted={() =>
+                        TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
+                    }
+                />
+                <WordInput
+                    active={buttonsActive}
+                    id={'translation-input'}
+                    languageCode={translationLang}
+                    pointerEvents="box-only"
+                    ref={translationInputRef}
+                    suggestions={translationSuggestions}
+                    word={currentTranslation}
+                    onWordChange={setCurrentTranslation}
+                    onMicrophonePermissionsNotGranted={() =>
+                        TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
+                    }
+                />
+            </GenericBottomSheet>
         </>
     );
 };
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (_colors: CustomTheme['colors']) =>
     StyleSheet.create({
-        actionText: {
-            color: colors.primary,
-            fontSize: 13,
-            paddingVertical: MARGIN_VERTICAL,
-            textAlign: 'center',
-        },
-        bottomSpacer: {
-            height: MARGIN_VERTICAL,
-        },
-        button: {
-            marginTop: MARGIN_VERTICAL,
-        },
-        header: {},
-        headerMargin: {
-            marginVertical: 10,
-        },
-        root: {
-            paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL,
-        },
-        wordInput: {
+        bottomSheet: {
+            gap: 15,
+            marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 15,
         },
     });

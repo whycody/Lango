@@ -266,6 +266,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                 {status && statusMessage && (
                     <Alert
                         message={statusMessage}
+                        style={styles.alert}
                         title={status == 'success' ? t('success') : t('invalidData')}
                         type={status}
                     />
@@ -303,6 +304,9 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
 
 const getStyles = (_colors: CustomTheme['colors']) =>
     StyleSheet.create({
+        alert: {
+            marginTop: -5,
+        },
         bottomSheet: {
             gap: 15,
             marginHorizontal: MARGIN_HORIZONTAL,

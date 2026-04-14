@@ -42,12 +42,12 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                 <MarqueeRow
                     loading={!!loading}
                     reverse={true}
-                    words={['keel', 'jazyk', 'nyelv', 'язык', 'језик', 'ژبه']}
+                    words={['keel', 'jazyk', 'nyelv', 'язык', 'језик', 'limbă']}
                 />
                 <MarqueeRow
                     loading={!!loading}
                     reverse={false}
-                    words={['sprache', 'tungumál', 'linguaggio', 'cànan', 'gjuhe', 'لغة']}
+                    words={['sprache', 'tungumál', 'linguaggio', 'cànan', 'gjuhe', 'tunga']}
                 />
                 <MarqueeRow
                     loading={!!loading}

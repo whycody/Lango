@@ -63,6 +63,7 @@ const getStyles = () =>
     StyleSheet.create({
         exampleCard: {
             alignSelf: 'stretch',
+            flex: 0,
             height: 350,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,

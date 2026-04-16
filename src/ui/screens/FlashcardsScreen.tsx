@@ -1,8 +1,16 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import {
+    BackHandler,
+    Keyboard,
+    Platform,
+    Pressable,
+    StyleSheet,
+    TextInput,
+    View,
+} from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useTheme } from '@react-navigation/native';
+import { useFocusEffect, useTheme } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from 'react-native-paper';
@@ -92,6 +100,23 @@ export const FlashcardsScreen = () => {
         setSearchingMode(true);
         setTimeout(() => inputRef?.current?.focus(), 100);
     };
+
+    useFocusEffect(
+        useCallback(() => {
+            const handleBackPress = () => {
+                if (!searchingMode) return false;
+
+                turnOffSearchingMode();
+                return true;
+            };
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+            return () => {
+                subscription.remove();
+            };
+        }, [searchingMode]),
+    );
 
     const handleActionButtonPress = () => {
         setEditFlashcardId(undefined);

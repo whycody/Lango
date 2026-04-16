@@ -1,6 +1,8 @@
 export default ({ config }) => {
-    const isTest = process.env.EAS_BUILD_PROFILE === 'test';
-    const isDev = process.env.EAS_BUILD_PROFILE === 'development';
+    const profile = (process.env.EAS_BUILD_PROFILE || process.env.APP_VARIANT).toLowerCase();
+
+    const isTest = profile === 'test';
+    const isDev = profile === 'development' || profile === 'dev';
 
     return {
         ...config,

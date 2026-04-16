@@ -356,7 +356,6 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     };
 
     const handleSessionExit = () => {
-        TrueSheet.dismiss(SESSION_LEAVE_SESSION_BOTTOM_SHEET);
         saveProgress(false);
         trackEvent(AnalyticsEventName.SESSION_SKIPPED, {
             evaluatedCount: wordsUpdates.length,

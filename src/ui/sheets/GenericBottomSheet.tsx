@@ -1,10 +1,9 @@
 import React, { ReactNode } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { GrabberOptions, TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 
-import { BOTTOM_SHEET_GRABBER_OPTIONS } from '../../constants/Common';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { ActionButton } from '../components/ActionButton';
 import { CustomText } from '../components/CustomText';
@@ -24,6 +23,11 @@ type GenericBottomSheetProps = {
     sheetName: string;
     title?: string;
     style?: StyleProp<ViewStyle>;
+};
+
+const BOTTOM_SHEET_GRABBER_OPTIONS: GrabberOptions = {
+    color: 'white',
+    cornerRadius: 0,
 };
 
 export const GenericBottomSheet = (props: GenericBottomSheetProps) => {

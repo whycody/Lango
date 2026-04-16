@@ -85,10 +85,6 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
         setFocused(false);
     };
 
-    const handleSuggestionPress = (suggestion: string) => {
-        onWordChange?.(suggestion);
-    };
-
     return (
         <View>
             <View style={[styles.root, style]}>
@@ -132,7 +128,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                     scrollEnabled={false}
                     style={styles.suggestionsList}
                     renderItem={({ item }) => (
-                        <Pressable onPress={() => handleSuggestionPress(item)}>
+                        <Pressable onPress={() => onWordChange?.(item)}>
                             <View style={styles.suggestionItem}>
                                 <CustomText style={styles.suggestionText}>{item}</CustomText>
                             </View>

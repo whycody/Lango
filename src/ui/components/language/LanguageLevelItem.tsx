@@ -37,7 +37,7 @@ export const LanguageLevelItem: FC<LanguageLevelItemProps> = ({
                 start={{ x: 0, y: 0 }}
             >
                 <Pressable
-                    android_ripple={{ color: colors.background }}
+                    android_ripple={{ color: colors.background, foreground: true }}
                     style={styles.root}
                     onPress={() => onPress(level)}
                 >

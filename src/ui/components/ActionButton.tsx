@@ -90,7 +90,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
             }}
         >
             <Pressable
-                android_ripple={{ color: primary ? 'white' : colors.card }}
+                android_ripple={{ color: primary ? 'white' : colors.card, foreground: true }}
                 style={[styles.root, style]}
                 onPress={active && !loading ? handlePress : undefined}
                 onPressIn={active && !loading ? handlePressIn : undefined}

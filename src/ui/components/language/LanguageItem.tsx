@@ -26,7 +26,7 @@ export const LanguageItem = memo<LanguageItemProps>(
         return (
             <Pressable
                 key={language.languageCode}
-                android_ripple={onPress && { color: colors.background }}
+                android_ripple={onPress && { color: colors.background, foreground: true }}
                 style={style}
                 onPress={onPress}
             >

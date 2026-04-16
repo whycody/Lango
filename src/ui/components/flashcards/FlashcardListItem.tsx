@@ -30,7 +30,7 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
 
         return (
             <Pressable
-                android_ripple={{ color: 'red' }}
+                android_ripple={{ color: colors.card, foreground: true }}
                 style={[styles.root, style]}
                 onPress={() => onPress?.(id)}
             >

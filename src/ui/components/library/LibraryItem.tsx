@@ -33,6 +33,7 @@ export const LibraryItem = memo<LibraryItemProps>(
             <Pressable
                 android_ripple={{
                     color: index % 2 === 0 ? colors.card : colors.background,
+                    foreground: true,
                 }}
                 style={({ pressed }) => [
                     styles.root,

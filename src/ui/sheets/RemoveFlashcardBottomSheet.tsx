@@ -1,8 +1,9 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { MARGIN_VERTICAL } from '../../constants/margins';
 import { useWordsWithDetails } from '../../store';
-import { Header } from '../components';
 import { FlashcardListItem } from '../components/flashcards';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
@@ -27,6 +28,7 @@ export const RemoveFlashcardBottomSheet = (props: RemoveFlashcardBottomSheetProp
             primaryActionLabel={t('continue')}
             secondaryActionLabel={t('cancel')}
             sheetName={props.sheetName}
+            style={styles.bottomSheet}
             title={t('removingFlashcard')}
             onPrimaryButtonPress={props.onRemove}
             onSecondaryButtonPress={props.onCancel}
@@ -40,3 +42,9 @@ export const RemoveFlashcardBottomSheet = (props: RemoveFlashcardBottomSheetProp
         </GenericBottomSheet>
     );
 };
+
+const styles = StyleSheet.create({
+    bottomSheet: {
+        marginTop: MARGIN_VERTICAL / 1.5,
+    },
+});

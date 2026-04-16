@@ -25,7 +25,7 @@ export const SortingMethodItem = memo<SortingMethodItemProps>(
         return (
             <Pressable
                 key={label}
-                android_ripple={{ color: colors.background }}
+                android_ripple={{ color: colors.background, foreground: true }}
                 style={style}
                 onPress={() => onPress(id)}
             >

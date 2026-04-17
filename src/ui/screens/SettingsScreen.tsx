@@ -223,7 +223,7 @@ export const SettingsScreen = () => {
                     );
                     break;
                 case SettingsItems.SUGGESTIONS_IN_SESSION:
-                    updateUserSuggestionsInSession(!user?.suggestionsInSession);
+                    updateUserSuggestionsInSession(!(user?.suggestionsInSession ?? false));
                     break;
                 case SettingsItems.SESSION_SPEECH_SYNTHESIZER:
                     userPreferences.setSessionSpeechSynthesizer(
@@ -234,7 +234,12 @@ export const SettingsScreen = () => {
                     break;
             }
         },
-        [userPreferences, notificationsEnabled],
+        [
+            userPreferences,
+            notificationsEnabled,
+            user?.suggestionsInSession,
+            updateUserSuggestionsInSession,
+        ],
     );
 
     const renderSettingsItem = ({ index, item }: { index: number; item: SettingItem }) => (

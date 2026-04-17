@@ -34,6 +34,11 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
         return clearFlipTimeout;
     }, [flip, visible]);
 
+    const onFlipStart = () => {
+        clearFlipTimeout();
+        timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
+    };
+
     return (
         <GenericBottomSheet
             description={t('hit_flashcard_bottom_sheet.desc')}
@@ -44,7 +49,13 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
             onDidPresent={() => setVisible(true)}
             onPrimaryButtonPress={() => TrueSheet.dismiss(props.sheetName)}
         >
-            <FlipCard flipHorizontal flip={flip} flipVertical={false} style={styles.exampleCard}>
+            <FlipCard
+                flipHorizontal
+                flip={flip}
+                flipVertical={false}
+                style={styles.exampleCard}
+                onFlipStart={onFlipStart}
+            >
                 <Card text={t('hit_flashcard_bottom_sheet.word')} />
                 <Card text={t('hit_flashcard_bottom_sheet.translation')} />
             </FlipCard>

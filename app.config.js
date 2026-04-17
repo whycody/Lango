@@ -1,12 +1,24 @@
 export default ({ config }) => {
     const profile = process.env.EAS_BUILD_PROFILE || process.env.APP_VARIANT;
+    const easPlatform = process.env.EAS_BUILD_PLATFORM;
+    const appPlatform = process.env.APP_PLATFORM;
+    const argv = process.argv.join(' ');
 
     const isTest = profile === 'test';
     const isDev = profile === 'development' || profile === 'dev';
+    const isIos = easPlatform === 'ios' || appPlatform === 'ios' || argv.includes('--platform ios');
 
     return {
         ...config,
         name: isTest ? 'LangoTest' : isDev ? 'LangoDev' : 'Lango',
+        ...(isIos && {
+            locales: {
+                en: './assets/locales/en.json',
+                pl: './assets/locales/pl.json',
+                es: './assets/locales/es.json',
+                it: './assets/locales/it.json',
+            },
+        }),
         android: {
             ...config.android,
             package: isTest

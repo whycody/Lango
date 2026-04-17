@@ -38,15 +38,13 @@ export const SessionSettingsBottomSheet = (props: SessionSettingsBottomSheetProp
         setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
     }, [userPreferences.flashcardSide, userPreferences.sessionSpeechSynthesizer]);
 
-    useEffect(() => {
-        return () => {
-            if (!saved.current) {
-                setFlashcardSide(userPreferences.flashcardSide);
-                setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
-            }
-            saved.current = false;
-        };
-    }, [userPreferences]);
+    const handleDismiss = () => {
+        if (!saved.current) {
+            setFlashcardSide(userPreferences.flashcardSide);
+            setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
+        }
+        saved.current = false;
+    };
 
     const handleFlashcardSideItemPress = (flashcardSide: FlashcardSide) => {
         triggerHaptics('soft');
@@ -77,6 +75,7 @@ export const SessionSettingsBottomSheet = (props: SessionSettingsBottomSheetProp
             secondaryActionLabel={t('cancel')}
             sheetName={props.sheetName}
             title={t('sessions_settings')}
+            onDidDismiss={handleDismiss}
             onPrimaryButtonPress={handleActionButtonPress}
             onSecondaryButtonPress={handleSecondaryActionButtonPress}
         >

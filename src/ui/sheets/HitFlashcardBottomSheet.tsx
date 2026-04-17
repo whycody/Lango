@@ -15,6 +15,7 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
     const { t } = useTranslation();
     const styles = getStyles();
     const [flip, setFlip] = useState(false);
+    const [visible, setVisible] = useState(false);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const clearFlipTimeout = () => {
@@ -28,14 +29,10 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
 
     useEffect(() => {
         clearFlipTimeout();
+        if (!visible) return;
         timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
         return clearFlipTimeout;
-    }, [flip]);
-
-    const onFlipStart = () => {
-        clearFlipTimeout();
-        timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
-    };
+    }, [flip, visible]);
 
     return (
         <GenericBottomSheet
@@ -43,15 +40,11 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
             primaryActionLabel={t('hit_flashcard_bottom_sheet.got_it')}
             sheetName={props.sheetName}
             title={t('hit_flashcard_bottom_sheet.title')}
+            onDidDismiss={() => setVisible(false)}
+            onDidPresent={() => setVisible(true)}
             onPrimaryButtonPress={() => TrueSheet.dismiss(props.sheetName)}
         >
-            <FlipCard
-                flipHorizontal
-                flip={flip}
-                flipVertical={false}
-                style={styles.exampleCard}
-                onFlipStart={onFlipStart}
-            >
+            <FlipCard flipHorizontal flip={flip} flipVertical={false} style={styles.exampleCard}>
                 <Card text={t('hit_flashcard_bottom_sheet.word')} />
                 <Card text={t('hit_flashcard_bottom_sheet.translation')} />
             </FlipCard>

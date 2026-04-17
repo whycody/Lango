@@ -14,6 +14,7 @@ type GenericBottomSheetProps = {
     children?: ReactNode;
     description?: string;
     onDidDismiss?: () => void;
+    onDidPresent?: () => void;
     onPrimaryButtonPress?: () => void;
     onSecondaryButtonPress?: () => void;
     primaryActionIcon?: keyof typeof Ionicons.glyphMap;
@@ -36,6 +37,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
         children,
         description,
         onDidDismiss,
+        onDidPresent,
         onPrimaryButtonPress,
         onSecondaryButtonPress,
         primaryActionIcon,
@@ -58,6 +60,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
             grabberOptions={BOTTOM_SHEET_GRABBER_OPTIONS}
             name={sheetName}
             onDidDismiss={onDidDismiss}
+            onDidPresent={onDidPresent}
         >
             <View style={styles.trueSheetRoot}>
                 {title && (

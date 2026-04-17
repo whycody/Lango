@@ -21,6 +21,7 @@ export const PickLanguageLevelBottomSheet = (props: PickLanguageLevelBottomSheet
         <GenericBottomSheet
             allowDismiss={allowDismiss}
             primaryActionLabel={t('general.cancel')}
+            primaryButtonEnabled={allowDismiss}
             sheetName={props.sheetName}
             onPrimaryButtonPress={dismiss}
         >

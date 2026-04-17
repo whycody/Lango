@@ -66,7 +66,8 @@ const NOTIFICATION_PERMISSION_STATUS = 'lastUserNotificationPermissionStatus';
 
 export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const userStorage = useUserStorage();
-    const storage = userStorage.storage ?? useMMKV();
+    const fallbackStorage = useMMKV();
+    const storage = userStorage.storage ?? fallbackStorage;
     const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(
         FLASHCARD_SIDE_KEY,
         FlashcardSide.WORD,

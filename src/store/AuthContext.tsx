@@ -56,7 +56,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [authError, setAuthError] = useState<string | null>(null);
     const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
-    const storage = user?.userId ? useMMKV({ id: `user-${user.userId}` }) : useMMKV();
+    const storageOptions = user?.userId ? { id: `user-${user.userId}` } : undefined;
+    const storage = useMMKV(storageOptions);
     const [userUpdatePayload, setUserUpdatePayload] = useMMKVObject<UserUpdatePayload | null>(
         'user-update-payload',
         storage,
@@ -97,7 +98,12 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
 
     const sendUserUpdates = async (payload: UserUpdatePayload | null) => {
-        if (!payload || (!payload.notificationsEnabled && !payload.languageLevels?.length)) {
+        if (
+            !payload ||
+            (payload.suggestionsInSession === undefined &&
+                payload.notificationsEnabled === undefined &&
+                !payload.languageLevels?.length)
+        ) {
             return false;
         }
 

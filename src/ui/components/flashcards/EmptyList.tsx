@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { CustomTheme } from '../../Theme';
 
 type EmptyListProps = {
     description?: string;
@@ -15,7 +16,7 @@ type EmptyListProps = {
 };
 
 export const EmptyList: FC<EmptyListProps> = ({ description, icon, onPress, style, title }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
 
     return (
@@ -32,7 +33,7 @@ export const EmptyList: FC<EmptyListProps> = ({ description, icon, onPress, styl
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         emptyViewContainer: {
             alignItems: 'center',

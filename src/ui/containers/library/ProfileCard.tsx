@@ -5,9 +5,10 @@ import { useTheme } from '@react-navigation/native';
 import { MARGIN_VERTICAL } from '../../../constants/margins';
 import { useAuth } from '../../../store/AuthContext';
 import { CustomText } from '../../components';
+import { CustomTheme } from '../../Theme';
 
 export const ProfileCard = () => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const auth = useAuth();
 
@@ -40,7 +41,7 @@ export const ProfileCard = () => {
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         name: {
             color: colors.primary,

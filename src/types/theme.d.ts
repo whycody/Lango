@@ -27,5 +27,6 @@ declare module '@react-navigation/native' {
             yellow600: string;
         };
         dark: boolean;
+        fonts: any;
     };
 }

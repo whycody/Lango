@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_VERTICAL } from '../../../constants/margins';
 import { SessionLength } from '../../../constants/UserPreferences';
+import { CustomTheme } from '../../../ui/Theme';
 import { CustomText } from '..';
 
 interface SessionLengthItemProps {
@@ -21,7 +22,7 @@ export const SessionLengthItem: FC<SessionLengthItemProps> = ({
     selected,
     style,
 }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, selected);
     const { t } = useTranslation();
 
@@ -57,13 +58,13 @@ export const SessionLengthItem: FC<SessionLengthItemProps> = ({
     );
 };
 
-const getStyles = (colors: any, selected: boolean) =>
+const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
     StyleSheet.create({
         pressable: {
             flex: 1,
         },
         root: {
-            flex: 1,
+            justifyContent: 'flex-end',
             opacity: selected ? 1 : 0.4,
             paddingBottom: MARGIN_VERTICAL / 2,
             paddingTop: MARGIN_VERTICAL * 1.2,
@@ -77,7 +78,6 @@ const getStyles = (colors: any, selected: boolean) =>
         },
         squaresContainer: {
             alignItems: 'center',
-            flex: 1,
             flexDirection: 'row',
             justifyContent: 'center',
         },

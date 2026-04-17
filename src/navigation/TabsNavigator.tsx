@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { Animated, BackHandler, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { CustomText } from '../ui/components';
 import { HomeScreen } from '../ui/screens/HomeScreen';
 import { LibraryScreen } from '../ui/screens/LibraryScreen';
 import { HandleFlashcardBottomSheet } from '../ui/sheets';
+import { CustomTheme } from '../ui/Theme';
 import { trackEvent } from '../utils/analytics';
 
 export type TabsParamList = {
@@ -20,30 +21,17 @@ export type TabsParamList = {
     Library: undefined;
 };
 
+const TABS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'tabs-handle-flashcard-bottom-sheet';
+
 const Tab = createBottomTabNavigator<TabsParamList>();
 
 const TabsNavigator = () => {
     const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
-    const flashcardBottomSheetRef = useRef<BottomSheetModal>(null);
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
     const haptics = useHaptics();
     const iconScale = useRef(new Animated.Value(1)).current;
-
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (bottomSheetIsShown) {
-                flashcardBottomSheetRef.current?.dismiss();
-                return true;
-            }
-            return false;
-        };
-
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-        return () => subscription.remove();
-    }, [bottomSheetIsShown]);
 
     type TabRouteProp = RouteProp<TabsParamList, keyof TabsParamList>;
 
@@ -108,15 +96,12 @@ const TabsNavigator = () => {
             mode: 'add',
             source: 'main_screen',
         });
-        flashcardBottomSheetRef.current?.present();
+        TrueSheet.present(TABS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     };
 
     return (
         <>
-            <HandleFlashcardBottomSheet
-                ref={flashcardBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index === 0)}
-            />
+            <HandleFlashcardBottomSheet sheetName={TABS_HANDLE_FLASHCARD_BOTTOM_SHEET} />
 
             <Tab.Navigator
                 screenOptions={({ route }) => ({
@@ -139,10 +124,9 @@ const TabsNavigator = () => {
                     component={View}
                     name="Add"
                     options={{
-                        tabBarButton: props => (
+                        tabBarButton: ({ style }) => (
                             <Pressable
-                                {...props}
-                                style={[props.style, styles.fabWrapper]}
+                                style={[style, styles.fabWrapper]}
                                 onPress={handleAddTabPress}
                                 onPressIn={animateIn}
                                 onPressOut={animateOut}
@@ -171,7 +155,7 @@ const TabsNavigator = () => {
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         fab: {
             alignItems: 'center',

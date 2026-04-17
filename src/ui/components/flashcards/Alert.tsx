@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 type AlertProps = {
@@ -14,7 +15,7 @@ type AlertProps = {
 };
 
 export const Alert = ({ message, style, title, type }: AlertProps) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, type);
 
     return (
@@ -36,7 +37,7 @@ export const Alert = ({ message, style, title, type }: AlertProps) => {
     );
 };
 
-const getStyles = (colors: any, type: 'error' | 'success') =>
+const getStyles = (colors: CustomTheme['colors'], type: 'error' | 'success') =>
     StyleSheet.create({
         header: {
             color: colors.background,

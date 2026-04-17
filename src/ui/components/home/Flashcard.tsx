@@ -11,6 +11,7 @@ import { useHaptics } from '../../../hooks';
 import { useLanguage, useWords } from '../../../store';
 import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
+import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 import { FlipCard } from '../session';
 
@@ -26,7 +27,7 @@ export const Flashcard = forwardRef(
         const [newFlashcardIsReady, setNewFlashcardIsReady] = useState(false);
         const [readyToFlip, setReadyToFlip] = useState(false);
         const [flip, setFlip] = useState(false);
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { t } = useTranslation();
         const wordsContext = useWords();
@@ -140,7 +141,7 @@ export const Flashcard = forwardRef(
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         container: {
             flex: 1,

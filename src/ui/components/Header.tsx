@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
+import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 
 interface HeaderProps {
@@ -11,7 +12,7 @@ interface HeaderProps {
 }
 
 export const Header: FC<HeaderProps> = ({ style, subtitle, title }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
 
     return (
@@ -24,7 +25,7 @@ export const Header: FC<HeaderProps> = ({ style, subtitle, title }) => {
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         subtitle: {
             color: colors.primary600,

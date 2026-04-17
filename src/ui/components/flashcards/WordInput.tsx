@@ -1,15 +1,15 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import {
     FlatList,
     Pressable,
     StyleProp,
     StyleSheet,
+    TextInput,
     TextInputProps,
     View,
     ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
@@ -17,6 +17,7 @@ import { LanguageCode } from '../../../constants/Language';
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { useVoiceInput } from '../../../hooks';
 import { trackEvent } from '../../../utils/analytics';
+import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 
 type WordInputProps = TextInputProps & {
@@ -25,16 +26,13 @@ type WordInputProps = TextInputProps & {
     languageCode: LanguageCode;
     onMicrophonePermissionsNotGranted?: () => void;
     onWordChange?: (word: string) => void;
-    onWordCommit?: (word: string) => void;
     style?: StyleProp<ViewStyle>;
     suggestions?: string[];
     word: string;
 };
 
 type WordInputRef = {
-    clearWord: () => void;
     focus: () => void;
-    getWord: () => string;
 };
 
 export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) => {
@@ -44,82 +42,47 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
         languageCode,
         onMicrophonePermissionsNotGranted,
         onWordChange,
-        onWordCommit,
         style,
         suggestions,
         word,
         ...rest
     } = props;
-    const { colors } = useTheme();
+
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const [focused, setFocused] = useState(false);
-
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const [internalWord, setInternalWord] = useState(word);
-    const [currentSuggestions, setCurrentSuggestions] = useState<string[]>([]);
     const inputRef = useRef<any>(null);
+
+    const filteredSuggestions =
+        suggestions
+            ?.filter(
+                s =>
+                    s.toLowerCase().startsWith(word.toLowerCase()) &&
+                    s.toLowerCase() !== word.toLowerCase(),
+            )
+            .slice(0, 2) ?? [];
 
     const voice = useVoiceInput({
         id,
         languageCode,
-        onEnd: (result: string) => {
-            onWordCommit?.(result);
-        },
         onPermissionDenied: onMicrophonePermissionsNotGranted,
         onResult: text => {
             trackEvent(AnalyticsEventName.MICROPHONE_WORD_INPUT);
-            setInternalWord(text);
             onWordChange?.(text);
         },
     });
 
     useImperativeHandle(ref, () => ({
-        clearWord: () => setInternalWord(''),
         focus: () => inputRef.current?.focus(),
-        getWord: () => internalWord,
     }));
-
-    useEffect(() => {
-        const filteredSuggestions = suggestions
-            ? suggestions
-                  .filter(
-                      suggestion =>
-                          suggestion.toLowerCase().startsWith(internalWord.toLowerCase()) &&
-                          suggestion.toLowerCase() !== internalWord.toLowerCase(),
-                  )
-                  .slice(0, 2)
-            : [];
-
-        setCurrentSuggestions(filteredSuggestions);
-    }, [internalWord, suggestions]);
 
     const handleTextChange = (newWord: string) => {
         if (!active) return;
-
-        setInternalWord(newWord);
         onWordChange?.(newWord);
-
-        if (voice.recording) return;
-
-        if (debounceRef.current) {
-            clearTimeout(debounceRef.current);
-        }
-
-        debounceRef.current = setTimeout(() => {
-            onWordCommit?.(newWord);
-        }, 450);
     };
 
     const handleBlur = () => {
-        onWordCommit?.(internalWord);
         setFocused(false);
-    };
-
-    const handleSuggestionPress = (suggestion: string) => {
-        setCurrentSuggestions([]);
-        setInternalWord(suggestion);
-        onWordChange(suggestion);
-        onWordCommit(suggestion);
     };
 
     return (
@@ -127,7 +90,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
             <View style={[styles.root, style]}>
                 <SquareFlag languageCode={languageCode} size={30} style={styles.flag} />
                 <View style={styles.inputContainer}>
-                    <BottomSheetTextInput
+                    <TextInput
                         autoCapitalize={'none'}
                         autoCorrect={true}
                         cursorColor={active ? colors.primary : 'transparent'}
@@ -137,11 +100,11 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                         scrollEnabled={true}
                         style={styles.input}
                         textContentType={'none'}
-                        value={internalWord}
+                        value={word}
                         placeholder={
-                            currentSuggestions && !focused && currentSuggestions
-                                ? currentSuggestions[0]
-                                : undefined
+                            focused || !filteredSuggestions.length
+                                ? undefined
+                                : filteredSuggestions[0]
                         }
                         onBlur={handleBlur}
                         onChangeText={handleTextChange}
@@ -157,15 +120,15 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                     />
                 </View>
             </View>
-            {currentSuggestions.length > 0 && focused && (
+            {filteredSuggestions.length > 0 && focused && (
                 <FlatList
-                    data={currentSuggestions}
+                    data={filteredSuggestions}
                     keyExtractor={index => index.toString()}
                     keyboardShouldPersistTaps={'always'}
                     scrollEnabled={false}
                     style={styles.suggestionsList}
                     renderItem={({ item }) => (
-                        <Pressable onPress={() => handleSuggestionPress(item)}>
+                        <Pressable onPress={() => onWordChange?.(item)}>
                             <View style={styles.suggestionItem}>
                                 <CustomText style={styles.suggestionText}>{item}</CustomText>
                             </View>
@@ -177,7 +140,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
     );
 });
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         flag: {
             marginRight: 10,
@@ -191,7 +154,7 @@ const getStyles = (colors: any) =>
             flex: 1,
             fontFamily: `Montserrat-Regular`,
             fontSize: 16,
-            lineHeight: 30,
+            lineHeight: 21,
             minHeight: 42,
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
         },

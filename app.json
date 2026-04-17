@@ -1,23 +1,20 @@
 {
     "expo": {
-        "sdkVersion": "52.0.0",
-        "jsEngine": "hermes",
         "name": "Lango",
         "slug": "lango",
-        "version": "1.3.10",
+        "version": "1.4.0",
         "orientation": "portrait",
-        "newArchEnabled": true,
         "icon": "./assets/logo.png",
         "userInterfaceStyle": "light",
-        "runtimeVersion": "1.3",
+        "runtimeVersion": "1.4",
         "splash": {
             "backgroundColor": "#0f0f30"
         },
         "locales": {
-            "en": "./languages/en.json",
-            "pl": "./languages/pl.json",
-            "es": "./languages/es.json",
-            "it": "./languages/it.json"
+            "en": "./assets/locales/en.json",
+            "pl": "./assets/locales/pl.json",
+            "es": "./assets/locales/es.json",
+            "it": "./assets/locales/it.json"
         },
         "plugins": [
             [
@@ -52,9 +49,8 @@
                 "expo-build-properties",
                 {
                     "android": {
-                        "compileSdkVersion": 35,
-                        "targetSdkVersion": 35,
-                        "buildToolsVersion": "35.0.0"
+                        "compileSdkVersion": 36,
+                        "targetSdkVersion": 36
                     }
                 }
             ],
@@ -90,7 +86,6 @@
                 "backgroundColor": "#07071b"
             },
             "googleServicesFile": "./config/google-services.json",
-            "edgeToEdgeEnabled": true,
             "package": "com.whycody.lango"
         },
         "web": {

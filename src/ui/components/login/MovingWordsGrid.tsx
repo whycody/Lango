@@ -55,5 +55,6 @@ const styles = StyleSheet.create({
         color: '#A0D5FF',
         fontSize: 16,
         fontWeight: '600',
+        textAlignVertical: 'center',
     },
 });

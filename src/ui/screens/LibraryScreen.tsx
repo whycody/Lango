@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { BackHandler, FlatList, Linking, ScrollView, StyleSheet, View } from 'react-native';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { FlatList, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,35 +10,24 @@ import { useDynamicStatusBar } from '../../hooks';
 import { ScreenName } from '../../navigation/navigationTypes';
 import { useAuth, useLanguage, useWords } from '../../store';
 import { LibraryNavProp } from '../../types';
+import { LibraryItem as LibraryItemType } from '../../types/utils/LibraryItem';
 import { trackEvent } from '../../utils/analytics';
-import { LibraryItem } from '../components/library';
+import { LibraryItem as LibraryItemRow } from '../components/library';
 import { ProfileCard } from '../containers';
 import { LanguageBottomSheet } from '../sheets';
+
+const LIBRARY_LANGUAGE_SHEET_NAME = 'library-language-sheet';
 
 export const LibraryScreen = () => {
     const { t } = useTranslation();
     const { langWords } = useWords();
     const navigation = useNavigation<LibraryNavProp>();
     const langContext = useLanguage();
-    const languageBottomSheetRef = useRef<BottomSheetModal>();
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
 
     const { onScroll, style } = useDynamicStatusBar(100, 0.3);
     const insets = useSafeAreaInsets();
     const styles = getStyles(insets);
     const authContext = useAuth();
-
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (bottomSheetIsShown) {
-                languageBottomSheetRef.current?.dismiss();
-                return true;
-            }
-        };
-
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-        return () => subscription.remove();
-    }, [bottomSheetIsShown]);
 
     const currentLang = langContext.languages.filter(
         lang => lang.languageCode === langContext.mainLang,
@@ -57,7 +45,7 @@ export const LibraryScreen = () => {
         }
     };
 
-    const libraryItems = [
+    const libraryItems: LibraryItemType[] = [
         {
             description: t('settings_desc'),
             icon: 'settings-sharp',
@@ -102,7 +90,7 @@ export const LibraryScreen = () => {
                     source: 'library_screen',
                     type: 'main',
                 });
-                languageBottomSheetRef.current?.present();
+                TrueSheet.present(LIBRARY_LANGUAGE_SHEET_NAME);
                 break;
             case LibraryItems.LOGOUT:
                 authContext.logout();
@@ -124,8 +112,8 @@ export const LibraryScreen = () => {
         }
     };
 
-    const renderLibraryItem = ({ index, item }) => (
-        <LibraryItem
+    const renderLibraryItem = ({ index, item }: { index: number; item: LibraryItemType }) => (
+        <LibraryItemRow
             key={item.id}
             description={item.description}
             icon={item.icon}
@@ -139,10 +127,7 @@ export const LibraryScreen = () => {
         <>
             <View style={style} />
             <ScrollView showsHorizontalScrollIndicator={false} onScroll={onScroll}>
-                <LanguageBottomSheet
-                    ref={languageBottomSheetRef}
-                    onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
-                />
+                <LanguageBottomSheet sheetName={LIBRARY_LANGUAGE_SHEET_NAME} />
                 <View style={styles.spacer} />
                 <ProfileCard />
                 <FlatList

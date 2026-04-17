@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 type SortingMethodItemProps = {
@@ -18,13 +19,13 @@ type SortingMethodItemProps = {
 
 export const SortingMethodItem = memo<SortingMethodItemProps>(
     ({ checked, id, index, label, onPress, style }) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
         return (
             <Pressable
                 key={label}
-                android_ripple={{ color: colors.background }}
+                android_ripple={{ color: colors.background, foreground: true }}
                 style={style}
                 onPress={() => onPress(id)}
             >
@@ -48,7 +49,7 @@ export const SortingMethodItem = memo<SortingMethodItemProps>(
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         container: {
             alignItems: 'center',

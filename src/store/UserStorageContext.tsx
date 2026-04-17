@@ -14,7 +14,7 @@ const UserStorageContext = createContext<UserStorageContextType>({
 export const UserStorageProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAuth();
 
-    const storage = user?.userId ? useMMKV({ id: `user-${user.userId}` }) : useMMKV();
+    const storage = useMMKV({ id: user?.userId ? `user-${user.userId}` : 'user-storage' });
 
     return (
         <UserStorageContext.Provider value={{ storage }}>{children}</UserStorageContext.Provider>

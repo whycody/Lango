@@ -21,6 +21,7 @@ import { useMMKV } from 'react-native-mmkv';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { LanguageCode } from './src/constants/Language';
+import { CustomTheme } from './src/ui/Theme';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {
     // Ignore splash-screen startup errors to avoid unhandled promise rejections.
@@ -99,7 +100,7 @@ export default function App() {
     );
 }
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         emptyView: {
             flex: 1,

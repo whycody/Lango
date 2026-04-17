@@ -56,8 +56,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [authError, setAuthError] = useState<string | null>(null);
     const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
-    const storage = user?.userId ? useMMKV({ id: `user-${user.userId}` }) : useMMKV();
-    const [userUpdatePayload, setUserUpdatePayload] = useMMKVObject<UserUpdatePayload>(
+    const storage = useMMKV({ id: user?.userId ? `user-${user.userId}` : 'user-storage' });
+    const [userUpdatePayload, setUserUpdatePayload] = useMMKVObject<UserUpdatePayload | null>(
         'user-update-payload',
         storage,
     );
@@ -71,8 +71,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             let loggedUser = await getUserInfo();
 
             if (loggedUser) {
-                const userUpdated = await sendUserUpdates(userUpdatePayload);
-                loggedUser = userUpdated ? await getUserInfo() : loggedUser;
+                const userUpdated = await sendUserUpdates(userUpdatePayload ?? null);
+                loggedUser = userUpdated ? ((await getUserInfo()) ?? loggedUser) : loggedUser;
                 setUser(loggedUser);
                 await setAnalyticsUserData(loggedUser, true);
                 setIsAuthenticated(true);
@@ -86,25 +86,30 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             }
 
             setIsAuthenticated(false);
-        } catch (error) {
+        } catch (error: any) {
             if (axios.isAxiosError(error) && error.code === AxiosError.ERR_NETWORK && user) {
                 setUser(user);
                 setIsAuthenticated(true);
             }
-            if (error.response?.status !== 401) return;
+            if (error?.response?.status !== 401) return;
             await removeData();
         }
     };
 
-    const sendUserUpdates = async (payload?: UserUpdatePayload) => {
-        if (!payload || (!payload.notificationsEnabled && !payload.languageLevels?.length)) {
+    const sendUserUpdates = async (payload: UserUpdatePayload | null) => {
+        if (
+            !payload ||
+            (payload.suggestionsInSession === undefined &&
+                payload.notificationsEnabled === undefined &&
+                !payload.languageLevels?.length)
+        ) {
             return false;
         }
 
         let updated = false;
 
-        if (payload?.suggestionsInSession !== undefined) {
-            const res = await updateNotificationsEnabled(userUpdatePayload.suggestionsInSession);
+        if (payload.suggestionsInSession !== undefined) {
+            const res = await updateSuggestionsInSession(payload.suggestionsInSession);
             if (res) {
                 setUserUpdatePayload(payload =>
                     payload ? { ...payload, suggestionsInSession: undefined } : null,
@@ -114,9 +119,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
 
         if (payload?.notificationsEnabled !== undefined) {
-            const res = await updateNotificationsEnabled(userUpdatePayload.notificationsEnabled);
+            const res = await updateNotificationsEnabled(payload.notificationsEnabled);
             if (res) {
-                if (userUpdatePayload.notificationsEnabled) await registerNotificationsToken();
+                if (payload.notificationsEnabled) await registerNotificationsToken();
                 setUserUpdatePayload(payload =>
                     payload ? { ...payload, notificationsEnabled: undefined } : null,
                 );
@@ -125,7 +130,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
 
         if (payload?.languageLevels?.length) {
-            const res = await updateLanguageLevels(userUpdatePayload.languageLevels);
+            const res = await updateLanguageLevels(payload.languageLevels);
             if (res) {
                 setUserUpdatePayload(payload =>
                     payload ? { ...payload, languageLevels: undefined } : null,
@@ -185,14 +190,17 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         if (updated) {
             await getSession();
-            setUserUpdatePayload({ ...userUpdatePayload, languageLevels: undefined });
+            setUserUpdatePayload(payload => ({
+                ...(payload ?? {}),
+                languageLevels: undefined,
+            }));
             return;
         }
 
-        setUserUpdatePayload({
-            ...userUpdatePayload,
+        setUserUpdatePayload(payload => ({
+            ...(payload ?? {}),
             languageLevels: levelsToUpdate,
-        });
+        }));
     };
 
     const removeData = async () => {
@@ -233,7 +241,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             }
 
             const data = await AccessToken.getCurrentAccessToken();
-            const res = await signInWithFacebook(data.accessToken);
+            const res = data && (await signInWithFacebook(data.accessToken));
 
             if (!res) return;
 
@@ -241,7 +249,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, {
                 provider: UserProvider.FACEBOOK,
             });
-        } catch (apiError) {
+        } catch (apiError: any) {
             const errorMessage = apiError?.response?.data?.error?.message || 'Something went wrong';
             await trackEvent(AnalyticsEventName.LOGIN_FAILURE, {
                 provider: UserProvider.FACEBOOK,
@@ -253,7 +261,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
     };
 
-    const handleGoogleSignInError = async error => {
+    const handleGoogleSignInError = async (error: any) => {
         let errorMessage = 'Unknown error';
 
         if (error.code) {
@@ -293,9 +301,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             await GoogleSignin.hasPlayServices();
             const response = await GoogleSignin.signIn();
 
-            if (!response.data) return;
+            if (!response.data?.idToken) return;
 
-            const res = await signInWithGoogle(response.data.idToken);
+            const res = await signInWithGoogle(response?.data?.idToken);
 
             if (!res) return;
 
@@ -327,6 +335,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 .filter(Boolean)
                 .join(' ');
 
+            if (!credential.identityToken) return;
+
             const res = await signInWithApple(credential.identityToken, fullName);
 
             if (!res) return;
@@ -352,20 +362,21 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
     };
 
-    const handleReceivedTokens = async res => {
+    const handleReceivedTokens = async (res: any) => {
         await setAccessToken(res.accessToken);
         await setRefreshToken(res.refreshToken);
         await getSession();
     };
 
     async function logout() {
+        if (!user) return;
         const { provider } = user;
         try {
             const res = await signOut();
             if (!res) return;
             await removeData();
             await trackEvent(AnalyticsEventName.LOGOUT_SUCCESS, { provider });
-        } catch (error) {
+        } catch (error: any) {
             const errorMessage = error?.response?.data?.error?.message || 'Something went wrong';
             await trackEvent(AnalyticsEventName.LOGOUT_FAILURE, {
                 provider,
@@ -389,7 +400,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 updateUserLanguageLevels,
                 updateUserNotificationsEnabled,
                 updateUserSuggestionsInSession,
-                user,
+                user: user ?? null,
             }}
         >
             {children}

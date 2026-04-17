@@ -57,7 +57,7 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
 
     const handleLanguagePick = useCallback(
         (language: Language) => {
-            const setters: Record<LanguageTypes, (code: string) => void> = {
+            const setters: Record<LanguageTypes, (code: LanguageCode) => void> = {
                 [LanguageTypes.MAIN]: setMainLang,
                 [LanguageTypes.TRANSLATION]: setTranslationLang,
                 [LanguageTypes.APPLICATION]: setApplicationLang,
@@ -65,7 +65,7 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
 
             const userEvaluatedLanguageLevel =
                 (languageType === LanguageTypes.MAIN && translationLang == language.languageCode) ||
-                user.languageLevels?.some(level => level.language == language.languageCode);
+                user?.languageLevels?.some(level => level.language == language.languageCode);
 
             if (
                 languageType !== LanguageTypes.MAIN ||

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, SectionList, StyleSheet, View } from 'react-native';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { SectionList, StyleSheet, View } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import { PermissionStatus } from 'expo-notifications';
@@ -16,22 +16,25 @@ import { useDynamicStatusBar } from '../../hooks';
 import { useAuth, useLanguage, useUserPreferences } from '../../store';
 import { SettingItem } from '../../types';
 import { trackEvent } from '../../utils/analytics';
-import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
+import {
+    ensureNotificationsPermission,
+    isNotificationPermissionGranted,
+} from '../../utils/ensureNotificationPermission';
 import { CustomText, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
 import { LanguageBottomSheet } from '../sheets';
+import { CustomTheme } from '../Theme';
 
 const keyExtractor = (item: SettingItem) => item.id.toString();
+const SETTINGS_LANGUAGE_SHEET_NAME = 'settings-language-sheet';
 
 export const SettingsScreen = () => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
     const { t } = useTranslation();
     const { applicationLang, languages, mainLang, translationLang } = useLanguage();
     const { updateUserNotificationsEnabled, updateUserSuggestionsInSession, user } = useAuth();
-    const languageBottomSheetRef = useRef<BottomSheetModal>();
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
     const userPreferences = useUserPreferences();
 
     const currentMainLang = languages.filter(lang => lang.languageCode === mainLang)[0]
@@ -47,23 +50,15 @@ export const SettingsScreen = () => {
     const { onScroll, style } = useDynamicStatusBar(100, 0.5);
     const notificationsEnabled =
         userPreferences.notificationsPermissionStatus == PermissionStatus.GRANTED &&
-        user.notificationsEnabled;
-
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (bottomSheetIsShown) {
-                languageBottomSheetRef.current?.dismiss();
-                return true;
-            }
-        };
-
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-        return () => subscription.remove();
-    }, [bottomSheetIsShown]);
+        user?.notificationsEnabled;
 
     useLayoutEffect(() => {
         const checkPermissions = async () => {
-            const { status } = await Notifications.getPermissionsAsync();
+            const permissions = await Notifications.getPermissionsAsync();
+            const status = isNotificationPermissionGranted(permissions)
+                ? PermissionStatus.GRANTED
+                : PermissionStatus.DENIED;
+
             userPreferences.setNotificationsPermissionStatus(status);
         };
 
@@ -134,8 +129,8 @@ export const SettingsScreen = () => {
                 section: SettingsSections.PREFERENCES,
             },
             {
-                description: t(`turned_${user.suggestionsInSession ? 'on' : 'off'}_m`),
-                enabled: user.suggestionsInSession,
+                description: t(`turned_${user?.suggestionsInSession ? 'on' : 'off'}_m`),
+                enabled: user?.suggestionsInSession,
                 icon: 'create-sharp',
                 id: SettingsItems.SUGGESTIONS_IN_SESSION,
                 label: t('new_words_suggestions'),
@@ -189,7 +184,7 @@ export const SettingsScreen = () => {
                 return LanguageTypes.MAIN;
             case SettingsItems.TRANSLATION_LANGUAGE:
                 return LanguageTypes.TRANSLATION;
-            case SettingsItems.APPLICATION_LANGUAGE:
+            default:
                 return LanguageTypes.APPLICATION;
         }
     };
@@ -211,7 +206,7 @@ export const SettingsScreen = () => {
                                   : 'app',
                     });
                     setPickedLanguageType(languageType);
-                    languageBottomSheetRef.current?.present();
+                    TrueSheet.present(SETTINGS_LANGUAGE_SHEET_NAME);
                     break;
                 }
                 case SettingsItems.VIBRATIONS:
@@ -228,7 +223,7 @@ export const SettingsScreen = () => {
                     );
                     break;
                 case SettingsItems.SUGGESTIONS_IN_SESSION:
-                    updateUserSuggestionsInSession(!user.suggestionsInSession);
+                    updateUserSuggestionsInSession(!(user?.suggestionsInSession ?? false));
                     break;
                 case SettingsItems.SESSION_SPEECH_SYNTHESIZER:
                     userPreferences.setSessionSpeechSynthesizer(
@@ -239,10 +234,15 @@ export const SettingsScreen = () => {
                     break;
             }
         },
-        [userPreferences, notificationsEnabled, languageBottomSheetRef],
+        [
+            userPreferences,
+            notificationsEnabled,
+            user?.suggestionsInSession,
+            updateUserSuggestionsInSession,
+        ],
     );
 
-    const renderSettingsItem = ({ index, item }) => (
+    const renderSettingsItem = ({ index, item }: { index: number; item: SettingItem }) => (
         <LibraryItem
             key={item.id}
             description={item.description}
@@ -250,7 +250,7 @@ export const SettingsScreen = () => {
             icon={item.icon}
             index={0}
             label={item.label}
-            style={index !== 0 && { borderColor: colors.card, borderTopWidth: 3 }}
+            style={index !== 0 ? { borderColor: colors.card, borderTopWidth: 3 } : undefined}
             onPress={() => handlePress(item.id)}
         />
     );
@@ -267,7 +267,11 @@ export const SettingsScreen = () => {
     const renderListFooterComponent = () => <VersionFooter style={styles.footer} />;
 
     const sections = useMemo(() => {
-        return Object.values(SettingsSections).map((section: number) => ({
+        const sectionValues = Object.values(SettingsSections).filter(
+            (value): value is SettingsSections => typeof value === 'number',
+        );
+
+        return sectionValues.map(section => ({
             data: settingsItems.filter(item => item.section === section),
             title: getSectionTitle(section),
         }));
@@ -278,8 +282,7 @@ export const SettingsScreen = () => {
             <LanguageBottomSheet
                 allLanguages={true}
                 languageType={pickedLanguageType}
-                ref={languageBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
+                sheetName={SETTINGS_LANGUAGE_SHEET_NAME}
             />
             <View style={styles.root}>
                 <View style={style} />
@@ -308,7 +311,7 @@ export const SettingsScreen = () => {
     );
 };
 
-const getStyles = (colors: any, insets: EdgeInsets) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         footer: {
             marginVertical: MARGIN_VERTICAL / 2,

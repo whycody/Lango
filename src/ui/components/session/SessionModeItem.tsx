@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide } from '../../../constants/UserPreferences';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 interface SessionModeItemProps {
@@ -17,7 +18,7 @@ interface SessionModeItemProps {
 }
 
 export const SessionModeItem: FC<SessionModeItemProps> = ({ mode, onPress, selected, style }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, selected);
     const { t } = useTranslation();
 
@@ -57,7 +58,7 @@ export const SessionModeItem: FC<SessionModeItemProps> = ({ mode, onPress, selec
     );
 };
 
-const getStyles = (colors: any, selected: boolean) =>
+const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
     StyleSheet.create({
         icon: {
             paddingRight: 5,
@@ -67,7 +68,7 @@ const getStyles = (colors: any, selected: boolean) =>
         },
         root: {
             alignItems: 'center',
-            flex: 1,
+            flexDirection: 'column',
             justifyContent: 'center',
             opacity: selected ? 1 : 0.4,
             paddingHorizontal: 15,

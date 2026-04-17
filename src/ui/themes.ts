@@ -1,7 +1,11 @@
+import { DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
+
 import { CustomTheme } from './Theme';
 
 export const DarkTheme: CustomTheme = {
+    ...NavigationDarkTheme,
     colors: {
+        ...NavigationDarkTheme.colors,
         background: '#0f0f30',
         border: '#333333',
         card: '#07071b',

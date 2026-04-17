@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CustomText } from '../../components/CustomText';
+import { CustomTheme } from '../../Theme';
 
 type LoadingViewProps = {};
 
 export const LoadingView: FC<LoadingViewProps> = () => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
@@ -32,7 +33,7 @@ export const LoadingView: FC<LoadingViewProps> = () => {
     );
 };
 
-const getStyles = (colors: any, insets: EdgeInsets) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         content: {
             alignItems: 'center',

@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { getLevelColor } from '../../../utils/getLevelColor';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 type FlashcardListItemProps = {
@@ -20,7 +21,7 @@ type FlashcardListItemProps = {
 
 export const FlashcardListItem = memo<FlashcardListItemProps>(
     ({ id, level, onEditPress, onPress, onRemovePress, style, text, translation }) => {
-        const { colors } = useTheme();
+        const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
         const getColor = useCallback((level: number) => {
@@ -29,7 +30,7 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
 
         return (
             <Pressable
-                android_ripple={{ color: colors.card }}
+                android_ripple={{ color: colors.card, foreground: true }}
                 style={[styles.root, style]}
                 onPress={() => onPress?.(id)}
             >
@@ -65,7 +66,7 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
     },
 );
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         container: {
             alignItems: 'center',

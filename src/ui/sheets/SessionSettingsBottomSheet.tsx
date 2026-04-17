@@ -1,6 +1,6 @@
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
@@ -8,19 +8,18 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { FlashcardSide } from '../../constants/UserPreferences';
 import { useHaptics } from '../../hooks';
 import { useLanguage, useUserPreferences } from '../../store';
-import { ActionButton, CustomText, Header } from '../components';
-import { SessionModeItem, SessionSpeechSynthesizerItem } from '../components/session';
+import { CustomText } from '../components';
+import { SessionModeItem } from '../components/session/SessionModeItem';
+import { SessionSpeechSynthesizerItem } from '../components/session/SessionSpeechSynthesizerItem';
+import { CustomTheme } from '../Theme';
+import { GenericBottomSheet } from './GenericBottomSheet';
 
 type SessionSettingsBottomSheetProps = {
-    onChangeIndex?: (index: number) => void;
-    onSettingsSave: () => void;
+    sheetName: string;
 };
 
-export const SessionSettingsBottomSheet = forwardRef<
-    BottomSheetModal,
-    SessionSettingsBottomSheetProps
->((props, ref: ForwardedRef<BottomSheetModal>) => {
-    const { colors } = useTheme();
+export const SessionSettingsBottomSheet = (props: SessionSettingsBottomSheetProps) => {
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const userPreferences = useUserPreferences();
     const [flashcardSide, setFlashcardSide] = useState<FlashcardSide>(
@@ -39,24 +38,13 @@ export const SessionSettingsBottomSheet = forwardRef<
         setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
     }, [userPreferences.flashcardSide, userPreferences.sessionSpeechSynthesizer]);
 
-    const handleChangingIndex = (index: number) => {
-        if (index == -1) {
-            if (!saved.current) {
-                setFlashcardSide(userPreferences.flashcardSide);
-                setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
-            }
-            saved.current = false;
+    const handleDismiss = () => {
+        if (!saved.current) {
+            setFlashcardSide(userPreferences.flashcardSide);
+            setSessionSpeechSynthesizer(userPreferences.sessionSpeechSynthesizer);
         }
-
-        props.onChangeIndex?.(index);
+        saved.current = false;
     };
-
-    const renderBackdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-        ),
-        [],
-    );
 
     const handleFlashcardSideItemPress = (flashcardSide: FlashcardSide) => {
         triggerHaptics('soft');
@@ -72,103 +60,75 @@ export const SessionSettingsBottomSheet = forwardRef<
         saved.current = true;
         userPreferences.setFlashcardSide(flashcardSide);
         userPreferences.setSessionSpeechSynthesizer(sessionSpeechSynthesizer);
-        props.onSettingsSave();
+        TrueSheet.dismiss(props.sheetName);
+    };
+
+    const handleSecondaryActionButtonPress = () => {
+        TrueSheet.dismiss(props.sheetName);
     };
 
     return (
-        <BottomSheetModal
-            backdropComponent={renderBackdrop}
-            backgroundStyle={styles.bottomSheetModal}
-            handleIndicatorStyle={styles.handleIndicatorStyle}
-            index={0}
-            ref={ref}
-            onChange={handleChangingIndex}
+        <GenericBottomSheet
+            primaryActionIcon={'save-sharp'}
+            primaryActionLabel={t('save')}
+            primaryButtonEnabled={true}
+            secondaryActionLabel={t('cancel')}
+            sheetName={props.sheetName}
+            title={t('sessions_settings')}
+            onDidDismiss={handleDismiss}
+            onPrimaryButtonPress={handleActionButtonPress}
+            onSecondaryButtonPress={handleSecondaryActionButtonPress}
         >
-            <BottomSheetScrollView style={styles.root}>
-                <Header style={styles.header} title={t('sessions_settings')} />
-                <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
-                <View style={styles.sessionItemsContainer}>
-                    <SessionModeItem
-                        mode={FlashcardSide.WORD}
-                        selected={flashcardSide === FlashcardSide.WORD}
-                        onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
-                    />
-                    <SessionModeItem
-                        mode={FlashcardSide.TRANSLATION}
-                        selected={flashcardSide === FlashcardSide.TRANSLATION}
-                        onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
-                    />
-                </View>
-
-                {mainLang !== translationLang && (
-                    <>
-                        <CustomText style={styles.subtitle}>{t('speech_synthesizer')}</CustomText>
-                        <View style={styles.sessionItemsContainer}>
-                            <SessionSpeechSynthesizerItem
-                                selected={sessionSpeechSynthesizer}
-                                synthesizerOn={true}
-                                onPress={() => handleSessionSpeechSynthesizerItemPress(true)}
-                            />
-                            <SessionSpeechSynthesizerItem
-                                selected={!sessionSpeechSynthesizer}
-                                synthesizerOn={false}
-                                onPress={() => handleSessionSpeechSynthesizerItemPress(false)}
-                            />
-                        </View>
-                    </>
-                )}
-                <ActionButton
-                    icon={'save-sharp'}
-                    label={t('save')}
-                    primary={true}
-                    style={styles.button}
-                    onPress={handleActionButtonPress}
+            <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
+            <View style={styles.sessionItemsContainer}>
+                <SessionModeItem
+                    mode={FlashcardSide.WORD}
+                    selected={flashcardSide === FlashcardSide.WORD}
+                    onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
                 />
-                <CustomText
-                    style={styles.actionText}
-                    weight={'SemiBold'}
-                    onPress={props.onSettingsSave}
-                >
-                    {t('cancel')}
-                </CustomText>
-            </BottomSheetScrollView>
-        </BottomSheetModal>
-    );
-});
+                <SessionModeItem
+                    mode={FlashcardSide.TRANSLATION}
+                    selected={flashcardSide === FlashcardSide.TRANSLATION}
+                    onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
+                />
+            </View>
 
-const getStyles = (colors: any) =>
+            {mainLang !== translationLang && (
+                <>
+                    <CustomText style={styles.subtitle}>{t('speech_synthesizer')}</CustomText>
+                    <View style={styles.sessionItemsContainer}>
+                        <SessionSpeechSynthesizerItem
+                            selected={sessionSpeechSynthesizer}
+                            synthesizerOn={true}
+                            onPress={() => handleSessionSpeechSynthesizerItemPress(true)}
+                        />
+                        <SessionSpeechSynthesizerItem
+                            selected={!sessionSpeechSynthesizer}
+                            synthesizerOn={false}
+                            onPress={() => handleSessionSpeechSynthesizerItemPress(false)}
+                        />
+                    </View>
+                </>
+            )}
+        </GenericBottomSheet>
+    );
+};
+
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
-        actionText: {
-            color: colors.primary,
-            fontSize: 13,
-            paddingVertical: MARGIN_VERTICAL,
-            textAlign: 'center',
-        },
-        bottomSheetModal: {
-            backgroundColor: colors.card,
-        },
-        button: {
-            marginTop: MARGIN_VERTICAL,
-        },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
-        },
         header: {
             paddingTop: MARGIN_VERTICAL / 2,
         },
-        root: {
-            paddingHorizontal: MARGIN_HORIZONTAL,
-        },
         sessionItemsContainer: {
-            flex: 1,
             flexDirection: 'row',
             gap: 6,
+            marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 5,
         },
         subtitle: {
             color: colors.primary600,
             fontSize: 14,
+            marginHorizontal: MARGIN_HORIZONTAL,
             paddingBottom: 3,
             paddingTop: 15,
         },

@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { useHaptics } from '../../hooks';
+import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 
 interface ActionButtonProps {
@@ -30,10 +31,10 @@ export const ActionButton: FC<ActionButtonProps> = ({
     label,
     loading = false,
     onPress,
-    primary,
+    primary = false,
     style,
 }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, primary, active);
     const { triggerHaptics } = useHaptics();
     const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -89,7 +90,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
             }}
         >
             <Pressable
-                android_ripple={{ color: primary ? 'white' : colors.card }}
+                android_ripple={{ color: primary ? 'white' : colors.card, foreground: true }}
                 style={[styles.root, style]}
                 onPress={active && !loading ? handlePress : undefined}
                 onPressIn={active && !loading ? handlePressIn : undefined}
@@ -120,7 +121,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
     );
 };
 
-const getStyles = (colors: any, primary: boolean, active: boolean) =>
+const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: boolean) =>
     StyleSheet.create({
         icon: {
             marginLeft: 4,

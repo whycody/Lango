@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { SessionLength } from '../../../constants/UserPreferences';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 const RECT_HEIGHT = 13;
@@ -18,7 +19,7 @@ interface SessionLengthItemProps {
 }
 
 export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPress, style }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, level);
     const { t } = useTranslation();
 
@@ -173,7 +174,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
     );
 };
 
-const getStyles = (colors: any, level: number) =>
+const getStyles = (colors: CustomTheme['colors'], level: number) =>
     StyleSheet.create({
         rectangle: {
             backgroundColor:

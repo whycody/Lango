@@ -52,6 +52,7 @@ const AppStack = () => {
                                                 <WordsWithDetailsProvider>
                                                     <BottomSheetModalProvider>
                                                         <Stack.Navigator
+                                                            id="AppStackNavigator"
                                                             screenOptions={screenOptions}
                                                         >
                                                             <Stack.Screen

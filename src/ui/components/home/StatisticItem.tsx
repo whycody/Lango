@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { MARGIN_VERTICAL } from '../../../constants/margins';
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 interface StatisticItemProps {
@@ -15,7 +16,7 @@ interface StatisticItemProps {
 }
 
 export const StatisticItem: FC<StatisticItemProps> = ({ description, icon, label, style }) => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
 
     return (
@@ -38,7 +39,7 @@ export const StatisticItem: FC<StatisticItemProps> = ({ description, icon, label
     );
 };
 
-const getStyles = (colors: any) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         description: {
             color: colors.primary300,

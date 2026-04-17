@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
     BackHandler,
     Keyboard,
@@ -9,8 +9,8 @@ import {
     View,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useTheme } from '@react-navigation/native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { useFocusEffect, useTheme } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from 'react-native-paper';
@@ -26,15 +26,18 @@ import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil
 import { ActionButton, CustomText } from '../components';
 import { EmptyList, FlashcardListItem, ListFilter } from '../components/flashcards';
 import { StatisticItem } from '../components/home';
-import {
-    HandleFlashcardBottomSheet,
-    RemoveFlashcardBottomSheet,
-    SortingMethodBottomSheet,
-} from '../sheets';
+import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
+import { RemoveFlashcardBottomSheet } from '../sheets/RemoveFlashcardBottomSheet';
+import { SortingMethodBottomSheet } from '../sheets/SortingMethodBottomSheet';
+import { CustomTheme } from '../Theme';
+
+const FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'flashcards-handle-flashcard-bottom-sheet';
+const FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'flashcards-remove-flashcard-bottom-sheet';
+const FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET = 'flashcards-sorting-method-bottom-sheet';
 
 export const FlashcardsScreen = () => {
     const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
     const wordsContext = useWords();
@@ -45,11 +48,7 @@ export const FlashcardsScreen = () => {
     ).length;
     const { flashcardsSortingMethod } = useUserPreferences();
 
-    const handleFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
-    const removeFlashcardBottomSheetRef = useRef<BottomSheetModal>(null);
-    const sortingMethodBottomSheetRef = useRef<BottomSheetModal>(null);
-    const [editFlashcardId, setEditFlashcardId] = useState<string | null>(null);
-    const [bottomSheetIsShown, setBottomSheetIsShown] = useState(false);
+    const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
     const [filter, setFilter] = useState('');
 
     const inputRef = useRef<TextInput>(null);
@@ -90,26 +89,6 @@ export const FlashcardsScreen = () => {
         [flashcards],
     );
 
-    useEffect(() => {
-        const handleBackPress = () => {
-            if (searchingMode) {
-                turnOffSearchingMode();
-                return true;
-            }
-            if (bottomSheetIsShown) {
-                handleFlashcardBottomSheetRef.current?.dismiss();
-                removeFlashcardBottomSheetRef.current?.dismiss();
-                sortingMethodBottomSheetRef.current?.dismiss();
-                return true;
-            }
-            return false;
-        };
-
-        const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-        return () => subscription.remove();
-    }, [searchingMode, bottomSheetIsShown]);
-
     const turnOffSearchingMode = () => {
         inputRef?.current?.blur();
         Keyboard.dismiss();
@@ -122,13 +101,30 @@ export const FlashcardsScreen = () => {
         setTimeout(() => inputRef?.current?.focus(), 100);
     };
 
+    useFocusEffect(
+        useCallback(() => {
+            const handleBackPress = () => {
+                if (!searchingMode) return false;
+
+                turnOffSearchingMode();
+                return true;
+            };
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+            return () => {
+                subscription.remove();
+            };
+        }, [searchingMode]),
+    );
+
     const handleActionButtonPress = () => {
-        setEditFlashcardId(null);
+        setEditFlashcardId(undefined);
         trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, {
             mode: 'add',
             source: 'flashcards_screen',
         });
-        handleFlashcardBottomSheetRef.current.present();
+        TrueSheet.present(FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     };
 
     const handlePress = useCallback(
@@ -145,24 +141,25 @@ export const FlashcardsScreen = () => {
             mode: 'edit',
             source: 'flashcards_screen',
         });
-        handleFlashcardBottomSheetRef.current.present();
+        TrueSheet.present(FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     }, []);
 
     const handleCancel = () => {
-        removeFlashcardBottomSheetRef.current.dismiss();
-        setEditFlashcardId(null);
+        TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
+        setEditFlashcardId(undefined);
     };
 
     const removeFlashcard = () => {
-        removeFlashcardBottomSheetRef.current.close();
+        TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
+        if (!editFlashcardId) return;
         wordsContext.removeWord(editFlashcardId);
-        setEditFlashcardId(null);
+        setEditFlashcardId(undefined);
     };
 
     const handleRemovePress = useCallback((id: string) => {
         Keyboard.dismiss();
         setEditFlashcardId(id);
-        removeFlashcardBottomSheetRef.current.present();
+        TrueSheet.present(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
     }, []);
 
     const renderFlashcardListItem = useCallback(
@@ -226,6 +223,7 @@ export const FlashcardsScreen = () => {
             </View>
         );
     }, [flashcards.length, numberOfWords, langoWords]);
+
     const renderSubheader = useMemo(() => {
         return (
             <View style={styles.subHeaderContainer}>
@@ -240,7 +238,7 @@ export const FlashcardsScreen = () => {
                 </Pressable>
                 <Pressable
                     style={styles.sortingHeader}
-                    onPress={() => sortingMethodBottomSheetRef.current.present()}
+                    onPress={() => TrueSheet.present(FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET)}
                 >
                     <MaterialCommunityIcons
                         color={colors.primary}
@@ -288,7 +286,7 @@ export const FlashcardsScreen = () => {
                     value={filter}
                     onChangeText={setFilter}
                     onClear={() => setFilter('')}
-                    onFocus={!searchingMode && turnOnSearchingMode}
+                    onFocus={searchingMode ? undefined : turnOnSearchingMode}
                 />
             </View>
         );
@@ -302,11 +300,11 @@ export const FlashcardsScreen = () => {
     };
 
     const data = searchingMode
-        ? [flashcards.length == 0 && { id: 'emptyList' }, ...flashcards]
+        ? [...(flashcards.length === 0 ? [{ id: 'emptyList' }] : []), ...flashcards]
         : [
               { id: 'header' },
               { id: 'subheader' },
-              flashcards.length == 0 && { id: 'emptyList' },
+              ...(flashcards.length === 0 ? [{ id: 'emptyList' }] : []),
               ...flashcards,
           ];
 
@@ -315,28 +313,21 @@ export const FlashcardsScreen = () => {
             <View style={styles.topSpacer} />
             <RemoveFlashcardBottomSheet
                 flashcardId={editFlashcardId}
-                ref={removeFlashcardBottomSheetRef}
+                sheetName={FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET}
                 onCancel={handleCancel}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
                 onRemove={removeFlashcard}
             />
             <HandleFlashcardBottomSheet
                 flashcardId={editFlashcardId}
-                ref={handleFlashcardBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
+                sheetName={FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET}
             />
-            <SortingMethodBottomSheet
-                ref={sortingMethodBottomSheetRef}
-                onChangeIndex={index => setBottomSheetIsShown(index >= 0)}
-            />
+            <SortingMethodBottomSheet sheetName={FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET} />
             {searchingMode && ListFilterHeader}
             <FlashList
-                data={data.filter(Boolean)}
-                estimatedItemSize={70}
+                data={data}
                 keyExtractor={item => item.id}
                 keyboardDismissMode={'on-drag'}
                 keyboardShouldPersistTaps={'always'}
-                maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
                 overScrollMode={'never'}
                 renderItem={renderListItem}
                 showsVerticalScrollIndicator={false}
@@ -356,7 +347,7 @@ export const FlashcardsScreen = () => {
     );
 };
 
-const getStyles = (colors: any, insets: EdgeInsets) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         backIcon: {
             marginRight: 10,

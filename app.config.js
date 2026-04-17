@@ -1,6 +1,8 @@
 export default ({ config }) => {
-    const isTest = process.env.EAS_BUILD_PROFILE === 'test';
-    const isDev = process.env.EAS_BUILD_PROFILE === 'development';
+    const profile = process.env.EAS_BUILD_PROFILE || process.env.APP_VARIANT;
+
+    const isTest = profile === 'test';
+    const isDev = profile === 'development' || profile === 'dev';
 
     return {
         ...config,
@@ -27,5 +29,6 @@ export default ({ config }) => {
                   ? (process.env.GOOGLE_SERVICES_IOS_DEV ?? 'config/GoogleService-Info-Dev.plist')
                   : (process.env.GOOGLE_SERVICES_IOS ?? 'config/GoogleService-Info.plist'),
         },
+        plugins: [...(config.plugins || []), 'expo-font'],
     };
 };

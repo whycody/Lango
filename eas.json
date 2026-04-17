@@ -26,7 +26,12 @@
         "production": {
             "channel": "production",
             "android": {
-                "buildType": "app-bundle"
+                "buildType": "app-bundle",
+                "gradleCommand": ":app:bundleRelease -x lint -x lintVitalAnalyzeRelease"
+            },
+            "env": {
+                "ORG_GRADLE_PROJECT_org.gradle.jvmargs": "-Xmx6144m -XX:MaxMetaspaceSize=2048m -Dfile.encoding=UTF-8",
+                "ORG_GRADLE_PROJECT_org.gradle.workers.max": "2"
             },
             "environment": "production",
             "autoIncrement": true

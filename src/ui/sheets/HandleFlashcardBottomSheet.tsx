@@ -1,20 +1,20 @@
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, Platform, StyleSheet, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React, { useEffect, useRef, useState } from 'react';
+import { Keyboard, StyleSheet } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { FullWindowOverlay } from 'react-native-screens';
 
 import { translateText } from '../../api/apiClient';
 import { LanguageCode } from '../../constants/Language';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { useVoiceInput } from '../../hooks';
 import { useLanguage, useWords } from '../../store';
 import { Word } from '../../types';
-import { ActionButton, CustomText, Header } from '../components';
 import { Alert, WordInput } from '../components/flashcards';
+import { CustomTheme } from '../Theme';
+import { GenericBottomSheet } from './GenericBottomSheet';
 import { MicrophonePermissionBottomSheet } from './MicrophonePermissionBottomSheet';
 
 type WordTranslations = {
@@ -26,26 +26,23 @@ type WordTranslations = {
 
 type HandleFlashcardBottomSheetProps = {
     flashcardId?: string;
-    onChangeIndex?: (index: number) => void;
+    sheetName: string;
     onWordEdit?: (id: string, word: string, translation: string) => void;
 };
 
-export const HandleFlashcardBottomSheet = forwardRef<
-    BottomSheetModal,
-    HandleFlashcardBottomSheetProps
->((props, ref: ForwardedRef<BottomSheetModal>) => {
-    const { colors } = useTheme();
+const MICROPHONE_PERMISSION_SHEET_NAME = 'handle-flashcard-microphone-permission';
+
+export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProps) => {
+    const { flashcardId, onWordEdit, sheetName } = props;
+    const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
-    const wordsContext = useWords();
+    const { addWord, editWord, getWord } = useWords();
 
     const wordInputRef = useRef<any>(null);
     const translationInputRef = useRef<any>(null);
-    const microphonePermissionSheetRef = useRef<BottomSheetModal>(null);
 
-    const flashcard: Word | null = props.flashcardId
-        ? (wordsContext.getWord(props.flashcardId) ?? null)
-        : null;
+    const flashcard: Word | null = flashcardId ? (getWord(flashcardId) ?? null) : null;
     const [word, setWord] = useState(flashcard?.text ?? '');
     const [translation, setTranslation] = useState(flashcard?.translation ?? '');
 
@@ -79,20 +76,9 @@ export const HandleFlashcardBottomSheet = forwardRef<
     const translationSuggestions = translationsOfWord ? translationsOfWord.translations : [];
     const wordSuggestions = translationsOfTranslation ? translationsOfTranslation.translations : [];
 
-    const renderBackdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-        ),
-        [],
-    );
-
     const clearInputs = () => {
-        setWord('');
-        setTranslation('');
         setCurrentWord('');
         setCurrentTranslation('');
-        wordInputRef.current?.clearWord();
-        translationInputRef.current?.clearWord();
     };
 
     const clearStatus = () => {
@@ -101,30 +87,29 @@ export const HandleFlashcardBottomSheet = forwardRef<
     };
 
     useEffect(() => {
-        if (!props.flashcardId) {
+        if (!flashcardId) {
             clearInputs();
         } else {
-            const currentFlashcard = wordsContext.getWord(props.flashcardId);
+            const currentFlashcard = getWord(flashcardId);
             if (!currentFlashcard) return;
 
             setWord(currentFlashcard.text);
             setTranslation(currentFlashcard.translation);
+            setCurrentWord(currentFlashcard.text);
+            setCurrentTranslation(currentFlashcard.translation);
         }
-    }, [props.flashcardId]);
+    }, [flashcardId]);
 
     const getCurrentWordAndTranslation = () => {
-        const currentWordInput = wordInputRef.current?.getWord();
-        const currentTranslationInput = translationInputRef.current?.getWord();
-
         const word =
-            currentWordInput.length > 0
-                ? currentWordInput.trim()
+            currentWord.length > 0
+                ? currentWord.trim()
                 : wordSuggestions.length > 0
                   ? wordSuggestions[0].trim()
                   : '';
         const translation =
-            currentTranslationInput.length > 0
-                ? currentTranslationInput.trim()
+            currentTranslation.length > 0
+                ? currentTranslation.trim()
                 : translationSuggestions.length > 0
                   ? translationSuggestions[0].trim()
                   : '';
@@ -141,22 +126,22 @@ export const HandleFlashcardBottomSheet = forwardRef<
     };
 
     const editFlashcard = () => {
-        if (!validateInputs() || !props.flashcardId) return;
+        if (!validateInputs() || !flashcardId) return;
         scheduleDismiss();
         const { translation, word } = getCurrentWordAndTranslation();
-        wordsContext.editWord({
-            id: props.flashcardId,
+        editWord({
+            id: flashcardId,
             text: word,
             translation,
         });
-        props.onWordEdit?.(props.flashcardId, word, translation);
+        onWordEdit?.(flashcardId, word, translation);
         setStatusMessage(t('editWord', { word }));
     };
 
     const addFlashcard = (multiple: boolean) => {
         if (!validateInputs()) return;
         const { translation, word } = getCurrentWordAndTranslation();
-        const newWord = wordsContext.addWord(word, translation, WordSource.USER);
+        const newWord = addWord(word, translation, WordSource.USER);
 
         if (!newWord) {
             setStatus('error');
@@ -178,24 +163,38 @@ export const HandleFlashcardBottomSheet = forwardRef<
         }
     };
 
-    const dismiss = () => {
-        ref && typeof ref !== 'function' && ref.current?.dismiss();
-    };
-
     const scheduleDismiss = () => {
         setStatus('success');
         setTimeout(() => Keyboard.dismiss(), 950);
-        setTimeout(() => dismiss(), 1000);
+        setTimeout(() => TrueSheet.dismiss(sheetName), 1000);
         setButtonsActive(false);
     };
 
     const handleSheetDismiss = () => {
         clearStatus();
         setButtonsActive(true);
-        if (!props.flashcardId) clearInputs();
+        if (!flashcardId) clearInputs();
     };
 
+    const wordDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const translationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const abortControllerRef = useRef(new AbortController());
+
+    useEffect(() => {
+        if (wordDebounceRef.current) clearTimeout(wordDebounceRef.current);
+        wordDebounceRef.current = setTimeout(() => setWord(currentWord), 450);
+        return () => {
+            if (wordDebounceRef.current) clearTimeout(wordDebounceRef.current);
+        };
+    }, [currentWord]);
+
+    useEffect(() => {
+        if (translationDebounceRef.current) clearTimeout(translationDebounceRef.current);
+        translationDebounceRef.current = setTimeout(() => setTranslation(currentTranslation), 450);
+        return () => {
+            if (translationDebounceRef.current) clearTimeout(translationDebounceRef.current);
+        };
+    }, [currentTranslation]);
 
     const translateWord = async (text: string, from = mainLang, to = translationLang) => {
         abortControllerRef.current && abortControllerRef.current.abort();
@@ -232,149 +231,85 @@ export const HandleFlashcardBottomSheet = forwardRef<
         }
     };
 
-    const handleChangeIndex = (index: number) => {
-        if (index === -1) {
-            voice.stop();
-        }
-
-        props.onChangeIndex?.(index);
-    };
-
     useEffect(() => {
         if (mainLang == translationLang) return;
         if (!!word && !translation) translateWord(word);
         if (!!translation && !word) translateWord(translation, translationLang, mainLang);
     }, [word, translation, mainLang, translationLang]);
 
-    const renderContainerComponent =
-        Platform.OS === 'ios'
-            ? useCallback(
-                  ({ children }: any) => <FullWindowOverlay>{children}</FullWindowOverlay>,
-                  [],
-              )
-            : undefined;
+    const handleDidDismiss = () => {
+        voice.stop();
+        handleSheetDismiss();
+    };
+
+    const handleActionButtonPress = () => {
+        if (!buttonsActive) return;
+        addFlashcard(true);
+    };
 
     return (
         <>
-            <MicrophonePermissionBottomSheet ref={microphonePermissionSheetRef} />
-            <BottomSheetModal
-                backdropComponent={renderBackdrop}
-                backgroundStyle={styles.bottomSheetModal}
-                containerComponent={renderContainerComponent}
-                handleIndicatorStyle={styles.handleIndicatorStyle}
-                index={0}
-                keyboardBlurBehavior={'restore'}
-                ref={ref}
-                onChange={handleChangeIndex}
-                onDismiss={handleSheetDismiss}
+            <MicrophonePermissionBottomSheet sheetName={MICROPHONE_PERMISSION_SHEET_NAME} />
+            <GenericBottomSheet
+                description={t('wordAndTranslation')}
+                primaryActionIcon={flashcardId ? 'save-sharp' : undefined}
+                primaryActionLabel={flashcardId ? t('edit') : t('add_1')}
+                primaryButtonEnabled={buttonsActive}
+                secondaryActionLabel={!flashcardId ? t('addAnother') : undefined}
+                sheetName={sheetName}
+                style={styles.bottomSheet}
+                title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
+                onDidDismiss={handleDidDismiss}
+                onPrimaryButtonPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
+                onSecondaryButtonPress={handleActionButtonPress}
             >
-                <BottomSheetScrollView keyboardShouldPersistTaps="always" style={styles.root}>
-                    <Header
-                        style={styles.headerMargin}
-                        subtitle={t('wordAndTranslation')}
-                        title={props.flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
+                {status && statusMessage && (
+                    <Alert
+                        message={statusMessage}
+                        style={styles.alert}
+                        title={status == 'success' ? t('success') : t('invalidData')}
+                        type={status}
                     />
-                    {status && statusMessage && (
-                        <Alert
-                            message={statusMessage}
-                            title={status == 'success' ? t('success') : t('invalidData')}
-                            type={status}
-                        />
-                    )}
-                    <WordInput
-                        active={buttonsActive}
-                        cursorColor={!buttonsActive ? 'transparent' : colors.primary}
-                        id={'main-input'}
-                        languageCode={mainLang}
-                        pointerEvents="box-only"
-                        ref={wordInputRef}
-                        style={styles.wordInput}
-                        suggestions={wordSuggestions}
-                        word={word}
-                        onWordChange={setCurrentWord}
-                        onWordCommit={setWord}
-                        onMicrophonePermissionsNotGranted={() =>
-                            microphonePermissionSheetRef.current?.present()
-                        }
-                    />
-                    <WordInput
-                        active={buttonsActive}
-                        id={'translation-input'}
-                        languageCode={translationLang}
-                        pointerEvents="box-only"
-                        ref={translationInputRef}
-                        style={styles.wordInput}
-                        suggestions={translationSuggestions}
-                        word={translation}
-                        onWordChange={setCurrentTranslation}
-                        onWordCommit={setTranslation}
-                        onMicrophonePermissionsNotGranted={() =>
-                            microphonePermissionSheetRef.current?.present()
-                        }
-                    />
-                    <ActionButton
-                        active={buttonsActive}
-                        icon={props.flashcardId ? 'save-sharp' : undefined}
-                        label={props.flashcardId ? t('edit') : t('add_1')}
-                        primary={true}
-                        style={styles.button}
-                        onPress={() => (props.flashcardId ? editFlashcard() : addFlashcard(false))}
-                    />
-                    {props.flashcardId ? (
-                        <View style={styles.bottomSpacer} />
-                    ) : (
-                        <CustomText
-                            style={styles.actionText}
-                            weight={'SemiBold'}
-                            onPress={() => {
-                                if (buttonsActive) addFlashcard(true);
-                            }}
-                        >
-                            {t('addAnother')}
-                        </CustomText>
-                    )}
-                </BottomSheetScrollView>
-            </BottomSheetModal>
+                )}
+                <WordInput
+                    active={buttonsActive}
+                    id={'main-input'}
+                    languageCode={mainLang}
+                    pointerEvents="box-only"
+                    ref={wordInputRef}
+                    suggestions={wordSuggestions}
+                    word={currentWord}
+                    onWordChange={setCurrentWord}
+                    onMicrophonePermissionsNotGranted={() =>
+                        TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
+                    }
+                />
+                <WordInput
+                    active={buttonsActive}
+                    id={'translation-input'}
+                    languageCode={translationLang}
+                    pointerEvents="box-only"
+                    ref={translationInputRef}
+                    suggestions={translationSuggestions}
+                    word={currentTranslation}
+                    onWordChange={setCurrentTranslation}
+                    onMicrophonePermissionsNotGranted={() =>
+                        TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
+                    }
+                />
+            </GenericBottomSheet>
         </>
     );
-});
+};
 
-const getStyles = (colors: any) =>
+const getStyles = (_colors: CustomTheme['colors']) =>
     StyleSheet.create({
-        actionText: {
-            color: colors.primary,
-            fontSize: 13,
-            paddingVertical: MARGIN_VERTICAL,
-            textAlign: 'center',
+        alert: {
+            marginTop: -5,
         },
-        bottomSheetModal: {
-            backgroundColor: colors.card,
-        },
-        bottomSpacer: {
-            height: MARGIN_VERTICAL,
-        },
-        button: {
-            marginTop: MARGIN_VERTICAL,
-        },
-        handleIndicatorStyle: {
-            backgroundColor: colors.primary,
-            borderRadius: 0,
-        },
-        header: {
-            paddingTop: MARGIN_VERTICAL,
-        },
-        headerMargin: {
-            marginVertical: 10,
-        },
-        root: {
-            paddingHorizontal: MARGIN_HORIZONTAL,
-        },
-        sessionItemsContainer: {
-            flex: 1,
-            flexDirection: 'row',
-            marginTop: 12,
-        },
-        wordInput: {
+        bottomSheet: {
+            gap: 15,
+            marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 15,
         },
     });

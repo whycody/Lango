@@ -14,7 +14,7 @@ import { createAuthData } from '../utils/authUtils';
 import { apiCall } from './apiHandler';
 
 export const getUserInfo: () => Promise<User | null> = async () => {
-    return await apiCall({ data: {}, method: 'GET', url: '/users/users' }, false, 10000);
+    return await apiCall({ method: 'GET', url: '/users/users' }, false, 10000);
 };
 
 export const updateUserLanguages = async (

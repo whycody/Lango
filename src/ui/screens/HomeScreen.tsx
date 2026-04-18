@@ -122,6 +122,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
         <>
             <EnableNotificationsBottomSheet sheetName={ENABLE_NOTIFICATIONS_SHEET_NAME} />
             <PickLanguageLevelBottomSheet
+                allowDismiss={false}
                 language={languages.find(l => l.languageCode === mainLang)}
                 sheetName={HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME}
             />

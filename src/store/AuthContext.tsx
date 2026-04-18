@@ -185,7 +185,10 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             languageLevel,
         ];
 
-        setUser(user => (user ? { ...user, languageLevels: levelsToUpdate } : null));
+        // We don't update user state here, because we want to wait for server confirmation
+        // before updating language levels in the app. This is because updating language levels
+        // triggers fetching new suggestions and we want to avoid doing it if the
+        // update fails on the server for some reason.
         const updated = await updateLanguageLevels([languageLevel]);
 
         if (updated) {

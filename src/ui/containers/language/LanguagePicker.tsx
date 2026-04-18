@@ -14,7 +14,11 @@ interface LanguagePickerProps {
     allLanguages?: boolean;
     alwaysAllowPick?: boolean;
     languageType?: LanguageTypes;
-    onLanguagePick?: (language: Language, userEvaluatedLanguageLevel: boolean) => void;
+    onLanguagePick?: (
+        language: Language,
+        mainLangNeedsEvaluation: boolean,
+        translationLangNeedsMainLangEvaluation: boolean,
+    ) => void;
     style?: ViewStyle;
 }
 
@@ -63,25 +67,35 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
                 [LanguageTypes.APPLICATION]: setApplicationLang,
             };
 
-            const userEvaluatedLanguageLevel =
-                (languageType === LanguageTypes.MAIN && translationLang == language.languageCode) ||
-                user?.languageLevels?.some(level => level.language == language.languageCode);
+            const translationLangNeedsMainLangEvaluation =
+                languageType === LanguageTypes.TRANSLATION &&
+                mainLang !== language.languageCode &&
+                !user?.languageLevels?.some(l => l.language === mainLang);
+
+            const mainLangLangNeedsEvaluation =
+                languageType === LanguageTypes.MAIN &&
+                language.languageCode !== translationLang &&
+                !user?.languageLevels?.some(l => l.language === language.languageCode);
 
             if (
-                languageType !== LanguageTypes.MAIN ||
-                userEvaluatedLanguageLevel ||
+                (!mainLangLangNeedsEvaluation && !translationLangNeedsMainLangEvaluation) ||
                 alwaysAllowPick
             ) {
                 setters[languageType](language.languageCode);
             }
 
             triggerHaptics('rigid');
-            onLanguagePick?.(language, userEvaluatedLanguageLevel);
+            onLanguagePick?.(
+                language,
+                mainLangLangNeedsEvaluation,
+                translationLangNeedsMainLangEvaluation,
+            );
         },
         [
             languageType,
             translationLang,
             mainLang,
+            user,
             setMainLang,
             setTranslationLang,
             setApplicationLang,

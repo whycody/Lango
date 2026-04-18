@@ -2,35 +2,36 @@ import React from 'react';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTranslation } from 'react-i18next';
 
-import { useLanguage } from '../../store';
 import { Language } from '../../types';
 import { LanguageLevelPicker } from '../containers/language/LanguageLevelPicker';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
+type PickLanguageLevelBottomSheetProps = {
+    language?: Language;
+    onLevelPick?: () => void;
+    allowDismiss?: boolean;
+    sheetName: string;
+};
+
 export const PickLanguageLevelBottomSheet = (props: PickLanguageLevelBottomSheetProps) => {
     const { t } = useTranslation();
-    const { mainLang } = useLanguage();
 
     const dismiss = () => TrueSheet.dismiss(props.sheetName);
 
-    // Do not allow dismissing when user doesn't have information about language level
-    // and has already picked it in previous version of app
-    const allowDismiss = mainLang !== props.language?.languageCode;
+    const handleLevelPick = () => {
+        props.onLevelPick?.();
+        dismiss();
+    };
 
     return (
         <GenericBottomSheet
-            allowDismiss={allowDismiss}
+            allowDismiss={props.allowDismiss ?? true}
             primaryActionLabel={t('general.cancel')}
-            primaryButtonEnabled={allowDismiss}
+            primaryButtonEnabled={props.allowDismiss ?? true}
             sheetName={props.sheetName}
             onPrimaryButtonPress={dismiss}
         >
-            <LanguageLevelPicker language={props.language} onLevelPick={dismiss} />
+            <LanguageLevelPicker language={props.language} onLevelPick={handleLevelPick} />
         </GenericBottomSheet>
     );
-};
-
-type PickLanguageLevelBottomSheetProps = {
-    language?: Language;
-    sheetName: string;
 };

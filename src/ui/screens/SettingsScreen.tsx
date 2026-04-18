@@ -16,10 +16,7 @@ import { useDynamicStatusBar } from '../../hooks';
 import { useAuth, useLanguage, useUserPreferences } from '../../store';
 import { SettingItem } from '../../types';
 import { trackEvent } from '../../utils/analytics';
-import {
-    ensureNotificationsPermission,
-    isNotificationPermissionGranted,
-} from '../../utils/ensureNotificationPermission';
+import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
 import { CustomText, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
 import { LanguageBottomSheet } from '../sheets';
@@ -55,11 +52,7 @@ export const SettingsScreen = () => {
     useLayoutEffect(() => {
         const checkPermissions = async () => {
             const permissions = await Notifications.getPermissionsAsync();
-            const status = isNotificationPermissionGranted(permissions)
-                ? PermissionStatus.GRANTED
-                : PermissionStatus.DENIED;
-
-            userPreferences.setNotificationsPermissionStatus(status);
+            userPreferences.setNotificationsPermissionStatus(permissions.status);
         };
 
         checkPermissions();
@@ -157,6 +150,7 @@ export const SettingsScreen = () => {
         ],
         [
             t,
+            user?.suggestionsInSession,
             notificationsEnabled,
             userPreferences,
             currentMainLang,

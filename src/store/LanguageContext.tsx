@@ -34,9 +34,11 @@ export const APPLICATION_LANG = 'applicationLangCode';
 export const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { i18n, t } = useTranslation();
     const { user } = useAuth();
-    const { storage } = useUserStorage();
-    const userMainLang = user.mainLang ?? ('' as LanguageCode);
-    const userTranslationLang = user.translationLang ?? ('' as LanguageCode);
+    const userStorage = useUserStorage();
+    const fallbackStorage = useMMKV({ id: 'user-storage' });
+    const storage = userStorage.storage ?? fallbackStorage;
+    const userMainLang = user?.mainLang ?? ('' as LanguageCode);
+    const userTranslationLang = user?.translationLang ?? ('' as LanguageCode);
     const [mainLang, setMainLang] = useTypedMMKV<LanguageCode>(MAIN_LANG, userMainLang, storage);
     const [translationLang, setTranslationLang] = useTypedMMKV<LanguageCode>(
         TRANSLATION_LANG,
@@ -46,7 +48,7 @@ export const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(
         APPLICATION_LANG,
         i18n.language as LanguageCode,
-        useMMKV(),
+        fallbackStorage,
     );
 
     const languages: Language[] = [

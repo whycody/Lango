@@ -129,10 +129,20 @@ const retriedRequests = new WeakSet<InternalAxiosRequestConfig>();
 const isNetworkError = (err: unknown): boolean =>
     axios.isAxiosError(err) && err.code === AxiosError.ERR_NETWORK;
 
-const handleUnauthorized = async (): Promise<void> => {
-    await removeAccessToken();
-    await removeRefreshToken();
-    onUnauthorized?.();
+let unauthorizedPromise: Promise<void> | null = null;
+
+const handleUnauthorized = (): Promise<void> => {
+    if (unauthorizedPromise) return unauthorizedPromise;
+    unauthorizedPromise = (async () => {
+        try {
+            await removeAccessToken();
+            await removeRefreshToken();
+            onUnauthorized?.();
+        } finally {
+            unauthorizedPromise = null;
+        }
+    })();
+    return unauthorizedPromise;
 };
 
 export const api: AxiosInstance = axios.create({

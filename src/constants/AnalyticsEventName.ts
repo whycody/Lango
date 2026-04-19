@@ -13,7 +13,6 @@ export const AnalyticsEventName = {
     LEAVE_SESSION_SHEET_OPEN: 'leave_session_sheet_open',
     LOGIN_FAILURE: 'login_failure',
     LOGIN_SUCCESS: 'login_success',
-    LOGOUT_FAILURE: 'logout_failure',
     LOGOUT_FORCED: 'logout_forced',
     LOGOUT_SUCCESS: 'logout_success',
     MICROPHONE_WORD_INPUT: 'microphone_word_input',

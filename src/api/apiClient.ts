@@ -66,7 +66,7 @@ export const signInWithApple = (accessToken: string, fullName: string) =>
 export const signOut = () =>
     call('POST /auth/auth/logout', null, async () => {
         const data = await createAuthData();
-        return api.post('/auth/auth/logout', data);
+        return api.post('/auth/auth/logout', data, SKIP_REFRESH);
     });
 
 export const updateSuggestionsInSession = (enabled: boolean) =>

@@ -19,6 +19,7 @@ import {
     removeAccessToken,
     removeRefreshToken,
     setAccessToken,
+    setOnUnauthorized,
     setRefreshToken,
 } from '../api/apiHandler';
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
@@ -63,8 +64,15 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     );
 
     useEffect(() => {
+        setOnUnauthorized(clearState);
         getSession();
+        return () => setOnUnauthorized(null);
     }, []);
+
+    const clearState = () => {
+        setIsAuthenticated(false);
+        setUser(null);
+    };
 
     const getSession = async () => {
         try {
@@ -92,7 +100,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 setIsAuthenticated(true);
             }
             if (error?.response?.status !== 401) return;
-            await removeData();
+            clearState();
         }
     };
 
@@ -204,13 +212,6 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             ...(payload ?? {}),
             languageLevels: levelsToUpdate,
         }));
-    };
-
-    const removeData = async () => {
-        setIsAuthenticated(false);
-        await removeAccessToken();
-        await removeRefreshToken();
-        setUser(null);
     };
 
     const login = async (method: UserProvider) => {
@@ -377,7 +378,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         try {
             const res = await signOut();
             if (!res) return;
-            await removeData();
+            await removeAccessToken();
+            await removeRefreshToken();
+            clearState();
             await trackEvent(AnalyticsEventName.LOGOUT_SUCCESS, { provider });
         } catch (error: any) {
             const errorMessage = error?.response?.data?.error?.message || 'Something went wrong';

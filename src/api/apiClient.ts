@@ -1,3 +1,5 @@
+import { AxiosResponse } from 'axios';
+
 import { LanguageCode } from '../constants/Language';
 import {
     Evaluation,
@@ -11,232 +13,121 @@ import {
     Word,
 } from '../types';
 import { createAuthData } from '../utils/authUtils';
-import { apiCall } from './apiHandler';
+import { api } from './apiHandler';
 
-export const getUserInfo: () => Promise<User | null> = async () => {
-    return await apiCall({ method: 'GET', url: '/users/users' }, false, 10000);
+const call = async <T, F>(
+    label: string,
+    fallback: F,
+    fn: () => Promise<AxiosResponse<T>>,
+): Promise<T | F> => {
+    try {
+        const res = await fn();
+        return res.data;
+    } catch (e) {
+        console.error(label, e);
+        return fallback;
+    }
 };
 
-export const updateUserLanguages = async (
+export const getUserInfo = async (): Promise<User | null> => {
+    const res = await api.get<User | null>('/users/users', { timeout: 10000 });
+    return res.data;
+};
+
+export const updateUserLanguages = (
     mainLang: LanguageCode,
     translationLang: LanguageCode,
     level: LanguageLevelRange,
-) => {
-    try {
-        return await apiCall({
-            data: { level, mainLang, translationLang },
-            method: 'PUT',
-            url: '/users/languages',
-        });
-    } catch (e) {
-        console.error('PUT /users/languages', e);
-        return null;
-    }
-};
+) =>
+    call('PUT /users/languages', null, () =>
+        api.put('/users/languages', { level, mainLang, translationLang }),
+    );
 
-export const signInWithGoogle = async (idToken: string) => {
-    try {
+export const signInWithGoogle = (idToken: string) =>
+    call('POST /auth/login/google', null, async () => {
         const data = await createAuthData({ idToken });
-        return await apiCall({ data, method: 'POST', url: '/auth/login/google' }, true);
-    } catch (e) {
-        console.error('POST /auth/login/google', e);
-        return null;
-    }
-};
+        return api.post('/auth/login/google', data);
+    });
 
-export const signInWithFacebook = async (accessToken: string) => {
-    try {
+export const signInWithFacebook = (accessToken: string) =>
+    call('POST /auth/login/facebook', null, async () => {
         const data = await createAuthData({ accessToken });
-        return await apiCall({ data, method: 'POST', url: '/auth/login/facebook' }, true);
-    } catch (e) {
-        console.error('POST /auth/login/facebook', e);
-        return null;
-    }
-};
+        return api.post('/auth/login/facebook', data);
+    });
 
-export const signInWithApple = async (accessToken: string, fullName: string) => {
-    try {
+export const signInWithApple = (accessToken: string, fullName: string) =>
+    call('POST /auth/login/apple', null, async () => {
         const data = await createAuthData({ accessToken, fullName });
-        return await apiCall({ data, method: 'POST', url: '/auth/login/apple' }, true);
-    } catch (e) {
-        console.error('POST /auth/login/apple', e);
-        return null;
-    }
-};
+        return api.post('/auth/login/apple', data);
+    });
 
-export const signOut = async () => {
-    try {
+export const signOut = () =>
+    call('POST /auth/auth/logout', null, async () => {
         const data = await createAuthData();
-        return await apiCall({ data, method: 'POST', url: '/auth/auth/logout' }, true);
-    } catch (e) {
-        console.error('POST /auth/auth/logout', e);
-        return null;
-    }
-};
+        return api.post('/auth/auth/logout', data);
+    });
 
-export const updateSuggestionsInSession = async (enabled: boolean) => {
-    try {
-        return await apiCall({
-            data: { enabled },
-            method: 'PATCH',
-            url: '/users/suggestions-in-session',
-        });
-    } catch (e) {
-        console.error('PATCH /users/suggestions-in-session', e);
-        return null;
-    }
-};
+export const updateSuggestionsInSession = (enabled: boolean) =>
+    call('PATCH /users/suggestions-in-session', null, () =>
+        api.patch('/users/suggestions-in-session', { enabled }),
+    );
 
-export const updateNotificationsEnabled = async (enabled: boolean) => {
-    try {
-        return await apiCall({ data: { enabled }, method: 'PATCH', url: '/notifications' });
-    } catch (e) {
-        console.error('PATCH /notifications', e);
-        return null;
-    }
-};
+export const updateNotificationsEnabled = (enabled: boolean) =>
+    call('PATCH /notifications', null, () => api.patch('/notifications', { enabled }));
 
-export const updateLanguageLevels = async (languageLevels: LanguageLevel[]) => {
-    try {
-        return await apiCall(
-            {
-                data: { languageLevels },
-                method: 'PUT',
-                url: '/users/language-levels',
-            },
-            true,
-        );
-    } catch (e) {
-        console.error('PUT /users/language-levels', e);
-        return null;
-    }
-};
+export const updateLanguageLevels = (languageLevels: LanguageLevel[]) =>
+    call('PUT /users/language-levels', null, () =>
+        api.put('/users/language-levels', { languageLevels }),
+    );
 
-export const registerDeviceToken = async (token: string) => {
-    try {
+export const registerDeviceToken = (token: string) =>
+    call('POST /notifications/devices', null, async () => {
         const data = await createAuthData({ token });
-        return await apiCall({ data, method: 'POST', url: '/notifications/devices' }, true);
-    } catch (e) {
-        console.error('POST /notifications/devices', e);
-        return null;
-    }
-};
+        return api.post('/notifications/devices', data);
+    });
 
-export const syncWordsOnServer = async (words: Word[]): Promise<SyncResult[] | null> => {
-    try {
-        return await apiCall({
-            data: words,
-            method: 'POST',
-            url: '/api/words/sync',
-        });
-    } catch (e) {
-        console.error('POST /api/words/sync', e);
-        return null;
-    }
-};
+export const syncWordsOnServer = (words: Word[]): Promise<SyncResult[] | null> =>
+    call('POST /api/words/sync', null, () => api.post<SyncResult[]>('/api/words/sync', words));
 
-export const fetchUpdatedWords = async (since: string): Promise<Word[]> => {
-    try {
-        return await apiCall({
-            data: {},
-            method: 'GET',
-            url: `/api/words?since=${since}`,
-        });
-    } catch (e) {
-        console.error('GET /api/words', e);
-        return [];
-    }
-};
+export const fetchUpdatedWords = (since: string): Promise<Word[]> =>
+    call<Word[], Word[]>('GET /api/words', [], () => api.get<Word[]>(`/api/words?since=${since}`));
 
-export const syncSessionsOnServer = async (sessions: Session[]): Promise<SyncResult[] | null> => {
-    try {
-        return await apiCall({
-            data: sessions,
-            method: 'POST',
-            url: '/sessions/sessions/sync',
-        });
-    } catch (e) {
-        console.error('POST /sessions/sessions/sync', e);
-        return null;
-    }
-};
+export const syncSessionsOnServer = (sessions: Session[]): Promise<SyncResult[] | null> =>
+    call('POST /sessions/sessions/sync', null, () =>
+        api.post<SyncResult[]>('/sessions/sessions/sync', sessions),
+    );
 
-export const fetchUpdatedSessions = async (since: string): Promise<Session[]> => {
-    try {
-        return await apiCall({
-            data: {},
-            method: 'GET',
-            url: `/sessions/sessions?since=${since}`,
-        });
-    } catch (e) {
-        console.error('GET /sessions/sessions', e);
-        return [];
-    }
-};
+export const fetchUpdatedSessions = (since: string): Promise<Session[]> =>
+    call<Session[], Session[]>('GET /sessions/sessions', [], () =>
+        api.get<Session[]>(`/sessions/sessions?since=${since}`),
+    );
 
-export const fetchUpdatedEvaluations = async (since: string): Promise<Evaluation[]> => {
-    try {
-        return await apiCall({
-            data: {},
-            method: 'GET',
-            url: `/evaluations/evaluations/?since=${since}`,
-        });
-    } catch (e) {
-        console.error(`GET /evaluations/?since=${since}`, e);
-        return [];
-    }
-};
+export const fetchUpdatedEvaluations = (since: string): Promise<Evaluation[]> =>
+    call<Evaluation[], Evaluation[]>(`GET /evaluations/?since=${since}`, [], () =>
+        api.get<Evaluation[]>(`/evaluations/evaluations/?since=${since}`),
+    );
 
-export const syncEvaluationsOnServer = async (
-    evaluations: Evaluation[],
-): Promise<SyncResult[] | null> => {
-    try {
-        return await apiCall({
-            data: evaluations,
-            method: 'POST',
-            url: '/evaluations/evaluations/sync',
-        });
-    } catch (e) {
-        console.error('POST /evaluations/evaluations/sync', e);
-        return null;
-    }
-};
+export const syncEvaluationsOnServer = (evaluations: Evaluation[]): Promise<SyncResult[] | null> =>
+    call('POST /evaluations/evaluations/sync', null, () =>
+        api.post<SyncResult[]>('/evaluations/evaluations/sync', evaluations),
+    );
 
-export const fetchUpdatedSuggestions = async (
+export const fetchUpdatedSuggestions = (
     mainLang: string,
     translationLang: string,
     since: string,
-): Promise<Suggestion[]> => {
-    try {
-        return await apiCall(
-            {
-                data: {},
-                method: 'GET',
-                url: `/suggestions/?since=${since}&mainLang=${mainLang}&translationLang=${translationLang}`,
-            },
-            false,
-            30000,
-        );
-    } catch (e) {
-        console.error(`GET /suggestions/?since=${since}`, e);
-        return [];
-    }
-};
+): Promise<Suggestion[]> =>
+    call<Suggestion[], Suggestion[]>(`GET /suggestions/?since=${since}`, [], () =>
+        api.get<Suggestion[]>(
+            `/suggestions/?since=${since}&mainLang=${mainLang}&translationLang=${translationLang}`,
+            { timeout: 30000 },
+        ),
+    );
 
-export const syncSuggestionsOnServer = async (
-    suggestions: Suggestion[],
-): Promise<SyncResult[] | null> => {
-    try {
-        return await apiCall({
-            data: suggestions,
-            method: 'POST',
-            url: '/suggestions/sync',
-        });
-    } catch (e) {
-        console.error('POST /suggestions/sync', e);
-        return null;
-    }
-};
+export const syncSuggestionsOnServer = (suggestions: Suggestion[]): Promise<SyncResult[] | null> =>
+    call('POST /suggestions/sync', null, () =>
+        api.post<SyncResult[]>('/suggestions/sync', suggestions),
+    );
 
 export const translateText = async (
     text: string,
@@ -244,12 +135,10 @@ export const translateText = async (
     to: string,
     signal?: AbortSignal,
 ): Promise<string> => {
-    const response = await apiCall<TranslateResponse>({
-        data: { from, text, to },
-        method: 'POST',
-        signal,
-        url: '/translations/translate',
-    });
-
-    return response.translation;
+    const res = await api.post<TranslateResponse>(
+        '/translations/translate',
+        { from, text, to },
+        { signal },
+    );
+    return res.data.translation;
 };

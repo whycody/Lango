@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import * as Updates from 'expo-updates';
 
@@ -6,6 +6,7 @@ import { createAuthData } from '../utils/authUtils';
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
+let tokenVersion = 0;
 
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
@@ -17,25 +18,30 @@ const subscribers: {
 
 const ACCESS_TOKEN = 'accessToken';
 const REFRESH_TOKEN = 'refreshToken';
+const REFRESH_TIMEOUT_MS = 10000;
+const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 const profile = Updates.channel;
 const apiUrl =
     !profile || ['test', 'development'].includes(profile)
         ? process.env.API_DEV_URL
         : process.env.API_URL;
+let onUnauthorized: (() => void) | null = null;
+
+export const setOnUnauthorized = (callback: (() => void) | null): void => {
+    onUnauthorized = callback;
+};
 
 const requestRefreshTokens = async (
-    refreshToken: string,
+    rt: string,
 ): Promise<{ accessToken: string; refreshToken: string }> => {
-    const data = await createAuthData({ refreshToken });
+    const data = await createAuthData({ refreshToken: rt });
     return (
         await axios({
             data,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: JSON_HEADERS,
             method: 'POST',
-            timeout: 10000,
+            timeout: REFRESH_TIMEOUT_MS,
             url: `${apiUrl}/auth/auth/refresh`,
         })
     ).data;
@@ -53,6 +59,7 @@ export const removeRefreshToken = async (): Promise<void> => {
 
 export const setAccessToken = async (token: string): Promise<void> => {
     accessToken = token;
+    tokenVersion++;
     await SecureStore.setItemAsync(ACCESS_TOKEN, token);
 };
 
@@ -85,15 +92,9 @@ function onRefreshFailed(error: any) {
     subscribers.length = 0;
 }
 
-const getAPIError = (message: string, status: number) => {
-    const error: any = new Error(message);
-    error.response = { status };
-    return error;
-};
-
 const refreshAccessToken = async (): Promise<void> => {
     if (isRefreshing && refreshPromise) return refreshPromise;
-    if (!refreshToken) throw getAPIError('No refresh token provided.', 401);
+    if (!refreshToken) throw new Error('No refresh token provided.');
 
     isRefreshing = true;
 
@@ -106,7 +107,7 @@ const refreshAccessToken = async (): Promise<void> => {
         } catch (error) {
             console.error('Error with refreshing token:', error);
             onRefreshFailed(error);
-            throw getAPIError('Cannot refresh token', 401);
+            throw error;
         } finally {
             isRefreshing = false;
             refreshPromise = null;
@@ -116,59 +117,61 @@ const refreshAccessToken = async (): Promise<void> => {
     return refreshPromise;
 };
 
-export const apiCall = async <T>(
-    options: {
-        data?: object | string;
-        method: string;
-        signal?: AbortSignal;
-        url: string;
-    },
-    refreshed: boolean = false,
-    timeout?: number,
-): Promise<T> => {
-    // console.log("Calling API:", options.method, `${getBaseURL()}${options.url}`, options.data);
+type VersionedRequest = InternalAxiosRequestConfig & { _tokenVersion?: number };
 
-    if (!accessToken) {
-        await loadTokens();
-    }
+const retriedRequests = new WeakSet<InternalAxiosRequestConfig>();
 
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-    };
+const isNetworkError = (err: unknown): boolean =>
+    axios.isAxiosError(err) && err.code === AxiosError.ERR_NETWORK;
 
-    if (accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`;
-    }
-
-    try {
-        const fullUrl = `${apiUrl}${options.url}`;
-
-        const axiosConfig: AxiosRequestConfig = {
-            headers,
-            method: options.method,
-            signal: options.signal,
-            timeout,
-            url: fullUrl,
-        };
-
-        if (
-            options.data &&
-            typeof options.data === 'object' &&
-            Object.keys(options.data).length > 0
-        ) {
-            axiosConfig.data = options.data;
-        } else if (options.data && typeof options.data === 'string') {
-            axiosConfig.data = options.data;
-        }
-
-        return (await axios(axiosConfig)).data;
-    } catch (error: any) {
-        if (error.response?.status === 401) {
-            if (refreshed) throw getAPIError('Unauthorized', 401);
-            isRefreshing ? await subscribeTokenRefresh() : await refreshAccessToken();
-            return apiCall(options, true, timeout);
-        }
-
-        throw error;
-    }
+const handleUnauthorized = async (): Promise<void> => {
+    await removeAccessToken();
+    await removeRefreshToken();
+    onUnauthorized?.();
 };
+
+export const api: AxiosInstance = axios.create({
+    baseURL: apiUrl,
+    headers: JSON_HEADERS,
+});
+
+api.interceptors.request.use(async config => {
+    if (!accessToken) await loadTokens();
+    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+    (config as VersionedRequest)._tokenVersion = tokenVersion;
+    return config;
+});
+
+api.interceptors.response.use(
+    response => response,
+    async (error: AxiosError) => {
+        const originalRequest = error.config as VersionedRequest | undefined;
+
+        if (error.response?.status !== 401 || !originalRequest) {
+            return Promise.reject(error);
+        }
+
+        if (retriedRequests.has(originalRequest)) {
+            await handleUnauthorized();
+            return Promise.reject(error);
+        }
+        retriedRequests.add(originalRequest);
+
+        if (originalRequest._tokenVersion !== tokenVersion) {
+            return api(originalRequest);
+        }
+
+        try {
+            if (isRefreshing) await subscribeTokenRefresh();
+            else await refreshAccessToken();
+        } catch (refreshError) {
+            if (isNetworkError(refreshError)) {
+                return Promise.reject(refreshError);
+            }
+            await handleUnauthorized();
+            return Promise.reject(error);
+        }
+
+        return api(originalRequest);
+    },
+);

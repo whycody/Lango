@@ -378,19 +378,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     async function logout() {
         if (!user) return;
         const { provider } = user;
-        try {
-            await signOut();
-            await removeAccessToken();
-            await removeRefreshToken();
-            clearState();
-            await trackEvent(AnalyticsEventName.LOGOUT_SUCCESS, { provider });
-        } catch (error: any) {
-            await trackEvent(AnalyticsEventName.LOGOUT_FAILURE, {
-                provider,
-                reason: error?.message || 'Unknown',
-            });
-            console.error('Logout error:', error);
-        }
+        await signOut();
+        await removeAccessToken();
+        await removeRefreshToken();
+        clearState();
+        await trackEvent(AnalyticsEventName.LOGOUT_SUCCESS, { provider });
     }
 
     if (isAuthenticated == null) return <LoadingView />;

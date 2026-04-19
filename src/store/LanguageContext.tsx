@@ -45,11 +45,16 @@ export const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
         userTranslationLang,
         storage,
     );
-    const [applicationLang, setApplicationLang] = useTypedMMKV<LanguageCode>(
+    const [applicationLang, setApplicationLangRaw] = useTypedMMKV<LanguageCode>(
         APPLICATION_LANG,
         i18n.language as LanguageCode,
         fallbackStorage,
     );
+
+    const setApplicationLang = (langCode: LanguageCode) => {
+        setApplicationLangRaw(langCode);
+        i18n.changeLanguage(langCode);
+    };
 
     const languages: Language[] = [
         {

@@ -61,8 +61,8 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
         try {
             setRefreshing(true);
             await checkUpdates();
-            await words.syncWords();
             await Promise.all([
+                words.syncWords(),
                 sessions.syncSessions(),
                 mainLang !== translationLang ? suggestions.syncSuggestions() : Promise.resolve(),
                 evaluations.syncEvaluations(),

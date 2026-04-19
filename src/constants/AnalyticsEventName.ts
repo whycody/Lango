@@ -14,6 +14,7 @@ export const AnalyticsEventName = {
     LOGIN_FAILURE: 'login_failure',
     LOGIN_SUCCESS: 'login_success',
     LOGOUT_FAILURE: 'logout_failure',
+    LOGOUT_FORCED: 'logout_forced',
     LOGOUT_SUCCESS: 'logout_success',
     MICROPHONE_WORD_INPUT: 'microphone_word_input',
     NAVIGATE_FLASHCARDS: 'navigate_flashcards',
@@ -66,6 +67,7 @@ export type AnalyticsEventPayloadMap = {
     login_failure: { provider: UserProvider; raw?: string; reason: string };
     login_success: { provider: UserProvider };
     logout_failure: { provider: UserProvider; reason: string };
+    logout_forced?: undefined;
     logout_success: { provider: UserProvider };
     microphone_word_input?: undefined;
     navigate_flashcards?: undefined;

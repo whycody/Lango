@@ -64,7 +64,10 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     );
 
     useEffect(() => {
-        setOnUnauthorized(clearState);
+        setOnUnauthorized(() => {
+            clearState();
+            trackEvent(AnalyticsEventName.LOGOUT_FORCED);
+        });
         getSession();
         return () => setOnUnauthorized(null);
     }, []);

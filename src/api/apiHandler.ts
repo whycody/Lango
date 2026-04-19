@@ -4,6 +4,13 @@ import * as Updates from 'expo-updates';
 
 import { createAuthData } from '../utils/authUtils';
 
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        _skipAuthRefresh?: boolean;
+        _tokenVersion?: number;
+    }
+}
+
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let tokenVersion = 0;
@@ -117,8 +124,6 @@ const refreshAccessToken = async (): Promise<void> => {
     return refreshPromise;
 };
 
-type VersionedRequest = InternalAxiosRequestConfig & { _tokenVersion?: number };
-
 const retriedRequests = new WeakSet<InternalAxiosRequestConfig>();
 
 const isNetworkError = (err: unknown): boolean =>
@@ -138,16 +143,20 @@ export const api: AxiosInstance = axios.create({
 api.interceptors.request.use(async config => {
     if (!accessToken) await loadTokens();
     if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
-    (config as VersionedRequest)._tokenVersion = tokenVersion;
+    config._tokenVersion = tokenVersion;
     return config;
 });
 
 api.interceptors.response.use(
     response => response,
     async (error: AxiosError) => {
-        const originalRequest = error.config as VersionedRequest | undefined;
+        const originalRequest = error.config;
 
-        if (error.response?.status !== 401 || !originalRequest) {
+        if (
+            error.response?.status !== 401 ||
+            !originalRequest ||
+            originalRequest._skipAuthRefresh
+        ) {
             return Promise.reject(error);
         }
 

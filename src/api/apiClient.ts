@@ -29,6 +29,8 @@ const call = async <T, F>(
     }
 };
 
+const SKIP_REFRESH = { _skipAuthRefresh: true };
+
 export const getUserInfo = async (): Promise<User | null> => {
     const res = await api.get<User | null>('/users/users', { timeout: 10000 });
     return res.data;
@@ -46,19 +48,19 @@ export const updateUserLanguages = (
 export const signInWithGoogle = (idToken: string) =>
     call('POST /auth/login/google', null, async () => {
         const data = await createAuthData({ idToken });
-        return api.post('/auth/login/google', data);
+        return api.post('/auth/login/google', data, SKIP_REFRESH);
     });
 
 export const signInWithFacebook = (accessToken: string) =>
     call('POST /auth/login/facebook', null, async () => {
         const data = await createAuthData({ accessToken });
-        return api.post('/auth/login/facebook', data);
+        return api.post('/auth/login/facebook', data, SKIP_REFRESH);
     });
 
 export const signInWithApple = (accessToken: string, fullName: string) =>
     call('POST /auth/login/apple', null, async () => {
         const data = await createAuthData({ accessToken, fullName });
-        return api.post('/auth/login/apple', data);
+        return api.post('/auth/login/apple', data, SKIP_REFRESH);
     });
 
 export const signOut = () =>

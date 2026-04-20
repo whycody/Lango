@@ -77,6 +77,13 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
         focus: () => inputRef.current?.focus(),
     }));
 
+    // Workaround: native `placeholder` on a multiline TextInput (UITextView) does not
+    // refresh reliably on iOS inside TrueSheet, so we fake it via `value` + muted color
+    // + hidden caret + forced selection. Using the native placeholder prop causes the
+    // suggestion to stay stale until the sheet is physically moved.
+    const showingSuggestion = !word && !focused && filteredSuggestions.length > 0;
+    const displayValue = showingSuggestion ? filteredSuggestions[0] : word;
+
     const handleTextChange = (newWord: string) => {
         if (!active) return;
         onWordChange?.(newWord);
@@ -94,19 +101,19 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                     <TextInput
                         autoCapitalize={'none'}
                         autoCorrect={true}
+                        caretHidden={showingSuggestion}
                         cursorColor={active ? colors.primary : 'transparent'}
                         multiline={true}
-                        placeholderTextColor={colors.cardAccent}
                         ref={inputRef}
                         scrollEnabled={true}
-                        style={[styles.input, isIOS && styles.inputIOS]}
+                        selection={!word ? { end: 0, start: 0 } : undefined}
                         textContentType={'none'}
-                        value={word}
-                        placeholder={
-                            focused || !filteredSuggestions.length
-                                ? undefined
-                                : filteredSuggestions[0]
-                        }
+                        value={displayValue}
+                        style={[
+                            styles.input,
+                            isIOS && styles.inputIOS,
+                            showingSuggestion && styles.inputAsPlaceholder,
+                        ]}
                         onBlur={handleBlur}
                         onChangeText={handleTextChange}
                         onFocus={() => setFocused(true)}
@@ -158,6 +165,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             lineHeight: 21,
             minHeight: 42,
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
+        },
+        inputAsPlaceholder: {
+            color: colors.cardAccent,
         },
         inputContainer: {
             alignItems: 'center',

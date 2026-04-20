@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { expo } from '../../../app.json';
 import { MARGIN_VERTICAL } from '../../constants/margins';
 import { UserProvider } from '../../constants/User';
+import { isAndroid, isIOS } from '../../utils/deviceUtils';
 import { ActionButton, CustomText, VersionFooter } from '../components';
 import { MarqueeRow } from '../components/login';
 import { CustomTheme } from '../Theme';
@@ -69,7 +70,7 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                 </CustomText>
                 <CustomText style={styles.text}>{t('welcome_desc')}</CustomText>
                 <View style={styles.contentSpacer} />
-                {Platform.OS == 'ios' && (
+                {isIOS && (
                     <ActionButton
                         icon={'logo-apple'}
                         label={t('login_with_apple')}
@@ -91,7 +92,7 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                     icon={'logo-facebook'}
                     label={t('login_with_facebook')}
                     loading={loading === UserProvider.FACEBOOK}
-                    primary={Platform.OS !== 'ios'}
+                    primary={isAndroid}
                     style={styles.button}
                     onPress={() => login(UserProvider.FACEBOOK)}
                 />

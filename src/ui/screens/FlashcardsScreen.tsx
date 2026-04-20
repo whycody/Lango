@@ -1,13 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import {
-    BackHandler,
-    Keyboard,
-    Platform,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    View,
-} from 'react-native';
+import { BackHandler, Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
@@ -22,6 +14,7 @@ import { WordSource } from '../../constants/Word';
 import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
+import { isIOS } from '../../utils/deviceUtils';
 import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil';
 import { ActionButton, CustomText } from '../components';
 import { EmptyList, FlashcardListItem, ListFilter } from '../components/flashcards';
@@ -426,6 +419,6 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         topSpacer: {
             backgroundColor: colors.card,
-            height: Platform.OS === 'ios' ? MARGIN_VERTICAL : insets.top,
+            height: isIOS ? MARGIN_VERTICAL : insets.top,
         },
     });

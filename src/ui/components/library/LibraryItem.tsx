@@ -1,10 +1,11 @@
 import { memo } from 'react';
-import { Platform, Pressable, StyleSheet, Switch, View, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Switch, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
+import { isIOS } from '../../../utils/deviceUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
@@ -31,15 +32,11 @@ export const LibraryItem = memo<LibraryItemProps>(
 
         return (
             <Pressable
+                style={({ pressed }) => [styles.root, pressed && isIOS && { opacity: 0.8 }, style]}
                 android_ripple={{
                     color: index % 2 === 0 ? colors.card : colors.background,
                     foreground: true,
                 }}
-                style={({ pressed }) => [
-                    styles.root,
-                    pressed && Platform.OS === 'ios' && { opacity: 0.8 },
-                    style,
-                ]}
                 onPress={handlePress}
             >
                 {icon && (

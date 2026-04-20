@@ -17,6 +17,7 @@ import { LanguageCode } from '../../../constants/Language';
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { useVoiceInput } from '../../../hooks';
 import { trackEvent } from '../../../utils/analytics';
+import { isIOS } from '../../../utils/deviceUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 
@@ -98,7 +99,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                         placeholderTextColor={colors.cardAccent}
                         ref={inputRef}
                         scrollEnabled={true}
-                        style={styles.input}
+                        style={[styles.input, isIOS && styles.inputIOS]}
                         textContentType={'none'}
                         value={word}
                         placeholder={
@@ -164,6 +165,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             flex: 1,
             flexDirection: 'row',
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
+        },
+        inputIOS: {
+            paddingVertical: 10,
         },
         root: {
             alignItems: 'center',

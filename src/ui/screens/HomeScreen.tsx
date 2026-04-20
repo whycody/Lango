@@ -104,7 +104,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     const onRefresh = useCallback(async () => {
         trackEvent(AnalyticsEventName.HOME_REFRESH);
         await tryToRefreshData();
-    }, [words, sessions, suggestions, evaluations, auth]);
+    }, [words, sessions, suggestions, evaluations, auth, setRefreshing]);
 
     const navigateToSessionScreen = (
         length: SessionLength,
@@ -132,6 +132,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 refreshControl={
                     <RefreshControl
                         progressViewOffset={50}
+                        tintColor={colors.text}
                         refreshing={
                             refreshing ||
                             suggestions.loading ||

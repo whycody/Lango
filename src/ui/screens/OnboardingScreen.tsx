@@ -82,7 +82,7 @@ export const OnboardingScreen = () => {
 
     const updateUserData = useCallback(async () => {
         setLoading(true);
-        const res = await updateUserLanguages(mainLang, translationLang, pickedLevel);
+        const res = await updateUserLanguages(mainLang, translationLang, pickedLevel ?? 1);
         if (res) {
             trackEvent(AnalyticsEventName.ONBOARDING_FINISHED);
             await getSession();
@@ -91,11 +91,15 @@ export const OnboardingScreen = () => {
     }, [mainLang, translationLang, pickedLevel]);
 
     const handleContinuePress = useCallback(() => {
-        if (currentStep < 3) {
+        if (currentStep === 2 && mainLang === translationLang) {
+            updateUserData();
+        } else if (currentStep < 3) {
             triggerPulse();
             scrollToScreen(currentStep + 1);
-        } else updateUserData();
-    }, [currentStep, scrollToScreen, triggerPulse, updateUserData]);
+        } else {
+            updateUserData();
+        }
+    }, [currentStep, mainLang, translationLang, scrollToScreen, triggerPulse, updateUserData]);
 
     useEffect(() => {
         if (currentStep > 0) {

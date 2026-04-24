@@ -101,8 +101,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (axios.isAxiosError(error) && error.code === AxiosError.ERR_NETWORK && user) {
                 setUser(user);
                 setIsAuthenticated(true);
+                return;
             }
-            if (error?.response?.status !== 401) return;
             clearState();
         }
     };

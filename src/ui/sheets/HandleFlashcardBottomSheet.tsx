@@ -54,7 +54,10 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
     const [buttonsActive, setButtonsActive] = useState(true);
     const { mainLang, translationLang } = useLanguage();
-    const voice = useVoiceInput({});
+
+    const voice = useVoiceInput({
+        onPermissionDenied: () => TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME),
+    });
 
     const translationsOfWord =
         wordTranslations &&
@@ -171,6 +174,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
     };
 
     const handleSheetDismiss = () => {
+        voice.stop();
         clearStatus();
         setButtonsActive(true);
         if (!flashcardId) clearInputs();
@@ -182,19 +186,21 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
 
     useEffect(() => {
         if (wordDebounceRef.current) clearTimeout(wordDebounceRef.current);
+        if (voice.recording) return;
         wordDebounceRef.current = setTimeout(() => setWord(currentWord), 450);
         return () => {
             if (wordDebounceRef.current) clearTimeout(wordDebounceRef.current);
         };
-    }, [currentWord]);
+    }, [currentWord, voice.recording]);
 
     useEffect(() => {
         if (translationDebounceRef.current) clearTimeout(translationDebounceRef.current);
+        if (voice.recording) return;
         translationDebounceRef.current = setTimeout(() => setTranslation(currentTranslation), 450);
         return () => {
             if (translationDebounceRef.current) clearTimeout(translationDebounceRef.current);
         };
-    }, [currentTranslation]);
+    }, [currentTranslation, voice.recording]);
 
     const translateWord = async (text: string, from = mainLang, to = translationLang) => {
         abortControllerRef.current && abortControllerRef.current.abort();
@@ -237,11 +243,6 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
         if (!!translation && !word) translateWord(translation, translationLang, mainLang);
     }, [word, translation, mainLang, translationLang]);
 
-    const handleDidDismiss = () => {
-        voice.stop();
-        handleSheetDismiss();
-    };
-
     const handleActionButtonPress = () => {
         if (!buttonsActive) return;
         addFlashcard(true);
@@ -259,7 +260,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                 sheetName={sheetName}
                 style={styles.bottomSheet}
                 title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
-                onDidDismiss={handleDidDismiss}
+                onDidDismiss={handleSheetDismiss}
                 onPrimaryButtonPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
                 onSecondaryButtonPress={handleActionButtonPress}
             >
@@ -273,29 +274,25 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                 )}
                 <WordInput
                     active={buttonsActive}
-                    id={'main-input'}
                     languageCode={mainLang}
                     pointerEvents="box-only"
                     ref={wordInputRef}
                     suggestions={wordSuggestions}
+                    voice={voice}
+                    voiceId="main-input"
                     word={currentWord}
                     onWordChange={setCurrentWord}
-                    onMicrophonePermissionsNotGranted={() =>
-                        TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
-                    }
                 />
                 <WordInput
                     active={buttonsActive}
-                    id={'translation-input'}
                     languageCode={translationLang}
                     pointerEvents="box-only"
                     ref={translationInputRef}
                     suggestions={translationSuggestions}
+                    voice={voice}
+                    voiceId="translation-input"
                     word={currentTranslation}
                     onWordChange={setCurrentTranslation}
-                    onMicrophonePermissionsNotGranted={() =>
-                        TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME)
-                    }
                 />
             </GenericBottomSheet>
         </>

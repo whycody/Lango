@@ -23,12 +23,12 @@ import { CustomText, SquareFlag } from '..';
 
 type WordInputProps = TextInputProps & {
     active: boolean;
-    id: string;
     languageCode: LanguageCode;
-    onMicrophonePermissionsNotGranted?: () => void;
     onWordChange?: (word: string) => void;
     style?: StyleProp<ViewStyle>;
     suggestions?: string[];
+    voice: ReturnType<typeof useVoiceInput>;
+    voiceId: string;
     word: string;
 };
 
@@ -39,15 +39,29 @@ type WordInputRef = {
 export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) => {
     const {
         active,
-        id,
         languageCode,
-        onMicrophonePermissionsNotGranted,
         onWordChange,
         style,
         suggestions,
+        voice,
+        voiceId,
         word,
         ...rest
     } = props;
+
+    const recording = voice.isRecording(voiceId);
+    const micDisabled = voice.recording && !recording;
+
+    const handleMicPress = () => {
+        voice.toggle({
+            id: voiceId,
+            languageCode,
+            onResult: text => {
+                trackEvent(AnalyticsEventName.MICROPHONE_WORD_INPUT);
+                onWordChange?.(text);
+            },
+        });
+    };
 
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
@@ -62,16 +76,6 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                     s.toLowerCase() !== word.toLowerCase(),
             )
             .slice(0, 2) ?? [];
-
-    const voice = useVoiceInput({
-        id,
-        languageCode,
-        onPermissionDenied: onMicrophonePermissionsNotGranted,
-        onResult: text => {
-            trackEvent(AnalyticsEventName.MICROPHONE_WORD_INPUT);
-            onWordChange?.(text);
-        },
-    });
 
     useImperativeHandle(ref, () => ({
         focus: () => inputRef.current?.focus(),
@@ -120,11 +124,17 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                         {...rest}
                     />
                     <Ionicons
-                        color={voice.recording ? colors.primary : colors.primary600}
                         name={'mic-sharp'}
                         size={24}
                         style={styles.icon}
-                        onPress={voice.toggle}
+                        color={
+                            recording
+                                ? colors.primary
+                                : micDisabled
+                                  ? colors.cardAccent
+                                  : colors.primary600
+                        }
+                        onPress={handleMicPress}
                     />
                 </View>
             </View>

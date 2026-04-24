@@ -5,94 +5,87 @@ import { LanguageCode } from '../constants/Language';
 import { speechLocaleMap } from '../constants/SpeechLocaleMap';
 import { useHaptics } from './useHaptics';
 
-let activeVoiceId: string | null = null;
-
-type UseVoiceInputParams = {
-    id?: string;
-    languageCode?: LanguageCode;
+export type VoiceInputParams = {
+    id: string;
+    languageCode: LanguageCode;
     onEnd?: (result: string) => void;
-    onPermissionDenied?: () => void;
-    onResult?: (text: string) => void;
+    onResult: (text: string) => void;
 };
 
-export const useVoiceInput = ({
-    id,
-    languageCode,
-    onEnd,
-    onPermissionDenied,
-    onResult,
-}: UseVoiceInputParams) => {
-    const [recording, setRecording] = useState<string | false>(false);
+type VoiceInputInit = {
+    onPermissionDenied?: () => void;
+};
+
+export const useVoiceInput = (init?: VoiceInputInit) => {
+    const [activeId, setActiveId] = useState<string | null>(null);
+    const paramsRef = useRef<VoiceInputParams | null>(null);
     const transcriptRef = useRef('');
     const { triggerHaptics } = useHaptics();
+
+    const onPermissionDeniedRef = useRef(init?.onPermissionDenied);
+    onPermissionDeniedRef.current = init?.onPermissionDenied;
 
     useSpeechRecognitionEvent('start', () => {
         transcriptRef.current = '';
     });
 
     useSpeechRecognitionEvent('end', () => {
-        if (activeVoiceId === id) {
-            activeVoiceId = null;
-            setRecording(false);
-            onEnd?.(transcriptRef.current);
-        }
+        const finalText = transcriptRef.current;
+        paramsRef.current?.onEnd?.(finalText);
+        paramsRef.current = null;
+        setActiveId(null);
     });
 
     useSpeechRecognitionEvent('result', event => {
-        if (activeVoiceId !== id) return;
-
-        transcriptRef.current = event.results?.[0]?.transcript ?? '';
-        onResult?.(transcriptRef.current);
+        const text = event.results?.[0]?.transcript ?? '';
+        transcriptRef.current = text;
+        paramsRef.current?.onResult(text);
     });
 
-    const start = useCallback(async () => {
+    const start = useCallback(async (params: VoiceInputParams) => {
         const permission = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
-
         if (!permission.granted) {
-            onPermissionDenied?.();
+            onPermissionDeniedRef.current?.();
             return;
         }
 
-        if (activeVoiceId && activeVoiceId !== id) {
-            ExpoSpeechRecognitionModule.stop();
-        }
+        if (paramsRef.current) ExpoSpeechRecognitionModule.stop();
 
-        activeVoiceId = id;
+        paramsRef.current = params;
         transcriptRef.current = '';
-        setRecording(id);
+        setActiveId(params.id);
 
         ExpoSpeechRecognitionModule.start({
             continuous: false,
             interimResults: true,
-            lang: speechLocaleMap[languageCode],
+            lang: speechLocaleMap[params.languageCode],
         });
-    }, [id, languageCode, onPermissionDenied]);
+    }, []);
 
     const stop = useCallback(() => {
-        if (activeVoiceId === id) {
-            ExpoSpeechRecognitionModule.stop();
-            activeVoiceId = null;
-            setRecording(false);
-        }
-    }, [id]);
+        if (!paramsRef.current) return;
+        ExpoSpeechRecognitionModule.stop();
+        paramsRef.current = null;
+        setActiveId(null);
+    }, []);
 
-    const toggle = useCallback(() => {
-        if (activeVoiceId && activeVoiceId !== id) {
-            return;
-        }
-
-        triggerHaptics('rigid');
-
-        if (recording) {
-            stop();
-            return;
-        }
-
-        start();
-    }, [recording, start, stop]);
+    const toggle = useCallback(
+        (params: VoiceInputParams) => {
+            if (activeId && activeId !== params.id) return;
+            triggerHaptics('rigid');
+            if (activeId === params.id) {
+                stop();
+                return;
+            }
+            start(params);
+        },
+        [activeId, start, stop, triggerHaptics],
+    );
 
     return {
-        recording: activeVoiceId === id && recording,
+        activeId,
+        isRecording: (id: string) => activeId === id,
+        recording: activeId !== null,
         start,
         stop,
         toggle,

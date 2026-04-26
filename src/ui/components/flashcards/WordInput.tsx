@@ -1,8 +1,10 @@
 import React, {
     Activity,
     forwardRef,
+    useCallback,
     useEffect,
     useImperativeHandle,
+    useMemo,
     useRef,
     useState,
 } from 'react';
@@ -60,7 +62,45 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
     const recording = voice.isRecording(voiceId);
     const micDisabled = voice.recording && !recording;
 
-    const handleMicPress = () => {
+    const { colors } = useTheme() as CustomTheme;
+    const styles = useMemo(() => getStyles(colors), [colors]);
+    const [focused, setFocused] = useState(false);
+    const inputRef = useRef<TextInput>(null);
+
+    const filteredSuggestions = useMemo(
+        () =>
+            suggestions
+                ?.filter(
+                    s =>
+                        s.toLowerCase().startsWith(word.toLowerCase()) &&
+                        s.toLowerCase() !== word.toLowerCase(),
+                )
+                .slice(0, 2) ?? [],
+        [suggestions, word],
+    );
+
+    useImperativeHandle(ref, () => ({
+        focus: () => {
+            setFocused(true);
+            if (!isIOS) inputRef.current?.focus();
+        },
+    }));
+
+    useEffect(() => {
+        if (isIOS && focused) inputRef.current?.focus();
+    }, [focused]);
+
+    const handleTextChange = useCallback(
+        (newWord: string) => {
+            if (!active) return;
+            onWordChange?.(newWord);
+        },
+        [active, onWordChange],
+    );
+
+    const handleBlur = useCallback(() => setFocused(false), []);
+
+    const handleMicPress = useCallback(() => {
         voice.toggle({
             id: voiceId,
             languageCode,
@@ -69,36 +109,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                 onWordChange?.(text);
             },
         });
-    };
-
-    const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
-    const [focused, setFocused] = useState(false);
-    const inputRef = useRef<any>(null);
-
-    const filteredSuggestions =
-        suggestions
-            ?.filter(
-                s =>
-                    s.toLowerCase().startsWith(word.toLowerCase()) &&
-                    s.toLowerCase() !== word.toLowerCase(),
-            )
-            .slice(0, 2) ?? [];
-
-    useImperativeHandle(ref, () => ({
-        focus: () => setFocused(true),
-    }));
-
-    useEffect(() => {
-        if (focused) inputRef.current?.focus();
-    }, [focused]);
-
-    const handleTextChange = (newWord: string) => {
-        if (!active) return;
-        onWordChange?.(newWord);
-    };
-
-    const handleBlur = () => setFocused(false);
+    }, [languageCode, onWordChange, voice, voiceId]);
 
     const showingSuggestion = !word && !focused && filteredSuggestions.length > 0;
 
@@ -181,7 +192,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
             {filteredSuggestions.length > 0 && focused && (
                 <FlatList
                     data={filteredSuggestions}
-                    keyExtractor={index => index.toString()}
+                    keyExtractor={item => item}
                     keyboardShouldPersistTaps={'always'}
                     scrollEnabled={false}
                     style={styles.suggestionsList}

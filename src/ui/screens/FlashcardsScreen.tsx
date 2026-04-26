@@ -325,7 +325,7 @@ export const FlashcardsScreen = () => {
                 renderItem={renderListItem}
                 showsVerticalScrollIndicator={false}
                 stickyHeaderHiddenOnScroll={false}
-                stickyHeaderIndices={searchingMode ? undefined : [1]}
+                stickyHeaderIndices={searchingMode || !flashcards.length ? undefined : [1]}
             />
             {!searchingMode && (
                 <View style={styles.buttonContainer}>

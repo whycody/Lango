@@ -57,7 +57,7 @@
         "lottie-react-native": "~7.3.4",
         "react": "19.2.0",
         "react-i18next": "~15.1.0",
-        "react-native": "0.83.4",
+        "react-native": "0.83.6",
         "react-native-device-info": "^14.0.4",
         "react-native-edge-to-edge": "^1.7.0",
         "react-native-fbsdk-next": "~13.4.1",

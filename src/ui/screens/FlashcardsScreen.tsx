@@ -364,6 +364,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginTop: 16,
         },
         root: {
+            backgroundColor: colors.background,
             flex: 1,
             height: '100%',
         },

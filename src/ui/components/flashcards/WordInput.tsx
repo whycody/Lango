@@ -1,9 +1,17 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+    Activity,
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
 import {
     FlatList,
     Pressable,
     StyleProp,
     StyleSheet,
+    Text,
     TextInput,
     TextInputProps,
     View,
@@ -78,51 +86,83 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
             .slice(0, 2) ?? [];
 
     useImperativeHandle(ref, () => ({
-        focus: () => inputRef.current?.focus(),
+        focus: () => setFocused(true),
     }));
 
-    // Workaround: native `placeholder` on a multiline TextInput (UITextView) does not
-    // refresh reliably on iOS inside TrueSheet, so we fake it via `value` + muted color
-    // + hidden caret + forced selection. Using the native placeholder prop causes the
-    // suggestion to stay stale until the sheet is physically moved.
-    const showingSuggestion = !word && !focused && filteredSuggestions.length > 0;
-    const displayValue = showingSuggestion ? filteredSuggestions[0] : word;
+    useEffect(() => {
+        if (focused) inputRef.current?.focus();
+    }, [focused]);
 
     const handleTextChange = (newWord: string) => {
         if (!active) return;
         onWordChange?.(newWord);
     };
 
-    const handleBlur = () => {
-        setFocused(false);
-    };
+    const handleBlur = () => setFocused(false);
+
+    const showingSuggestion = !word && !focused && filteredSuggestions.length > 0;
 
     return (
         <View>
             <View style={[styles.root, style]}>
                 <SquareFlag languageCode={languageCode} size={30} style={styles.flag} />
                 <View style={styles.inputContainer}>
-                    <TextInput
-                        autoCapitalize={'none'}
-                        autoCorrect={true}
-                        caretHidden={showingSuggestion}
-                        cursorColor={active ? colors.primary : 'transparent'}
-                        multiline={true}
-                        ref={inputRef}
-                        scrollEnabled={true}
-                        selection={!word ? { end: 0, start: 0 } : undefined}
-                        textContentType={'none'}
-                        value={displayValue}
-                        style={[
-                            styles.input,
-                            isIOS && styles.inputIOS,
-                            showingSuggestion && styles.inputAsPlaceholder,
-                        ]}
-                        onBlur={handleBlur}
-                        onChangeText={handleTextChange}
-                        onFocus={() => setFocused(true)}
-                        {...rest}
-                    />
+                    {isIOS ? (
+                        <>
+                            <Activity mode={focused ? 'visible' : 'hidden'}>
+                                <TextInput
+                                    autoCapitalize={'none'}
+                                    autoCorrect={true}
+                                    cursorColor={active ? colors.primary : 'transparent'}
+                                    multiline={true}
+                                    ref={inputRef}
+                                    scrollEnabled={false}
+                                    style={[styles.input, styles.inputIOS]}
+                                    textContentType={'none'}
+                                    value={word}
+                                    onBlur={handleBlur}
+                                    onChangeText={handleTextChange}
+                                    onFocus={() => setFocused(true)}
+                                    {...rest}
+                                />
+                            </Activity>
+                            <Activity mode={focused ? 'hidden' : 'visible'}>
+                                <Pressable
+                                    style={styles.inputPressable}
+                                    onPress={() => setFocused(true)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.input,
+                                            styles.inputIOS,
+                                            showingSuggestion && styles.inputAsPlaceholder,
+                                            styles.inputText,
+                                        ]}
+                                    >
+                                        {showingSuggestion ? filteredSuggestions[0] : word}
+                                    </Text>
+                                </Pressable>
+                            </Activity>
+                        </>
+                    ) : (
+                        <TextInput
+                            autoCapitalize={'none'}
+                            autoCorrect={true}
+                            cursorColor={active ? colors.primary : 'transparent'}
+                            multiline={true}
+                            placeholder={showingSuggestion ? filteredSuggestions[0] : undefined}
+                            placeholderTextColor={colors.cardAccent}
+                            ref={inputRef}
+                            scrollEnabled={false}
+                            style={styles.input}
+                            textContentType={'none'}
+                            value={word}
+                            onBlur={handleBlur}
+                            onChangeText={handleTextChange}
+                            onFocus={() => setFocused(true)}
+                            {...rest}
+                        />
+                    )}
                     <Ionicons
                         name={'mic-sharp'}
                         size={24}
@@ -188,6 +228,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         inputIOS: {
             paddingVertical: 10,
+        },
+        inputPressable: {
+            flex: 1,
+        },
+        inputText: {
+            flex: 0,
         },
         root: {
             alignItems: 'center',

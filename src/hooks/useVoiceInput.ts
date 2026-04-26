@@ -3,7 +3,10 @@ import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-spe
 
 import { LanguageCode } from '../constants/Language';
 import { speechLocaleMap } from '../constants/SpeechLocaleMap';
+import { isIOS } from '../utils/deviceUtils';
 import { useHaptics } from './useHaptics';
+
+const IOS_SILENCE_TIMEOUT_MS = 1500;
 
 export type VoiceInputParams = {
     id: string;
@@ -20,16 +23,26 @@ export const useVoiceInput = (init?: VoiceInputInit) => {
     const [activeId, setActiveId] = useState<string | null>(null);
     const paramsRef = useRef<VoiceInputParams | null>(null);
     const transcriptRef = useRef('');
+    const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const { triggerHaptics } = useHaptics();
 
     const onPermissionDeniedRef = useRef(init?.onPermissionDenied);
     onPermissionDeniedRef.current = init?.onPermissionDenied;
 
+    const clearSilenceTimer = useCallback(() => {
+        if (silenceTimerRef.current) {
+            clearTimeout(silenceTimerRef.current);
+            silenceTimerRef.current = null;
+        }
+    }, []);
+
     useSpeechRecognitionEvent('start', () => {
         transcriptRef.current = '';
+        clearSilenceTimer();
     });
 
     useSpeechRecognitionEvent('end', () => {
+        clearSilenceTimer();
         const finalText = transcriptRef.current;
         paramsRef.current?.onEnd?.(finalText);
         paramsRef.current = null;
@@ -40,6 +53,13 @@ export const useVoiceInput = (init?: VoiceInputInit) => {
         const text = event.results?.[0]?.transcript ?? '';
         transcriptRef.current = text;
         paramsRef.current?.onResult(text);
+
+        if (isIOS && text) {
+            clearSilenceTimer();
+            silenceTimerRef.current = setTimeout(() => {
+                ExpoSpeechRecognitionModule.stop();
+            }, IOS_SILENCE_TIMEOUT_MS);
+        }
     });
 
     const start = useCallback(async (params: VoiceInputParams) => {
@@ -64,10 +84,11 @@ export const useVoiceInput = (init?: VoiceInputInit) => {
 
     const stop = useCallback(() => {
         if (!paramsRef.current) return;
+        clearSilenceTimer();
         ExpoSpeechRecognitionModule.stop();
         paramsRef.current = null;
         setActiveId(null);
-    }, []);
+    }, [clearSilenceTimer]);
 
     const toggle = useCallback(
         (params: VoiceInputParams) => {

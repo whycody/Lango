@@ -5,7 +5,7 @@
         "version": "1.4.4",
         "orientation": "portrait",
         "icon": "./assets/logo.png",
-        "userInterfaceStyle": "dark",
+        "userInterfaceStyle": "light",
         "runtimeVersion": "1.4",
         "splash": {
             "backgroundColor": "#0f0f30"
@@ -55,7 +55,12 @@
                 }
             ],
             "expo-notifications",
-            "@react-native-google-signin/google-signin",
+            [
+                "@react-native-google-signin/google-signin",
+                {
+                    "iosUrlScheme": "com.googleusercontent.apps.445752259366-b011a2oa6opsu95dpt54vref5jqudmv7"
+                }
+            ],
             "expo-apple-authentication",
             "@react-native-firebase/app"
         ],
@@ -73,7 +78,8 @@
                 "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
                 "NSMicrophoneUsageDescription": "This app requires access to the microphone to allow you to enter words using your voice.",
                 "ITSAppUsesNonExemptEncryption": false
-            }
+            },
+            "appleTeamId": "X2DWMRWN43"
         },
         "android": {
             "adaptiveIcon": {

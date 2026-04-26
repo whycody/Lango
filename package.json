@@ -9,6 +9,8 @@
         "android:prebuild:dev": "cross-env APP_VARIANT=development expo prebuild --platform android --clean",
         "ios:dev": "cross-env APP_VARIANT=development expo run:ios --device",
         "ios:prebuild:dev": "cross-env APP_VARIANT=development expo prebuild --platform ios --clean",
+        "ios:production": "cross-env APP_VARIANT=production expo run:ios --device",
+        "ios:prebuild:proudction": "cross-env APP_VARIANT=production expo prebuild --platform ios --clean",
         "android:test": "cross-env APP_VARIANT=test expo run:android",
         "android:prebuild:test": "cross-env APP_VARIANT=test expo prebuild --platform android --clean",
         "ios": "expo run:ios",

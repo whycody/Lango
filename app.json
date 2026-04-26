@@ -77,6 +77,7 @@
                 "CFBundleAllowMixedLocalizations": true,
                 "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
                 "NSMicrophoneUsageDescription": "This app requires access to the microphone to allow you to enter words using your voice.",
+                "NSPhotoLibraryUsageDescription": "This app does not access your photo library directly, but some features may require it for importing images.",
                 "ITSAppUsesNonExemptEncryption": false
             },
             "appleTeamId": "X2DWMRWN43"

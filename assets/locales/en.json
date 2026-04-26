@@ -1,4 +1,5 @@
 {
     "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study. We will never send more than two notifications per day.",
-    "NSMicrophoneUsageDescription": "This app requires access to the microphone to allow you to enter words using your voice."
+    "NSMicrophoneUsageDescription": "This app requires access to the microphone to allow you to enter words using your voice.",
+    "NSPhotoLibraryUsageDescription": "This app does not access your photo library directly, but some features may require it for importing images."
 }

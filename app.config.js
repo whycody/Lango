@@ -1,11 +1,11 @@
 import { withPodfile } from '@expo/config-plugins';
 
-const withModularHeaders = (config) =>
-    withPodfile(config, (cfg) => {
+const withModularHeaders = config =>
+    withPodfile(config, cfg => {
         if (!cfg.modResults.contents.includes('use_modular_headers!')) {
             cfg.modResults.contents = cfg.modResults.contents.replace(
                 'prepare_react_native_project!',
-                'prepare_react_native_project!\n\nuse_modular_headers!'
+                'prepare_react_native_project!\n\nuse_modular_headers!',
             );
         }
         return cfg;

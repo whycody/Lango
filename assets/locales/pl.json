@@ -1,4 +1,5 @@
 {
     "NSUserNotificationUsageDescription": "Ta aplikacja potrzebuje pozwolenia na wysyłanie powiadomień, aby przypominać Ci o nauce. Nigdy nie wyślemy więcej niż dwóch powiadomień dziennie.",
-    "NSMicrophoneUsageDescription": "Ta aplikacja potrzebuje pozwolenia na korzystanie z mikrofonu, aby umożliwić Ci wprowadzanie słówek za pomocą mowy."
+    "NSMicrophoneUsageDescription": "Ta aplikacja potrzebuje pozwolenia na korzystanie z mikrofonu, aby umożliwić Ci wprowadzanie słówek za pomocą mowy.",
+    "NSPhotoLibraryUsageDescription": "Ta aplikacja nie uzyskuje bezpośredniego dostępu do Twojej biblioteki zdjęć, ale niektóre funkcje mogą tego wymagać do importowania obrazów."
 }

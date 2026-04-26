@@ -1,4 +1,5 @@
 {
     "NSUserNotificationUsageDescription": "Questa app necessita dell'autorizzazione per inviarti notifiche di promemoria per lo studio. Non invieremo mai più di due notifiche al giorno.",
-    "NSMicrophoneUsageDescription": "Questa applicazione richiede l'accesso al microfono per consentirti di inserire parole tramite la voce."
+    "NSMicrophoneUsageDescription": "Questa applicazione richiede l'accesso al microfono per consentirti di inserire parole tramite la voce.",
+    "NSPhotoLibraryUsageDescription": "Questa app non accede direttamente alla tua libreria fotografica, ma alcune funzionalità potrebbero richiederlo per importare immagini."
 }

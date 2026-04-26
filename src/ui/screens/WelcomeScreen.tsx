@@ -28,7 +28,9 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
 
     const firstName = user.name ? user.name.split(' ')[0] : null;
     const nameLength = firstName ? firstName.length : -1;
-    const fullText = firstName ? t('welcome_onboarding', { name: firstName }) : 'Witaj w Lango!';
+    const fullText = firstName
+        ? t('welcome_onboarding', { name: firstName })
+        : t('welcome_onboarding_no_name');
 
     const showConfetti = () => {
         setTimeout(() => {

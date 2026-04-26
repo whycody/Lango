@@ -60,6 +60,7 @@
             "@react-native-firebase/app"
         ],
         "ios": {
+            "icon": "./assets/icon1024.png",
             "supportsTablet": true,
             "buildNumber": "16",
             "bundleIdentifier": "com.whycody.lango",

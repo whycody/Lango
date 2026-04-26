@@ -50,7 +50,7 @@ export const useVoiceInput = (init?: VoiceInputInit) => {
     });
 
     useSpeechRecognitionEvent('result', event => {
-        const text = event.results?.[0]?.transcript ?? '';
+        const text = (event.results?.[0]?.transcript ?? '').toLowerCase();
         transcriptRef.current = text;
         paramsRef.current?.onResult(text);
 
@@ -63,6 +63,7 @@ export const useVoiceInput = (init?: VoiceInputInit) => {
     });
 
     const start = useCallback(async (params: VoiceInputParams) => {
+        const { granted: wasGranted } = await ExpoSpeechRecognitionModule.getPermissionsAsync();
         const permission = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
         if (!permission.granted) {
             onPermissionDeniedRef.current?.();
@@ -74,6 +75,10 @@ export const useVoiceInput = (init?: VoiceInputInit) => {
         paramsRef.current = params;
         transcriptRef.current = '';
         setActiveId(params.id);
+
+        // iOS needs a moment to initialise AVAudioSession after the first permission grant.
+        // Without the delay the recogniser fires an immediate `end` event and the mic turns off.
+        if (!wasGranted) await new Promise<void>(resolve => setTimeout(resolve, 300));
 
         ExpoSpeechRecognitionModule.start({
             continuous: false,

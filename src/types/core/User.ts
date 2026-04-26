@@ -26,7 +26,7 @@ export type User = {
     email: string;
     languageLevels: LanguageLevel[];
     mainLang: LanguageCode | null;
-    name: string;
+    name?: string;
     notificationsEnabled: boolean;
     picture: string;
     provider: UserProvider;

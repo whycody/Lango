@@ -24,10 +24,11 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
     const subtitleFadeAnim = useRef(new Animated.Value(0)).current;
     const subtitleSlideAnim = useRef(new Animated.Value(20)).current;
     const titleMarginAnim = useRef(new Animated.Value(0)).current;
-    const confettiRef = useRef<LottieView>();
+    const confettiRef = useRef<LottieView | null>(null);
 
-    const nameLength = user.name ? user.name.split(' ')[0].length : 0;
-    const fullText = t('welcome_onboarding', { name: user.name.split(' ')[0] });
+    const firstName = user.name ? user.name.split(' ')[0] : null;
+    const nameLength = firstName ? firstName.length : -1;
+    const fullText = firstName ? t('welcome_onboarding', { name: firstName }) : 'Witaj w Lango!';
 
     const showConfetti = () => {
         setTimeout(() => {
@@ -98,7 +99,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
 
     return (
         <View style={styles.root}>
-            <Text style={[styles.title, { marginBottom: titleMarginAnim }]}>
+            <Text style={[styles.title, { marginBottom: firstName ? titleMarginAnim : 20 }]}>
                 <Text style={styles.name}>{displayedText.slice(0, nameLength + 1)}</Text>
                 <Text style={styles.text}>
                     {displayedText.slice(nameLength + 1)}

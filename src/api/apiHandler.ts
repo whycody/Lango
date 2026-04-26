@@ -29,10 +29,7 @@ const REFRESH_TIMEOUT_MS = 10000;
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 const profile = Updates.channel;
-const apiUrl =
-    !profile || ['test', 'development'].includes(profile)
-        ? process.env.API_DEV_URL
-        : process.env.API_URL;
+const apiUrl = 'http://192.168.1.15:3000';
 let onUnauthorized: (() => void) | null = null;
 
 export const setOnUnauthorized = (callback: (() => void) | null): void => {

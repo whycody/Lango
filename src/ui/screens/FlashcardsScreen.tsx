@@ -347,8 +347,9 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         buttonContainer: {
             backgroundColor: colors.card,
+            paddingBottom: insets.bottom,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: MARGIN_VERTICAL / 2,
+            paddingTop: MARGIN_VERTICAL / 2,
         },
         headerCard: {
             backgroundColor: colors.card,

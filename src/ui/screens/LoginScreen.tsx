@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,8 +25,10 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
     const insets = useSafeAreaInsets();
 
     return (
-        <View
-            style={[
+        <ScrollView
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
                 styles.root,
                 {
                     paddingBottom: MARGIN_VERTICAL + insets.bottom,
@@ -101,7 +103,7 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                 </CustomText>
                 <VersionFooter small={true} />
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -122,7 +124,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         errorText: {
             color: colors.red,
             fontSize: 12,
-            height: 50,
+            paddingBottom: 10,
         },
         headerText: {
             color: colors.primary300,
@@ -134,7 +136,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         root: {
             backgroundColor: colors.background,
-            flex: 1,
+            flexGrow: 1,
             paddingBottom: MARGIN_VERTICAL * 2,
             paddingTop: MARGIN_VERTICAL * 2,
         },

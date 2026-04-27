@@ -37,22 +37,25 @@ export const useVoiceInput = (init?: VoiceInputInit) => {
     }, []);
 
     useSpeechRecognitionEvent('start', () => {
+        if (!paramsRef.current) return;
         transcriptRef.current = '';
         clearSilenceTimer();
     });
 
     useSpeechRecognitionEvent('end', () => {
+        if (!paramsRef.current) return;
         clearSilenceTimer();
         const finalText = transcriptRef.current;
-        paramsRef.current?.onEnd?.(finalText);
+        paramsRef.current.onEnd?.(finalText);
         paramsRef.current = null;
         setActiveId(null);
     });
 
     useSpeechRecognitionEvent('result', event => {
+        if (!paramsRef.current) return;
         const text = (event.results?.[0]?.transcript ?? '').toLowerCase();
         transcriptRef.current = text;
-        paramsRef.current?.onResult(text);
+        paramsRef.current.onResult(text);
 
         if (isIOS && text) {
             clearSilenceTimer();

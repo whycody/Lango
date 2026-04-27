@@ -10,17 +10,17 @@ import { CustomTheme } from '../../Theme';
 export const ProfileCard = () => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
-    const auth = useAuth();
+    const { user } = useAuth();
 
-    if (!auth.user) return null;
+    if (!user) return null;
 
     return (
         <View style={styles.root}>
-            {auth.user.picture ? (
+            {user.picture ? (
                 <View style={styles.profileIconContainer}>
                     <Image
                         resizeMode="cover"
-                        source={{ uri: auth.user.picture }}
+                        source={{ uri: user.picture }}
                         style={styles.profileImage}
                     />
                 </View>
@@ -34,9 +34,11 @@ export const ProfileCard = () => {
                     />
                 </View>
             )}
-            <CustomText style={styles.name} weight={'Bold'}>
-                {auth.user.name}
-            </CustomText>
+            {user.name && (
+                <CustomText style={styles.name} weight={'Bold'}>
+                    {user.name}
+                </CustomText>
+            )}
         </View>
     );
 };

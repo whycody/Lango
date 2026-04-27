@@ -79,6 +79,9 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
 
     useEffect(() => {
         navigation.setOptions({ gestureEnabled: false });
+        return () => {
+            navigation.setOptions({ gestureEnabled: true });
+        };
     }, [navigation]);
 
     const confettiRef = useRef<LottieView>(null);

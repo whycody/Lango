@@ -35,6 +35,7 @@ const AppStack = () => {
 
     const modalScreenOptions = {
         animationDuration: 100,
+        contentStyle: { backgroundColor: colors.card },
         presentation: 'modal' as const,
     };
 

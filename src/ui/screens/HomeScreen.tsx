@@ -132,6 +132,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 refreshControl={
                     <RefreshControl
                         progressViewOffset={50}
+                        tintColor={colors.text}
                         refreshing={
                             refreshing ||
                             suggestions.loading ||

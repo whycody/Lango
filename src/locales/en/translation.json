@@ -138,6 +138,8 @@
     "notifications_disabled_message": "To enable notifications, you need to change the app settings in your system.",
     "back": "Go back",
     "welcome": "{{name}},\n welcome to Lango! ",
+    "welcome_onboarding": "{{name}},\n welcome to Lango!",
+    "welcome_onboarding_no_name": "Welcome to Lango!",
     "welcome_onboarding_desc": "We are very pleased that you have joined our community! Answer a few questions so we can better tailor the app to your needs.",
     "general": {
         "open_settings": "Open settings",

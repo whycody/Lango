@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useMMKV } from 'react-native-mmkv';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 import { LanguageCode } from './src/constants/Language';
 import { CustomTheme } from './src/ui/Theme';
 
@@ -45,6 +46,7 @@ export default function App() {
 
     useEffect(() => {
         const checkForUpdates = async () => {
+            await requestTrackingPermissionsAsync();
             await checkUpdates();
             await SplashScreen.hideAsync();
         };

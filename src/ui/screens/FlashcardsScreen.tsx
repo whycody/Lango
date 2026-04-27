@@ -1,13 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import {
-    BackHandler,
-    Keyboard,
-    Platform,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    View,
-} from 'react-native';
+import { BackHandler, Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
@@ -22,6 +14,7 @@ import { WordSource } from '../../constants/Word';
 import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
+import { isIOS } from '../../utils/deviceUtils';
 import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil';
 import { ActionButton, CustomText } from '../components';
 import { EmptyList, FlashcardListItem, ListFilter } from '../components/flashcards';
@@ -332,7 +325,7 @@ export const FlashcardsScreen = () => {
                 renderItem={renderListItem}
                 showsVerticalScrollIndicator={false}
                 stickyHeaderHiddenOnScroll={false}
-                stickyHeaderIndices={searchingMode ? undefined : [1]}
+                stickyHeaderIndices={searchingMode || !flashcards.length ? undefined : [1]}
             />
             {!searchingMode && (
                 <View style={styles.buttonContainer}>
@@ -354,8 +347,9 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         buttonContainer: {
             backgroundColor: colors.card,
+            paddingBottom: insets.bottom,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: MARGIN_VERTICAL / 2,
+            paddingTop: MARGIN_VERTICAL / 2,
         },
         headerCard: {
             backgroundColor: colors.card,
@@ -370,6 +364,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginTop: 16,
         },
         root: {
+            backgroundColor: colors.background,
             flex: 1,
             height: '100%',
         },
@@ -426,6 +421,6 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         topSpacer: {
             backgroundColor: colors.card,
-            height: Platform.OS === 'ios' ? MARGIN_VERTICAL : insets.top,
+            height: isIOS ? MARGIN_VERTICAL : insets.top,
         },
     });

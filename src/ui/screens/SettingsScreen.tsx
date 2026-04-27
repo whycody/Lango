@@ -16,6 +16,7 @@ import { useDynamicStatusBar } from '../../hooks';
 import { useAuth, useLanguage, useUserPreferences } from '../../store';
 import { SettingItem } from '../../types';
 import { trackEvent } from '../../utils/analytics';
+import { isAndroid, isIOS } from '../../utils/deviceUtils';
 import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
 import { CustomText, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
@@ -28,7 +29,7 @@ const SETTINGS_LANGUAGE_SHEET_NAME = 'settings-language-sheet';
 export const SettingsScreen = () => {
     const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
-    const styles = getStyles(colors, insets);
+    const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
     const { t } = useTranslation();
     const { applicationLang, languages, mainLang, translationLang } = useLanguage();
     const { updateUserNotificationsEnabled, updateUserSuggestionsInSession, user } = useAuth();
@@ -258,7 +259,10 @@ export const SettingsScreen = () => {
             <></>
         );
 
-    const renderListFooterComponent = () => <VersionFooter style={styles.footer} />;
+    const renderListFooterComponent = useCallback(
+        () => <VersionFooter style={styles.footer} />,
+        [styles.footer],
+    );
 
     const sections = useMemo(() => {
         const sectionValues = Object.values(SettingsSections).filter(
@@ -279,7 +283,7 @@ export const SettingsScreen = () => {
                 sheetName={SETTINGS_LANGUAGE_SHEET_NAME}
             />
             <View style={styles.root}>
-                <View style={style} />
+                {isAndroid && <View style={style} />}
                 <SectionList
                     ListFooterComponent={renderListFooterComponent}
                     keyExtractor={keyExtractor}
@@ -290,7 +294,10 @@ export const SettingsScreen = () => {
                     stickySectionHeadersEnabled={false}
                     ListHeaderComponent={
                         <>
-                            <CustomText style={styles.title} weight="Bold">
+                            <CustomText
+                                style={[styles.title, isIOS && styles.titleIOS]}
+                                weight="Bold"
+                            >
                                 {t('settings')}
                             </CustomText>
                             <CustomText style={styles.subtitle}>
@@ -337,5 +344,8 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
             paddingTop: insets.top,
+        },
+        titleIOS: {
+            marginTop: 0,
         },
     });

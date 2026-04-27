@@ -131,10 +131,12 @@ const TabsNavigator = () => {
                                 onPressIn={animateIn}
                                 onPressOut={animateOut}
                             >
-                                <View style={styles.fab}>
-                                    <Animated.View style={plusStyle}>
-                                        <Entypo color={colors.card} name="plus" size={24} />
-                                    </Animated.View>
+                                <View style={styles.fabBorder}>
+                                    <View style={styles.fab}>
+                                        <Animated.View style={plusStyle}>
+                                            <Entypo color={colors.card} name="plus" size={24} />
+                                        </Animated.View>
+                                    </View>
                                 </View>
                             </Pressable>
                         ),
@@ -160,24 +162,19 @@ const getStyles = (colors: CustomTheme['colors']) =>
         fab: {
             alignItems: 'center',
             backgroundColor: colors.primary300,
-            borderColor: colors.card,
-            borderRadius: 35,
-            borderWidth: 5,
-            elevation: 6,
-            height: 64,
+            borderRadius: 28,
+            height: 56,
             justifyContent: 'center',
-            width: 64,
+            width: 56,
         },
-        fabContainer: {
+        fabBorder: {
             alignItems: 'center',
-            alignSelf: 'center',
-            borderRadius: 30,
+            backgroundColor: colors.card,
+            borderRadius: 32,
             elevation: 6,
-            height: 60,
+            height: 66,
             justifyContent: 'center',
-            position: 'absolute',
-            top: -25,
-            width: 60,
+            width: 66,
         },
         fabWrapper: {
             alignItems: 'center',

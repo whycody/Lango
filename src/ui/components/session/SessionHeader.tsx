@@ -33,7 +33,7 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
             <MaterialCommunityIcons
                 color={colors.primary300}
                 name={'exit-to-app'}
-                size={21}
+                size={23}
                 style={[styles.transform, styles.icon]}
                 onPress={onSessionExit}
             />
@@ -53,7 +53,7 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
             <Ionicons
                 color={colors.primary300}
                 name={'settings-outline'}
-                size={21}
+                size={23}
                 style={styles.icon}
                 onPress={onSettingsPressed}
             />

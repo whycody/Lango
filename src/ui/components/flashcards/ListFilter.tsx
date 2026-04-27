@@ -16,7 +16,7 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
         const styles = getStyles(colors);
 
         return (
-            <View style={styles.root}>
+            <View pointerEvents={!props.editable ? 'none' : 'auto'} style={styles.root}>
                 <Ionicons
                     color={isSearching ? colors.primary600 : colors.primary300}
                     name="search-sharp"

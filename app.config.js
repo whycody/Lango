@@ -1,3 +1,16 @@
+import { withPodfile } from '@expo/config-plugins';
+
+const withModularHeaders = config =>
+    withPodfile(config, cfg => {
+        if (!cfg.modResults.contents.includes('use_modular_headers!')) {
+            cfg.modResults.contents = cfg.modResults.contents.replace(
+                'prepare_react_native_project!',
+                'prepare_react_native_project!\n\nuse_modular_headers!',
+            );
+        }
+        return cfg;
+    });
+
 export default ({ config }) => {
     const profile = process.env.EAS_BUILD_PROFILE || process.env.APP_VARIANT;
     const easPlatform = process.env.EAS_BUILD_PLATFORM;
@@ -30,17 +43,15 @@ export default ({ config }) => {
         },
         ios: {
             ...config.ios,
-            bundleIdentifier: isTest
-                ? 'com.whycody.lango.test'
-                : isDev
-                  ? 'com.whycody.lango.dev'
-                  : 'com.whycody.lango',
-            googleServicesFile: isTest
-                ? (process.env.GOOGLE_SERVICES_IOS_TEST ?? 'config/GoogleService-Info-Test.plist')
-                : isDev
-                  ? (process.env.GOOGLE_SERVICES_IOS_DEV ?? 'config/GoogleService-Info-Dev.plist')
-                  : (process.env.GOOGLE_SERVICES_IOS ?? 'config/GoogleService-Info.plist'),
+            bundleIdentifier: 'com.whycody.lango',
+            googleServicesFile:
+                process.env.GOOGLE_SERVICES_IOS ?? 'config/GoogleService-Info.plist',
         },
-        plugins: [...(config.plugins || []), 'expo-font'],
+        plugins: [
+            ...(config.plugins || []),
+            'expo-font',
+            'expo-tracking-transparency',
+            withModularHeaders,
+        ],
     };
 };

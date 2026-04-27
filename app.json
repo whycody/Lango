@@ -2,11 +2,11 @@
     "expo": {
         "name": "Lango",
         "slug": "lango",
-        "version": "1.4.4",
+        "version": "1.5",
         "orientation": "portrait",
         "icon": "./assets/logo.png",
-        "userInterfaceStyle": "light",
-        "runtimeVersion": "1.4",
+        "userInterfaceStyle": "dark",
+        "runtimeVersion": "1.5",
         "splash": {
             "backgroundColor": "#0f0f30"
         },
@@ -55,11 +55,17 @@
                 }
             ],
             "expo-notifications",
-            "@react-native-google-signin/google-signin",
+            [
+                "@react-native-google-signin/google-signin",
+                {
+                    "iosUrlScheme": "com.googleusercontent.apps.445752259366-b011a2oa6opsu95dpt54vref5jqudmv7"
+                }
+            ],
             "expo-apple-authentication",
             "@react-native-firebase/app"
         ],
         "ios": {
+            "icon": "./assets/icon1024.png",
             "supportsTablet": true,
             "buildNumber": "16",
             "bundleIdentifier": "com.whycody.lango",
@@ -69,10 +75,13 @@
             },
             "infoPlist": {
                 "CFBundleAllowMixedLocalizations": true,
+                "ITSAppUsesNonExemptEncryption": false,
                 "NSUserNotificationUsageDescription": "This app needs permission to send notifications to remind you to study.",
                 "NSMicrophoneUsageDescription": "This app requires access to the microphone to allow you to enter words using your voice.",
-                "ITSAppUsesNonExemptEncryption": false
-            }
+                "NSPhotoLibraryUsageDescription": "This app does not access your photo library directly, but some features may require it for importing images.",
+                "NSUserTrackingUsageDescription": "This helps us understand how you use the app so we can improve your learning experience, fix issues faster, and deliver content that is more relevant to you."
+            },
+            "appleTeamId": "C7T527Q596"
         },
         "android": {
             "adaptiveIcon": {

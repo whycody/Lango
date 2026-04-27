@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -13,7 +13,7 @@ type VersionFooterProps = {
 
 export const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) => {
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
+    const styles = useMemo(() => getStyles(colors), [colors]);
     const version = appBuildNumbers.expo.version;
 
     return (

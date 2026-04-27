@@ -77,6 +77,13 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
 
     const wordSet = useWordSet(length * 10, mode);
 
+    useEffect(() => {
+        navigation.setOptions({ gestureEnabled: false });
+        return () => {
+            navigation.setOptions({ gestureEnabled: true });
+        };
+    }, [navigation]);
+
     const confettiRef = useRef<LottieView>(null);
     const pagerRef = useRef<PagerView>(null);
     const isInitial = useRef(true);

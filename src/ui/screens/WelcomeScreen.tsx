@@ -23,11 +23,13 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
     const [showCursor, setShowCursor] = useState(true);
     const subtitleFadeAnim = useRef(new Animated.Value(0)).current;
     const subtitleSlideAnim = useRef(new Animated.Value(20)).current;
-    const titleMarginAnim = useRef(new Animated.Value(0)).current;
-    const confettiRef = useRef<LottieView>();
+    const confettiRef = useRef<LottieView | null>(null);
 
-    const nameLength = user.name ? user.name.split(' ')[0].length : 0;
-    const fullText = t('welcome_onboarding', { name: user.name.split(' ')[0] });
+    const firstName = user?.name ? user.name.split(' ')[0] : null;
+    const nameLength = firstName ? firstName.length : -1;
+    const fullText = firstName
+        ? t('welcome_onboarding', { name: firstName })
+        : t('welcome_onboarding_no_name');
 
     const showConfetti = () => {
         setTimeout(() => {
@@ -98,13 +100,24 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
 
     return (
         <View style={styles.root}>
-            <Text style={[styles.title, { marginBottom: titleMarginAnim }]}>
-                <Text style={styles.name}>{displayedText.slice(0, nameLength + 1)}</Text>
-                <Text style={styles.text}>
-                    {displayedText.slice(nameLength + 1)}
-                    <Text style={!showCursor && { color: 'transparent' }}>|</Text>
-                </Text>
-            </Text>
+            <View style={styles.titleContainer}>
+                {displayedText.split('\n').map((line, lineIndex, arr) => {
+                    const isLast = lineIndex === arr.length - 1;
+                    const namePart = lineIndex === 0 ? line.slice(0, nameLength + 1) : '';
+                    const textPart = lineIndex === 0 ? line.slice(nameLength + 1) : line;
+                    return (
+                        <View key={lineIndex} style={styles.titleLine}>
+                            <Text style={styles.title}>
+                                {lineIndex === 0 && <Text>{namePart}</Text>}
+                                <Text>{textPart}</Text>
+                                {isLast && (
+                                    <Text style={!showCursor && { color: 'transparent' }}>|</Text>
+                                )}
+                            </Text>
+                        </View>
+                    );
+                })}
+            </View>
             <Animated.View
                 style={{
                     opacity: subtitleFadeAnim,
@@ -144,9 +157,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             right: 0,
             top: 0,
         },
-        name: {
-            backgroundColor: colors.card,
-        },
         root: {
             height: '100%',
             justifyContent: 'center',
@@ -158,14 +168,17 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginHorizontal: MARGIN_HORIZONTAL * 3,
             textAlign: 'center',
         },
-        text: {
-            backgroundColor: colors.card,
-        },
         title: {
             color: colors.primary300,
             fontFamily: 'Montserrat-Bold',
             fontSize: 26,
-            marginBottom: 40,
-            textAlign: 'center',
+        },
+        titleContainer: {
+            alignItems: 'center',
+            marginBottom: 20,
+            marginTop: -30,
+        },
+        titleLine: {
+            backgroundColor: colors.card,
         },
     });

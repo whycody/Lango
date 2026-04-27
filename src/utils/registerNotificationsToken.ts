@@ -1,9 +1,8 @@
-import * as Notifications from 'expo-notifications';
+import messaging from '@react-native-firebase/messaging';
 
 import { registerDeviceToken } from '../api/apiClient';
 
 export const registerNotificationsToken = async () => {
-    const tokenData = await Notifications.getDevicePushTokenAsync();
-    const pushToken = tokenData.data;
-    await registerDeviceToken(pushToken);
+    const fcmToken = await messaging().getToken();
+    await registerDeviceToken(fcmToken);
 };

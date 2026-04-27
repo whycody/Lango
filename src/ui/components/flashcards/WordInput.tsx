@@ -1,9 +1,19 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+    Activity,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import {
     FlatList,
     Pressable,
     StyleProp,
     StyleSheet,
+    Text,
     TextInput,
     TextInputProps,
     View,
@@ -17,17 +27,18 @@ import { LanguageCode } from '../../../constants/Language';
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { useVoiceInput } from '../../../hooks';
 import { trackEvent } from '../../../utils/analytics';
+import { isIOS } from '../../../utils/deviceUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 
 type WordInputProps = TextInputProps & {
     active: boolean;
-    id: string;
     languageCode: LanguageCode;
-    onMicrophonePermissionsNotGranted?: () => void;
     onWordChange?: (word: string) => void;
     style?: StyleProp<ViewStyle>;
     suggestions?: string[];
+    voice: ReturnType<typeof useVoiceInput>;
+    voiceId: string;
     word: string;
 };
 
@@ -38,92 +49,150 @@ type WordInputRef = {
 export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) => {
     const {
         active,
-        id,
         languageCode,
-        onMicrophonePermissionsNotGranted,
         onWordChange,
         style,
         suggestions,
+        voice,
+        voiceId,
         word,
         ...rest
     } = props;
 
+    const recording = voice.isRecording(voiceId);
+    const micDisabled = voice.recording && !recording;
+
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
+    const styles = useMemo(() => getStyles(colors), [colors]);
     const [focused, setFocused] = useState(false);
-    const inputRef = useRef<any>(null);
+    const inputRef = useRef<TextInput>(null);
 
-    const filteredSuggestions =
-        suggestions
-            ?.filter(
-                s =>
-                    s.toLowerCase().startsWith(word.toLowerCase()) &&
-                    s.toLowerCase() !== word.toLowerCase(),
-            )
-            .slice(0, 2) ?? [];
-
-    const voice = useVoiceInput({
-        id,
-        languageCode,
-        onPermissionDenied: onMicrophonePermissionsNotGranted,
-        onResult: text => {
-            trackEvent(AnalyticsEventName.MICROPHONE_WORD_INPUT);
-            onWordChange?.(text);
-        },
-    });
+    const filteredSuggestions = useMemo(
+        () =>
+            suggestions
+                ?.filter(
+                    s =>
+                        s.toLowerCase().startsWith(word.toLowerCase()) &&
+                        s.toLowerCase() !== word.toLowerCase(),
+                )
+                .slice(0, 2) ?? [],
+        [suggestions, word],
+    );
 
     useImperativeHandle(ref, () => ({
-        focus: () => inputRef.current?.focus(),
+        focus: () => {
+            setFocused(true);
+            if (!isIOS) inputRef.current?.focus();
+        },
     }));
 
-    const handleTextChange = (newWord: string) => {
-        if (!active) return;
-        onWordChange?.(newWord);
-    };
+    useEffect(() => {
+        if (isIOS && focused) inputRef.current?.focus();
+    }, [focused]);
 
-    const handleBlur = () => {
-        setFocused(false);
-    };
+    const handleTextChange = useCallback(
+        (newWord: string) => {
+            if (!active) return;
+            onWordChange?.(newWord);
+        },
+        [active, onWordChange],
+    );
+
+    const handleBlur = useCallback(() => setFocused(false), []);
+
+    const handleMicPress = useCallback(() => {
+        voice.toggle({
+            id: voiceId,
+            languageCode,
+            onResult: text => {
+                trackEvent(AnalyticsEventName.MICROPHONE_WORD_INPUT);
+                onWordChange?.(text);
+            },
+        });
+    }, [languageCode, onWordChange, voice, voiceId]);
+
+    const showingSuggestion = !word && !focused && filteredSuggestions.length > 0;
 
     return (
         <View>
             <View style={[styles.root, style]}>
                 <SquareFlag languageCode={languageCode} size={30} style={styles.flag} />
                 <View style={styles.inputContainer}>
-                    <TextInput
-                        autoCapitalize={'none'}
-                        autoCorrect={true}
-                        cursorColor={active ? colors.primary : 'transparent'}
-                        multiline={true}
-                        placeholderTextColor={colors.cardAccent}
-                        ref={inputRef}
-                        scrollEnabled={true}
-                        style={styles.input}
-                        textContentType={'none'}
-                        value={word}
-                        placeholder={
-                            focused || !filteredSuggestions.length
-                                ? undefined
-                                : filteredSuggestions[0]
-                        }
-                        onBlur={handleBlur}
-                        onChangeText={handleTextChange}
-                        onFocus={() => setFocused(true)}
-                        {...rest}
-                    />
+                    {isIOS ? (
+                        <>
+                            <Activity mode={focused ? 'visible' : 'hidden'}>
+                                <TextInput
+                                    autoCapitalize={'none'}
+                                    autoCorrect={true}
+                                    cursorColor={active ? colors.primary : 'transparent'}
+                                    multiline={true}
+                                    ref={inputRef}
+                                    scrollEnabled={false}
+                                    style={[styles.input, styles.inputIOS]}
+                                    textContentType={'none'}
+                                    value={word}
+                                    onBlur={handleBlur}
+                                    onChangeText={handleTextChange}
+                                    onFocus={() => setFocused(true)}
+                                    {...rest}
+                                />
+                            </Activity>
+                            <Activity mode={focused ? 'hidden' : 'visible'}>
+                                <Pressable
+                                    style={styles.inputPressable}
+                                    onPress={() => setFocused(true)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.input,
+                                            styles.inputIOS,
+                                            showingSuggestion && styles.inputAsPlaceholder,
+                                            styles.inputText,
+                                        ]}
+                                    >
+                                        {showingSuggestion ? filteredSuggestions[0] : word}
+                                    </Text>
+                                </Pressable>
+                            </Activity>
+                        </>
+                    ) : (
+                        <TextInput
+                            autoCapitalize={'none'}
+                            autoCorrect={true}
+                            cursorColor={active ? colors.primary : 'transparent'}
+                            multiline={true}
+                            placeholder={showingSuggestion ? filteredSuggestions[0] : undefined}
+                            placeholderTextColor={colors.cardAccent}
+                            ref={inputRef}
+                            scrollEnabled={false}
+                            style={styles.input}
+                            textContentType={'none'}
+                            value={word}
+                            onBlur={handleBlur}
+                            onChangeText={handleTextChange}
+                            onFocus={() => setFocused(true)}
+                            {...rest}
+                        />
+                    )}
                     <Ionicons
-                        color={voice.recording ? colors.primary : colors.primary600}
                         name={'mic-sharp'}
                         size={24}
                         style={styles.icon}
-                        onPress={voice.toggle}
+                        color={
+                            recording
+                                ? colors.primary
+                                : micDisabled
+                                  ? colors.cardAccent
+                                  : colors.primary600
+                        }
+                        onPress={handleMicPress}
                     />
                 </View>
             </View>
             {filteredSuggestions.length > 0 && focused && (
                 <FlatList
                     data={filteredSuggestions}
-                    keyExtractor={index => index.toString()}
+                    keyExtractor={item => item}
                     keyboardShouldPersistTaps={'always'}
                     scrollEnabled={false}
                     style={styles.suggestionsList}
@@ -158,12 +227,24 @@ const getStyles = (colors: CustomTheme['colors']) =>
             minHeight: 42,
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
         },
+        inputAsPlaceholder: {
+            color: colors.cardAccent,
+        },
         inputContainer: {
             alignItems: 'center',
             backgroundColor: colors.background,
             flex: 1,
             flexDirection: 'row',
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
+        },
+        inputIOS: {
+            paddingVertical: 10,
+        },
+        inputPressable: {
+            flex: 1,
+        },
+        inputText: {
+            flex: 0,
         },
         root: {
             alignItems: 'center',

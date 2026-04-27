@@ -44,11 +44,8 @@ export default ({ config }) => {
         ios: {
             ...config.ios,
             bundleIdentifier: 'com.whycody.lango',
-            googleServicesFile: isTest
-                ? (process.env.GOOGLE_SERVICES_IOS_TEST ?? 'config/GoogleService-Info-Test.plist')
-                : isDev
-                  ? (process.env.GOOGLE_SERVICES_IOS_DEV ?? 'config/GoogleService-Info-Dev.plist')
-                  : (process.env.GOOGLE_SERVICES_IOS ?? 'config/GoogleService-Info.plist'),
+            googleServicesFile:
+                process.env.GOOGLE_SERVICES_IOS ?? 'config/GoogleService-Info.plist',
         },
         plugins: [
             ...(config.plugins || []),

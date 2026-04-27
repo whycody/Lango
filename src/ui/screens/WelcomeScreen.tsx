@@ -25,7 +25,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = ({ onAnimationEnd }) => {
     const subtitleSlideAnim = useRef(new Animated.Value(20)).current;
     const confettiRef = useRef<LottieView | null>(null);
 
-    const firstName = user.name ? user.name.split(' ')[0] : null;
+    const firstName = user?.name ? user.name.split(' ')[0] : null;
     const nameLength = firstName ? firstName.length : -1;
     const fullText = firstName
         ? t('welcome_onboarding', { name: firstName })

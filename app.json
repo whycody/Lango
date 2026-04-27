@@ -2,11 +2,11 @@
     "expo": {
         "name": "Lango",
         "slug": "lango",
-        "version": "1.4.4",
+        "version": "1.5",
         "orientation": "portrait",
         "icon": "./assets/logo.png",
         "userInterfaceStyle": "dark",
-        "runtimeVersion": "1.4",
+        "runtimeVersion": "1.5",
         "splash": {
             "backgroundColor": "#0f0f30"
         },

@@ -128,6 +128,7 @@
     "turned_off_m": "Turned off",
     "session": "Session",
     "preferences": "Preferences",
+    "account": "Account",
     "vibrations": "Vibrations",
     "notifications": "Notifications",
     "turn_on_notifications_title": "Enable notifications \uD83D\uDCAC",
@@ -196,5 +197,9 @@
     },
     "play": "Play",
     "press_arrow_to_skip_suggestion": "If you would like to skip this suggestion, press arrow to the right",
-    "new_words_suggestions": "New words suggestions"
+    "new_words_suggestions": "New words suggestions",
+    "email_address": "Email address",
+    "delete_account": "Delete account",
+    "delete_account_desc": "Press if you want to delete your account.",
+    "delete_account_sheet_desc": "To delete the account associated with the email *{{email}}*, enter your email address below. Remember that this operation is irreversible, and all your data will be permanently deleted."
 }

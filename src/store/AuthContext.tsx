@@ -6,6 +6,7 @@ import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 import { useMMKV, useMMKVObject } from 'react-native-mmkv';
 
 import {
+    deleteAccount,
     getUserInfo,
     signInWithApple,
     signInWithFacebook,
@@ -31,6 +32,7 @@ import { registerNotificationsToken } from '../utils/registerNotificationsToken'
 
 interface AuthContextType {
     authError: string | null;
+    deleteUserAccount: () => Promise<boolean>;
     getSession: () => Promise<void>;
     isAuthenticated: boolean;
     loading: UserProvider | false;
@@ -375,6 +377,17 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         await getSession();
     };
 
+    const deleteUserAccount = async (): Promise<boolean> => {
+        if (!user) return false;
+        const result = await deleteAccount();
+        if (result === null) return false;
+        if (user.provider === UserProvider.GOOGLE) await GoogleSignin.signOut();
+        await removeAccessToken();
+        await removeRefreshToken();
+        clearState();
+        return true;
+    };
+
     async function logout() {
         if (!user) return;
         const { provider } = user;
@@ -383,6 +396,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         await removeRefreshToken();
         clearState();
         await trackEvent(AnalyticsEventName.LOGOUT_SUCCESS, { provider });
+        if (provider !== UserProvider.GOOGLE) return;
+        await GoogleSignin.signOut();
     }
 
     if (isAuthenticated == null) return <LoadingView />;
@@ -391,6 +406,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         <AuthContext.Provider
             value={{
                 authError,
+                deleteUserAccount,
                 getSession,
                 isAuthenticated,
                 loading,

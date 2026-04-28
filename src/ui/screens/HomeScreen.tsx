@@ -104,7 +104,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     const onRefresh = useCallback(async () => {
         trackEvent(AnalyticsEventName.HOME_REFRESH);
         await tryToRefreshData();
-    }, [words, sessions, suggestions, evaluations, auth]);
+    }, [words, sessions, suggestions, evaluations, auth, mainLang, translationLang]);
 
     const navigateToSessionScreen = (
         length: SessionLength,

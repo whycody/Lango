@@ -19,6 +19,7 @@ type GenericBottomSheetProps = {
     onSecondaryButtonPress?: () => void;
     primaryActionIcon?: keyof typeof Ionicons.glyphMap;
     primaryActionLabel?: string;
+    primaryButtonLoading?: boolean;
     secondaryActionLabel?: string;
     primaryButtonEnabled?: boolean;
     sheetName: string;
@@ -43,6 +44,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
         primaryActionIcon,
         primaryActionLabel,
         primaryButtonEnabled,
+        primaryButtonLoading = false,
         secondaryActionLabel,
         sheetName,
         style,
@@ -82,6 +84,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
                         active={primaryButtonEnabled}
                         icon={primaryActionIcon}
                         label={primaryActionLabel}
+                        loading={primaryButtonLoading}
                         primary={true}
                         style={styles.button}
                         onPress={() => onPrimaryButtonPress?.()}

@@ -9,10 +9,13 @@ export enum SettingsItems {
     SUGGESTIONS_IN_SESSION = 'suggestions_in_session',
     FLASHCARD_SIDE = 'flashcard_side',
     SESSION_SPEECH_SYNTHESIZER = 'session_speech_synthesizer',
+    EMAIL_ADDRESS = 'email_address',
+    DELETE_ACCOUNT = 'delete_account',
 }
 
 export enum SettingsSections {
     LANGUAGE,
     PREFERENCES,
     SESSION,
+    ACCOUNT,
 }

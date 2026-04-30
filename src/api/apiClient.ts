@@ -69,6 +69,11 @@ export const signOut = () =>
         return api.post('/auth/auth/logout', data, SKIP_REFRESH);
     });
 
+export const deleteAccount = () =>
+    call('DELETE /auth/auth/account', null, async () => {
+        return api.delete('/auth/auth/account');
+    });
+
 export const updateSuggestionsInSession = (enabled: boolean) =>
     call('PATCH /users/suggestions-in-session', null, () =>
         api.patch('/users/suggestions-in-session', { enabled }),

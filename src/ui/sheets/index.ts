@@ -1,3 +1,4 @@
+export * from './DeleteAccountBottomSheet';
 export * from './EnableNotificationsBottomSheet';
 export * from './FinishSessionBottomSheet';
 export * from './GenericBottomSheet';

@@ -128,6 +128,7 @@
     "turned_off_m": "Wyłączone",
     "session": "Sesja",
     "preferences": "Preferencje",
+    "account": "Konto",
     "vibrations": "Wibracje",
     "notifications": "Powiadomienia",
     "turn_on_notifications_title": "Włącz powiadomienia \uD83D\uDCAC",
@@ -195,5 +196,9 @@
     },
     "play": "Odtwórz",
     "press_arrow_to_skip_suggestion": "Jeżeli chciałbyś pominąć tę propozycję, kliknij w strzałkę po prawej stronie",
-    "new_words_suggestions": "Propozycje nowych słówek"
+    "new_words_suggestions": "Propozycje nowych słówek",
+    "email_address": "Adres email",
+    "delete_account": "Usuń konto",
+    "delete_account_desc": "Kliknij, jeśli chcesz usunąć swoje konto.",
+    "delete_account_sheet_desc": "Aby usunąć konto powiązane z adresem *{{email}}*, wpisz poniżej swój adres email. Pamiętaj, że ta operacja jest nieodwracalna, a wszystkie Twoje dane zostaną trwale usunięte."
 }

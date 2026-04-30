@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useFocusEffect, useRoute, useTheme } from '@react-navigation/native';
@@ -106,6 +106,10 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     const [wordsUpdates, setWordsUpdates] = useState<WordUpdate[]>([]);
     const [skippedSuggestionsIds, setSkippedSuggestionsIds] = useState<string[]>([]);
     const [flippedCards, setFlippedCards] = useState(Array(length * 10).fill(false));
+
+    useLayoutEffect(() => {
+        confettiRef.current?.reset();
+    }, []);
 
     useEffect(() => {
         if (isInitial.current) {
@@ -413,8 +417,11 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
 
     const saveProgress = useCallback(
         (finished: boolean) => {
-            skipSuggestions(skippedSuggestionsIds, 'skipped').then(debouncedSyncSuggestions);
+            const { mainLang, translationLang } = wordSet.sessionWords[0];
 
+            if (mainLang !== translationLang) {
+                skipSuggestions(skippedSuggestionsIds, 'skipped').then(debouncedSyncSuggestions);
+            }
             if (wordsUpdates.length === 0) return;
 
             const suggestionUpdates = getSuggestionUpdates(wordsUpdates);
@@ -426,7 +433,6 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
             }
 
             const avgGrade = calculateAvgGrade(wordsUpdates);
-            const { mainLang, translationLang } = wordSet.sessionWords[0];
             const wordsToAdd = getWordsToAdd(wordSet.sessionWords, suggestionUpdates);
 
             if (finished) {

@@ -20,11 +20,12 @@ import { isAndroid, isIOS } from '../../utils/deviceUtils';
 import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
 import { CustomText, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
-import { LanguageBottomSheet } from '../sheets';
+import { DeleteAccountBottomSheet, LanguageBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const keyExtractor = (item: SettingItem) => item.id.toString();
 const SETTINGS_LANGUAGE_SHEET_NAME = 'settings-language-sheet';
+const SETTINGS_DELETE_ACCOUNT_SHEET_NAME = 'settings-delete-account-sheet';
 
 export const SettingsScreen = () => {
     const { colors } = useTheme() as CustomTheme;
@@ -148,9 +149,24 @@ export const SettingsScreen = () => {
                 label: t('speech_synthesizer'),
                 section: SettingsSections.SESSION,
             },
+            {
+                description: user?.email ?? '',
+                icon: 'mail-sharp',
+                id: SettingsItems.EMAIL_ADDRESS,
+                label: t('email_address'),
+                section: SettingsSections.ACCOUNT,
+            },
+            {
+                description: t('delete_account_desc'),
+                icon: 'person-remove-sharp',
+                id: SettingsItems.DELETE_ACCOUNT,
+                label: t('delete_account'),
+                section: SettingsSections.ACCOUNT,
+            },
         ],
         [
             t,
+            user?.email,
             user?.suggestionsInSession,
             notificationsEnabled,
             userPreferences,
@@ -168,6 +184,8 @@ export const SettingsScreen = () => {
                 return t('preferences');
             case SettingsSections.SESSION:
                 return t('session');
+            case SettingsSections.ACCOUNT:
+                return t('account');
             default:
                 return '';
         }
@@ -224,6 +242,9 @@ export const SettingsScreen = () => {
                     userPreferences.setSessionSpeechSynthesizer(
                         !userPreferences.sessionSpeechSynthesizer,
                     );
+                    break;
+                case SettingsItems.DELETE_ACCOUNT:
+                    TrueSheet.present(SETTINGS_DELETE_ACCOUNT_SHEET_NAME);
                     break;
                 default:
                     break;
@@ -282,6 +303,7 @@ export const SettingsScreen = () => {
                 languageType={pickedLanguageType}
                 sheetName={SETTINGS_LANGUAGE_SHEET_NAME}
             />
+            <DeleteAccountBottomSheet sheetName={SETTINGS_DELETE_ACCOUNT_SHEET_NAME} />
             <View style={styles.root}>
                 {isAndroid && <View style={style} />}
                 <SectionList

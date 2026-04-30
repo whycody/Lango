@@ -18,6 +18,11 @@ import { checkUpdates } from './src/utils/checkUpdates';
 import { useTypedMMKV } from './src/hooks';
 import { useTranslation } from 'react-i18next';
 import { useMMKV } from 'react-native-mmkv';
+import {
+    AVAudioSessionCategory,
+    AVAudioSessionCategoryOptions,
+    ExpoSpeechRecognitionModule,
+} from 'expo-speech-recognition';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
@@ -43,6 +48,13 @@ export default function App() {
         if (!applicationLang) return;
         i18n.changeLanguage(applicationLang);
     }, [applicationLang]);
+
+    useEffect(() => {
+        ExpoSpeechRecognitionModule.setCategoryIOS({
+            category: AVAudioSessionCategory.playback,
+            categoryOptions: [AVAudioSessionCategoryOptions.mixWithOthers],
+        });
+    }, []);
 
     useEffect(() => {
         const checkForUpdates = async () => {

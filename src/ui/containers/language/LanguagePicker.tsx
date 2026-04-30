@@ -56,7 +56,12 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
         languageType !== LanguageTypes.APPLICATION
             ? languages
             : languages.filter(lang =>
-                  [LanguageCode.POLISH, LanguageCode.ENGLISH].includes(lang.languageCode),
+                  [
+                      LanguageCode.POLISH,
+                      LanguageCode.ENGLISH,
+                      LanguageCode.SPANISH,
+                      LanguageCode.ITALIAN,
+                  ].includes(lang.languageCode),
               );
 
     const handleLanguagePick = useCallback(

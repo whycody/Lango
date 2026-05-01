@@ -50,6 +50,7 @@ export const DeleteAccountBottomSheet = (props: DeleteAccountBottomSheetProps) =
             primaryButtonEnabled={isConfirmed}
             primaryButtonLoading={accountDeleting}
             secondaryActionLabel={t('cancel')}
+            secondaryButtonEnabled={!accountDeleting}
             sheetName={sheetName}
             title={t('delete_account')}
             onDidDismiss={handleDismiss}

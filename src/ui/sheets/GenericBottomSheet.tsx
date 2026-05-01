@@ -22,6 +22,7 @@ type GenericBottomSheetProps = {
     primaryButtonLoading?: boolean;
     secondaryActionLabel?: string;
     primaryButtonEnabled?: boolean;
+    secondaryButtonEnabled?: boolean;
     sheetName: string;
     title?: string;
     style?: StyleProp<ViewStyle>;
@@ -46,6 +47,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
         primaryButtonEnabled,
         primaryButtonLoading = false,
         secondaryActionLabel,
+        secondaryButtonEnabled = true,
         sheetName,
         style,
         title,
@@ -93,9 +95,12 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
 
                 {secondaryActionLabel ? (
                     <CustomText
-                        style={styles.actionText}
                         weight="SemiBold"
-                        onPress={() => onSecondaryButtonPress?.()}
+                        style={[
+                            styles.actionText,
+                            !secondaryButtonEnabled && styles.actionTextDisabled,
+                        ]}
+                        onPress={secondaryButtonEnabled ? onSecondaryButtonPress : undefined}
                     >
                         {secondaryActionLabel}
                     </CustomText>
@@ -115,6 +120,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: MARGIN_VERTICAL,
             textAlign: 'center',
+        },
+        actionTextDisabled: {
+            opacity: 0.4,
         },
         button: {
             marginHorizontal: MARGIN_HORIZONTAL,

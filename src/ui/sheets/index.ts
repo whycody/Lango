@@ -8,6 +8,7 @@ export * from './LanguageBottomSheet';
 export * from './LeaveSessionBottomSheet';
 export * from './PickLanguageLevelBottomSheet';
 export * from './RemoveFlashcardBottomSheet';
+export * from './SameLearningLanguageBottomSheet';
 export * from './SessionSettingsBottomSheet';
 export * from './SortingMethodBottomSheet';
 export * from './StartSessionBottomSheet';

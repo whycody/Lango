@@ -200,5 +200,11 @@
     "email_address": "Adres email",
     "delete_account": "Usuń konto",
     "delete_account_desc": "Kliknij, jeśli chcesz usunąć swoje konto.",
-    "delete_account_sheet_desc": "Aby usunąć konto powiązane z adresem *{{email}}*, wpisz poniżej swój adres email. Pamiętaj, że ta operacja jest nieodwracalna, a wszystkie Twoje dane zostaną trwale usunięte."
+    "delete_account_sheet_desc": "Aby usunąć konto powiązane z adresem *{{email}}*, wpisz poniżej swój adres email. Pamiętaj, że ta operacja jest nieodwracalna, a wszystkie Twoje dane zostaną trwale usunięte.",
+    "same_learning_language": {
+        "title": "Jesteś pewny?",
+        "desc": "Czy na pewno chcesz uczyć się języka, który jest Twoim językiem ojczystym? Największe postępy osiągniesz, wybierając do nauki inny język.",
+        "confirm": "Tak, kontynuuj",
+        "change": "Wybierz inny język"
+    }
 }

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, ScrollView, StyleSheet, View } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +15,10 @@ import { LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { ActionButton } from '../components';
 import { LanguageLevelPicker, LanguagePicker, OnboardingScreenContainer } from '../containers';
+import { SameLearningLanguageBottomSheet } from '../sheets';
 import { WelcomeScreen } from './WelcomeScreen';
+
+const SAME_LANGUAGE_SHEET = 'onboarding-same-language-sheet';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -35,6 +39,14 @@ export const OnboardingScreen = () => {
     const { languages, mainLang, translationLang } = useLanguage();
     const [welcomeScreenIsReady, setWelcomeScreenIsReady] = useState(false);
     const [pickedLevel, setPickedLevel] = useState<LanguageLevelRange | undefined>();
+
+    const prevMainLangRef = useRef(mainLang);
+    useEffect(() => {
+        if (prevMainLangRef.current !== mainLang) {
+            prevMainLangRef.current = mainLang;
+            setPickedLevel(undefined);
+        }
+    }, [mainLang]);
 
     const buttonEnabled =
         (currentStep === 0 && welcomeScreenIsReady) ||
@@ -92,7 +104,7 @@ export const OnboardingScreen = () => {
 
     const handleContinuePress = useCallback(() => {
         if (currentStep === 2 && mainLang === translationLang) {
-            updateUserData();
+            TrueSheet.present(SAME_LANGUAGE_SHEET);
         } else if (currentStep < 3) {
             triggerPulse();
             scrollToScreen(currentStep + 1);
@@ -145,6 +157,7 @@ export const OnboardingScreen = () => {
 
     return (
         <>
+            <SameLearningLanguageBottomSheet sheetName={SAME_LANGUAGE_SHEET} onConfirm={updateUserData} />
             <ScrollView
                 pagingEnabled
                 ref={scrollViewRef}

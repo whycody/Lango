@@ -201,5 +201,11 @@
     "email_address": "Email address",
     "delete_account": "Delete account",
     "delete_account_desc": "Press if you want to delete your account.",
-    "delete_account_sheet_desc": "To delete the account associated with the email *{{email}}*, enter your email address below. Remember that this operation is irreversible, and all your data will be permanently deleted."
+    "delete_account_sheet_desc": "To delete the account associated with the email *{{email}}*, enter your email address below. Remember that this operation is irreversible, and all your data will be permanently deleted.",
+    "same_learning_language": {
+        "title": "Are you sure?",
+        "desc": "Are you sure you want to learn the same language as your native language? You'll make the most progress by choosing a different language to learn.",
+        "confirm": "Yes, continue",
+        "change": "Choose a different language"
+    }
 }

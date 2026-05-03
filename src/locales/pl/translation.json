@@ -206,5 +206,10 @@
         "desc": "Czy na pewno chcesz uczyć się języka, który jest Twoim językiem ojczystym? Największe postępy osiągniesz, wybierając do nauki inny język.",
         "confirm": "Tak, kontynuuj",
         "change": "Wybierz inny język"
+    },
+    "word_selection": {
+        "title": "Dodaj pierwsze słówka",
+        "desc": "Zaznacz pierwsze słówka, które chciałbyś dodać do swojego słownika",
+        "select_all": "Zaznacz wszystkie"
     }
 }

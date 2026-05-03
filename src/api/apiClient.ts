@@ -3,6 +3,7 @@ import { AxiosResponse } from 'axios';
 import { LanguageCode } from '../constants/Language';
 import {
     Evaluation,
+    ExampleFlashcard,
     LanguageLevel,
     LanguageLevelRange,
     Session,
@@ -134,6 +135,28 @@ export const fetchUpdatedSuggestions = (
 export const syncSuggestionsOnServer = (suggestions: Suggestion[]): Promise<SyncResult[] | null> =>
     call('POST /suggestions/sync', null, () =>
         api.post<SyncResult[]>('/suggestions/sync', suggestions),
+    );
+
+export const fetchExampleFlashcards = (
+    mainLang: LanguageCode,
+    translationLang: LanguageCode,
+    level: LanguageLevelRange,
+): Promise<ExampleFlashcard[]> =>
+    new Promise(resolve =>
+        setTimeout(
+            () =>
+                resolve([
+                    { id: '1', translation: 'Cześć', word: 'Hello' },
+                    { id: '2', translation: 'Dziękuję', word: 'Thank you' },
+                    { id: '3', translation: 'Proszę', word: 'Please' },
+                    { id: '4', translation: 'Tak', word: 'Yes' },
+                    { id: '5', translation: 'Nie', word: 'No' },
+                    { id: '6', translation: 'Woda', word: 'Water' },
+                    { id: '7', translation: 'Jedzenie', word: 'Food' },
+                    { id: '8', translation: 'Przyjaciel', word: 'Friend' },
+                ]),
+            1000,
+        ),
     );
 
 export const translateText = async (

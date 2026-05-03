@@ -207,5 +207,10 @@
         "desc": "Sei sicuro di voler imparare la stessa lingua della tua lingua madre? Otterrai i maggiori progressi scegliendo una lingua diversa da imparare.",
         "confirm": "Sì, continua",
         "change": "Scegli un'altra lingua"
+    },
+    "word_selection": {
+        "title": "Aggiungi le tue prime parole",
+        "desc": "Seleziona le prime parole che vorresti aggiungere al tuo dizionario",
+        "select_all": "Seleziona tutto"
     }
 }

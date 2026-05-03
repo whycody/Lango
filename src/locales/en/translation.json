@@ -207,5 +207,10 @@
         "desc": "Are you sure you want to learn the same language as your native language? You'll make the most progress by choosing a different language to learn.",
         "confirm": "Yes, continue",
         "change": "Choose a different language"
+    },
+    "word_selection": {
+        "title": "Add your first words",
+        "desc": "Select the first words you'd like to add to your dictionary",
+        "select_all": "Select all"
     }
 }

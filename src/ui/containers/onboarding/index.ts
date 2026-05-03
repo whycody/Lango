@@ -1,1 +1,1 @@
-export * from './ScreenContainer';
+export * from './FlashcardsSelectionContainer';

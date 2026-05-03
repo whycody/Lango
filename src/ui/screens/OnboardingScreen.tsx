@@ -1,99 +1,71 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ProgressBar } from 'react-native-paper';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { updateUserLanguages } from '../../api/apiClient';
+import { fetchExampleFlashcards, updateUserLanguages } from '../../api/apiClient';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageTypes } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useAuth, useLanguage } from '../../store';
-import { LanguageLevelRange } from '../../types';
+import { ExampleFlashcard, LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { ActionButton } from '../components';
-import { LanguageLevelPicker, LanguagePicker, OnboardingScreenContainer } from '../containers';
+import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
 import { SameLearningLanguageBottomSheet } from '../sheets';
-import { WelcomeScreen } from './WelcomeScreen';
+import { CustomTheme } from '../Theme';
 
 const SAME_LANGUAGE_SHEET = 'onboarding-same-language-sheet';
-
-const screenHeight = Dimensions.get('window').height;
+const TOTAL_STEPS = 5;
 
 export const OnboardingScreen = () => {
-    const { colors } = useTheme();
+    const { colors } = useTheme() as CustomTheme;
     const { getSession } = useAuth();
     const insets = useSafeAreaInsets();
-    const styles = getStyles(insets);
+    const styles = getStyles(colors, insets);
     const { t } = useTranslation();
-    const scrollViewRef = useRef<ScrollView>(null);
 
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
-    const backSlideAnim = useRef(new Animated.Value(30)).current;
-    const backOpacityAnim = useRef(new Animated.Value(0)).current;
-    const pulseAnim = useRef(new Animated.Value(0)).current;
+    const [exampleWords, setExampleWords] = useState<ExampleFlashcard[]>([]);
+    const [selectedWordIds, setSelectedWordIds] = useState<string[]>([]);
 
     const { languages, mainLang, translationLang } = useLanguage();
-    const [welcomeScreenIsReady, setWelcomeScreenIsReady] = useState(false);
     const [pickedLevel, setPickedLevel] = useState<LanguageLevelRange | undefined>();
 
-    const prevMainLangRef = useRef(mainLang);
     useEffect(() => {
-        if (prevMainLangRef.current !== mainLang) {
-            prevMainLangRef.current = mainLang;
-            setPickedLevel(undefined);
-        }
+        setPickedLevel(undefined);
     }, [mainLang]);
 
     const buttonEnabled =
-        (currentStep === 0 && welcomeScreenIsReady) ||
-        (currentStep === 1 && !!translationLang) ||
-        (currentStep === 2 && !!mainLang) ||
-        (currentStep === 3 && !!pickedLevel);
+        (currentStep === 0 && !!translationLang) ||
+        (currentStep === 1 && !!mainLang) ||
+        (currentStep === 2 && !!pickedLevel) ||
+        currentStep === 3;
 
     useEffect(() => {
         trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED);
     }, []);
 
-    const scrollToScreen = useCallback((screenIndex: number) => {
-        const offsetY = screenIndex * (screenHeight + insets.top + insets.bottom);
-        scrollViewRef.current?.scrollTo({
-            animated: true,
-            y: offsetY,
-        });
-        setCurrentStep(screenIndex);
+    const handleWordToggle = useCallback((id: string) => {
+        setSelectedWordIds(prev =>
+            prev.includes(id) ? prev.filter(wId => wId !== id) : [...prev, id],
+        );
     }, []);
-
-    const triggerPulse = useCallback(() => {
-        pulseAnim.setValue(0);
-        Animated.sequence([
-            Animated.timing(pulseAnim, {
-                duration: 200,
-                easing: Easing.out(Easing.quad),
-                toValue: 1,
-                useNativeDriver: true,
-            }),
-            Animated.timing(pulseAnim, {
-                duration: 200,
-                easing: Easing.in(Easing.quad),
-                toValue: 0,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [pulseAnim]);
 
     const handleBackPress = useCallback(() => {
         if (currentStep > 0) {
-            triggerPulse();
-            scrollToScreen(currentStep - 1);
+            setCurrentStep(currentStep - 1);
         }
-    }, [currentStep, scrollToScreen, triggerPulse]);
+    }, [currentStep]);
 
     const updateUserData = useCallback(async () => {
         setLoading(true);
+        // TODO: pass selectedWordIds to account configuration endpoint
         const res = await updateUserLanguages(mainLang, translationLang, pickedLevel ?? 1);
         if (res) {
             trackEvent(AnalyticsEventName.ONBOARDING_FINISHED);
@@ -103,102 +75,61 @@ export const OnboardingScreen = () => {
     }, [mainLang, translationLang, pickedLevel]);
 
     const handleContinuePress = useCallback(() => {
-        if (currentStep === 2 && mainLang === translationLang) {
+        if (currentStep === 1 && mainLang === translationLang) {
             TrueSheet.present(SAME_LANGUAGE_SHEET);
+        } else if (currentStep === 2) {
+            setLoading(true);
+            setSelectedWordIds([]);
+            fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1).then(words => {
+                setExampleWords(words);
+                setLoading(false);
+                setCurrentStep(3);
+            });
         } else if (currentStep < 3) {
-            triggerPulse();
-            scrollToScreen(currentStep + 1);
+            setCurrentStep(currentStep + 1);
         } else {
             updateUserData();
         }
-    }, [currentStep, mainLang, translationLang, scrollToScreen, triggerPulse, updateUserData]);
-
-    useEffect(() => {
-        if (currentStep > 0) {
-            backSlideAnim.setValue(30);
-            backOpacityAnim.setValue(0);
-
-            Animated.parallel([
-                Animated.timing(backSlideAnim, {
-                    duration: 300,
-                    easing: Easing.out(Easing.quad),
-                    toValue: 0,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(backOpacityAnim, {
-                    duration: 300,
-                    easing: Easing.out(Easing.quad),
-                    toValue: 1,
-                    useNativeDriver: true,
-                }),
-            ]).start();
-        } else {
-            backSlideAnim.setValue(0);
-            backOpacityAnim.setValue(1);
-
-            Animated.parallel([
-                Animated.timing(backSlideAnim, {
-                    duration: 300,
-                    easing: Easing.in(Easing.quad),
-                    toValue: 30,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(backOpacityAnim, {
-                    duration: 300,
-                    easing: Easing.in(Easing.quad),
-                    toValue: 0,
-                    useNativeDriver: true,
-                }),
-            ]).start();
-        }
-    }, [currentStep === 0, backSlideAnim, backOpacityAnim]);
-
-    const languageTypes = [LanguageTypes.TRANSLATION, LanguageTypes.MAIN];
+    }, [currentStep, mainLang, translationLang, updateUserData]);
 
     return (
         <>
-            <SameLearningLanguageBottomSheet sheetName={SAME_LANGUAGE_SHEET} onConfirm={updateUserData} />
-            <ScrollView
-                pagingEnabled
-                ref={scrollViewRef}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
+            <SameLearningLanguageBottomSheet
+                sheetName={SAME_LANGUAGE_SHEET}
+                onConfirm={updateUserData}
+            />
+            <LinearGradient
+                colors={[colors.card, colors.background]}
+                end={{ x: 1, y: 1 }}
+                start={{ x: 0, y: 0 }}
+                style={styles.root}
             >
-                <LinearGradient
-                    colors={[colors.background, colors.card]}
-                    end={{ x: 1, y: 1 }}
-                    start={{ x: 0.5, y: 0.5 }}
-                    style={styles.fullScreenSection}
-                >
-                    <OnboardingScreenContainer currentStep={currentStep}>
-                        <WelcomeScreen onAnimationEnd={() => setWelcomeScreenIsReady(true)} />
-                    </OnboardingScreenContainer>
-                </LinearGradient>
+                <View style={styles.topBar}>
+                    <View style={styles.progressBarWrapper}>
+                        <ProgressBar
+                            color={colors.primary}
+                            progress={(currentStep + 1) / TOTAL_STEPS}
+                            style={styles.progressBar}
+                        />
+                    </View>
+                </View>
 
-                {languageTypes.map((type, index) => (
-                    <LinearGradient
-                        key={type}
-                        colors={[colors.background, colors.card]}
-                        end={{ x: index, y: index }}
-                        start={{ x: 1 - index, y: 1 - index }}
-                    >
-                        <OnboardingScreenContainer currentStep={currentStep}>
-                            <LanguagePicker
-                                alwaysAllowPick
-                                languageType={type}
-                                style={styles.languagePicker}
-                            />
-                        </OnboardingScreenContainer>
-                    </LinearGradient>
-                ))}
-
-                <LinearGradient
-                    colors={[colors.background, colors.card]}
-                    end={{ x: 0, y: 0 }}
-                    start={{ x: 0.5, y: 0.5 }}
-                    style={styles.fullScreenSection}
-                >
-                    <OnboardingScreenContainer currentStep={currentStep}>
+                <View style={styles.content}>
+                    {currentStep === 0 && (
+                        <LanguagePicker
+                            alwaysAllowPick
+                            languageType={LanguageTypes.TRANSLATION}
+                            style={styles.languagePicker}
+                        />
+                    )}
+                    {currentStep === 1 && (
+                        <LanguagePicker
+                            alwaysAllowPick
+                            languageType={LanguageTypes.MAIN}
+                            style={styles.languagePicker}
+                        />
+                    )}
+                    {currentStep === 2 && (
                         <LanguageLevelPicker
                             language={languages.find(lang => lang.languageCode === mainLang)}
                             pickedLevel={pickedLevel}
@@ -206,64 +137,66 @@ export const OnboardingScreen = () => {
                             updateUserData={false}
                             onLevelPick={setPickedLevel}
                         />
-                    </OnboardingScreenContainer>
-                </LinearGradient>
-            </ScrollView>
-
-            <View style={styles.buttonContainer}>
-                {currentStep > 0 && (
-                    <Animated.View
-                        style={{
-                            opacity: backOpacityAnim,
-                            transform: [{ translateY: backSlideAnim }],
-                        }}
-                    >
-                        <ActionButton
-                            active={!loading}
-                            icon={'arrow-back-outline'}
-                            label={t('back')}
-                            primary={false}
-                            style={styles.backButton}
-                            onPress={handleBackPress}
+                    )}
+                    {currentStep === 3 && (
+                        <FlashcardsSelectionContainer
+                            selectedIds={selectedWordIds}
+                            style={styles.languagePicker}
+                            words={exampleWords}
+                            onSelectAll={setSelectedWordIds}
+                            onToggle={handleWordToggle}
                         />
-                    </Animated.View>
-                )}
-                <ActionButton
-                    active={buttonEnabled}
-                    icon={'arrow-forward-outline'}
-                    label={t('continue')}
-                    loading={loading}
-                    primary={true}
-                    onPress={handleContinuePress}
-                />
-            </View>
+                    )}
+                </View>
+
+                <View style={styles.bottomBar}>
+                    <ActionButton
+                        active={buttonEnabled}
+                        icon={'arrow-forward-outline'}
+                        label={t('continue')}
+                        loading={loading}
+                        primary={true}
+                        onPress={handleContinuePress}
+                    />
+                    <ActionButton
+                        active={currentStep > 0 && !loading}
+                        icon={'arrow-back-outline'}
+                        label={t('back')}
+                        primary={false}
+                        onPress={handleBackPress}
+                    />
+                </View>
+            </LinearGradient>
         </>
     );
 };
 
-const getStyles = (insets: any) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
-        backButton: {
-            marginBottom: MARGIN_VERTICAL / 2,
-        },
-        buttonContainer: {
-            bottom: 0,
-            left: 0,
+        bottomBar: {
+            backgroundColor: colors.card,
+            gap: 10,
             paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            position: 'absolute',
-            right: 0,
+            paddingTop: MARGIN_VERTICAL,
         },
-        fullScreenSection: {
+        content: {
             flex: 1,
         },
         languagePicker: {
-            flex: 1,
-            height: screenHeight + insets.top + insets.bottom,
-            paddingTop: insets.top + MARGIN_VERTICAL,
-            width: '100%',
+            paddingTop: MARGIN_VERTICAL,
+        },
+        progressBar: {
+            backgroundColor: colors.cardAccent,
+            height: 5,
+        },
+        progressBarWrapper: {
+            marginHorizontal: MARGIN_HORIZONTAL,
         },
         root: {
             flex: 1,
+        },
+        topBar: {
+            paddingTop: insets.top + MARGIN_VERTICAL / 2,
         },
     });

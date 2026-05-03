@@ -96,25 +96,23 @@ export const ActionButton: FC<ActionButtonProps> = ({
                 onPressIn={active && !loading ? handlePressIn : undefined}
                 onPressOut={active && !loading ? handlePressOut : undefined}
             >
-                {loading ? (
+                <CustomText style={[styles.label, loading && styles.hidden]} weight={'Bold'}>
+                    {label}
+                </CustomText>
+                {icon && (
+                    <Ionicons
+                        color={primary ? colors.card : colors.primary}
+                        name={icon}
+                        size={14}
+                        style={[styles.icon, loading && styles.hidden]}
+                    />
+                )}
+                {loading && (
                     <ActivityIndicator
                         color={primary ? colors.card : colors.primary}
                         size="small"
+                        style={StyleSheet.absoluteFill}
                     />
-                ) : (
-                    <>
-                        <CustomText style={styles.label} weight={'Bold'}>
-                            {label}
-                        </CustomText>
-                        {icon && (
-                            <Ionicons
-                                color={primary ? colors.card : colors.primary}
-                                name={icon}
-                                size={14}
-                                style={styles.icon}
-                            />
-                        )}
-                    </>
                 )}
             </Pressable>
         </Animated.View>
@@ -123,6 +121,9 @@ export const ActionButton: FC<ActionButtonProps> = ({
 
 const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: boolean) =>
     StyleSheet.create({
+        hidden: {
+            opacity: 0,
+        },
         icon: {
             marginLeft: 4,
             marginTop: 2,

@@ -20,10 +20,11 @@ interface LanguagePickerProps {
         translationLangNeedsMainLangEvaluation: boolean,
     ) => void;
     style?: ViewStyle;
+    title?: string;
 }
 
 export const LanguagePicker = (props: LanguagePickerProps) => {
-    const { alwaysAllowPick, languageType = LanguageTypes.MAIN, onLanguagePick, style } = props;
+    const { alwaysAllowPick, languageType = LanguageTypes.MAIN, onLanguagePick, style, title } = props;
     const styles = getStyles();
     const { t } = useTranslation();
     const {
@@ -126,7 +127,7 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
             <Header
                 style={styles.header}
                 subtitle={t(`choose_language_${languageType}_desc`)}
-                title={t(`choose_${langTypeDesc}_language`)}
+                title={title ?? t(`choose_${langTypeDesc}_language`)}
             />
             <FlatList data={languagesData} renderItem={renderLanguageItem} scrollEnabled={false} />
         </View>

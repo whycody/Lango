@@ -120,6 +120,7 @@ export const OnboardingScreen = () => {
                             alwaysAllowPick
                             languageType={LanguageTypes.TRANSLATION}
                             style={styles.languagePicker}
+                            title={`1. ${t('choose_translation_language')}`}
                         />
                     )}
                     {currentStep === 1 && (
@@ -127,6 +128,7 @@ export const OnboardingScreen = () => {
                             alwaysAllowPick
                             languageType={LanguageTypes.MAIN}
                             style={styles.languagePicker}
+                            title={`2. ${t('choose_main_language')}`}
                         />
                     )}
                     {currentStep === 2 && (
@@ -134,6 +136,7 @@ export const OnboardingScreen = () => {
                             language={languages.find(lang => lang.languageCode === mainLang)}
                             pickedLevel={pickedLevel}
                             style={styles.languagePicker}
+                            title={`3. ${t('language_level.select', { language: languages.find(lang => lang.languageCode === mainLang)?.languageName.toLowerCase() })}`}
                             updateUserData={false}
                             onLevelPick={setPickedLevel}
                         />
@@ -142,6 +145,7 @@ export const OnboardingScreen = () => {
                         <FlashcardsSelectionContainer
                             selectedIds={selectedWordIds}
                             style={styles.languagePicker}
+                            title={`4. ${t('word_selection.title')}`}
                             words={exampleWords}
                             onSelectAll={setSelectedWordIds}
                             onToggle={handleWordToggle}

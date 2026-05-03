@@ -33,9 +33,9 @@ export const FlashcardSelectionItem = memo<FlashcardSelectionItemProps>(
                 onPress={handleToggle}
             >
                 <LinearGradient
+                    colors={['transparent', selected ? colors.cardAccent : 'transparent']}
                     end={{ x: 1, y: 1 }}
                     start={{ x: 0, y: 0 }}
-                    colors={['transparent', selected ? colors.cardAccent : 'transparent']}
                 >
                     <View style={styles.container}>
                         <Ionicons color={colors.primary600} name={'reader-sharp'} size={22} />

@@ -16,6 +16,7 @@ type FlashcardsSelectionContainerProps = {
     onToggle: (id: string) => void;
     selectedIds: string[];
     style?: StyleProp<ViewStyle>;
+    title?: string;
     words: ExampleFlashcard[];
 };
 
@@ -24,6 +25,7 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
     onToggle,
     selectedIds,
     style,
+    title,
     words,
 }) => {
     const { colors } = useTheme() as CustomTheme;
@@ -56,7 +58,7 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
             <Header
                 style={styles.header}
                 subtitle={t('word_selection.desc')}
-                title={t('word_selection.title')}
+                title={title ?? t('word_selection.title')}
             />
             <Pressable
                 android_ripple={{ color: colors.background, foreground: true }}

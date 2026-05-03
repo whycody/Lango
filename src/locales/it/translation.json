@@ -82,7 +82,7 @@
     "choose_translation_language": "Scegli la tua lingua madre",
     "choose_application_language": "Scegli la lingua dell'applicazione",
     "choose_language_main_desc": "Tocca un riquadro per selezionare la lingua che vuoi imparare.",
-    "choose_language_translation_desc": "Tocca un riquadro per scegliere la lingua con cui ti senti più a tuo agio.",
+    "choose_language_translation_desc": "Tocca un riquadro per selezionare la lingua che conosci meglio.",
     "choose_language_application_desc": "Tocca un riquadro per selezionare la lingua in cui vuoi usare l'app.",
     "searchFlashcard": "Cerca scheda",
     "english": "Inglese",
@@ -170,18 +170,18 @@
         "disabled_message": "Per attivare il microfono, devi modificare le impostazioni dell'app nel tuo sistema."
     },
     "language_level": {
-        "select": "Quanto bene conosci la lingua {{language}}?",
+        "select": "Scegli quanto bene conosci {{language}}",
         "select_desc": "Tocca un riquadro per selezionare il livello che descrive meglio la tua padronanza della lingua.",
         "beginner": "Principiante",
-        "beginner_desc": "Stai iniziando. Conosci parole di base e frasi semplici.",
+        "beginner_desc": "Conosci parole di base e frasi semplici.",
         "elementary": "Elementare",
-        "elementary_desc": "Capisci frasi semplici e puoi comunicare in situazioni quotidiane.",
+        "elementary_desc": "Ti cavi nelle situazioni di base.",
         "intermediate": "Intermedio",
-        "intermediate_desc": "Riesci a gestire la maggior parte delle conversazioni tipiche e a descrivere le tue esperienze.",
+        "intermediate_desc": "Ti destreggi nella maggior parte delle conversazioni quotidiane.",
         "advanced": "Avanzato",
-        "advanced_desc": "Comunichi fluentemente su vari argomenti e capisci contenuti più complessi.",
+        "advanced_desc": "Comunichi fluentemente su vari argomenti e capisci contenuti complessi.",
         "proficient": "Esperto",
-        "proficient_desc": "Parli con fluidità e precisione e capisci sfumature e affermazioni più lunghe."
+        "proficient_desc": "Parli con fluidità e precisione e capisci le sfumature."
     },
     "new_word_suggestion": "Proposta di nuova parola",
     "word_tags": {
@@ -210,7 +210,7 @@
     },
     "word_selection": {
         "title": "Aggiungi le tue prime parole",
-        "desc": "Seleziona le prime parole che vorresti aggiungere al tuo dizionario",
+        "desc": "Tocca i riquadri per selezionare le parole che vorresti aggiungere per prime al tuo dizionario.",
         "select_all": "Seleziona tutto"
     }
 }

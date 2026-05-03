@@ -8,13 +8,14 @@ import { useHaptics } from '../../../hooks';
 import { useAuth, useLanguage } from '../../../store';
 import { Language, LanguageLevelRange } from '../../../types';
 import { Header } from '../../components';
-import { LanguageItem, LanguageLevelItem } from '../../components/language';
+import { LanguageLevelItem } from '../../components/language';
 
 type LanguageLevelPickerProps = {
     language?: Language;
     onLevelPick?: (level: LanguageLevelRange) => void;
     pickedLevel?: LanguageLevelRange;
     style?: StyleProp<ViewStyle>;
+    title?: string;
     updateUserData?: boolean;
 };
 
@@ -23,6 +24,7 @@ export const LanguageLevelPicker: FC<LanguageLevelPickerProps> = ({
     onLevelPick,
     pickedLevel,
     style,
+    title,
     updateUserData = true,
 }) => {
     const { t } = useTranslation();
@@ -50,13 +52,13 @@ export const LanguageLevelPicker: FC<LanguageLevelPickerProps> = ({
             <Header
                 style={styles.header}
                 subtitle={t('language_level.select_desc')}
-                title={t('language_level.select', {
-                    language: language?.languageName.toLowerCase(),
-                })}
+                title={
+                    title ??
+                    t('language_level.select', {
+                        language: language?.languageName.toLowerCase(),
+                    })
+                }
             />
-            {language && (
-                <LanguageItem checked={false} index={0} language={language} showIcon={false} />
-            )}
             {languageLevels.map(({ code, desc, label, level }) => (
                 <LanguageLevelItem
                     key={level}

@@ -1,4 +1,4 @@
-import React, { Activity, useCallback, useEffect, useState } from 'react';
+import React, { Activity, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { fetchExampleFlashcards, updateUserLanguages } from '../../api/apiClient';
+import { fetchExampleFlashcards, updateUserData } from '../../api/apiClient';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageTypes } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
@@ -56,9 +56,9 @@ export const OnboardingScreen = () => {
         setDisplayedFlashcardsIds([]);
         setFlashcardsLoading(true);
 
-        fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1, controller.signal)
+        fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1, 15, controller.signal)
             .then(flashcards => {
-                setExampleFlashcards(flashcards);
+                if (flashcards) setExampleFlashcards(flashcards);
                 setFlashcardsLoading(false);
             })
             .catch(err => {
@@ -78,36 +78,33 @@ export const OnboardingScreen = () => {
         trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED);
     }, []);
 
-    const handleFlashcardToggle = useCallback((id: string) => {
+    const handleFlashcardToggle = (id: string) => {
         setSelectedFlashcardsIds(prev =>
             prev.includes(id) ? prev.filter(wId => wId !== id) : [...prev, id],
         );
-    }, []);
+    };
 
-    const handleBackPress = useCallback(() => {
+    const handleBackPress = () => {
         if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
         }
-    }, [currentStep]);
+    };
 
-    const handleLastVisibleIndexChange = useCallback(
-        (index: number) => {
-            if (index < 0) return;
-            setDisplayedFlashcardsIds(prev => {
-                const newVisible = exampleFlashcards.slice(0, index + 1).map(w => w.id);
-                const merged = Array.from(new Set([...prev, ...newVisible]));
-                return merged.length !== prev.length ? merged : prev;
-            });
-        },
-        [exampleFlashcards],
-    );
+    const handleLastVisibleIndexChange = (index: number) => {
+        if (index < 0) return;
+        setDisplayedFlashcardsIds(prev => {
+            const newVisible = exampleFlashcards.slice(0, index + 1).map(w => w.id);
+            const merged = Array.from(new Set([...prev, ...newVisible]));
+            return merged.length !== prev.length ? merged : prev;
+        });
+    };
 
-    const updateUserData = useCallback(async () => {
+    const updateUserOnboardingData = async () => {
         setLoading(true);
         const skippedFlashcardsIds = displayedFlashcardsIds.filter(
             id => !selectedFlashcardsIds.includes(id),
         );
-        const res = await updateUserLanguages(
+        const res = await updateUserData(
             mainLang,
             translationLang,
             pickedLevel ?? 1,
@@ -119,23 +116,23 @@ export const OnboardingScreen = () => {
             await getSession();
         }
         setLoading(false);
-    }, [mainLang, translationLang, pickedLevel, displayedFlashcardsIds, selectedFlashcardsIds]);
+    };
 
-    const handleContinuePress = useCallback(() => {
+    const handleContinuePress = () => {
         if (currentStep === 1 && mainLang === translationLang) {
             TrueSheet.present(SAME_LANGUAGE_SHEET);
         } else if (currentStep < 3) {
             setCurrentStep(currentStep + 1);
         } else {
-            updateUserData();
+            updateUserOnboardingData();
         }
-    }, [currentStep, mainLang, translationLang, updateUserData]);
+    };
 
     return (
         <>
             <SameLearningLanguageBottomSheet
                 sheetName={SAME_LANGUAGE_SHEET}
-                onConfirm={updateUserData}
+                onConfirm={updateUserOnboardingData}
             />
             <LinearGradient
                 colors={[colors.card, colors.background]}

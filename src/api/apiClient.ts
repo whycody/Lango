@@ -37,15 +37,15 @@ export const getUserInfo = async (): Promise<User | null> => {
     return res.data;
 };
 
-export const updateUserLanguages = (
+export const updateUserData = (
     mainLang: LanguageCode,
     translationLang: LanguageCode,
     level: LanguageLevelRange,
     selectedFlashcardsIds: string[],
     skippedFlashcardsIds: string[],
 ) =>
-    call('PUT /users/languages', null, () =>
-        api.put('/users/languages', {
+    call('PUT /users/data', null, () =>
+        api.put('/users/data', {
             level,
             mainLang,
             selectedFlashcardsIds,
@@ -149,30 +149,15 @@ export const fetchExampleFlashcards = (
     mainLang: LanguageCode,
     translationLang: LanguageCode,
     level: LanguageLevelRange,
+    count: number = 15,
     signal?: AbortSignal,
-): Promise<ExampleFlashcard[]> =>
-    new Promise((resolve, reject) => {
-        const timer = setTimeout(
-            () =>
-                resolve([
-                    { id: '1', translation: 'Cześć', word: 'Hello' },
-                    { id: '2', translation: 'Dziękuję', word: 'Thank you' },
-                    { id: '3', translation: 'Proszę', word: 'Please' },
-                    { id: '4', translation: 'Tak', word: 'Yes' },
-                    { id: '5', translation: 'Nie', word: 'No' },
-                    { id: '6', translation: 'Woda', word: 'Water' },
-                    { id: '7', translation: 'Jedzenie', word: 'Food' },
-                    { id: '8', translation: 'Przyjaciel', word: 'Friend' },
-                ]),
-            5000,
-        );
-        signal?.addEventListener('abort', () => {
-            clearTimeout(timer);
-            const err = new Error('Aborted');
-            err.name = 'AbortError';
-            reject(err);
-        });
-    });
+): Promise<ExampleFlashcard[] | null> =>
+    call('GET /suggestions/examples', null, () =>
+        api.get<ExampleFlashcard[]>('/suggestions/examples', {
+            params: { count, level, mainLang, translationLang },
+            signal,
+        }),
+    );
 
 export const translateText = async (
     text: string,

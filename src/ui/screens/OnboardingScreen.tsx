@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Activity, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -30,22 +30,28 @@ export const OnboardingScreen = () => {
     const { t } = useTranslation();
 
     const [loading, setLoading] = useState(false);
+    const [wordsLoading, setWordsLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [exampleWords, setExampleWords] = useState<ExampleFlashcard[]>([]);
     const [selectedWordIds, setSelectedWordIds] = useState<string[]>([]);
 
     const { languages, mainLang, translationLang } = useLanguage();
     const [pickedLevel, setPickedLevel] = useState<LanguageLevelRange | undefined>();
+    const fetchControllerRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
         setPickedLevel(undefined);
     }, [mainLang]);
 
+    useEffect(() => {
+        setExampleWords([]);
+    }, [pickedLevel]);
+
     const buttonEnabled =
         (currentStep === 0 && !!translationLang) ||
         (currentStep === 1 && !!mainLang) ||
         (currentStep === 2 && !!pickedLevel) ||
-        currentStep === 3;
+        (currentStep === 3 && !wordsLoading);
 
     useEffect(() => {
         trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED);
@@ -78,19 +84,32 @@ export const OnboardingScreen = () => {
         if (currentStep === 1 && mainLang === translationLang) {
             TrueSheet.present(SAME_LANGUAGE_SHEET);
         } else if (currentStep === 2) {
-            setLoading(true);
-            setSelectedWordIds([]);
-            fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1).then(words => {
-                setExampleWords(words);
-                setLoading(false);
-                setCurrentStep(3);
-            });
+            setCurrentStep(3);
+            if (exampleWords.length === 0) {
+                fetchControllerRef.current?.abort();
+                fetchControllerRef.current = new AbortController();
+                setSelectedWordIds([]);
+                setWordsLoading(true);
+                fetchExampleFlashcards(
+                    mainLang,
+                    translationLang,
+                    pickedLevel ?? 1,
+                    fetchControllerRef.current.signal,
+                )
+                    .then(words => {
+                        setExampleWords(words);
+                        setWordsLoading(false);
+                    })
+                    .catch(err => {
+                        if (err.name !== 'AbortError') setWordsLoading(false);
+                    });
+            }
         } else if (currentStep < 3) {
             setCurrentStep(currentStep + 1);
         } else {
             updateUserData();
         }
-    }, [currentStep, mainLang, translationLang, updateUserData]);
+    }, [currentStep, mainLang, translationLang, pickedLevel, exampleWords.length, updateUserData]);
 
     return (
         <>
@@ -115,23 +134,23 @@ export const OnboardingScreen = () => {
                 </View>
 
                 <View style={styles.content}>
-                    {currentStep === 0 && (
+                    <Activity mode={currentStep === 0 ? 'visible' : 'hidden'}>
                         <LanguagePicker
                             alwaysAllowPick
                             languageType={LanguageTypes.TRANSLATION}
                             style={styles.languagePicker}
                             title={`1. ${t('choose_translation_language')}`}
                         />
-                    )}
-                    {currentStep === 1 && (
+                    </Activity>
+                    <Activity mode={currentStep === 1 ? 'visible' : 'hidden'}>
                         <LanguagePicker
                             alwaysAllowPick
                             languageType={LanguageTypes.MAIN}
                             style={styles.languagePicker}
                             title={`2. ${t('choose_main_language')}`}
                         />
-                    )}
-                    {currentStep === 2 && (
+                    </Activity>
+                    <Activity mode={currentStep === 2 ? 'visible' : 'hidden'}>
                         <LanguageLevelPicker
                             language={languages.find(lang => lang.languageCode === mainLang)}
                             pickedLevel={pickedLevel}
@@ -140,9 +159,10 @@ export const OnboardingScreen = () => {
                             updateUserData={false}
                             onLevelPick={setPickedLevel}
                         />
-                    )}
-                    {currentStep === 3 && (
+                    </Activity>
+                    <Activity mode={currentStep === 3 ? 'visible' : 'hidden'}>
                         <FlashcardsSelectionContainer
+                            loading={wordsLoading}
                             selectedIds={selectedWordIds}
                             style={styles.languagePicker}
                             title={`4. ${t('word_selection.title')}`}
@@ -150,7 +170,7 @@ export const OnboardingScreen = () => {
                             onSelectAll={setSelectedWordIds}
                             onToggle={handleWordToggle}
                         />
-                    )}
+                    </Activity>
                 </View>
 
                 <View style={styles.bottomBar}>

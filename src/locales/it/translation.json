@@ -211,6 +211,7 @@
     "word_selection": {
         "title": "Aggiungi le tue prime parole",
         "desc": "Tocca i riquadri per selezionare le parole che vorresti aggiungere per prime al tuo dizionario.",
-        "select_all": "Seleziona tutto"
+        "select_all": "Seleziona tutto",
+        "searching": "Stiamo cercando i migliori suggerimenti per te"
     }
 }

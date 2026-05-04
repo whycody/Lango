@@ -141,9 +141,10 @@ export const fetchExampleFlashcards = (
     mainLang: LanguageCode,
     translationLang: LanguageCode,
     level: LanguageLevelRange,
+    signal?: AbortSignal,
 ): Promise<ExampleFlashcard[]> =>
-    new Promise(resolve =>
-        setTimeout(
+    new Promise((resolve, reject) => {
+        const timer = setTimeout(
             () =>
                 resolve([
                     { id: '1', translation: 'Cześć', word: 'Hello' },
@@ -155,9 +156,15 @@ export const fetchExampleFlashcards = (
                     { id: '7', translation: 'Jedzenie', word: 'Food' },
                     { id: '8', translation: 'Przyjaciel', word: 'Friend' },
                 ]),
-            1000,
-        ),
-    );
+            5000,
+        );
+        signal?.addEventListener('abort', () => {
+            clearTimeout(timer);
+            const err = new Error('Aborted');
+            err.name = 'AbortError';
+            reject(err);
+        });
+    });
 
 export const translateText = async (
     text: string,

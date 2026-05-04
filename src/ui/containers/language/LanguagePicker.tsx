@@ -24,7 +24,13 @@ interface LanguagePickerProps {
 }
 
 export const LanguagePicker = (props: LanguagePickerProps) => {
-    const { alwaysAllowPick, languageType = LanguageTypes.MAIN, onLanguagePick, style, title } = props;
+    const {
+        alwaysAllowPick,
+        languageType = LanguageTypes.MAIN,
+        onLanguagePick,
+        style,
+        title,
+    } = props;
     const styles = getStyles();
     const { t } = useTranslation();
     const {

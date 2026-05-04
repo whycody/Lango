@@ -211,6 +211,7 @@
     "word_selection": {
         "title": "Add your first words",
         "desc": "Click on tiles to select the words you'd like to add to your dictionary first.",
-        "select_all": "Select all"
+        "select_all": "Select all",
+        "searching": "We're looking for the best suggestions for you"
     }
 }

@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { FlatList, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -8,10 +8,12 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
 import { ExampleFlashcard } from '../../../types';
 import { CustomText, Header } from '../../components';
-import { FlashcardSelectionItem } from '../../components/flashcards';
 import { CustomTheme } from '../../Theme';
+import { FlashcardEntranceList } from './FlashcardEntranceList';
+import { FlashcardsSelectionSkeleton } from './FlashcardsSelectionSkeleton';
 
 type FlashcardsSelectionContainerProps = {
+    loading?: boolean;
     onSelectAll: (ids: string[]) => void;
     onToggle: (id: string) => void;
     selectedIds: string[];
@@ -21,6 +23,7 @@ type FlashcardsSelectionContainerProps = {
 };
 
 export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps> = ({
+    loading,
     onSelectAll,
     onToggle,
     selectedIds,
@@ -33,15 +36,25 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
     const styles = getStyles(colors);
     const haptics = useHaptics();
 
-    const allSelected = words.length > 0 && selectedIds.length === words.length;
+    const [showSkeleton, setShowSkeleton] = useState(!!loading);
+    const skeletonOpacity = useRef(new Animated.Value(loading ? 1 : 0)).current;
 
-    const renderItem = ({ item }: { item: ExampleFlashcard }) => (
-        <FlashcardSelectionItem
-            selected={selectedIds.includes(item.id)}
-            word={item}
-            onToggle={onToggle}
-        />
-    );
+    useEffect(() => {
+        if (loading) {
+            setShowSkeleton(true);
+            skeletonOpacity.setValue(1);
+        } else if (showSkeleton) {
+            Animated.timing(skeletonOpacity, {
+                duration: 200,
+                toValue: 0,
+                useNativeDriver: true,
+            }).start(({ finished }) => {
+                if (finished) setShowSkeleton(false);
+            });
+        }
+    }, [loading]);
+
+    const allSelected = words.length > 0 && selectedIds.length === words.length;
 
     const handleSelectAll = () => {
         haptics.triggerHaptics('rigid');
@@ -49,7 +62,6 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
             onSelectAll([]);
             return;
         }
-
         onSelectAll(words.map(w => w.id));
     };
 
@@ -62,6 +74,7 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
             />
             <Pressable
                 android_ripple={{ color: colors.background, foreground: true }}
+                disabled={loading}
                 style={styles.selectAllRow}
                 onPress={handleSelectAll}
             >
@@ -77,12 +90,17 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
                 </View>
             </Pressable>
             <View style={styles.divider} />
-            <FlatList
-                ItemSeparatorComponent={<View style={styles.divider} />}
-                data={words}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-            />
+            {showSkeleton ? (
+                <Animated.View style={{ opacity: skeletonOpacity }}>
+                    <FlashcardsSelectionSkeleton />
+                </Animated.View>
+            ) : (
+                <FlashcardEntranceList
+                    selectedIds={selectedIds}
+                    words={words}
+                    onToggle={onToggle}
+                />
+            )}
         </View>
     );
 };

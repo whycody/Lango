@@ -210,6 +210,7 @@
     "word_selection": {
         "title": "Dodaj swoje pierwsze słówka",
         "desc": "Kliknij na kafelki, aby zaznaczyć słówka, które jako pierwsze chciałbyś dodać do swojego słownika.",
-        "select_all": "Zaznacz wszystkie"
+        "select_all": "Zaznacz wszystkie",
+        "searching": "Szukamy najlepszych propozycji dla Ciebie"
     }
 }

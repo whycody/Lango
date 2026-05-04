@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, ScrollView, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -7,21 +7,23 @@ import { FlashcardSelectionItem } from '../../components/flashcards';
 import { CustomTheme } from '../../Theme';
 
 type FlashcardEntranceListProps = {
+    onLastVisibleIndexChange?: (index: number) => void;
     onToggle: (id: string) => void;
     selectedIds: string[];
-    words: ExampleFlashcard[];
+    flashcards: ExampleFlashcard[];
 };
 
 export const FlashcardEntranceList: FC<FlashcardEntranceListProps> = ({
+    flashcards,
+    onLastVisibleIndexChange,
     onToggle,
     selectedIds,
-    words,
 }) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
 
     const [itemAnims] = useState(() =>
-        words.map(() => ({
+        flashcards.map(() => ({
             opacity: new Animated.Value(0),
             translateY: new Animated.Value(-20),
         })),
@@ -45,19 +47,59 @@ export const FlashcardEntranceList: FC<FlashcardEntranceListProps> = ({
         return () => animations.forEach(a => a.stop());
     }, []);
 
+    const itemTopPositions = useRef<number[]>([]);
+    const containerHeightRef = useRef(0);
+    const scrollYRef = useRef(0);
+    const onLastVisibleIndexChangeRef = useRef(onLastVisibleIndexChange);
+    useEffect(() => {
+        onLastVisibleIndexChangeRef.current = onLastVisibleIndexChange;
+    }, [onLastVisibleIndexChange]);
+
+    const computeAndReport = useCallback(() => {
+        if (containerHeightRef.current === 0) return;
+        const visibleBottom = scrollYRef.current + containerHeightRef.current;
+        let lastVisible = -1;
+        for (let i = 0; i < flashcards.length; i++) {
+            if (
+                itemTopPositions.current[i] !== undefined &&
+                itemTopPositions.current[i] < visibleBottom
+            ) {
+                lastVisible = i;
+            } else if (itemTopPositions.current[i] !== undefined) {
+                break;
+            }
+        }
+        onLastVisibleIndexChangeRef.current?.(lastVisible);
+    }, [flashcards.length]);
+
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            {words.map((item, i) => (
+        <ScrollView
+            scrollEventThrottle={100}
+            showsVerticalScrollIndicator={false}
+            onLayout={e => {
+                containerHeightRef.current = e.nativeEvent.layout.height;
+                computeAndReport();
+            }}
+            onScroll={e => {
+                scrollYRef.current = e.nativeEvent.contentOffset.y;
+                computeAndReport();
+            }}
+        >
+            {flashcards.map((item, i) => (
                 <Animated.View
                     key={item.id}
                     style={{
                         opacity: itemAnims[i].opacity,
                         transform: [{ translateY: itemAnims[i].translateY }],
                     }}
+                    onLayout={e => {
+                        itemTopPositions.current[i] = e.nativeEvent.layout.y;
+                        computeAndReport();
+                    }}
                 >
                     <FlashcardSelectionItem
+                        flashcard={item}
                         selected={selectedIds.includes(item.id)}
-                        word={item}
                         onToggle={onToggle}
                     />
                     <View style={styles.divider} />

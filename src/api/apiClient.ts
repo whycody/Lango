@@ -41,9 +41,17 @@ export const updateUserLanguages = (
     mainLang: LanguageCode,
     translationLang: LanguageCode,
     level: LanguageLevelRange,
+    selectedFlashcardsIds: string[],
+    skippedFlashcardsIds: string[],
 ) =>
     call('PUT /users/languages', null, () =>
-        api.put('/users/languages', { level, mainLang, translationLang }),
+        api.put('/users/languages', {
+            level,
+            mainLang,
+            selectedFlashcardsIds,
+            skippedFlashcardsIds,
+            translationLang,
+        }),
     );
 
 export const signInWithGoogle = (idToken: string) =>

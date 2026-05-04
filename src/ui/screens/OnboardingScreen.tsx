@@ -1,4 +1,4 @@
-import React, { Activity, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Activity, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -30,35 +30,56 @@ export const OnboardingScreen = () => {
     const { t } = useTranslation();
 
     const [loading, setLoading] = useState(false);
-    const [wordsLoading, setWordsLoading] = useState(false);
+    const [flashcardsLoading, setFlashcardsLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
-    const [exampleWords, setExampleWords] = useState<ExampleFlashcard[]>([]);
-    const [selectedWordIds, setSelectedWordIds] = useState<string[]>([]);
+    const [exampleFlashcards, setExampleFlashcards] = useState<ExampleFlashcard[]>([]);
+    const [selectedFlashcardsIds, setSelectedFlashcardsIds] = useState<string[]>([]);
+    const [displayedFlashcardsIds, setDisplayedFlashcardsIds] = useState<string[]>([]);
 
     const { languages, mainLang, translationLang } = useLanguage();
     const [pickedLevel, setPickedLevel] = useState<LanguageLevelRange | undefined>();
-    const fetchControllerRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
         setPickedLevel(undefined);
     }, [mainLang]);
 
     useEffect(() => {
-        setExampleWords([]);
+        setExampleFlashcards([]);
+        setDisplayedFlashcardsIds([]);
     }, [pickedLevel]);
+
+    useEffect(() => {
+        if (currentStep !== 3 || exampleFlashcards.length > 0) return;
+
+        const controller = new AbortController();
+        setSelectedFlashcardsIds([]);
+        setDisplayedFlashcardsIds([]);
+        setFlashcardsLoading(true);
+
+        fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1, controller.signal)
+            .then(flashcards => {
+                setExampleFlashcards(flashcards);
+                setFlashcardsLoading(false);
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') setFlashcardsLoading(false);
+            });
+
+        return () => controller.abort();
+    }, [currentStep, mainLang, translationLang, pickedLevel, exampleFlashcards.length]);
 
     const buttonEnabled =
         (currentStep === 0 && !!translationLang) ||
         (currentStep === 1 && !!mainLang) ||
         (currentStep === 2 && !!pickedLevel) ||
-        (currentStep === 3 && !wordsLoading);
+        (currentStep === 3 && !flashcardsLoading);
 
     useEffect(() => {
         trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED);
     }, []);
 
-    const handleWordToggle = useCallback((id: string) => {
-        setSelectedWordIds(prev =>
+    const handleFlashcardToggle = useCallback((id: string) => {
+        setSelectedFlashcardsIds(prev =>
             prev.includes(id) ? prev.filter(wId => wId !== id) : [...prev, id],
         );
     }, []);
@@ -69,47 +90,46 @@ export const OnboardingScreen = () => {
         }
     }, [currentStep]);
 
+    const handleLastVisibleIndexChange = useCallback(
+        (index: number) => {
+            if (index < 0) return;
+            setDisplayedFlashcardsIds(prev => {
+                const newVisible = exampleFlashcards.slice(0, index + 1).map(w => w.id);
+                const merged = Array.from(new Set([...prev, ...newVisible]));
+                return merged.length !== prev.length ? merged : prev;
+            });
+        },
+        [exampleFlashcards],
+    );
+
     const updateUserData = useCallback(async () => {
         setLoading(true);
-        // TODO: pass selectedWordIds to account configuration endpoint
-        const res = await updateUserLanguages(mainLang, translationLang, pickedLevel ?? 1);
+        const skippedFlashcardsIds = displayedFlashcardsIds.filter(
+            id => !selectedFlashcardsIds.includes(id),
+        );
+        const res = await updateUserLanguages(
+            mainLang,
+            translationLang,
+            pickedLevel ?? 1,
+            selectedFlashcardsIds,
+            skippedFlashcardsIds,
+        );
         if (res) {
             trackEvent(AnalyticsEventName.ONBOARDING_FINISHED);
             await getSession();
         }
         setLoading(false);
-    }, [mainLang, translationLang, pickedLevel]);
+    }, [mainLang, translationLang, pickedLevel, displayedFlashcardsIds, selectedFlashcardsIds]);
 
     const handleContinuePress = useCallback(() => {
         if (currentStep === 1 && mainLang === translationLang) {
             TrueSheet.present(SAME_LANGUAGE_SHEET);
-        } else if (currentStep === 2) {
-            setCurrentStep(3);
-            if (exampleWords.length === 0) {
-                fetchControllerRef.current?.abort();
-                fetchControllerRef.current = new AbortController();
-                setSelectedWordIds([]);
-                setWordsLoading(true);
-                fetchExampleFlashcards(
-                    mainLang,
-                    translationLang,
-                    pickedLevel ?? 1,
-                    fetchControllerRef.current.signal,
-                )
-                    .then(words => {
-                        setExampleWords(words);
-                        setWordsLoading(false);
-                    })
-                    .catch(err => {
-                        if (err.name !== 'AbortError') setWordsLoading(false);
-                    });
-            }
         } else if (currentStep < 3) {
             setCurrentStep(currentStep + 1);
         } else {
             updateUserData();
         }
-    }, [currentStep, mainLang, translationLang, pickedLevel, exampleWords.length, updateUserData]);
+    }, [currentStep, mainLang, translationLang, updateUserData]);
 
     return (
         <>
@@ -162,13 +182,14 @@ export const OnboardingScreen = () => {
                     </Activity>
                     <Activity mode={currentStep === 3 ? 'visible' : 'hidden'}>
                         <FlashcardsSelectionContainer
-                            loading={wordsLoading}
-                            selectedIds={selectedWordIds}
+                            flashcards={exampleFlashcards}
+                            loading={flashcardsLoading}
+                            selectedIds={selectedFlashcardsIds}
                             style={styles.languagePicker}
                             title={`4. ${t('word_selection.title')}`}
-                            words={exampleWords}
-                            onSelectAll={setSelectedWordIds}
-                            onToggle={handleWordToggle}
+                            onLastVisibleIndexChange={handleLastVisibleIndexChange}
+                            onSelectAll={setSelectedFlashcardsIds}
+                            onToggle={handleFlashcardToggle}
                         />
                     </Activity>
                 </View>

@@ -13,23 +13,25 @@ import { FlashcardEntranceList } from './FlashcardEntranceList';
 import { FlashcardsSelectionSkeleton } from './FlashcardsSelectionSkeleton';
 
 type FlashcardsSelectionContainerProps = {
+    flashcards: ExampleFlashcard[];
     loading?: boolean;
+    onLastVisibleIndexChange?: (index: number) => void;
     onSelectAll: (ids: string[]) => void;
     onToggle: (id: string) => void;
     selectedIds: string[];
     style?: StyleProp<ViewStyle>;
     title?: string;
-    words: ExampleFlashcard[];
 };
 
 export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps> = ({
+    flashcards,
     loading,
+    onLastVisibleIndexChange,
     onSelectAll,
     onToggle,
     selectedIds,
     style,
     title,
-    words,
 }) => {
     const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
@@ -54,7 +56,7 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
         }
     }, [loading]);
 
-    const allSelected = words.length > 0 && selectedIds.length === words.length;
+    const allSelected = flashcards.length > 0 && selectedIds.length === flashcards.length;
 
     const handleSelectAll = () => {
         haptics.triggerHaptics('rigid');
@@ -62,7 +64,7 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
             onSelectAll([]);
             return;
         }
-        onSelectAll(words.map(w => w.id));
+        onSelectAll(flashcards.map(w => w.id));
     };
 
     return (
@@ -96,8 +98,9 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
                 </Animated.View>
             ) : (
                 <FlashcardEntranceList
+                    flashcards={flashcards}
                     selectedIds={selectedIds}
-                    words={words}
+                    onLastVisibleIndexChange={onLastVisibleIndexChange}
                     onToggle={onToggle}
                 />
             )}

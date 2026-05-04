@@ -13,17 +13,17 @@ import { CustomText } from '..';
 type FlashcardSelectionItemProps = {
     onToggle: (id: string) => void;
     selected: boolean;
-    word: ExampleFlashcard;
+    flashcard: ExampleFlashcard;
 };
 
 export const FlashcardSelectionItem = memo<FlashcardSelectionItemProps>(
-    ({ onToggle, selected, word }) => {
+    ({ flashcard, onToggle, selected }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const haptics = useHaptics();
 
         const handleToggle = () => {
-            onToggle(word.id);
+            onToggle(flashcard.id);
             haptics.triggerHaptics('light');
         };
 
@@ -41,9 +41,11 @@ export const FlashcardSelectionItem = memo<FlashcardSelectionItemProps>(
                         <Ionicons color={colors.primary600} name={'reader-sharp'} size={22} />
                         <View style={styles.textContainer}>
                             <CustomText style={styles.text} weight={'SemiBold'}>
-                                {word.word}
+                                {flashcard.word}
                             </CustomText>
-                            <CustomText style={styles.translation}>{word.translation}</CustomText>
+                            <CustomText style={styles.translation}>
+                                {flashcard.translation}
+                            </CustomText>
                         </View>
                         <View style={styles.checkboxContainer}>
                             {selected ? (

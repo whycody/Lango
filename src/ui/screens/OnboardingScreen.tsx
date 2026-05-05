@@ -35,6 +35,8 @@ export const OnboardingScreen = () => {
 
     const [loading, setLoading] = useState(false);
     const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+    const [flashcardsError, setFlashcardsError] = useState(false);
+    const [flashcardsErrorMessage, setFlashcardsErrorMessage] = useState<string | null>(null);
     const [currentStep, setCurrentStep] = useState(0);
     const [exampleFlashcards, setExampleFlashcards] = useState<ExampleFlashcard[]>([]);
     const [selectedFlashcardsIds, setSelectedFlashcardsIds] = useState<string[]>([]);
@@ -56,6 +58,8 @@ export const OnboardingScreen = () => {
     useEffect(() => {
         setExampleFlashcards([]);
         setDisplayedFlashcardsIds([]);
+        setFlashcardsError(false);
+        setFlashcardsErrorMessage(null);
     }, [pickedLevel]);
 
     useEffect(() => {
@@ -65,14 +69,23 @@ export const OnboardingScreen = () => {
         setSelectedFlashcardsIds([]);
         setDisplayedFlashcardsIds([]);
         setFlashcardsLoading(true);
+        setFlashcardsError(false);
+        setFlashcardsErrorMessage(null);
 
         fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1, 15, controller.signal)
             .then(flashcards => {
-                if (flashcards) setExampleFlashcards(flashcards);
+                if (flashcards.length > 0) {
+                    setExampleFlashcards(flashcards);
+                } else {
+                    setFlashcardsError(true);
+                }
                 setFlashcardsLoading(false);
             })
             .catch(err => {
-                if (err.name !== 'AbortError') setFlashcardsLoading(false);
+                if (err?.code === 'ERR_CANCELED') return;
+                setFlashcardsError(true);
+                setFlashcardsErrorMessage(err?.response?.data?.error ?? null);
+                setFlashcardsLoading(false);
             });
 
         return () => controller.abort();
@@ -189,6 +202,8 @@ export const OnboardingScreen = () => {
                     </Activity>
                     <Activity mode={currentStep === 3 ? 'visible' : 'hidden'}>
                         <FlashcardsSelectionContainer
+                            error={flashcardsError}
+                            errorMessage={flashcardsErrorMessage}
                             flashcards={exampleFlashcards}
                             loading={flashcardsLoading}
                             selectedIds={selectedFlashcardsIds}

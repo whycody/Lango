@@ -151,13 +151,14 @@ export const fetchExampleFlashcards = (
     level: LanguageLevelRange,
     count: number = 15,
     signal?: AbortSignal,
-): Promise<ExampleFlashcard[] | null> =>
-    call('GET /suggestions/examples', null, () =>
-        api.get<ExampleFlashcard[]>('/suggestions/examples', {
+): Promise<ExampleFlashcard[]> =>
+    api
+        .get<ExampleFlashcard[]>('/suggestions/examples', {
             params: { count, level, mainLang, translationLang },
             signal,
-        }),
-    );
+            timeout: 15000,
+        })
+        .then(res => res.data);
 
 export const translateText = async (
     text: string,

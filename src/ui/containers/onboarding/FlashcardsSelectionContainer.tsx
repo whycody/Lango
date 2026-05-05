@@ -8,11 +8,14 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
 import { ExampleFlashcard } from '../../../types';
 import { CustomText, Header } from '../../components';
+import { EmptyList } from '../../components/flashcards';
 import { CustomTheme } from '../../Theme';
 import { FlashcardEntranceList } from './FlashcardEntranceList';
 import { FlashcardsSelectionSkeleton } from './FlashcardsSelectionSkeleton';
 
 type FlashcardsSelectionContainerProps = {
+    error?: boolean;
+    errorMessage?: string | null;
     flashcards: ExampleFlashcard[];
     loading?: boolean;
     onLastVisibleIndexChange?: (index: number) => void;
@@ -24,6 +27,8 @@ type FlashcardsSelectionContainerProps = {
 };
 
 export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps> = ({
+    error,
+    errorMessage,
     flashcards,
     loading,
     onLastVisibleIndexChange,
@@ -96,6 +101,17 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
                 <Animated.View style={{ opacity: skeletonOpacity }}>
                     <FlashcardsSelectionSkeleton />
                 </Animated.View>
+            ) : error ? (
+                <>
+                    <EmptyList
+                        description={t('word_selection.load_failed_desc')}
+                        icon={'sad-outline'}
+                        title={t('word_selection.load_failed')}
+                    />
+                    {errorMessage ? (
+                        <CustomText style={styles.errorMessage}>Error: {errorMessage}</CustomText>
+                    ) : null}
+                </>
             ) : (
                 <FlashcardEntranceList
                     flashcards={flashcards}
@@ -120,6 +136,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
             backgroundColor: colors.background,
             height: 3,
             width: '100%',
+        },
+        errorMessage: {
+            color: colors.red,
+            fontSize: 11,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            textAlign: 'center',
         },
         header: {
             paddingHorizontal: MARGIN_HORIZONTAL,

@@ -215,6 +215,8 @@
         "searching": "Szukamy najlepszych propozycji dla Ciebie",
         "skip_confirm": "Czy na pewno nie chcesz dodać żadnych słówek?",
         "skip_confirm_desc": "Nawet kilka słówek sprawi, że nauka będzie o wiele skuteczniejsza od samego początku!",
-        "add_flashcards": "Dodaj słówka"
+        "add_flashcards": "Dodaj słówka",
+        "load_failed": "Nie udało się załadować propozycji",
+        "load_failed_desc": "Możesz kontynuować bez zaznaczania słówek."
     }
 }

@@ -216,6 +216,8 @@
         "searching": "Buscando las mejores propuestas para ti",
         "skip_confirm": "¿Estás seguro de que no quieres añadir ninguna tarjeta?",
         "skip_confirm_desc": "¡Incluso unas pocas palabras harán tu aprendizaje mucho más efectivo desde el principio!",
-        "add_flashcards": "Añadir tarjetas"
+        "add_flashcards": "Añadir tarjetas",
+        "load_failed": "No se pudieron cargar las sugerencias",
+        "load_failed_desc": "Puedes continuar sin seleccionar palabras."
     }
 }

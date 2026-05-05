@@ -216,6 +216,8 @@
         "searching": "We're looking for the best suggestions for you",
         "skip_confirm": "Are you sure you don't want to add any flashcards?",
         "skip_confirm_desc": "Even a few words will make your learning more effective from the very start!",
-        "add_flashcards": "Add flashcards"
+        "add_flashcards": "Add flashcards",
+        "load_failed": "Couldn't load suggestions",
+        "load_failed_desc": "You can still continue without selecting words."
     }
 }

@@ -216,6 +216,8 @@
         "searching": "Stiamo cercando i migliori suggerimenti per te",
         "skip_confirm": "Sei sicuro di non voler aggiungere nessuna scheda?",
         "skip_confirm_desc": "Anche solo poche parole renderanno il tuo apprendimento molto più efficace fin dall'inizio!",
-        "add_flashcards": "Aggiungi schede"
+        "add_flashcards": "Aggiungi schede",
+        "load_failed": "Impossibile caricare i suggerimenti",
+        "load_failed_desc": "Puoi continuare senza selezionare parole."
     }
 }

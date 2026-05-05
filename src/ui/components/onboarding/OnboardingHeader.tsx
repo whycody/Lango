@@ -35,7 +35,7 @@ export const OnboardingHeader: FC<OnboardingHeaderProps> = ({
                 <View style={styles.progressBarWrapper}>
                     <ProgressBar
                         color={colors.primary}
-                        progress={(currentStep + 1) / totalSteps}
+                        progress={(currentStep + 1) / (totalSteps + 1)}
                         style={styles.progressBar}
                     />
                 </View>

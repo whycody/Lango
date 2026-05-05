@@ -28,7 +28,7 @@ import { CustomTheme } from '../Theme';
 const SAME_LANGUAGE_SHEET = 'onboarding-same-language-sheet';
 const LOGOUT_SHEET = 'onboarding-logout-sheet';
 const SKIP_FLASHCARDS_SHEET = 'onboarding-skip-flashcards-sheet';
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 4;
 
 export const OnboardingScreen = () => {
     const { colors } = useTheme() as CustomTheme;
@@ -64,7 +64,7 @@ export const OnboardingScreen = () => {
         setDisplayedFlashcardsIds([]);
         setFlashcardsError(false);
         setFlashcardsErrorMessage(null);
-    }, [pickedLevel]);
+    }, [pickedLevel, translationLang, mainLang]);
 
     useEffect(() => {
         if (currentStep !== 3 || exampleFlashcards.length > 0) return;

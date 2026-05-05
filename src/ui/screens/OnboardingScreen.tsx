@@ -4,16 +4,18 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { getLocales } from 'react-native-localize';
 import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchExampleFlashcards, updateUserData } from '../../api/apiClient';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
-import { LanguageTypes } from '../../constants/Language';
+import { LanguageCode, LanguageTypes } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useAuth, useLanguage } from '../../store';
 import { ExampleFlashcard, LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
+import { isSupportedLanguageCode } from '../../utils/languageUtils';
 import { ActionButton } from '../components';
 import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
 import { SameLearningLanguageBottomSheet } from '../sheets';
@@ -36,8 +38,14 @@ export const OnboardingScreen = () => {
     const [selectedFlashcardsIds, setSelectedFlashcardsIds] = useState<string[]>([]);
     const [displayedFlashcardsIds, setDisplayedFlashcardsIds] = useState<string[]>([]);
 
-    const { languages, mainLang, translationLang } = useLanguage();
+    const { languages, mainLang, setTranslationLang, translationLang } = useLanguage();
     const [pickedLevel, setPickedLevel] = useState<LanguageLevelRange | undefined>();
+
+    useEffect(() => {
+        if (translationLang) return;
+        const deviceLang = getLocales()[0]?.languageCode;
+        if (isSupportedLanguageCode(deviceLang)) setTranslationLang(deviceLang as LanguageCode);
+    }, []);
 
     useEffect(() => {
         setPickedLevel(undefined);

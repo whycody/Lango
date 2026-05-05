@@ -1,4 +1,4 @@
-import React, { Activity, useEffect, useState } from 'react';
+import React, { Activity, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -16,9 +16,13 @@ import { ExampleFlashcard, LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isSupportedLanguageCode } from '../../utils/languageUtils';
 import { ActionButton } from '../components';
-import { OnboardingHeader } from '../components/onboarding/OnboardingHeader';
+import { OnboardingHeader } from '../components/onboarding';
 import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
-import { LogoutBottomSheet, SameLearningLanguageBottomSheet, SkipFlashcardsBottomSheet } from '../sheets';
+import {
+    LogoutBottomSheet,
+    SameLearningLanguageBottomSheet,
+    SkipFlashcardsBottomSheet,
+} from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const SAME_LANGUAGE_SHEET = 'onboarding-same-language-sheet';
@@ -113,14 +117,17 @@ export const OnboardingScreen = () => {
         }
     };
 
-    const handleLastVisibleIndexChange = (index: number) => {
-        if (index < 0) return;
-        setDisplayedFlashcardsIds(prev => {
-            const newVisible = exampleFlashcards.slice(0, index + 1).map(w => w.id);
-            const merged = Array.from(new Set([...prev, ...newVisible]));
-            return merged.length !== prev.length ? merged : prev;
-        });
-    };
+    const handleLastVisibleIndexChange = useCallback(
+        (index: number) => {
+            if (index < 0) return;
+            setDisplayedFlashcardsIds(prev => {
+                const newVisible = exampleFlashcards.slice(0, index + 1).map(w => w.id);
+                const merged = Array.from(new Set([...prev, ...newVisible]));
+                return merged.length !== prev.length ? merged : prev;
+            });
+        },
+        [exampleFlashcards],
+    );
 
     const updateUserOnboardingData = async () => {
         setLoading(true);
@@ -141,10 +148,27 @@ export const OnboardingScreen = () => {
         setLoading(false);
     };
 
+    const mainLanguageName = languages
+        .find(lang => lang.languageCode === mainLang)
+        ?.languageName.toLowerCase();
+
+    const stepTitles = [
+        t('choose_translation_language'),
+        t('choose_main_language'),
+        t('language_level.select', { language: mainLanguageName }),
+        t('word_selection.title'),
+    ];
+
+    const stepTitle = (index: number) => `${index + 1}. ${stepTitles[index]}`;
+
     const handleContinuePress = () => {
         if (currentStep === 1 && mainLang === translationLang) {
             TrueSheet.present(SAME_LANGUAGE_SHEET);
-        } else if (currentStep === 3 && exampleFlashcards.length > 0 && selectedFlashcardsIds.length === 0) {
+        } else if (
+            currentStep === 3 &&
+            exampleFlashcards.length > 0 &&
+            selectedFlashcardsIds.length === 0
+        ) {
             TrueSheet.present(SKIP_FLASHCARDS_SHEET);
         } else if (currentStep < 3) {
             setCurrentStep(currentStep + 1);
@@ -156,7 +180,10 @@ export const OnboardingScreen = () => {
     return (
         <>
             <LogoutBottomSheet sheetName={LOGOUT_SHEET} />
-            <SkipFlashcardsBottomSheet sheetName={SKIP_FLASHCARDS_SHEET} onConfirm={updateUserOnboardingData} />
+            <SkipFlashcardsBottomSheet
+                sheetName={SKIP_FLASHCARDS_SHEET}
+                onConfirm={updateUserOnboardingData}
+            />
             <SameLearningLanguageBottomSheet
                 sheetName={SAME_LANGUAGE_SHEET}
                 onConfirm={updateUserOnboardingData}
@@ -179,7 +206,7 @@ export const OnboardingScreen = () => {
                             alwaysAllowPick
                             languageType={LanguageTypes.TRANSLATION}
                             style={styles.languagePicker}
-                            title={`1. ${t('choose_translation_language')}`}
+                            title={stepTitle(0)}
                         />
                     </Activity>
                     <Activity mode={currentStep === 1 ? 'visible' : 'hidden'}>
@@ -187,7 +214,7 @@ export const OnboardingScreen = () => {
                             alwaysAllowPick
                             languageType={LanguageTypes.MAIN}
                             style={styles.languagePicker}
-                            title={`2. ${t('choose_main_language')}`}
+                            title={stepTitle(1)}
                         />
                     </Activity>
                     <Activity mode={currentStep === 2 ? 'visible' : 'hidden'}>
@@ -195,7 +222,7 @@ export const OnboardingScreen = () => {
                             language={languages.find(lang => lang.languageCode === mainLang)}
                             pickedLevel={pickedLevel}
                             style={styles.languagePicker}
-                            title={`3. ${t('language_level.select', { language: languages.find(lang => lang.languageCode === mainLang)?.languageName.toLowerCase() })}`}
+                            title={stepTitle(2)}
                             updateUserData={false}
                             onLevelPick={setPickedLevel}
                         />
@@ -208,7 +235,7 @@ export const OnboardingScreen = () => {
                             loading={flashcardsLoading}
                             selectedIds={selectedFlashcardsIds}
                             style={styles.languagePicker}
-                            title={`4. ${t('word_selection.title')}`}
+                            title={stepTitle(3)}
                             onLastVisibleIndexChange={handleLastVisibleIndexChange}
                             onSelectAll={setSelectedFlashcardsIds}
                             onToggle={handleFlashcardToggle}

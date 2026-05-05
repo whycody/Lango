@@ -24,6 +24,7 @@
     "settings": "Settings",
     "myWords": "My words",
     "logout": "Logout",
+    "logout_confirm": "Are you sure you want to log out?",
     "logout_desc": "Don’t worry, you can always come back",
     "privacyPolicy": "Privacy policy",
     "useConditions": "Use conditions",

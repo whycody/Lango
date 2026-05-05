@@ -24,6 +24,7 @@
     "settings": "Ajustes",
     "myWords": "Mis palabras",
     "logout": "Cerrar sesión",
+    "logout_confirm": "¿Estás seguro de que quieres cerrar sesión?",
     "logout_desc": "No te preocupes, siempre puedes volver",
     "privacyPolicy": "Política de privacidad",
     "useConditions": "Condiciones de uso",

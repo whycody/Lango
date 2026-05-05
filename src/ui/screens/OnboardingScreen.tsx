@@ -5,7 +5,6 @@ import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { getLocales } from 'react-native-localize';
-import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchExampleFlashcards, updateUserData } from '../../api/apiClient';
@@ -17,11 +16,13 @@ import { ExampleFlashcard, LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isSupportedLanguageCode } from '../../utils/languageUtils';
 import { ActionButton } from '../components';
+import { OnboardingHeader } from '../components/onboarding/OnboardingHeader';
 import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
-import { SameLearningLanguageBottomSheet } from '../sheets';
+import { LogoutBottomSheet, SameLearningLanguageBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const SAME_LANGUAGE_SHEET = 'onboarding-same-language-sheet';
+const LOGOUT_SHEET = 'onboarding-logout-sheet';
 const TOTAL_STEPS = 5;
 
 export const OnboardingScreen = () => {
@@ -138,6 +139,7 @@ export const OnboardingScreen = () => {
 
     return (
         <>
+            <LogoutBottomSheet sheetName={LOGOUT_SHEET} />
             <SameLearningLanguageBottomSheet
                 sheetName={SAME_LANGUAGE_SHEET}
                 onConfirm={updateUserOnboardingData}
@@ -148,15 +150,11 @@ export const OnboardingScreen = () => {
                 start={{ x: 0, y: 0 }}
                 style={styles.root}
             >
-                <View style={styles.topBar}>
-                    <View style={styles.progressBarWrapper}>
-                        <ProgressBar
-                            color={colors.primary}
-                            progress={(currentStep + 1) / TOTAL_STEPS}
-                            style={styles.progressBar}
-                        />
-                    </View>
-                </View>
+                <OnboardingHeader
+                    currentStep={currentStep}
+                    totalSteps={TOTAL_STEPS}
+                    onLogout={() => TrueSheet.present(LOGOUT_SHEET)}
+                />
 
                 <View style={styles.content}>
                     <Activity mode={currentStep === 0 ? 'visible' : 'hidden'}>
@@ -236,17 +234,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         languagePicker: {
             paddingTop: MARGIN_VERTICAL,
         },
-        progressBar: {
-            backgroundColor: colors.cardAccent,
-            height: 5,
-        },
-        progressBarWrapper: {
-            marginHorizontal: MARGIN_HORIZONTAL,
-        },
         root: {
             flex: 1,
-        },
-        topBar: {
-            paddingTop: insets.top + MARGIN_VERTICAL / 2,
         },
     });

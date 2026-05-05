@@ -24,6 +24,7 @@
     "settings": "Impostazioni",
     "myWords": "Le mie parole",
     "logout": "Esci",
+    "logout_confirm": "Sei sicuro di voler uscire?",
     "logout_desc": "Non preoccuparti, puoi sempre tornare",
     "privacyPolicy": "Informativa sulla privacy",
     "useConditions": "Condizioni d'uso",

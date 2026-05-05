@@ -6,6 +6,7 @@ export * from './HandleFlashcardBottomSheet';
 export * from './HitFlashcardBottomSheet';
 export * from './LanguageBottomSheet';
 export * from './LeaveSessionBottomSheet';
+export * from './LogoutBottomSheet';
 export * from './PickLanguageLevelBottomSheet';
 export * from './RemoveFlashcardBottomSheet';
 export * from './SameLearningLanguageBottomSheet';

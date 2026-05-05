@@ -37,7 +37,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         emptyViewContainer: {
             alignItems: 'center',
-            backgroundColor: colors.background,
             justifyContent: 'center',
             marginVertical: 50,
         },

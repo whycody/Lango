@@ -24,6 +24,7 @@
     "settings": "Ajustes",
     "myWords": "Mis palabras",
     "logout": "Cerrar sesión",
+    "logout_confirm": "¿Estás seguro de que quieres cerrar sesión?",
     "logout_desc": "No te preocupes, siempre puedes volver",
     "privacyPolicy": "Política de privacidad",
     "useConditions": "Condiciones de uso",
@@ -82,7 +83,7 @@
     "choose_translation_language": "Elige tu idioma nativo",
     "choose_application_language": "Elige el idioma de la aplicación",
     "choose_language_main_desc": "Toca un bloque para seleccionar el idioma que quieres aprender.",
-    "choose_language_translation_desc": "Toca un bloque para elegir el idioma con el que te sientes más cómodo.",
+    "choose_language_translation_desc": "Toca un bloque para seleccionar el idioma que mejor conoces.",
     "choose_language_application_desc": "Toca un bloque para seleccionar el idioma en el que quieres usar la app.",
     "searchFlashcard": "Buscar tarjeta",
     "english": "Inglés",
@@ -170,18 +171,18 @@
         "disabled_message": "Para activar el micrófono, necesitas cambiar la configuración de la app en tu sistema."
     },
     "language_level": {
-        "select": "¿Qué tan bien conoces el idioma {{language}}?",
+        "select": "Elige qué tan bien conoces {{language}}",
         "select_desc": "Toca un bloque para seleccionar el nivel que mejor describe tu dominio del idioma.",
         "beginner": "Principiante",
-        "beginner_desc": "Estás empezando. Conoces palabras básicas y frases simples.",
+        "beginner_desc": "Conoces palabras básicas y frases simples.",
         "elementary": "Elemental",
-        "elementary_desc": "Entiendes frases simples y puedes comunicarte en situaciones cotidianas.",
+        "elementary_desc": "Te desenvuelves en situaciones básicas.",
         "intermediate": "Intermedio",
-        "intermediate_desc": "Puedes manejar la mayoría de las conversaciones típicas y describir tus experiencias.",
+        "intermediate_desc": "Te manejas en la mayoría de las conversaciones cotidianas.",
         "advanced": "Avanzado",
-        "advanced_desc": "Te comunicas con fluidez sobre diversos temas y entiendes contenido más complejo.",
+        "advanced_desc": "Hablas con fluidez sobre varios temas y entiendes contenido complejo.",
         "proficient": "Competente",
-        "proficient_desc": "Hablas con fluidez y precisión, y entiendes matices y afirmaciones más largas."
+        "proficient_desc": "Hablas con fluidez y precisión, y entiendes matices."
     },
     "new_word_suggestion": "Sugerencia de nueva palabra",
     "word_tags": {
@@ -207,5 +208,16 @@
         "desc": "¿Estás seguro de que quieres aprender el mismo idioma que tu lengua materna? Obtendrás los mayores progresos eligiendo un idioma diferente para aprender.",
         "confirm": "Sí, continuar",
         "change": "Elegir otro idioma"
+    },
+    "word_selection": {
+        "title": "Añade tus primeras palabras",
+        "desc": "Toca las tarjetas para seleccionar las palabras que quieras añadir primero a tu diccionario.",
+        "select_all": "Seleccionar todo",
+        "searching": "Buscando las mejores propuestas para ti",
+        "skip_confirm": "¿Estás seguro de que no quieres añadir ninguna tarjeta?",
+        "skip_confirm_desc": "¡Incluso unas pocas palabras harán tu aprendizaje mucho más efectivo desde el principio!",
+        "add_flashcards": "Añadir tarjetas",
+        "load_failed": "No se pudieron cargar las sugerencias",
+        "load_failed_desc": "Puedes continuar sin seleccionar palabras."
     }
 }

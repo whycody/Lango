@@ -24,6 +24,7 @@
     "settings": "Ustawienia",
     "myWords": "Moje słówka",
     "logout": "Wyloguj się",
+    "logout_confirm": "Czy na pewno chcesz się wylogować?",
     "logout_desc": "Bez obaw, zawsze możesz wrócić",
     "privacyPolicy": "Polityka prywatności",
     "useConditions": "Warunki korzystania",
@@ -82,7 +83,7 @@
     "choose_translation_language": "Wybierz swój język ojczysty",
     "choose_application_language": "Wybierz język aplikacji",
     "choose_language_main_desc": "Kliknij na kafelek, aby zaznaczyć język, którego chcesz się uczyć.",
-    "choose_language_translation_desc": "Kliknij na kafelek, aby wybrać język, który jest Ci najbliższy.",
+    "choose_language_translation_desc": "Kliknij na kafelek, aby zaznaczyć język, który jest Ci najlepiej znany.",
     "choose_language_application_desc": "Kliknij na kafelek, aby wybrać język, w którym chcesz korzystać z aplikacji.",
     "searchFlashcard": "Wyszukaj fiszkę",
     "english": "Angielski",
@@ -169,18 +170,18 @@
         "disabled_message": "Aby włączyć mikrofon, musisz zmienić ustawienia aplikacji w systemie."
     },
     "language_level": {
-        "select": "Jak dobrze znasz język {{language}}?",
-        "select_desc": "Kliknij na kafelek, aby wybrać poziom, który najlepiej opisuje Twoją znajomość języka.",
+        "select": "Wybierz, jak dobrze znasz {{language}}",
+        "select_desc": "Kliknij na kafelek, aby zaznaczyć poziom, który najlepiej opisuje Twoją znajomość języka.",
         "beginner": "Początkujący",
-        "beginner_desc": "Dopiero zaczynasz. Znasz podstawowe słowa i pojedyncze zwroty.",
+        "beginner_desc": "Znasz podstawowe słowa i proste zwroty.",
         "elementary": "Podstawowy",
-        "elementary_desc": "Rozumiesz proste zdania i potrafisz porozumieć się w codziennych sytuacjach.",
+        "elementary_desc": "Porozumiewasz się w podstawowych sytuacjach.",
         "intermediate": "Średniozaawansowany",
-        "intermediate_desc": "Radzisz sobie w większości typowych rozmów i umiesz opisać swoje doświadczenia.",
+        "intermediate_desc": "Radzisz sobie w większości codziennych rozmów.",
         "advanced": "Zaawansowany",
-        "advanced_desc": "Swobodnie komunikujesz się na różne tematy i rozumiesz bardziej złożone treści.",
+        "advanced_desc": "Swobodnie rozmawiasz o różnych tematach.",
         "proficient": "Biegły",
-        "proficient_desc": "Mówisz płynnie i precyzyjnie, rozumiesz niuanse językowe i dłuższe wypowiedzi."
+        "proficient_desc": "Mówisz płynnie i precyzyjnie, rozumiesz niuanse."
     },
     "new_word_suggestion": "Propozycja nowego słówka",
     "word_tags": {
@@ -206,5 +207,16 @@
         "desc": "Czy na pewno chcesz uczyć się języka, który jest Twoim językiem ojczystym? Największe postępy osiągniesz, wybierając do nauki inny język.",
         "confirm": "Tak, kontynuuj",
         "change": "Wybierz inny język"
+    },
+    "word_selection": {
+        "title": "Dodaj swoje pierwsze słówka",
+        "desc": "Kliknij na kafelki, aby zaznaczyć słówka, które jako pierwsze chciałbyś dodać do swojego słownika.",
+        "select_all": "Zaznacz wszystkie",
+        "searching": "Szukamy najlepszych propozycji dla Ciebie",
+        "skip_confirm": "Czy na pewno nie chcesz dodać żadnych słówek?",
+        "skip_confirm_desc": "Nawet kilka słówek sprawi, że nauka będzie o wiele skuteczniejsza od samego początku!",
+        "add_flashcards": "Dodaj słówka",
+        "load_failed": "Nie udało się załadować propozycji",
+        "load_failed_desc": "Możesz kontynuować bez zaznaczania słówek."
     }
 }

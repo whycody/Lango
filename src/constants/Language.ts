@@ -18,3 +18,5 @@ export enum LanguageTypes {
     MAIN = 'main',
     TRANSLATION = 'translation',
 }
+
+export const SUPPORTED_LANGUAGE_CODES = ['en', 'pl', 'es', 'it'] as const;

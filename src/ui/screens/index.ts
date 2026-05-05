@@ -5,4 +5,3 @@ export * from './LoginScreen';
 export * from './OnboardingScreen';
 export * from './SessionScreen';
 export * from './SettingsScreen';
-export * from './WelcomeScreen';

@@ -32,7 +32,7 @@ export const LanguageLevelItem: FC<LanguageLevelItemProps> = ({
         <>
             {level !== 1 && <View style={styles.divider} />}
             <LinearGradient
-                colors={['transparent', picked ? colors.cardAccent300 : 'transparent']}
+                colors={['transparent', picked ? colors.cardAccent : 'transparent']}
                 end={{ x: 1, y: 1 }}
                 start={{ x: 0, y: 0 }}
             >

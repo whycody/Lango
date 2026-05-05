@@ -3,6 +3,7 @@ import { AxiosResponse } from 'axios';
 import { LanguageCode } from '../constants/Language';
 import {
     Evaluation,
+    ExampleFlashcard,
     LanguageLevel,
     LanguageLevelRange,
     Session,
@@ -36,13 +37,21 @@ export const getUserInfo = async (): Promise<User | null> => {
     return res.data;
 };
 
-export const updateUserLanguages = (
+export const updateUserData = (
     mainLang: LanguageCode,
     translationLang: LanguageCode,
     level: LanguageLevelRange,
+    selectedFlashcardsIds: string[],
+    skippedFlashcardsIds: string[],
 ) =>
-    call('PUT /users/languages', null, () =>
-        api.put('/users/languages', { level, mainLang, translationLang }),
+    call('PUT /users/data', null, () =>
+        api.put('/users/data', {
+            level,
+            mainLang,
+            selectedFlashcardsIds,
+            skippedFlashcardsIds,
+            translationLang,
+        }),
     );
 
 export const signInWithGoogle = (idToken: string) =>
@@ -135,6 +144,21 @@ export const syncSuggestionsOnServer = (suggestions: Suggestion[]): Promise<Sync
     call('POST /suggestions/sync', null, () =>
         api.post<SyncResult[]>('/suggestions/sync', suggestions),
     );
+
+export const fetchExampleFlashcards = async (
+    mainLang: LanguageCode,
+    translationLang: LanguageCode,
+    level: LanguageLevelRange,
+    count: number = 15,
+    signal?: AbortSignal,
+): Promise<ExampleFlashcard[]> => {
+    const res = await api.get<ExampleFlashcard[]>('/suggestions/examples', {
+        params: { count, level, mainLang, translationLang },
+        signal,
+        timeout: 15000,
+    });
+    return res.data;
+};
 
 export const translateText = async (
     text: string,

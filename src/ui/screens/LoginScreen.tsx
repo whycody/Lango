@@ -86,7 +86,7 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                     icon={'logo-google'}
                     label={t('login_with_google')}
                     loading={loading === UserProvider.GOOGLE}
-                    primary={true}
+                    primary={isAndroid}
                     style={styles.button}
                     onPress={() => login(UserProvider.GOOGLE)}
                 />

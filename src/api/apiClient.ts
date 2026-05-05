@@ -145,20 +145,20 @@ export const syncSuggestionsOnServer = (suggestions: Suggestion[]): Promise<Sync
         api.post<SyncResult[]>('/suggestions/sync', suggestions),
     );
 
-export const fetchExampleFlashcards = (
+export const fetchExampleFlashcards = async (
     mainLang: LanguageCode,
     translationLang: LanguageCode,
     level: LanguageLevelRange,
     count: number = 15,
     signal?: AbortSignal,
-): Promise<ExampleFlashcard[]> =>
-    api
-        .get<ExampleFlashcard[]>('/suggestions/examples', {
-            params: { count, level, mainLang, translationLang },
-            signal,
-            timeout: 15000,
-        })
-        .then(res => res.data);
+): Promise<ExampleFlashcard[]> => {
+    const res = await api.get<ExampleFlashcard[]>('/suggestions/examples', {
+        params: { count, level, mainLang, translationLang },
+        signal,
+        timeout: 15000,
+    });
+    return res.data;
+};
 
 export const translateText = async (
     text: string,

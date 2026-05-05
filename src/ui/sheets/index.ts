@@ -10,6 +10,7 @@ export * from './LogoutBottomSheet';
 export * from './PickLanguageLevelBottomSheet';
 export * from './RemoveFlashcardBottomSheet';
 export * from './SameLearningLanguageBottomSheet';
+export * from './SkipFlashcardsBottomSheet';
 export * from './SessionSettingsBottomSheet';
 export * from './SortingMethodBottomSheet';
 export * from './StartSessionBottomSheet';

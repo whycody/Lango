@@ -213,6 +213,9 @@
         "title": "Add your first words",
         "desc": "Click on tiles to select the words you'd like to add to your dictionary first.",
         "select_all": "Select all",
-        "searching": "We're looking for the best suggestions for you"
+        "searching": "We're looking for the best suggestions for you",
+        "skip_confirm": "Are you sure you don't want to add any flashcards?",
+        "skip_confirm_desc": "Even a few words will make your learning more effective from the very start!",
+        "add_flashcards": "Add flashcards"
     }
 }

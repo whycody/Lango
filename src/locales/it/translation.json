@@ -213,6 +213,9 @@
         "title": "Aggiungi le tue prime parole",
         "desc": "Tocca i riquadri per selezionare le parole che vorresti aggiungere per prime al tuo dizionario.",
         "select_all": "Seleziona tutto",
-        "searching": "Stiamo cercando i migliori suggerimenti per te"
+        "searching": "Stiamo cercando i migliori suggerimenti per te",
+        "skip_confirm": "Sei sicuro di non voler aggiungere nessuna scheda?",
+        "skip_confirm_desc": "Anche solo poche parole renderanno il tuo apprendimento molto più efficace fin dall'inizio!",
+        "add_flashcards": "Aggiungi schede"
     }
 }

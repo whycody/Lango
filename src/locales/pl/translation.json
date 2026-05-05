@@ -212,6 +212,9 @@
         "title": "Dodaj swoje pierwsze słówka",
         "desc": "Kliknij na kafelki, aby zaznaczyć słówka, które jako pierwsze chciałbyś dodać do swojego słownika.",
         "select_all": "Zaznacz wszystkie",
-        "searching": "Szukamy najlepszych propozycji dla Ciebie"
+        "searching": "Szukamy najlepszych propozycji dla Ciebie",
+        "skip_confirm": "Czy na pewno nie chcesz dodać żadnych słówek?",
+        "skip_confirm_desc": "Nawet kilka słówek sprawi, że nauka będzie o wiele skuteczniejsza od samego początku!",
+        "add_flashcards": "Dodaj słówka"
     }
 }

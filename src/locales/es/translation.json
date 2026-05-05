@@ -213,6 +213,9 @@
         "title": "Añade tus primeras palabras",
         "desc": "Toca las tarjetas para seleccionar las palabras que quieras añadir primero a tu diccionario.",
         "select_all": "Seleccionar todo",
-        "searching": "Buscando las mejores propuestas para ti"
+        "searching": "Buscando las mejores propuestas para ti",
+        "skip_confirm": "¿Estás seguro de que no quieres añadir ninguna tarjeta?",
+        "skip_confirm_desc": "¡Incluso unas pocas palabras harán tu aprendizaje mucho más efectivo desde el principio!",
+        "add_flashcards": "Añadir tarjetas"
     }
 }

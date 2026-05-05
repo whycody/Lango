@@ -18,11 +18,12 @@ import { isSupportedLanguageCode } from '../../utils/languageUtils';
 import { ActionButton } from '../components';
 import { OnboardingHeader } from '../components/onboarding/OnboardingHeader';
 import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
-import { LogoutBottomSheet, SameLearningLanguageBottomSheet } from '../sheets';
+import { LogoutBottomSheet, SameLearningLanguageBottomSheet, SkipFlashcardsBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const SAME_LANGUAGE_SHEET = 'onboarding-same-language-sheet';
 const LOGOUT_SHEET = 'onboarding-logout-sheet';
+const SKIP_FLASHCARDS_SHEET = 'onboarding-skip-flashcards-sheet';
 const TOTAL_STEPS = 5;
 
 export const OnboardingScreen = () => {
@@ -130,6 +131,8 @@ export const OnboardingScreen = () => {
     const handleContinuePress = () => {
         if (currentStep === 1 && mainLang === translationLang) {
             TrueSheet.present(SAME_LANGUAGE_SHEET);
+        } else if (currentStep === 3 && exampleFlashcards.length > 0 && selectedFlashcardsIds.length === 0) {
+            TrueSheet.present(SKIP_FLASHCARDS_SHEET);
         } else if (currentStep < 3) {
             setCurrentStep(currentStep + 1);
         } else {
@@ -140,6 +143,7 @@ export const OnboardingScreen = () => {
     return (
         <>
             <LogoutBottomSheet sheetName={LOGOUT_SHEET} />
+            <SkipFlashcardsBottomSheet sheetName={SKIP_FLASHCARDS_SHEET} onConfirm={updateUserOnboardingData} />
             <SameLearningLanguageBottomSheet
                 sheetName={SAME_LANGUAGE_SHEET}
                 onConfirm={updateUserOnboardingData}

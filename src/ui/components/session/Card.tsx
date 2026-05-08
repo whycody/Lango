@@ -167,7 +167,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             textAlign: 'center',
         },
         icon: {
-            padding: MARGIN_HORIZONTAL,
+            margin: MARGIN_HORIZONTAL / 2,
+            padding: MARGIN_HORIZONTAL / 2,
             zIndex: 2,
         },
         iconMarked: {

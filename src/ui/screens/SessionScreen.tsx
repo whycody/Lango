@@ -24,12 +24,14 @@ import {
     useEvaluations,
     useLanguage,
     useSessions,
+    useStatistics,
     useSuggestions,
     useUserPreferences,
     useWords,
 } from '../../store';
 import { SessionWord, Word, WordUpdate } from '../../types';
 import { trackEvent } from '../../utils/analytics';
+import { getCurrentStreak } from '../../utils/streakUtils';
 import { CustomText } from '../components';
 import { Card, FlipCard, SessionHeader, WordLevelItem } from '../components/session';
 import {
@@ -39,6 +41,7 @@ import {
     LeaveSessionBottomSheet,
     SessionSettingsBottomSheet,
 } from '../sheets';
+import { StreakBottomSheet } from '../sheets/StreakBottomSheet';
 import { WordSuggestionBottomSheet } from '../sheets/WordSuggestionBottomSheet';
 import { CustomTheme } from '../Theme';
 
@@ -53,6 +56,7 @@ const SESSION_HIT_FLASHCARD_BOTTOM_SHEET = 'session-hit-flashcard-bottom-sheet';
 const SESSION_LEAVE_SESSION_BOTTOM_SHEET = 'session-leave-session-bottom-sheet';
 const SESSION_FINISH_SESSION_BOTTOM_SHEET = 'session-finish-session-bottom-sheet';
 const SESSION_SETTINGS_BOTTOM_SHEET = 'session-settings-bottom-sheet';
+const SESSION_STREAK_BOTTOM_SHEET = 'session-streak-bottom-sheet';
 const SESSION_WORD_SUGGESTION_BOTTOM_SHEET = 'session-word-suggestion-bottom-sheet';
 
 type SessionScreenProps = NativeStackScreenProps<RootStackParamList, ScreenName.Session>;
@@ -78,7 +82,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     const { mainLang, translationLang } = useLanguage();
     const { triggerHaptics } = useHaptics();
 
-    const { user } = useAuth();
+    const { updateUserFinishedOnboarding, user } = useAuth();
     const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode);
 
     useEffect(() => {
@@ -110,6 +114,9 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     const [wordsUpdates, setWordsUpdates] = useState<WordUpdate[]>([]);
     const [skippedSuggestionsIds, setSkippedSuggestionsIds] = useState<string[]>([]);
     const [flippedCards, setFlippedCards] = useState(Array(length * 10).fill(false));
+
+    const { studyDaysList } = useStatistics();
+    const streak = getCurrentStreak(studyDaysList);
 
     useLayoutEffect(() => {
         confettiRef.current?.reset();
@@ -340,12 +347,19 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     }, [wordsUpdates, skippedSuggestionsIds]);
 
     const finishSession = () => {
+        const shouldDisplayStreakSheet = !streak.active;
         incrementCurrentIndex();
         confettiRef.current?.play(0);
         saveProgress(true);
         triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
-        TrueSheet.present(SESSION_FINISH_SESSION_BOTTOM_SHEET);
+        if (shouldDisplayStreakSheet) triggerHaptics('heavy');
+        if (!user?.finishedOnboarding) updateUserFinishedOnboarding(true);
+        TrueSheet.present(
+            shouldDisplayStreakSheet
+                ? SESSION_STREAK_BOTTOM_SHEET
+                : SESSION_FINISH_SESSION_BOTTOM_SHEET,
+        );
     };
 
     useEffect(() => {
@@ -355,7 +369,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     }, [currentIndex]);
 
     const endSession = () => {
-        TrueSheet.dismiss(SESSION_FINISH_SESSION_BOTTOM_SHEET);
+        TrueSheet.dismissAll();
         navigation.reset({
             index: 0,
             routes: [{ name: ScreenName.Tabs }],
@@ -378,7 +392,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
         setCards(wordSet.sessionWords);
         setTimeout(() => {
             setCurrentIndex(0);
-            TrueSheet.dismiss(SESSION_FINISH_SESSION_BOTTOM_SHEET);
+            TrueSheet.dismissAll();
         }, 200);
     };
 
@@ -519,6 +533,11 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
                 flashcardUpdates={wordsUpdates}
                 sheetName={SESSION_FINISH_SESSION_BOTTOM_SHEET}
                 startNewSession={startNewSession}
+            />
+            <StreakBottomSheet
+                finishSessionBottomSheetName={SESSION_FINISH_SESSION_BOTTOM_SHEET}
+                sheetName={SESSION_STREAK_BOTTOM_SHEET}
+                streak={streak}
             />
             <SessionSettingsBottomSheet sheetName={SESSION_SETTINGS_BOTTOM_SHEET} />
             <HitFlashcardBottomSheet sheetName={SESSION_HIT_FLASHCARD_BOTTOM_SHEET} />

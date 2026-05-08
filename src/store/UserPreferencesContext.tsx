@@ -85,7 +85,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     );
     const [sessionLength, setSessionLength] = useTypedMMKV<SessionLength>(
         SESSION_LENGTH_KEY,
-        SessionLength.MEDIUM,
+        SessionLength.SHORT,
         storage,
     );
     const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV<boolean>(

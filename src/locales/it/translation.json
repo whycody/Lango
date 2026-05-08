@@ -231,5 +231,23 @@
     "onboarding": {
         "welcome": "Benvenuto in Lango! 👋",
         "onboarding_desc": "Hai personalizzato l'app secondo le tue preferenze, ora è il momento di imparare! Premi il pulsante in basso per iniziare la tua prima sessione di apprendimento."
+    },
+    "streak": {
+        "days_in_row": "Giorni consecutivi",
+        "goal_achieved": "Obiettivo raggiunto!",
+        "message1": "Sei vicino al prossimo traguardo. Mancano solo {{daysLeft}} giorni per raggiungere {{nextGoal}} giorni consecutivi 🔥",
+        "message2": "Ottimo ritmo - ancora {{daysLeft}} giorni e raggiungerai {{nextGoal}} giorni di studio continuo 💪",
+        "message3": "Ogni giorno conta. Tra {{daysLeft}} giorni supererai i {{nextGoal}} giorni consecutivi e salirai di livello 🔥",
+        "message4": "Sei sempre più vicino a un'abitudine che fa davvero la differenza. Mancano {{daysLeft}} giorni per raggiungere {{nextGoal}} giorni 📈",
+        "message5": "Ottimo lavoro finora - ora la cosa più importante è non fermarsi. Solo {{daysLeft}} giorni ti separano da {{nextGoal}} giorni 💡",
+        "message6": "Mantieni il ritmo ancora per {{daysLeft}} giorni e raggiungerai {{nextGoal}} giorni senza interruzioni 🔥",
+        "message7": "Stai costruendo un'abitudine, non solo una serie. Ancora {{daysLeft}} giorni per raggiungere {{nextGoal}} giorni 📊",
+        "goalReached1": "Ottimo lavoro! Hai già raggiunto {{currentGoal}} giorni consecutivi di studio 🔥",
+        "goalReached2": "Un altro traguardo sbloccato - {{currentGoal}} giorni consecutivi sono tuoi 💪",
+        "goalReached3": "Congratulazioni! Hai appena raggiunto {{currentGoal}} giorni di studio continuo 📈",
+        "goalReached4": "Una costanza incredibile. Hai già completato {{currentGoal}} giorni consecutivi 🔥",
+        "goalReached5": "Ce l'hai fatta! La tua serie è appena arrivata a {{currentGoal}} 🚀",
+        "goalReached6": "Sono già {{currentGoal}} giorni di studio regolare. Il prossimo obiettivo è {{nextGoal}} giorni 💡",
+        "goalReached7": "Nuovo livello sbloccato - {{currentGoal}} giorni consecutivi di studio 🔥 Prossima fermata: {{nextGoal}} giorni"
     }
 }

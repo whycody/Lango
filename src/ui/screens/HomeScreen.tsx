@@ -61,6 +61,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
 
     useEffect(() => {
         if (user?.finishedOnboarding) return;
+        console.log(user);
         TrueSheet.present(HOME_ONBOARDING_SHEET_NAME);
     }, [user?.finishedOnboarding]);
 
@@ -93,7 +94,9 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
             )
                 return;
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
-            TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
+            setTimeout(() => {
+                TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
+            }, 200);
         };
 
         if (user?.finishedOnboarding) checkNotifications();

@@ -231,5 +231,23 @@
     "onboarding": {
         "welcome": "Welcome to Lango! 👋",
         "onboarding_desc": "You have customized the app to your preferences, now it's time to learn! Click the button below to start your first learning session."
+    },
+    "streak": {
+        "days_in_row": "Days in a row",
+        "goal_achieved": "Goal achieved!",
+        "message1": "You're close to the next milestone. Only {{daysLeft}} days left to reach {{nextGoal}} days in a row 🔥",
+        "message2": "Great pace - just {{daysLeft}} more days to reach {{nextGoal}} days of continuous learning 💪",
+        "message3": "Every day counts. In {{daysLeft}} days you'll surpass {{nextGoal}} days in a row and reach the next level 🔥",
+        "message4": "You're getting closer to a habit that truly makes a difference. {{daysLeft}} days left until {{nextGoal}} days 📈",
+        "message5": "Great job so far - now the key is to keep going. Only {{daysLeft}} days separate you from {{nextGoal}} days 💡",
+        "message6": "Keep the rhythm for {{daysLeft}} more days and you'll reach {{nextGoal}} days without a break 🔥",
+        "message7": "You're building a habit, not just a streak. {{daysLeft}} more days until you reach {{nextGoal}} days 📊",
+        "goalReached1": "Amazing work! You've already reached {{currentGoal}} days of learning in a row 🔥",
+        "goalReached2": "Another milestone unlocked - {{currentGoal}} days in a row is yours 💪",
+        "goalReached3": "Congratulations! You've just reached {{currentGoal}} days of continuous learning 📈",
+        "goalReached4": "Incredible consistency. {{currentGoal}} days in a row behind you 🔥",
+        "goalReached5": "You did it! Your streak has just climbed to {{currentGoal}} 🚀",
+        "goalReached6": "That's already {{currentGoal}} days of regular learning. The next goal is {{nextGoal}} days 💡",
+        "goalReached7": "New level unlocked - {{currentGoal}} days of learning in a row 🔥 Next stop: {{nextGoal}} days"
     }
 }

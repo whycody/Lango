@@ -231,5 +231,23 @@
     "onboarding": {
         "welcome": "¡Bienvenido a Lango! 👋",
         "onboarding_desc": "Has personalizado la app según tus preferencias, ¡ahora es momento de aprender! Pulsa el botón de abajo para comenzar tu primera sesión de aprendizaje."
+    },
+    "streak": {
+        "days_in_row": "Días seguidos",
+        "goal_achieved": "¡Objetivo alcanzado!",
+        "message1": "Estás cerca del próximo logro. Solo faltan {{daysLeft}} días para alcanzar {{nextGoal}} días seguidos 🔥",
+        "message2": "Vas a muy buen ritmo - solo {{daysLeft}} días más para alcanzar {{nextGoal}} días de aprendizaje continuo 💪",
+        "message3": "Cada día cuenta. En {{daysLeft}} días superarás los {{nextGoal}} días seguidos y subirás al siguiente nivel 🔥",
+        "message4": "Cada vez estás más cerca de un hábito que realmente marca la diferencia. Quedan {{daysLeft}} días para llegar a {{nextGoal}} días 📈",
+        "message5": "Gran trabajo hasta ahora - lo importante es no detenerse. Solo {{daysLeft}} días te separan de {{nextGoal}} días 💡",
+        "message6": "Mantén el ritmo durante {{daysLeft}} días más y alcanzarás {{nextGoal}} días sin interrupciones 🔥",
+        "message7": "Estás construyendo un hábito, no solo una racha. {{daysLeft}} días más y alcanzarás {{nextGoal}} días 📊",
+        "goalReached1": "¡Excelente trabajo! Ya has alcanzado {{currentGoal}} días de aprendizaje seguidos 🔥",
+        "goalReached2": "Otro logro desbloqueado - {{currentGoal}} días seguidos son tuyos 💪",
+        "goalReached3": "¡Felicidades! Acabas de alcanzar {{currentGoal}} días de aprendizaje continuo 📈",
+        "goalReached4": "Increíble constancia. {{currentGoal}} días seguidos ya forman parte de tu historia 🔥",
+        "goalReached5": "¡Lo lograste! Tu racha acaba de llegar a {{currentGoal}} 🚀",
+        "goalReached6": "Ya son {{currentGoal}} días de aprendizaje regular. El próximo objetivo es {{nextGoal}} días 💡",
+        "goalReached7": "Nuevo nivel desbloqueado - {{currentGoal}} días de aprendizaje seguidos 🔥 Próxima parada: {{nextGoal}} días"
     }
 }

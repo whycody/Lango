@@ -230,5 +230,23 @@
     "onboarding": {
         "welcome": "Witaj w Lango! 👋",
         "onboarding_desc": "Dostosowałeś aplikację do swoich preferencji, teraz czas na naukę! Kliknij w przycisk na dole, aby rozpocząć swoją pierwszą sesję nauki."
+    },
+    "streak": {
+        "days_in_row": "Dni z rzędu",
+        "goal_achieved": "Cel osiągnięty!",
+        "message1": "Jesteś blisko kolejnego kamienia milowego. Zostało {{daysLeft}} dni, aby osiągnąć {{nextGoal}} dni z rzędu 🔥",
+        "message2": "Świetne tempo - jeszcze {{daysLeft}} dni i osiągniesz {{nextGoal}} dni ciągłej nauki 💪",
+        "message3": "Każdy dzień się liczy. Za {{daysLeft}} dni przekroczysz {{nextGoal}} dni z rzędu i wejdziesz na kolejny poziom 🔥",
+        "message4": "Coraz bliżej nawyku, który robi różnicę. Zostało {{daysLeft}} dni do {{nextGoal}} dni 📈",
+        "message5": "Dobra robota - teraz najważniejsze to nie zwalniać. {{daysLeft}} dni dzieli Cię od {{nextGoal}} dni 💡",
+        "message6": "Utrzymaj rytm jeszcze {{daysLeft}} dni, a osiągniesz {{nextGoal}} dni bez przerwy 🔥",
+        "message7": "Budujesz nawyk, nie tylko liczbę dni z rzędu. Jeszcze {{daysLeft}} dni i osiągniesz {{nextGoal}} dni 📊",
+        "goalReached1": "Świetna robota! Osiągnąłeś już {{currentGoal}} dni nauki z rzędu 🔥",
+        "goalReached2": "Kolejny kamień milowy zdobyty - {{currentGoal}} dni z rzędu należy do Ciebie 💪",
+        "goalReached3": "Gratulacje! Właśnie osiągnąłeś {{currentGoal}} dni ciągłej nauki 📈",
+        "goalReached4": "Niesamowita konsekwencja. {{currentGoal}} dni z rzędu za Tobą 🔥",
+        "goalReached5": "Udało się! Twoja liczba dni z rzędu poszybowała właśnie do {{currentGoal}} 🚀",
+        "goalReached6": "To już {{currentGoal}} dni regularnej nauki. Następny cel to {{nextGoal}} dni 💡",
+        "goalReached7": "Nowy poziom odblokowany - {{currentGoal}} dni nauki z rzędu 🔥 Następny przystanek: {{nextGoal}} dni"
     }
 }

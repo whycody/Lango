@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
@@ -28,15 +28,14 @@ export const OnboardingBottomSheet = (props: OnboardingBottomSheetProps) => {
             sheetName={props.sheetName}
             onPrimaryButtonPress={handlePrimaryButtonPress}
         >
-            <View style={styles.lottieWrapper}>
-                <LottieView
-                    autoPlay={true}
-                    loop={true}
-                    source={require('../../../assets/face.json')}
-                    style={styles.lottie}
-                />
-            </View>
+            <LottieView
+                autoPlay={true}
+                loop={true}
+                source={require('../../../assets/face.json')}
+                style={styles.lottie}
+            />
             <Header
+                centered={true}
                 style={styles.header}
                 subtitle={t('onboarding.onboarding_desc')}
                 title={t('onboarding.welcome')}
@@ -53,9 +52,6 @@ const styles = StyleSheet.create({
     lottie: {
         height: 250,
         marginBottom: -10,
-        pointerEvents: 'none',
-    },
-    lottieWrapper: {
         pointerEvents: 'none',
     },
 });

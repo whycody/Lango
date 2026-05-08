@@ -11,6 +11,7 @@ import { CustomText } from '..';
 
 interface SessionLengthItemProps {
     length: SessionLength;
+    shorter?: boolean;
     onPress?: () => void;
     selected: boolean;
     style?: StyleProp<ViewStyle>;
@@ -20,6 +21,7 @@ export const SessionLengthItem: FC<SessionLengthItemProps> = ({
     length,
     onPress,
     selected,
+    shorter,
     style,
 }) => {
     const { colors } = useTheme() as CustomTheme;
@@ -51,7 +53,7 @@ export const SessionLengthItem: FC<SessionLengthItemProps> = ({
                     )}
                 </CustomText>
                 <CustomText style={styles.subtitle}>
-                    {(length * 10 + ` ${t('repetitions')}`).toUpperCase()}
+                    {(length * (shorter ? 5 : 10) + ` ${t('repetitions')}`).toUpperCase()}
                 </CustomText>
             </LinearGradient>
         </Pressable>

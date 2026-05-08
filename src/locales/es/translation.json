@@ -157,12 +157,20 @@
         "repetitions_count_desc": "De más repetido",
         "repetitions_count_asc": "De menos repetido"
     },
+    "common": {
+        "got_it": "Entendido"
+    },
     "hit_flashcard_bottom_sheet": {
         "title": "Toca la tarjeta para voltearla 🤏",
         "desc": "Primero intenta recordar el significado de la palabra mostrada, luego toca para ver la respuesta correcta.",
-        "got_it": "Entendido",
         "word": "Palabra",
         "translation": "Traducción"
+    },
+    "word_suggestion_bottom_sheet": {
+        "title": "Sugerencia de nueva palabra ✨",
+        "desc": "Ves una sugerencia de tarjeta que aún no está en tu diccionario. Si quieres añadirla, *valora qué tan bien la conoces*. Si no, *sáltala usando la flecha* en la esquina inferior derecha.",
+        "word": "Palabra sugerida",
+        "translation": "Traducción de la palabra"
     },
     "microphone": {
         "no_permission": "Sin permiso para usar el micrófono 🎤",
@@ -219,5 +227,9 @@
         "add_flashcards": "Añadir tarjetas",
         "load_failed": "No se pudieron cargar las sugerencias",
         "load_failed_desc": "Puedes continuar sin seleccionar palabras."
+    },
+    "onboarding": {
+        "welcome": "¡Bienvenido a Lango! 👋",
+        "onboarding_desc": "Has personalizado la app según tus preferencias, ¡ahora es momento de aprender! Pulsa el botón de abajo para comenzar tu primera sesión de aprendizaje."
     }
 }

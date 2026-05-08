@@ -4,19 +4,21 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { useUserPreferences } from '../../store';
 import { Card, FlipCard } from '../components/session';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
-type HitFlashcardBottomSheetProps = {
+type WordSuggestionBottomSheetProps = {
     sheetName: string;
 };
 
-export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => {
+export const WordSuggestionBottomSheet = (props: WordSuggestionBottomSheetProps) => {
     const { t } = useTranslation();
     const styles = getStyles();
     const [flip, setFlip] = useState(false);
     const [visible, setVisible] = useState(false);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const { setUserHasEverSeenSuggestionInSession } = useUserPreferences();
 
     const clearFlipTimeout = () => {
         if (timeoutRef.current) {
@@ -30,24 +32,33 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
     useEffect(() => {
         clearFlipTimeout();
         if (!visible) return;
-        timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
+        timeoutRef.current = setTimeout(() => setFlip(f => !f), 4000);
         return clearFlipTimeout;
     }, [flip, visible]);
 
     const onFlipStart = () => {
         clearFlipTimeout();
-        timeoutRef.current = setTimeout(() => setFlip(f => !f), 2000);
+        timeoutRef.current = setTimeout(() => setFlip(f => !f), 4000);
     };
+
+    const handlePrimaryButtonPress = () => {
+        TrueSheet.dismiss(props.sheetName);
+        setUserHasEverSeenSuggestionInSession(true);
+    };
+
+    const suggestionWord = {
+        type: 'suggestion',
+    } as any;
 
     return (
         <GenericBottomSheet
-            description={t('hit_flashcard_bottom_sheet.desc')}
+            description={t('word_suggestion_bottom_sheet.desc')}
             primaryActionLabel={t('common.got_it')}
             sheetName={props.sheetName}
-            title={t('hit_flashcard_bottom_sheet.title')}
+            title={t('word_suggestion_bottom_sheet.title')}
             onDidDismiss={() => setVisible(false)}
             onDidPresent={() => setVisible(true)}
-            onPrimaryButtonPress={() => TrueSheet.dismiss(props.sheetName)}
+            onPrimaryButtonPress={handlePrimaryButtonPress}
         >
             <FlipCard
                 flipHorizontal
@@ -56,8 +67,20 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
                 style={styles.exampleCard}
                 onFlipStart={onFlipStart}
             >
-                <Card text={t('hit_flashcard_bottom_sheet.word')} />
-                <Card text={t('hit_flashcard_bottom_sheet.translation')} />
+                <Card
+                    text={t('word_suggestion_bottom_sheet.word')}
+                    textStyle={styles.cardText}
+                    userHasEverSkippedSuggestion={false}
+                    word={suggestionWord}
+                    onContinuePress={() => {}}
+                />
+                <Card
+                    text={t('word_suggestion_bottom_sheet.translation')}
+                    textStyle={styles.cardText}
+                    userHasEverSkippedSuggestion={false}
+                    word={suggestionWord}
+                    onContinuePress={() => {}}
+                />
             </FlipCard>
         </GenericBottomSheet>
     );
@@ -65,6 +88,9 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
 
 const getStyles = () =>
     StyleSheet.create({
+        cardText: {
+            marginTop: MARGIN_VERTICAL * 2.5,
+        },
         exampleCard: {
             alignSelf: 'stretch',
             flex: 0,

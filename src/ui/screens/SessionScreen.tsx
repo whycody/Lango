@@ -19,6 +19,7 @@ import { WordSource } from '../../constants/Word';
 import { useHaptics, useWordSet } from '../../hooks';
 import { RootStackParamList, ScreenName } from '../../navigation/navigationTypes';
 import {
+    useAuth,
     useDebouncedSyncSuggestions,
     useEvaluations,
     useLanguage,
@@ -38,6 +39,7 @@ import {
     LeaveSessionBottomSheet,
     SessionSettingsBottomSheet,
 } from '../sheets';
+import { WordSuggestionBottomSheet } from '../sheets/WordSuggestionBottomSheet';
 import { CustomTheme } from '../Theme';
 
 export type SessionScreenParams = {
@@ -51,6 +53,7 @@ const SESSION_HIT_FLASHCARD_BOTTOM_SHEET = 'session-hit-flashcard-bottom-sheet';
 const SESSION_LEAVE_SESSION_BOTTOM_SHEET = 'session-leave-session-bottom-sheet';
 const SESSION_FINISH_SESSION_BOTTOM_SHEET = 'session-finish-session-bottom-sheet';
 const SESSION_SETTINGS_BOTTOM_SHEET = 'session-settings-bottom-sheet';
+const SESSION_WORD_SUGGESTION_BOTTOM_SHEET = 'session-word-suggestion-bottom-sheet';
 
 type SessionScreenProps = NativeStackScreenProps<RootStackParamList, ScreenName.Session>;
 
@@ -75,7 +78,8 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     const { mainLang, translationLang } = useLanguage();
     const { triggerHaptics } = useHaptics();
 
-    const wordSet = useWordSet(length * 10, mode);
+    const { user } = useAuth();
+    const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode);
 
     useEffect(() => {
         navigation.setOptions({ gestureEnabled: false });
@@ -124,6 +128,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
         useCallback(() => {
             const handleBackPress = () => {
                 trackEvent(AnalyticsEventName.LEAVE_SESSION_SHEET_OPEN);
+                if (!user?.finishedOnboarding) return true;
                 TrueSheet.present(SESSION_LEAVE_SESSION_BOTTOM_SHEET);
                 return true;
             };
@@ -133,7 +138,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
             return () => {
                 subscription.remove();
             };
-        }, []),
+        }, [user?.finishedOnboarding]),
     );
 
     const decrementCurrentIndex = useCallback(() => {
@@ -177,11 +182,10 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     const speakWord = useCallback(
         (word: SessionWord, frontSide: boolean) => {
             const shouldSpeakTranslation = flipped ? !frontSide : frontSide;
-            Speech.stop().then(() => {
-                Speech.speak(shouldSpeakTranslation ? word?.translation : word.text, {
-                    language: shouldSpeakTranslation ? word.translationLang : word.mainLang,
-                });
-            });
+            const text = shouldSpeakTranslation ? word.translation : word.text;
+            const language = shouldSpeakTranslation ? word.translationLang : word.mainLang;
+            Speech.stop();
+            Speech.speak(text, { language });
         },
         [flipped],
     );
@@ -203,6 +207,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
                 >
                     <Card
                         frontSide={true}
+                        showTapSuggestion={!userPreferences.userHasEverHitFlashcard && isActive}
                         text={flipped ? word?.text : word?.translation}
                         userHasEverSkippedSuggestion={userPreferences.userHasEverSkippedSuggestion}
                         word={word}
@@ -221,6 +226,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
                 >
                     <Card
                         frontSide={false}
+                        showTapSuggestion={!userPreferences.userHasEverHitFlashcard && isActive}
                         text={flipped ? word?.translation : word?.text}
                         userHasEverSkippedSuggestion={userPreferences.userHasEverSkippedSuggestion}
                         word={word}
@@ -264,20 +270,29 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
 
     useEffect(() => {
         const word = cards[currentIndex];
+        const isSuggestion = !!word && word.type === 'suggestion';
+        const shouldShowSuggestionSheet =
+            isSuggestion && !userPreferences.userHasEverSeenSuggestionInSession;
+        if (!shouldShowSuggestionSheet) return;
+        setTimeout(() => {
+            TrueSheet.present(SESSION_WORD_SUGGESTION_BOTTOM_SHEET);
+        }, 550);
+    }, [cards, currentIndex, userPreferences.userHasEverSeenSuggestionInSession]);
+
+    useEffect(() => {
+        const word = cards[currentIndex];
         if (!word) return;
         const speechSynthesizer =
             userPreferences.sessionSpeechSynthesizer && mainLang !== translationLang;
-        if (
-            ((flipped && !flippedCards[currentIndex]) ||
-                (!flipped && flippedCards[currentIndex])) &&
-            speechSynthesizer
-        ) {
-            Speech.stop().then(() => {
-                Speech.speak(word?.text, { language: word.mainLang });
-            });
+        const isFrontSide = !flippedCards[currentIndex];
+        const shouldSpeak = (flipped && isFrontSide) || (!flipped && !isFrontSide);
+        if (shouldSpeak && speechSynthesizer) {
+            Speech.stop();
+            Speech.speak(word?.text, { language: word.mainLang });
         }
     }, [
         flipped,
+        cards,
         currentIndex,
         flippedCards,
         mainLang,
@@ -335,6 +350,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
 
     useEffect(() => {
         setProgress(currentIndex);
+        if (currentIndex > cards.length - 1) return;
         pagerRef.current?.setPage?.(currentIndex);
     }, [currentIndex]);
 
@@ -487,13 +503,8 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View
-                style={[
-                    styles.topInsetSpacer,
-                    { backgroundColor: colors.card, height: insets.top },
-                ]}
-            />
+        <>
+            <WordSuggestionBottomSheet sheetName={SESSION_WORD_SUGGESTION_BOTTOM_SHEET} />
             <LeaveSessionBottomSheet
                 leaveSession={handleSessionExit}
                 sheetName={SESSION_LEAVE_SESSION_BOTTOM_SHEET}
@@ -511,80 +522,92 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
             />
             <SessionSettingsBottomSheet sheetName={SESSION_SETTINGS_BOTTOM_SHEET} />
             <HitFlashcardBottomSheet sheetName={SESSION_HIT_FLASHCARD_BOTTOM_SHEET} />
-            <View style={[styles.sessionHeaderContainer, { backgroundColor: colors.card }]}>
-                <SessionHeader
-                    cardsSetLength={cards.length}
-                    length={length}
-                    progress={progress}
-                    onSessionExit={handleSessionExitPress}
-                    onSettingsPressed={handleSessionSettingsPress}
+            <View style={styles.container}>
+                <View
+                    style={[
+                        styles.topInsetSpacer,
+                        { backgroundColor: colors.card, height: insets.top },
+                    ]}
                 />
-                <View style={styles.progressBarWrapper}>
-                    <ProgressBar
-                        animatedValue={progress ? progress / cards.length : 0.000001}
-                        color={colors.primary}
-                        style={styles.progressBar}
+
+                <View style={[styles.sessionHeaderContainer, { backgroundColor: colors.card }]}>
+                    <SessionHeader
+                        allowExit={!!user?.finishedOnboarding}
+                        cardsSetLength={cards.length}
+                        length={length}
+                        progress={progress}
+                        onSessionExit={handleSessionExitPress}
+                        onSettingsPressed={handleSessionSettingsPress}
                     />
-                </View>
-            </View>
-            <PagerView
-                initialPage={0}
-                orientation="vertical"
-                pageMargin={10}
-                ref={pagerRef}
-                scrollEnabled={false}
-                style={styles.pagerView}
-            >
-                {cards.map((word, index) => (
-                    <View key={word.id + numberOfSession} style={styles.pagerViewItem}>
-                        {Math.abs(index - currentIndex) <= 1 ? (
-                            renderCard(word, index)
-                        ) : (
-                            <View style={styles.cardPlaceholder} />
-                        )}
+                    <View style={styles.progressBarWrapper}>
+                        <ProgressBar
+                            animatedValue={progress ? progress / cards.length : 0.000001}
+                            color={colors.primary}
+                            style={styles.progressBar}
+                        />
                     </View>
-                ))}
-            </PagerView>
-            <View style={styles.bottomBarContainer}>
-                <View style={styles.textContainer}>
-                    <CustomText style={styles.headerText} weight="SemiBold">
-                        {t('howWell')}
-                    </CustomText>
-                    <CustomText style={styles.descriptionText} weight="Regular">
-                        {t('select_level')}
-                    </CustomText>
                 </View>
-                <View style={styles.levelsItemsContainer}>
-                    <WordLevelItem
-                        active={currentIndex < cards.length}
-                        level={1}
-                        style={styles.levelItem}
-                        onPress={handleLevelPress}
-                    />
-                    <WordLevelItem
-                        active={currentIndex < cards.length}
-                        level={2}
-                        style={styles.levelItem}
-                        onPress={handleLevelPress}
-                    />
-                    <WordLevelItem
-                        active={currentIndex < cards.length}
-                        level={3}
-                        style={styles.levelItem}
-                        onPress={handleLevelPress}
+                <PagerView
+                    initialPage={0}
+                    keyboardDismissMode="none"
+                    offscreenPageLimit={2}
+                    orientation="horizontal"
+                    pageMargin={10}
+                    ref={pagerRef}
+                    scrollEnabled={false}
+                    style={styles.pagerView}
+                >
+                    {cards.map((word, index) => (
+                        <View key={word.id + numberOfSession} style={styles.pagerViewItem}>
+                            {Math.abs(index - currentIndex) <= 1 ? (
+                                renderCard(word, index)
+                            ) : (
+                                <View style={styles.cardPlaceholder} />
+                            )}
+                        </View>
+                    ))}
+                </PagerView>
+                <View style={styles.bottomBarContainer}>
+                    <View style={styles.textContainer}>
+                        <CustomText style={styles.headerText} weight="SemiBold">
+                            {t('howWell')}
+                        </CustomText>
+                        <CustomText style={styles.descriptionText} weight="Regular">
+                            {t('select_level')}
+                        </CustomText>
+                    </View>
+                    <View style={styles.levelsItemsContainer}>
+                        <WordLevelItem
+                            active={currentIndex < cards.length}
+                            level={1}
+                            style={styles.levelItem}
+                            onPress={handleLevelPress}
+                        />
+                        <WordLevelItem
+                            active={currentIndex < cards.length}
+                            level={2}
+                            style={styles.levelItem}
+                            onPress={handleLevelPress}
+                        />
+                        <WordLevelItem
+                            active={currentIndex < cards.length}
+                            level={3}
+                            style={styles.levelItem}
+                            onPress={handleLevelPress}
+                        />
+                    </View>
+                </View>
+                <View style={styles.lottieWrapper}>
+                    <LottieView
+                        autoPlay={false}
+                        loop={false}
+                        ref={confettiRef}
+                        source={require('../../../assets/confetti.json')}
+                        style={styles.lottie}
                     />
                 </View>
             </View>
-            <View style={styles.lottieWrapper}>
-                <LottieView
-                    autoPlay={false}
-                    loop={false}
-                    ref={confettiRef}
-                    source={require('../../../assets/confetti.json')}
-                    style={styles.lottie}
-                />
-            </View>
-        </View>
+        </>
     );
 };
 

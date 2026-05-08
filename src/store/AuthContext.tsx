@@ -12,6 +12,7 @@ import {
     signInWithFacebook,
     signInWithGoogle,
     signOut,
+    updateFinishedOnboarding,
     updateLanguageLevels,
     updateNotificationsEnabled,
     updateSuggestionsInSession,
@@ -41,6 +42,7 @@ interface AuthContextType {
     updateUserLanguageLevels: (languageLevels: LanguageLevel) => Promise<void>;
     updateUserNotificationsEnabled: (notificationsEnabled: boolean) => Promise<void>;
     updateUserSuggestionsInSession: (suggestionsInSession: boolean) => Promise<void>;
+    updateUserFinishedOnboarding: (finished: boolean) => Promise<void>;
     user: User | null;
 }
 
@@ -121,6 +123,16 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         let updated = false;
 
+        if (payload.finishedOnboarding !== undefined) {
+            const res = await updateFinishedOnboarding(payload.finishedOnboarding);
+            if (res) {
+                setUserUpdatePayload(payload =>
+                    payload ? { ...payload, finishedOnboarding: undefined } : null,
+                );
+                updated = true;
+            }
+        }
+
         if (payload.suggestionsInSession !== undefined) {
             const res = await updateSuggestionsInSession(payload.suggestionsInSession);
             if (res) {
@@ -168,6 +180,23 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                           suggestionsInSession,
                       }
                     : { suggestionsInSession },
+            );
+        }
+    };
+
+    const updateUserFinishedOnboarding = async (finished: boolean) => {
+        setUser(user => (user ? { ...user, finishedOnboarding: finished } : null));
+        const updated = await updateFinishedOnboarding(finished);
+        if (updated) {
+            await getSession();
+        } else {
+            setUserUpdatePayload(
+                userUpdatePayload
+                    ? {
+                          ...userUpdatePayload,
+                          finishedOnboarding: finished,
+                      }
+                    : { finishedOnboarding: finished },
             );
         }
     };
@@ -412,6 +441,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 loading,
                 login,
                 logout,
+                updateUserFinishedOnboarding,
                 updateUserLanguageLevels,
                 updateUserNotificationsEnabled,
                 updateUserSuggestionsInSession,

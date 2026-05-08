@@ -95,7 +95,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ) => {
-        TrueSheet.dismiss(START_SESSION_BOTTOM_SHEET);
+        TrueSheet.dismissAll();
         navigateToSessionScreen(length, mode, flashcardSide);
     };
 

@@ -17,7 +17,7 @@ export const DarkTheme: CustomTheme = {
         green600: '#73c576',
 
         notification: '#ffffff',
-        primary: '#DCF2F1',
+        primary: '#dcf2f1',
         primary300: '#A8DAE7',
 
         primary600: '#719cea',

@@ -157,12 +157,20 @@
         "repetitions_count_desc": "From most repeated",
         "repetitions_count_asc": "From least repeated"
     },
+    "common": {
+        "got_it": "Got it"
+    },
     "hit_flashcard_bottom_sheet": {
         "title": "Tap the flashcard to flip it 🤏",
         "desc": "First, try to recall the meaning of the displayed word, then tap to check the correct answer.",
-        "got_it": "Got it",
         "word": "Word",
         "translation": "Translation"
+    },
+    "word_suggestion_bottom_sheet": {
+        "title": "New word suggestion ✨",
+        "desc": "You see a flashcard suggestion that is not yet in your dictionary. If you want to add it, *rate how well you know it*. If not, *skip it using the arrow* in the bottom right corner.",
+        "word": "Suggested word",
+        "translation": "Word translation"
     },
     "microphone": {
         "no_permission": "No permission to use the microphone 🎤",
@@ -219,5 +227,9 @@
         "add_flashcards": "Add flashcards",
         "load_failed": "Couldn't load suggestions",
         "load_failed_desc": "You can still continue without selecting words."
+    },
+    "onboarding": {
+        "welcome": "Welcome to Lango! 👋",
+        "onboarding_desc": "You have customized the app to your preferences, now it's time to learn! Click the button below to start your first learning session."
     }
 }

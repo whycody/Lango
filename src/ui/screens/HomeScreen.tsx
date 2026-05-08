@@ -61,8 +61,9 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
 
     useEffect(() => {
         if (user?.finishedOnboarding) return;
-        console.log(user);
-        TrueSheet.present(HOME_ONBOARDING_SHEET_NAME);
+        setTimeout(() => {
+            TrueSheet.present(HOME_ONBOARDING_SHEET_NAME);
+        }, 300);
     }, [user?.finishedOnboarding]);
 
     const tryToRefreshData = async () => {

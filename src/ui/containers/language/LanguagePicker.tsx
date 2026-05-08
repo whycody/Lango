@@ -25,6 +25,7 @@ interface LanguagePickerProps {
 
 export const LanguagePicker = (props: LanguagePickerProps) => {
     const {
+        allLanguages = true,
         alwaysAllowPick,
         languageType = LanguageTypes.MAIN,
         onLanguagePick,
@@ -59,17 +60,29 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
               ? 'translation'
               : 'application';
 
+    const mainLanguagesData = allLanguages
+        ? languages
+        : languages.filter(lang => lang.languageCode !== translationLang);
+
+    const translationLanguagesData = allLanguages
+        ? languages
+        : languages.filter(lang => lang.languageCode !== mainLang);
+
+    const appLanguagesData = languages.filter(lang =>
+        [
+            LanguageCode.POLISH,
+            LanguageCode.ENGLISH,
+            LanguageCode.SPANISH,
+            LanguageCode.ITALIAN,
+        ].includes(lang.languageCode),
+    );
+
     const languagesData =
-        languageType !== LanguageTypes.APPLICATION
-            ? languages
-            : languages.filter(lang =>
-                  [
-                      LanguageCode.POLISH,
-                      LanguageCode.ENGLISH,
-                      LanguageCode.SPANISH,
-                      LanguageCode.ITALIAN,
-                  ].includes(lang.languageCode),
-              );
+        languageType == LanguageTypes.MAIN
+            ? mainLanguagesData
+            : languageType === LanguageTypes.TRANSLATION
+              ? translationLanguagesData
+              : appLanguagesData;
 
     const handleLanguagePick = useCallback(
         (language: Language) => {

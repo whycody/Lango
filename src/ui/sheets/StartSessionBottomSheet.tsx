@@ -7,7 +7,7 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
 import { useHaptics } from '../../hooks';
-import { useUserPreferences } from '../../store';
+import { useAuth, useUserPreferences } from '../../store';
 import { CustomText } from '../components';
 import { SessionLengthItem, SessionModeItem } from '../components/session';
 import { CustomTheme } from '../Theme';
@@ -25,6 +25,7 @@ export const START_SESSION_BOTTOM_SHEET = 'start-session-bottom-sheet';
 
 export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props => {
     const { colors } = useTheme() as CustomTheme;
+    const { user } = useAuth();
     const styles = getStyles(colors);
     const userPreferences = useUserPreferences();
     const [flashcardSide, setFlashcardSide] = useState<FlashcardSide>(
@@ -67,6 +68,7 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
 
     return (
         <GenericBottomSheet
+            allowDismiss={!!user?.finishedOnboarding}
             primaryActionIcon={'play-sharp'}
             primaryActionLabel={t('startSession')}
             sheetName={START_SESSION_BOTTOM_SHEET}
@@ -109,18 +111,21 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
                 <SessionLengthItem
                     length={SessionLength.SHORT}
                     selected={sessionLength === SessionLength.SHORT}
+                    shorter={!user?.finishedOnboarding}
                     style={styles.sessionLengthItem}
                     onPress={() => handleSessionLengthItemPress(1)}
                 />
                 <SessionLengthItem
                     length={SessionLength.MEDIUM}
                     selected={sessionLength === SessionLength.MEDIUM}
+                    shorter={!user?.finishedOnboarding}
                     style={styles.sessionLengthItem}
                     onPress={() => handleSessionLengthItemPress(2)}
                 />
                 <SessionLengthItem
                     length={SessionLength.LONG}
                     selected={sessionLength === SessionLength.LONG}
+                    shorter={!user?.finishedOnboarding}
                     onPress={() => handleSessionLengthItemPress(3)}
                 />
             </View>

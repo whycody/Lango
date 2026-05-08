@@ -21,7 +21,7 @@ import { useWords } from '../store/WordsContext';
 import { useWordsHeuristicStates } from '../store/WordsHeuristicStatesContext';
 import { useWordsMLStatesContext } from '../store/WordsMLStatesContext';
 import { Session, WordSet, WordSetStrategy } from '../types';
-import { buildFallbackSet, enhanceWords } from '../utils/strategiesUtils';
+import { buildFallbackSet, buildOnboardingSet, enhanceWords } from '../utils/strategiesUtils';
 
 const STRATEGIES = {
     HEURISTIC: heuristicStrategy,
@@ -92,13 +92,25 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
 
     return useMemo(() => {
         const lastSessionModel = getLastSessionModel(sessions);
-        const currentModel = user.sessionModel || SessionModel.HYBRID;
+        const currentModel = user?.sessionModel || SessionModel.HYBRID;
         const shouldUseFallback = langWords.length < size || !evaluations?.length;
+
+        if (!user?.finishedOnboarding) {
+            const fallbackMeta = getFallbackModelAndVersion(mode, currentModel, lastSessionModel);
+            const onboardingSet = buildOnboardingSet(size, langWords, langSuggestions);
+            const enhanced = enhanceWords(onboardingSet, langWordsMLStates ?? []);
+
+            return {
+                model: fallbackMeta.model,
+                sessionWords: enhanced,
+                version: fallbackMeta.version,
+            };
+        }
 
         if (shouldUseFallback) {
             const fallbackMeta = getFallbackModelAndVersion(mode, currentModel, lastSessionModel);
             const fallbackSet = buildFallbackSet(size, langWords, langSuggestions);
-            const enhanced = enhanceWords(fallbackSet, langWordsMLStates);
+            const enhanced = enhanceWords(fallbackSet, langWordsMLStates ?? []);
 
             return {
                 model: fallbackMeta.model,
@@ -114,13 +126,13 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
             langWords,
             langSuggestions,
             evaluations,
-            langWordsMLStates,
+            langWordsMLStates ?? [],
             langWordsHeuristicStates,
             lastSessionModel,
-            user.suggestionsInSession,
+            user?.suggestionsInSession,
         );
 
-        const enhanced = enhanceWords(strategy.sessionWords, langWordsMLStates);
+        const enhanced = enhanceWords(strategy.sessionWords, langWordsMLStates ?? []);
 
         return {
             model: strategy.model,
@@ -128,7 +140,7 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
             version: strategy.version,
         };
     }, [
-        user.sessionModel,
+        user?.sessionModel,
         langWords,
         langSuggestions,
         evaluations?.length ?? 0,

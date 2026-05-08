@@ -88,6 +88,11 @@ export const updateSuggestionsInSession = (enabled: boolean) =>
         api.patch('/users/suggestions-in-session', { enabled }),
     );
 
+export const updateFinishedOnboarding = (finished: boolean) =>
+    call('PATCH /users/finished-onboarding', null, () =>
+        api.patch('/users/finished-onboarding', { finished }),
+    );
+
 export const updateNotificationsEnabled = (enabled: boolean) =>
     call('PATCH /notifications', null, () => api.patch('/notifications', { enabled }));
 

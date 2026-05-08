@@ -1,3 +1,4 @@
+import { BASE_MILESTONES } from '../constants/Streak';
 import { Streak } from '../types';
 import { toLocalDateString } from './dateUtil';
 
@@ -29,4 +30,16 @@ export const getCurrentStreak = (studyDaysList: string[]): Streak => {
     }
 
     return { active, numberOfDays: streak };
+};
+
+export const getNextMilestone = (value: number) => {
+    const base = BASE_MILESTONES.find(m => m > value);
+    if (base) return base;
+    return Math.ceil(value / 100) * 100;
+};
+
+export const getPrevMilestone = (value: number) => {
+    const reversed = [...BASE_MILESTONES].reverse().find(m => m <= value);
+    if (reversed) return reversed;
+    return Math.floor(value / 100) * 100;
 };

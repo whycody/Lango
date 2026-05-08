@@ -64,6 +64,16 @@ export const buildFallbackSet = (size: number, words: Word[], suggestions: Sugge
     ]);
 };
 
+export const buildOnboardingSet = (size: number, words: Word[], suggestions: Suggestion[]) => {
+    const wordsToTake = Math.min(size - 1, words.length);
+    const suggestionsToTake = Math.max(0, size - wordsToTake);
+
+    return [
+        ...mapWordsToSessionWords(words).slice(0, wordsToTake),
+        ...mapSuggestionsToSessionWords(shuffle(suggestions).slice(0, suggestionsToTake)),
+    ];
+};
+
 export const enhanceWords = (
     sessionWords: SessionWord[],
     mlStates: WordMLState[],

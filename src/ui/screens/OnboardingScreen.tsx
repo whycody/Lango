@@ -212,6 +212,7 @@ export const OnboardingScreen = () => {
                     <Activity mode={currentStep === 1 ? 'visible' : 'hidden'}>
                         <LanguagePicker
                             alwaysAllowPick
+                            allLanguages={false}
                             languageType={LanguageTypes.MAIN}
                             style={styles.languagePicker}
                             title={stepTitle(1)}

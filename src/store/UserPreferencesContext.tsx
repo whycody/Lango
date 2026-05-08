@@ -24,9 +24,11 @@ interface UserPreferencesContextProps {
     setSessionSpeechSynthesizer: (sessionSpeechSynthesizer: boolean) => void;
     setUserHasEverHitFlashcard: (hasEverHit: boolean) => void;
     setUserHasEverSkippedSuggestion: (hasEverSkip: boolean) => void;
+    setUserHasEverSeenSuggestionInSession: (hasEverSeen: boolean) => void;
     setVibrationsEnabled: (enabled: boolean) => void;
     userHasEverHitFlashcard: boolean;
     userHasEverSkippedSuggestion: boolean;
+    userHasEverSeenSuggestionInSession: boolean;
     vibrationsEnabled: boolean;
 }
 
@@ -46,9 +48,11 @@ export const UserPreferencesContext = createContext<UserPreferencesContextProps>
     setSessionMode: () => {},
     setSessionSpeechSynthesizer: () => {},
     setUserHasEverHitFlashcard: () => {},
+    setUserHasEverSeenSuggestionInSession: () => {},
     setUserHasEverSkippedSuggestion: () => {},
     setVibrationsEnabled: () => {},
     userHasEverHitFlashcard: false,
+    userHasEverSeenSuggestionInSession: false,
     userHasEverSkippedSuggestion: false,
     vibrationsEnabled: true,
 });
@@ -62,6 +66,7 @@ const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
 const FLASHCARDS_SORTING_METHOD = 'flashcardsSortingMethod';
 const USER_HAS_EVER_HIT_FLASHCARD = 'userHasEverHitFlashcard';
 const USER_HAS_SKIPPED_SUGGESTION = 'userHasEverSkippedSuggestion';
+const USER_HAS_EVER_SEEN_SUGGESTION_IN_SESSION = 'userHasEverSeenSuggestionInSession';
 const NOTIFICATION_PERMISSION_STATUS = 'lastUserNotificationPermissionStatus';
 
 export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
@@ -80,7 +85,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     );
     const [sessionLength, setSessionLength] = useTypedMMKV<SessionLength>(
         SESSION_LENGTH_KEY,
-        SessionLength.MEDIUM,
+        SessionLength.SHORT,
         storage,
     );
     const [sessionSpeechSynthesizer, setSessionSpeechSynthesizer] = useTypedMMKV<boolean>(
@@ -114,6 +119,8 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
         false,
         storage,
     );
+    const [userHasEverSeenSuggestionInSession, setUserHasEverSeenSuggestionInSession] =
+        useTypedMMKV<boolean>(USER_HAS_EVER_SEEN_SUGGESTION_IN_SESSION, false, storage);
     const [notificationsPermissionStatus, setNotificationsPermissionStatus] =
         useTypedMMKV<PermissionStatus>(
             NOTIFICATION_PERMISSION_STATUS,
@@ -139,9 +146,11 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
                 setSessionMode,
                 setSessionSpeechSynthesizer,
                 setUserHasEverHitFlashcard,
+                setUserHasEverSeenSuggestionInSession,
                 setUserHasEverSkippedSuggestion,
                 setVibrationsEnabled,
                 userHasEverHitFlashcard,
+                userHasEverSeenSuggestionInSession,
                 userHasEverSkippedSuggestion,
                 vibrationsEnabled,
             }}

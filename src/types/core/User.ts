@@ -20,6 +20,7 @@ export type UserUpdatePayload = {
     languageLevels?: LanguageLevel[];
     notificationsEnabled?: boolean;
     suggestionsInSession?: boolean;
+    finishedOnboarding?: boolean;
 };
 
 export type User = {
@@ -34,5 +35,6 @@ export type User = {
     stats: UserStats;
     suggestionsInSession: boolean;
     translationLang: LanguageCode | null;
+    finishedOnboarding: boolean;
     userId: string;
 };

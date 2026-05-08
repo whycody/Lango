@@ -10,6 +10,7 @@ import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 type SessionHeaderProps = {
+    allowExit?: boolean;
     cardsSetLength: number;
     length: SessionLength;
     onSessionExit: () => void;
@@ -18,6 +19,7 @@ type SessionHeaderProps = {
 };
 
 export const SessionHeader: FC<SessionHeaderProps> = ({
+    allowExit = true,
     cardsSetLength,
     length,
     onSessionExit,
@@ -34,8 +36,8 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
                 color={colors.primary300}
                 name={'exit-to-app'}
                 size={23}
-                style={[styles.transform, styles.icon]}
-                onPress={onSessionExit}
+                style={[styles.transform, styles.icon, !allowExit && styles.disabled]}
+                onPress={allowExit ? onSessionExit : undefined}
             />
             <CustomText style={styles.progressText} weight={'SemiBold'}>
                 {`${progress}`}
@@ -63,6 +65,9 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
+        disabled: {
+            opacity: 0.5,
+        },
         headerContainer: {
             alignItems: 'center',
             flexDirection: 'row',

@@ -27,10 +27,12 @@ import { isNotificationPermissionGranted } from '../../utils/ensureNotificationP
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
+import { OnboardingBottomSheet } from '../sheets/OnboardingBottomSheet';
 import { CustomTheme } from '../Theme';
 
 const ENABLE_NOTIFICATIONS_SHEET_NAME = 'enable-notifications-sheet';
 const HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME = 'home-pick-language-level-sheet';
+const HOME_ONBOARDING_SHEET_NAME = 'home-onboarding-sheet';
 
 type HomeScreenNavProp = CompositeNavigationProp<
     BottomTabNavigationProp<TabsParamList, 'Home'>,
@@ -56,6 +58,13 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     useEffect(() => {
         trackEvent(AnalyticsEventName.NAVIGATE_HOME);
     }, []);
+
+    useEffect(() => {
+        if (user?.finishedOnboarding) return;
+        setTimeout(() => {
+            TrueSheet.present(HOME_ONBOARDING_SHEET_NAME);
+        }, 300);
+    }, [user?.finishedOnboarding]);
 
     const tryToRefreshData = async () => {
         try {
@@ -86,11 +95,13 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
             )
                 return;
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
-            TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
+            setTimeout(() => {
+                TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
+            }, 200);
         };
 
-        checkNotifications();
-    }, [askLaterNotifications]);
+        if (user?.finishedOnboarding) checkNotifications();
+    }, [askLaterNotifications, user?.finishedOnboarding]);
 
     useEffect(() => {
         if (
@@ -120,6 +131,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
 
     return (
         <>
+            <OnboardingBottomSheet sheetName={HOME_ONBOARDING_SHEET_NAME} />
             <EnableNotificationsBottomSheet sheetName={ENABLE_NOTIFICATIONS_SHEET_NAME} />
             <PickLanguageLevelBottomSheet
                 allowDismiss={false}

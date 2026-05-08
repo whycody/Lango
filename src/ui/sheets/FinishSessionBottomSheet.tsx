@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { WordUpdate } from '../../types';
-import { CustomText } from '../components';
+import { CustomText, Header } from '../components';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
@@ -46,10 +46,10 @@ export const FinishSessionBottomSheet = (props: FinishSessionBottomSheetProps) =
             secondaryActionLabel={t('startNextSession')}
             sheetName={props.sheetName}
             style={styles.bottomSheet}
-            title={t('sessionSummary')}
             onPrimaryButtonPress={props.endSession}
             onSecondaryButtonPress={props.startNewSession}
         >
+            <Header style={{ marginTop: MARGIN_VERTICAL }} title={t('sessionSummary')} />
             {props.flashcardUpdates.length > 0 && (
                 <View style={styles.statusBar}>
                     <View
@@ -97,6 +97,10 @@ const getStyles = (colors: CustomTheme['colors']) =>
         header: {
             paddingTop: MARGIN_VERTICAL,
         },
+        lottie: {
+            height: 65,
+            width: 65,
+        },
         progressBar: {
             backgroundColor: colors.background,
             height: 6,
@@ -114,6 +118,13 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         statusBarSegment: {
             height: 9,
+        },
+        streakContainer: {
+            borderColor: colors.cardAccent,
+            borderStyle: 'dashed',
+            borderWidth: 2,
+            marginTop: MARGIN_VERTICAL,
+            padding: MARGIN_HORIZONTAL / 2,
         },
         subtitle: {
             color: colors.primary600,

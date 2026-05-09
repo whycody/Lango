@@ -4,6 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { CustomText } from '../../components/CustomText';
 import { CustomTheme } from '../../Theme';
 
@@ -44,12 +45,15 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         descText: {
             color: colors.primary600,
             fontSize: 14,
+            marginHorizontal: MARGIN_HORIZONTAL * 2,
             paddingTop: 5,
+            textAlign: 'center',
         },
         headerText: {
             color: colors.primary300,
             fontSize: 17,
             paddingTop: 30,
+            textAlign: 'center',
         },
         image: {
             alignSelf: 'center',

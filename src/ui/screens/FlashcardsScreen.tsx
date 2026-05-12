@@ -16,7 +16,7 @@ import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
 import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil';
-import { ActionButton, CustomText } from '../components';
+import { ActionButton, CustomText, ModalDragHandle } from '../components';
 import { EmptyList, FlashcardListItem, ListFilter } from '../components/flashcards';
 import { StatisticItem } from '../components/home';
 import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
@@ -303,7 +303,9 @@ export const FlashcardsScreen = () => {
 
     return (
         <View style={styles.root}>
-            <View style={styles.topSpacer} />
+            <View style={styles.topSpacer}>
+                <ModalDragHandle />
+            </View>
             <RemoveFlashcardBottomSheet
                 flashcardId={editFlashcardId}
                 sheetName={FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET}
@@ -420,7 +422,9 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginTop: MARGIN_VERTICAL,
         },
         topSpacer: {
+            alignItems: 'center',
             backgroundColor: colors.card,
             height: isIOS ? MARGIN_VERTICAL : insets.top,
+            justifyContent: 'center',
         },
     });

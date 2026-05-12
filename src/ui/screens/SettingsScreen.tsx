@@ -18,7 +18,7 @@ import { SettingItem } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isAndroid, isIOS } from '../../utils/deviceUtils';
 import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
-import { CustomText, VersionFooter } from '../components';
+import { CustomText, ModalDragHandle, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
 import { DeleteAccountBottomSheet, LanguageBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
@@ -47,6 +47,7 @@ export const SettingsScreen = () => {
 
     const [pickedLanguageType, setPickedLanguageType] = useState<LanguageTypes>(LanguageTypes.MAIN);
     const { onScroll, style } = useDynamicStatusBar(100, 0.5);
+
     const notificationsEnabled =
         userPreferences.notificationsPermissionStatus == PermissionStatus.GRANTED &&
         user?.notificationsEnabled;
@@ -316,6 +317,7 @@ export const SettingsScreen = () => {
                     stickySectionHeadersEnabled={false}
                     ListHeaderComponent={
                         <>
+                            <ModalDragHandle />
                             <CustomText
                                 style={[styles.title, isIOS && styles.titleIOS]}
                                 weight="Bold"
@@ -365,7 +367,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             fontSize: 24,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
-            paddingTop: insets.top,
+            paddingTop: isAndroid ? insets.top : MARGIN_VERTICAL,
         },
         titleIOS: {
             marginTop: 0,

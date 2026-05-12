@@ -347,7 +347,7 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     }, [wordsUpdates, skippedSuggestionsIds]);
 
     const finishSession = () => {
-        const shouldDisplayStreakSheet = !streak.active && wordsUpdates.length > 0;
+        const shouldDisplayStreakSheet = streak.active && wordsUpdates.length > 0;
         incrementCurrentIndex();
         confettiRef.current?.play(0);
         saveProgress(true);

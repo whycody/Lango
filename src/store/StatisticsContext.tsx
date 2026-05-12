@@ -16,15 +16,15 @@ export const StatisticsContext = createContext<StatisticsContextProps>({
 export const StatisticsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { sessions } = useSessions();
     const { user } = useAuth();
-    const [daysList, setDaysList] = useState<string[]>(user.stats?.studyDays || []);
-    const [serverSessionsCount, setServerSessionsCount] = useState(user.stats?.sessionCount || 0);
+    const [daysList, setDaysList] = useState<string[]>(user?.stats?.studyDays || []);
+    const [serverSessionsCount, setServerSessionsCount] = useState(user?.stats?.sessionCount || 0);
 
     const localUnsyncedSessions = sessions.filter(s => !s.synced);
     const localUnsyncedSessionsCount = localUnsyncedSessions.length;
     const numberOfSessions = serverSessionsCount + localUnsyncedSessionsCount;
 
     useEffect(() => {
-        const serverDaysLocal = user.stats?.studyDays || [];
+        const serverDaysLocal = user?.stats?.studyDays || [];
         const unsyncedLocalDays = localUnsyncedSessions.map(s => s.localDay);
 
         const combinedDaysSet = new Set([...serverDaysLocal, ...unsyncedLocalDays]);
@@ -32,8 +32,8 @@ export const StatisticsProvider: FC<{ children: ReactNode }> = ({ children }) =>
         const combinedDaysList = Array.from(combinedDaysSet).sort();
 
         setDaysList(combinedDaysList);
-        setServerSessionsCount(user.stats?.sessionCount || 0);
-    }, [user.stats, sessions]);
+        setServerSessionsCount(user?.stats?.sessionCount || 0);
+    }, [user?.stats, sessions]);
 
     return (
         <StatisticsContext.Provider

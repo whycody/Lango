@@ -347,14 +347,14 @@ export const SessionScreen = ({ navigation }: SessionScreenProps) => {
     }, [wordsUpdates, skippedSuggestionsIds]);
 
     const finishSession = () => {
-        const shouldDisplayStreakSheet = !streak.active && wordsUpdates.length > 0;
+        const shouldDisplayStreakSheet = streak.active && wordsUpdates.length > 0;
         incrementCurrentIndex();
         confettiRef.current?.play(0);
         saveProgress(true);
         triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
-        if (shouldDisplayStreakSheet) triggerHaptics('heavy');
         if (!user?.finishedOnboarding) updateUserFinishedOnboarding(true);
+        if (shouldDisplayStreakSheet) triggerHaptics('heavy');
         TrueSheet.present(
             shouldDisplayStreakSheet
                 ? SESSION_STREAK_BOTTOM_SHEET

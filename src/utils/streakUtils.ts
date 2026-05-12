@@ -39,7 +39,8 @@ export const getNextMilestone = (value: number) => {
 };
 
 export const getPrevMilestone = (value: number) => {
-    const reversed = [...BASE_MILESTONES].reverse().find(m => m <= value);
-    if (reversed) return reversed;
-    return Math.floor(value / 100) * 100;
+    const maxMilestone = Math.max(...BASE_MILESTONES);
+    const reversed = [...BASE_MILESTONES].reverse().find(m => value < maxMilestone && m <= value);
+    if (maxMilestone <= value || !reversed) return Math.floor(value / 100) * 100;
+    return reversed;
 };

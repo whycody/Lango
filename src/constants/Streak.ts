@@ -1,4 +1,4 @@
-export const BASE_MILESTONES = [7, 14, 30, 50, 150, 200, 300, 365];
+export const BASE_MILESTONES = [7, 14, 30, 50, 100, 150, 200, 250, 300, 350, 365, 400];
 
 export const SHORT_STREAK_ANIMATIONS_DELAY = 150;
 export const STREAK_ANIMATIONS_DELAY = 500;

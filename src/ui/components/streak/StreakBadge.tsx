@@ -3,17 +3,17 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
 
-import { SHORT_STREAK_ANIMATIONS_DELAY, STREAK_ANIMATIONS_DELAY } from '../../../constants/Streak';
 import { getNextMilestone, getPrevMilestone } from '../../../utils/streakUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 import { StreakTiles } from './StreakTiles';
 
 type StreakBadgeProps = {
+    animate?: boolean;
     streak: number;
 };
 
-export const StreakBadge = ({ streak }: StreakBadgeProps) => {
+export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
     const { colors } = useTheme() as CustomTheme;
     const appear = useRef(new Animated.Value(0)).current;
     const [barWidth, setBarWidth] = useState(0);
@@ -27,38 +27,36 @@ export const StreakBadge = ({ streak }: StreakBadgeProps) => {
     const styles = useMemo(() => getStyles(colors, isGoal), [colors, isGoal]);
 
     useEffect(() => {
+        if (!animate) return;
         const target = isGoal ? 1 : next ? (streak - prev) / (next - prev) : 1;
         progressAnim.stopAnimation(() => {
             progressAnim.setValue(0);
-            Animated.sequence([
-                Animated.delay(STREAK_ANIMATIONS_DELAY),
-                Animated.timing(progressAnim, {
-                    duration: 700,
-                    toValue: target,
-                    useNativeDriver: false,
-                }),
-            ]).start();
+            Animated.timing(progressAnim, {
+                duration: 700,
+                toValue: target,
+                useNativeDriver: false,
+            }).start();
         });
-    }, [streak, next, prev, isGoal]);
+    }, [streak, next, prev, isGoal, animate]);
 
     useEffect(() => {
-        Animated.sequence([
-            Animated.delay(SHORT_STREAK_ANIMATIONS_DELAY),
-            Animated.spring(appear, {
-                friction: 7,
-                tension: 70,
-                toValue: 1,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, []);
+        Animated.spring(appear, {
+            friction: 7,
+            tension: 70,
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    }, [animate]);
 
     const getRandomStreakMessageKey = (key: string, count: number) => {
         const index = Math.floor(Math.random() * count) + 1;
         return `streak.${key}${index}`;
     };
 
-    const message = getRandomStreakMessageKey(isGoal ? 'goalReached' : 'message', 7);
+    const message = useMemo(
+        () => getRandomStreakMessageKey(isGoal ? 'goalReached' : 'message', 7),
+        [isGoal],
+    );
 
     return (
         <Animated.View

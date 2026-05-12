@@ -110,7 +110,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved?: boolean) =>
             gap: 6,
         },
         digit: {
-            color: '#fff',
+            color: colors.white,
             fontSize: 24,
             fontWeight: '900',
         },

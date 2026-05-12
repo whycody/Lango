@@ -27,7 +27,7 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
     const styles = useMemo(() => getStyles(colors, isGoal), [colors, isGoal]);
 
     useEffect(() => {
-        if (!animate) return;
+        if (!animate || barWidth === 0) return;
         const target = isGoal ? 1 : next ? (streak - prev) / (next - prev) : 1;
         progressAnim.stopAnimation(() => {
             progressAnim.setValue(0);
@@ -37,7 +37,7 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
                 useNativeDriver: false,
             }).start();
         });
-    }, [streak, next, prev, isGoal, animate]);
+    }, [streak, next, prev, isGoal, animate, barWidth]);
 
     useEffect(() => {
         Animated.spring(appear, {

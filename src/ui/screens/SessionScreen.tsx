@@ -61,13 +61,12 @@ const SESSION_WORD_SUGGESTION_BOTTOM_SHEET = 'session-word-suggestion-bottom-she
 
 type SessionScreenProps = NativeStackScreenProps<RootStackParamList, ScreenName.Session>;
 
-export const SessionScreen = ({ navigation }: SessionScreenProps) => {
+export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
 
-    const route = useRoute();
     const params = route.params as SessionScreenParams;
     const length = params?.length || 1;
     const mode = params?.mode || SessionMode.STUDY;

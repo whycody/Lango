@@ -39,7 +39,13 @@ type HomeScreenNavProp = CompositeNavigationProp<
     NavigationProp<RootStackParamList>
 >;
 
-export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) => {
+export const HomeScreen = ({
+    navigation,
+    route,
+}: {
+    navigation: HomeScreenNavProp;
+    route: any;
+}) => {
     const auth = useAuth();
     const words = useWords();
     const sessions = useSessions();
@@ -97,11 +103,11 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
             setTimeout(() => {
                 TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
-            }, 200);
+            }, 500);
         };
 
-        if (user?.finishedOnboarding) checkNotifications();
-    }, [askLaterNotifications, user?.finishedOnboarding]);
+        if (user?.finishedOnboarding && route.name === 'Home') checkNotifications();
+    }, [askLaterNotifications, user?.finishedOnboarding, route]);
 
     useEffect(() => {
         if (

@@ -103,7 +103,7 @@ export const HomeScreen = ({
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
             setTimeout(() => {
                 TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
-            }, 500);
+            }, 1000);
         };
 
         if (user?.finishedOnboarding && route.name === 'Home') checkNotifications();

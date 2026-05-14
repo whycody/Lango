@@ -2,7 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { CompositeNavigationProp, NavigationProp, useTheme } from '@react-navigation/native';
+import {
+    CompositeNavigationProp,
+    NavigationProp,
+    useIsFocused,
+    useTheme,
+} from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -23,6 +28,7 @@ import {
 } from '../../store';
 import { trackEvent } from '../../utils/analytics';
 import { checkUpdates } from '../../utils/checkUpdates';
+import { isIOS } from '../../utils/deviceUtils';
 import { isNotificationPermissionGranted } from '../../utils/ensureNotificationPermission';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
@@ -39,13 +45,7 @@ type HomeScreenNavProp = CompositeNavigationProp<
     NavigationProp<RootStackParamList>
 >;
 
-export const HomeScreen = ({
-    navigation,
-    route,
-}: {
-    navigation: HomeScreenNavProp;
-    route: any;
-}) => {
+export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) => {
     const auth = useAuth();
     const words = useWords();
     const sessions = useSessions();
@@ -57,9 +57,14 @@ export const HomeScreen = ({
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, insets);
 
-    const { askLaterNotifications } = useUserPreferences();
+    const {
+        askLaterNotifications,
+        askedNotificationsThisSession,
+        setAskedNotificationsThisSession,
+    } = useUserPreferences();
     const { languages, mainLang, translationLang } = useLanguage();
     const { user } = useAuth();
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         trackEvent(AnalyticsEventName.NAVIGATE_HOME);
@@ -101,13 +106,20 @@ export const HomeScreen = ({
             )
                 return;
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
-            setTimeout(() => {
-                TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
-            }, 1000);
+            requestAnimationFrame(() => {
+                setAskedNotificationsThisSession(true);
+                setTimeout(
+                    () => {
+                        TrueSheet.present(ENABLE_NOTIFICATIONS_SHEET_NAME);
+                    },
+                    isIOS ? 600 : 0,
+                );
+            });
         };
 
-        if (user?.finishedOnboarding && route.name === 'Home') checkNotifications();
-    }, [askLaterNotifications, user?.finishedOnboarding, route]);
+        if (user?.finishedOnboarding && isFocused && !askedNotificationsThisSession)
+            checkNotifications();
+    }, [askLaterNotifications, user?.finishedOnboarding, isFocused, askedNotificationsThisSession]);
 
     useEffect(() => {
         if (

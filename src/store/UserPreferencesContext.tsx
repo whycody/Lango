@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext } from 'react';
+import { createContext, FC, ReactNode, useContext, useState } from 'react';
 import { PermissionStatus } from 'expo-notifications';
 import { useMMKV } from 'react-native-mmkv';
 
@@ -9,6 +9,7 @@ import { useUserStorage } from './UserStorageContext';
 
 interface UserPreferencesContextProps {
     askLaterNotifications: number | null;
+    askedNotificationsThisSession: boolean;
     flashcardSide: FlashcardSide;
     flashcardsSortingMethod: FlashcardSortingMethod;
     notificationsPermissionStatus: PermissionStatus;
@@ -26,6 +27,7 @@ interface UserPreferencesContextProps {
     setUserHasEverSkippedSuggestion: (hasEverSkip: boolean) => void;
     setUserHasEverSeenSuggestionInSession: (hasEverSeen: boolean) => void;
     setVibrationsEnabled: (enabled: boolean) => void;
+    setAskedNotificationsThisSession: (asked: boolean) => void;
     userHasEverHitFlashcard: boolean;
     userHasEverSkippedSuggestion: boolean;
     userHasEverSeenSuggestionInSession: boolean;
@@ -33,6 +35,7 @@ interface UserPreferencesContextProps {
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContextProps>({
+    askedNotificationsThisSession: false,
     askLaterNotifications: null,
     flashcardSide: FlashcardSide.WORD,
     flashcardsSortingMethod: FlashcardSortingMethod.ADD_DATE_DESC,
@@ -40,6 +43,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContextProps>
     sessionLength: 2,
     sessionMode: SessionMode.STUDY,
     sessionSpeechSynthesizer: true,
+    setAskedNotificationsThisSession: () => {},
     setAskLaterNotifications: () => {},
     setFlashcardSide: () => {},
     setFlashcardsSortingMethod: () => {},
@@ -73,6 +77,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     const userStorage = useUserStorage();
     const fallbackStorage = useMMKV();
     const storage = userStorage.storage ?? fallbackStorage;
+    const [askedNotificationsThisSession, setAskedNotificationsThisSession] = useState(false);
     const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(
         FLASHCARD_SIDE_KEY,
         FlashcardSide.WORD,
@@ -131,6 +136,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     return (
         <UserPreferencesContext.Provider
             value={{
+                askedNotificationsThisSession,
                 askLaterNotifications,
                 flashcardSide,
                 flashcardsSortingMethod,
@@ -138,6 +144,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
                 sessionLength,
                 sessionMode,
                 sessionSpeechSynthesizer,
+                setAskedNotificationsThisSession,
                 setAskLaterNotifications,
                 setFlashcardSide,
                 setFlashcardsSortingMethod,

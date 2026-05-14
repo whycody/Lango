@@ -23,7 +23,7 @@ interface LibraryItemProps {
 export const LibraryItem = memo<LibraryItemProps>(
     ({ color, description, enabled, icon, index, label, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors);
+        const styles = getStyles(colors, index);
         const { triggerHaptics } = useHaptics();
 
         const handlePress = () => {
@@ -70,7 +70,7 @@ export const LibraryItem = memo<LibraryItemProps>(
     },
 );
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (colors: CustomTheme['colors'], index: number) =>
     StyleSheet.create({
         description: {
             color: colors.white,
@@ -92,7 +92,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderWidth: 1,
             flexDirection: 'row',
             marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: 12,
+            marginTop: index === 0 ? 0 : 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: 16,
         },

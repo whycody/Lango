@@ -88,6 +88,7 @@ export const SettingsScreen = () => {
     const settingsItems: SettingItem[] = useMemo(
         () => [
             {
+                color: '#2EE6A6',
                 description: currentMainLang,
                 icon: 'language',
                 id: SettingsItems.MAIN_LANGUAGE,
@@ -95,6 +96,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.LANGUAGE,
             },
             {
+                color: '#2EE6A6',
                 description: currentTranslationLang,
                 icon: 'language',
                 id: SettingsItems.TRANSLATION_LANGUAGE,
@@ -102,13 +104,16 @@ export const SettingsScreen = () => {
                 section: SettingsSections.LANGUAGE,
             },
             {
+                color: '#4D7CFF',
                 description: currentApplicationLang,
-                icon: 'language',
+                icon: 'globe',
                 id: SettingsItems.APPLICATION_LANGUAGE,
                 label: t('application_language'),
                 section: SettingsSections.LANGUAGE,
             },
+
             {
+                color: '#FFB84D',
                 description: t(`turned_${userPreferences.vibrationsEnabled ? 'on' : 'off'}_m`),
                 enabled: userPreferences.vibrationsEnabled,
                 icon: 'phone-portrait',
@@ -117,6 +122,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.PREFERENCES,
             },
             {
+                color: '#FF7A59',
                 description: t(`turned_${notificationsEnabled ? 'on' : 'off'}_m`),
                 enabled: notificationsEnabled,
                 icon: 'notifications',
@@ -124,15 +130,18 @@ export const SettingsScreen = () => {
                 label: t('notifications'),
                 section: SettingsSections.PREFERENCES,
             },
+
             {
+                color: '#9B6BFF',
                 description: t(`turned_${user?.suggestionsInSession ? 'on' : 'off'}_m`),
                 enabled: user?.suggestionsInSession,
-                icon: 'create',
+                icon: 'sparkles',
                 id: SettingsItems.SUGGESTIONS_IN_SESSION,
                 label: t('new_words_suggestions'),
                 section: SettingsSections.SESSION,
             },
             {
+                color: userPreferences.flashcardSide == FlashcardSide.WORD ? '#63E6FF' : '#2EE6A6',
                 description:
                     userPreferences.flashcardSide == FlashcardSide.WORD
                         ? t('word')
@@ -143,6 +152,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.SESSION,
             },
             {
+                color: '#B06CFF',
                 description: t(`turned_${userPreferences.sessionSpeechSynthesizer ? 'on' : 'off'}`),
                 enabled: userPreferences.sessionSpeechSynthesizer,
                 icon: 'volume-high',
@@ -150,7 +160,9 @@ export const SettingsScreen = () => {
                 label: t('speech_synthesizer'),
                 section: SettingsSections.SESSION,
             },
+
             {
+                color: '#7B9CFF',
                 description: user?.email ?? '',
                 icon: 'mail',
                 id: SettingsItems.EMAIL_ADDRESS,
@@ -158,6 +170,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.ACCOUNT,
             },
             {
+                color: '#FF5C5C',
                 description: t('delete_account_desc'),
                 icon: 'person-remove',
                 id: SettingsItems.DELETE_ACCOUNT,
@@ -262,12 +275,12 @@ export const SettingsScreen = () => {
     const renderSettingsItem = ({ index, item }: { index: number; item: SettingItem }) => (
         <LibraryItem
             key={item.id}
+            color={item.color}
             description={item.description}
             enabled={item.enabled}
             icon={item.icon}
-            index={0}
+            index={index}
             label={item.label}
-            style={index !== 0 ? { borderColor: colors.card, borderTopWidth: 3 } : undefined}
             onPress={() => handlePress(item.id)}
         />
     );
@@ -306,6 +319,7 @@ export const SettingsScreen = () => {
             />
             <DeleteAccountBottomSheet sheetName={SETTINGS_DELETE_ACCOUNT_SHEET_NAME} />
             <View style={styles.root}>
+                <ModalDragHandle />
                 {isAndroid && <View style={style} />}
                 <SectionList
                     ListFooterComponent={renderListFooterComponent}
@@ -317,7 +331,6 @@ export const SettingsScreen = () => {
                     stickySectionHeadersEnabled={false}
                     ListHeaderComponent={
                         <>
-                            <ModalDragHandle />
                             <CustomText
                                 style={[styles.title, isIOS && styles.titleIOS]}
                                 weight="Bold"
@@ -342,11 +355,11 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginVertical: MARGIN_VERTICAL / 2,
         },
         root: {
-            backgroundColor: colors.card,
+            backgroundColor: colors.background,
             flex: 1,
         },
         section: {
-            color: colors.primary,
+            color: colors.primary300,
             fontSize: 13,
             marginBottom: 10,
             marginHorizontal: MARGIN_HORIZONTAL,
@@ -357,13 +370,13 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             backgroundColor: colors.card,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 15,
             marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL / 3,
+            marginTop: 4,
         },
         title: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 24,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,

@@ -9,4 +9,5 @@ export type SettingItem = {
     id: SettingsItems;
     label: string;
     section: number;
+    color: string;
 };

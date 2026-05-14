@@ -40,11 +40,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: 30,
         },
         smallVersion: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 12,
         },
         version: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 13,
             fontWeight: 'bold',
             textAlign: 'center',

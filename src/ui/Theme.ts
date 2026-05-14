@@ -9,6 +9,7 @@ export type CustomTheme = Theme & {
         green600: string;
         primary300: string;
         primary600: string;
+        primary800: string;
         red: string;
         red300: string;
         red600: string;

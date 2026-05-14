@@ -13,9 +13,9 @@ export const DarkTheme: CustomTheme = {
         cardAccent: '#2f2f47',
         cardAccent300: '#434366',
         cardAccent600: '#3a3a58',
+
         green300: 'rgba(115,197,118,0.15)',
         green600: '#73c576',
-
         notification: '#ffffff',
         orange: '#ff9f43',
         orange300: 'rgba(255, 158, 67, 0.50)',
@@ -24,6 +24,8 @@ export const DarkTheme: CustomTheme = {
         primary: '#4653ac',
         primary300: '#606eca',
         primary600: '#4E5AA6',
+        primary800: '#2e3875',
+
         red: '#ff6060',
         red300: 'rgba(228,129,129,0.15)',
         red600: '#e48181',

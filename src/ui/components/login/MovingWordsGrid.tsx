@@ -1,7 +1,9 @@
 import React, { FC, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Marquee } from '@animatereactnative/marquee';
+import { useTheme } from '@react-navigation/native';
 
+import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 type MarqueeRowProps = {
@@ -12,6 +14,8 @@ type MarqueeRowProps = {
 
 export const MarqueeRow: FC<MarqueeRowProps> = ({ loading, reverse, words }) => {
     const randomizedSpeed = useMemo(() => 0.2 + Math.random(), [loading]);
+    const { colors } = useTheme() as CustomTheme;
+    const styles = getStyles(colors);
 
     return (
         <Marquee
@@ -33,28 +37,30 @@ export const MarqueeRow: FC<MarqueeRowProps> = ({ loading, reverse, words }) => 
     );
 };
 
-const styles = StyleSheet.create({
-    marquee: {
-        marginTop: 10,
-    },
-    marqueeContent: {
-        flexDirection: 'row',
-    },
-    row: {
-        flexDirection: 'row',
-    },
-    wordBox: {
-        backgroundColor: '#2F4878',
-        flex: 1,
-        flexDirection: 'row',
-        marginRight: 10,
-        paddingHorizontal: 20,
-        paddingVertical: 17,
-    },
-    wordText: {
-        color: '#A0D5FF',
-        fontSize: 16,
-        fontWeight: '600',
-        textAlignVertical: 'center',
-    },
-});
+const getStyles = (colors: CustomTheme['colors']) =>
+    StyleSheet.create({
+        marquee: {
+            marginTop: 10,
+        },
+        marqueeContent: {
+            flexDirection: 'row',
+        },
+        row: {
+            flexDirection: 'row',
+        },
+        wordBox: {
+            backgroundColor: colors.primary800,
+            borderRadius: 4,
+            flex: 1,
+            flexDirection: 'row',
+            marginRight: 10,
+            paddingHorizontal: 20,
+            paddingVertical: 17,
+        },
+        wordText: {
+            color: colors.white,
+            fontSize: 16,
+            fontWeight: '600',
+            textAlignVertical: 'center',
+        },
+    });

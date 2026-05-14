@@ -127,7 +127,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingBottom: 10,
         },
         headerText: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 48,
             textAlign: 'center',
         },
@@ -141,13 +141,13 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingTop: MARGIN_VERTICAL * 2,
         },
         subheaderText: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 14,
             marginBottom: -15,
             textAlign: 'center',
         },
         text: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 14,
             marginVertical: 20,
             textAlign: 'center',

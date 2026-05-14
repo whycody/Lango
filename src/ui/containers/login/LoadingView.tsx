@@ -19,7 +19,7 @@ export const LoadingView: FC<LoadingViewProps> = () => {
     return (
         <View style={styles.root}>
             <View style={styles.content}>
-                <ActivityIndicator color={colors.primary} size="large" />
+                <ActivityIndicator color={colors.white} size="large" />
                 <CustomText style={styles.headerText} weight={'Bold'}>
                     {t('loading_content')}
                 </CustomText>
@@ -43,14 +43,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             paddingTop: 90,
         },
         descText: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 14,
             marginHorizontal: MARGIN_HORIZONTAL * 2,
             paddingTop: 5,
             textAlign: 'center',
         },
         headerText: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 17,
             paddingTop: 30,
             textAlign: 'center',

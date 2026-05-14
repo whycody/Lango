@@ -7,13 +7,15 @@ export const DarkTheme: CustomTheme = {
     colors: {
         ...NavigationDarkTheme.colors,
         background: '#090B22',
+        blue: '#4e8cff',
         border: '#333333',
-        card: '#23233d',
 
+        card: '#23233d',
         cardAccent: '#2f2f47',
         cardAccent300: '#434366',
-        cardAccent600: '#3a3a58',
 
+        cardAccent600: '#3a3a58',
+        green: '#73c576',
         green300: 'rgba(115,197,118,0.15)',
         green600: '#73c576',
         notification: '#ffffff',
@@ -21,8 +23,8 @@ export const DarkTheme: CustomTheme = {
         orange300: 'rgba(255, 158, 67, 0.50)',
         orange600: 'rgba(255, 158, 67, 0.15)',
 
-        primary: '#4653ac',
-        primary300: '#606eca',
+        primary: '#4758c5',
+        primary300: '#5465d3',
         primary600: '#4E5AA6',
         primary800: '#2e3875',
 

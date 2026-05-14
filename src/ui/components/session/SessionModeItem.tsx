@@ -1,8 +1,7 @@
 import { FC } from 'react';
-import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
 import { SessionMode } from '../../../constants/Session';
@@ -15,45 +14,52 @@ interface SessionModeItemProps {
     onPress?: () => void;
     selected: boolean;
     style?: StyleProp<ViewStyle>;
+    color?: string;
 }
 
-export const SessionModeItem: FC<SessionModeItemProps> = ({ mode, onPress, selected, style }) => {
+export const SessionModeItem: FC<SessionModeItemProps> = ({
+    color,
+    mode,
+    onPress,
+    selected,
+    style,
+}) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, selected);
     const { t } = useTranslation();
 
-    let iconName: keyof typeof Ionicons.glyphMap = 'school-outline';
+    let iconName: keyof typeof Ionicons.glyphMap = 'school';
     switch (mode) {
         case SessionMode.STUDY:
-            iconName = 'school-outline';
+            iconName = 'school';
             break;
         case SessionMode.RANDOM:
-            iconName = 'dice-outline';
+            iconName = 'dice';
             break;
         case SessionMode.OLDEST:
-            iconName = 'time-outline';
+            iconName = 'time';
             break;
         case FlashcardSide.WORD:
-            iconName = 'chatbubbles-outline';
+            iconName = 'chatbubbles';
             break;
         case FlashcardSide.TRANSLATION:
-            iconName = 'language-outline';
+            iconName = 'language';
             break;
     }
 
     return (
         <Pressable style={styles.pressable} onPress={onPress}>
-            <LinearGradient
-                colors={[colors.cardAccent600, colors.background]}
-                end={{ x: 1, y: 1 }}
-                start={{ x: 0, y: 0 }}
-                style={[styles.root, style]}
-            >
-                <Ionicons color={colors.primary300} name={iconName} size={18} style={styles.icon} />
+            <View style={[styles.root, style]}>
+                <Ionicons
+                    color={selected && color ? color : colors.white}
+                    name={iconName}
+                    size={18}
+                    style={styles.icon}
+                />
                 <CustomText style={styles.title} weight={'Bold'}>
                     {t(mode.toLowerCase())}
                 </CustomText>
-            </LinearGradient>
+            </View>
         </Pressable>
     );
 };
@@ -64,6 +70,8 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
             paddingRight: 5,
         },
         pressable: {
+            backgroundColor: selected ? colors.cardAccent300 : colors.cardAccent,
+            borderRadius: 8,
             flex: 1,
         },
         root: {
@@ -81,7 +89,7 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
             justifyContent: 'center',
         },
         title: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 12,
             textAlign: 'center',
         },

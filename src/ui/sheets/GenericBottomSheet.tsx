@@ -132,7 +132,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             height: MARGIN_VERTICAL,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 15,
             marginTop: MARGIN_VERTICAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
@@ -141,7 +141,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: MARGIN_VERTICAL / 4,
         },
         title: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 18,
             marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,

@@ -30,12 +30,7 @@ export const SessionLengthItem: FC<SessionLengthItemProps> = ({
 
     return (
         <Pressable style={styles.pressable} onPress={onPress}>
-            <LinearGradient
-                colors={[colors.cardAccent600, colors.background]}
-                end={{ x: 1, y: 1 }}
-                start={{ x: 0, y: 0 }}
-                style={[styles.root, style]}
-            >
+            <View style={[styles.root, style]}>
                 <View style={styles.squaresContainer}>
                     {length > 2 && <View style={styles.square} />}
                 </View>
@@ -55,7 +50,7 @@ export const SessionLengthItem: FC<SessionLengthItemProps> = ({
                 <CustomText style={styles.subtitle}>
                     {(length * (shorter ? 5 : 10) + ` ${t('repetitions')}`).toUpperCase()}
                 </CustomText>
-            </LinearGradient>
+            </View>
         </Pressable>
     );
 };
@@ -66,13 +61,16 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
             flex: 1,
         },
         root: {
+            backgroundColor: selected ? colors.cardAccent300 : colors.cardAccent,
+            borderRadius: 8,
             justifyContent: 'flex-end',
             opacity: selected ? 1 : 0.4,
             paddingBottom: MARGIN_VERTICAL / 2,
             paddingTop: MARGIN_VERTICAL * 1.2,
         },
         square: {
-            backgroundColor: colors.primary300,
+            backgroundColor: selected ? colors.orange : colors.white,
+            borderRadius: 3,
             height: 20,
             marginHorizontal: 2,
             marginTop: 4,
@@ -84,12 +82,12 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
             justifyContent: 'center',
         },
         subtitle: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 10,
             textAlign: 'center',
         },
         title: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 11,
             marginTop: 5,
             textAlign: 'center',

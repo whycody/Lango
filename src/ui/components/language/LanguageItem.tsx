@@ -32,7 +32,7 @@ export const LanguageItem = memo<LanguageItemProps>(
             >
                 {index !== 0 && <View style={styles.divider} />}
                 <LinearGradient
-                    colors={['transparent', checked ? colors.cardAccent : 'transparent']}
+                    colors={['transparent', checked ? colors.cardAccent300 : 'transparent']}
                     end={{ x: 1, y: 1 }}
                     start={{ x: 0, y: 0 }}
                 >
@@ -68,7 +68,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingVertical: 15,
         },
         divider: {
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardAccent600,
             height: 3,
             width: '100%',
         },
@@ -78,14 +78,14 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingRight: 0,
         },
         text: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 14,
         },
         textContainer: {
             flex: 1,
         },
         translation: {
-            color: colors.primary300,
+            color: colors.white300,
             fontSize: 13,
         },
     });

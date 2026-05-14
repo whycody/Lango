@@ -69,7 +69,7 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
     return (
         <GenericBottomSheet
             allowDismiss={!!user?.finishedOnboarding}
-            primaryActionIcon={'play-sharp'}
+            primaryActionIcon={'play'}
             primaryActionLabel={t('startSession')}
             sheetName={START_SESSION_BOTTOM_SHEET}
             title={t('startSession')}
@@ -78,11 +78,13 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
             <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
             <View style={styles.sessionItemsContainer}>
                 <SessionModeItem
+                    color={colors.blue}
                     mode={FlashcardSide.WORD}
                     selected={flashcardSide === FlashcardSide.WORD}
                     onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
                 />
                 <SessionModeItem
+                    color={colors.blue}
                     mode={FlashcardSide.TRANSLATION}
                     selected={flashcardSide === FlashcardSide.TRANSLATION}
                     onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
@@ -91,16 +93,19 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
             <CustomText style={styles.subtitle}>{t('choose_session_mode')}</CustomText>
             <View style={styles.sessionItemsContainer}>
                 <SessionModeItem
+                    color={colors.green}
                     mode={SessionMode.STUDY}
                     selected={sessionMode === SessionMode.STUDY}
                     onPress={() => handleSessionModeItemPress(SessionMode.STUDY)}
                 />
                 <SessionModeItem
+                    color={colors.green}
                     mode={SessionMode.RANDOM}
                     selected={sessionMode === SessionMode.RANDOM}
                     onPress={() => handleSessionModeItemPress(SessionMode.RANDOM)}
                 />
                 <SessionModeItem
+                    color={colors.green}
                     mode={SessionMode.OLDEST}
                     selected={sessionMode === SessionMode.OLDEST}
                     onPress={() => handleSessionModeItemPress(SessionMode.OLDEST)}
@@ -148,7 +153,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             flex: 1,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 14,
             marginHorizontal: MARGIN_HORIZONTAL,
             paddingBottom: 3,

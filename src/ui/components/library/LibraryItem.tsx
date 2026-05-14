@@ -15,14 +15,15 @@ interface LibraryItemProps {
     icon?: keyof typeof Ionicons.glyphMap;
     index: number;
     label: string;
+    color?: string;
     onPress?: () => void;
     style?: ViewStyle;
 }
 
 export const LibraryItem = memo<LibraryItemProps>(
-    ({ description, enabled, icon, index, label, onPress, style }) => {
+    ({ color, description, enabled, icon, index, label, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors, index);
+        const styles = getStyles(colors);
         const { triggerHaptics } = useHaptics();
 
         const handlePress = () => {
@@ -40,7 +41,12 @@ export const LibraryItem = memo<LibraryItemProps>(
                 onPress={handlePress}
             >
                 {icon && (
-                    <Ionicons color={colors.primary300} name={icon} size={24} style={styles.icon} />
+                    <Ionicons
+                        color={color ? color : colors.primary300}
+                        name={icon}
+                        size={24}
+                        style={styles.icon}
+                    />
                 )}
                 <View style={styles.textContainer}>
                     <CustomText style={styles.label} weight={'SemiBold'}>
@@ -64,25 +70,31 @@ export const LibraryItem = memo<LibraryItemProps>(
     },
 );
 
-const getStyles = (colors: CustomTheme['colors'], index: number) =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         description: {
-            color: colors.primary600,
+            color: colors.white,
             fontSize: 12,
+            opacity: 0.7,
         },
         icon: {
             marginRight: 12,
         },
         label: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 14,
         },
         root: {
             alignItems: 'center',
-            backgroundColor: index % 2 === 0 ? colors.background : colors.card,
+            backgroundColor: colors.card,
+            borderColor: colors.cardAccent300,
+            borderRadius: 8,
+            borderWidth: 1,
             flexDirection: 'row',
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 18,
+            paddingVertical: 16,
         },
         textContainer: {
             flex: 1,

@@ -217,6 +217,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         root: {
             backgroundColor: colors.cardAccent300,
+            borderRadius: 12,
             flex: 1,
         },
         skipSuggestionText: {

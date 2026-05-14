@@ -89,21 +89,21 @@ export const SettingsScreen = () => {
         () => [
             {
                 description: currentMainLang,
-                icon: 'language-sharp',
+                icon: 'language',
                 id: SettingsItems.MAIN_LANGUAGE,
                 label: t('main_language'),
                 section: SettingsSections.LANGUAGE,
             },
             {
                 description: currentTranslationLang,
-                icon: 'language-sharp',
+                icon: 'language',
                 id: SettingsItems.TRANSLATION_LANGUAGE,
                 label: t('translation_language'),
                 section: SettingsSections.LANGUAGE,
             },
             {
                 description: currentApplicationLang,
-                icon: 'language-sharp',
+                icon: 'language',
                 id: SettingsItems.APPLICATION_LANGUAGE,
                 label: t('application_language'),
                 section: SettingsSections.LANGUAGE,
@@ -111,7 +111,7 @@ export const SettingsScreen = () => {
             {
                 description: t(`turned_${userPreferences.vibrationsEnabled ? 'on' : 'off'}_m`),
                 enabled: userPreferences.vibrationsEnabled,
-                icon: 'phone-portrait-sharp',
+                icon: 'phone-portrait',
                 id: SettingsItems.VIBRATIONS,
                 label: t('vibrations'),
                 section: SettingsSections.PREFERENCES,
@@ -119,7 +119,7 @@ export const SettingsScreen = () => {
             {
                 description: t(`turned_${notificationsEnabled ? 'on' : 'off'}_m`),
                 enabled: notificationsEnabled,
-                icon: 'notifications-sharp',
+                icon: 'notifications',
                 id: SettingsItems.NOTIFICATIONS,
                 label: t('notifications'),
                 section: SettingsSections.PREFERENCES,
@@ -127,7 +127,7 @@ export const SettingsScreen = () => {
             {
                 description: t(`turned_${user?.suggestionsInSession ? 'on' : 'off'}_m`),
                 enabled: user?.suggestionsInSession,
-                icon: 'create-sharp',
+                icon: 'create',
                 id: SettingsItems.SUGGESTIONS_IN_SESSION,
                 label: t('new_words_suggestions'),
                 section: SettingsSections.SESSION,
@@ -137,7 +137,7 @@ export const SettingsScreen = () => {
                     userPreferences.flashcardSide == FlashcardSide.WORD
                         ? t('word')
                         : t('translation'),
-                icon: 'document-text-sharp',
+                icon: 'document-text',
                 id: SettingsItems.FLASHCARD_SIDE,
                 label: t('flashcard_side'),
                 section: SettingsSections.SESSION,
@@ -145,21 +145,21 @@ export const SettingsScreen = () => {
             {
                 description: t(`turned_${userPreferences.sessionSpeechSynthesizer ? 'on' : 'off'}`),
                 enabled: userPreferences.sessionSpeechSynthesizer,
-                icon: 'volume-high-sharp',
+                icon: 'volume-high',
                 id: SettingsItems.SESSION_SPEECH_SYNTHESIZER,
                 label: t('speech_synthesizer'),
                 section: SettingsSections.SESSION,
             },
             {
                 description: user?.email ?? '',
-                icon: 'mail-sharp',
+                icon: 'mail',
                 id: SettingsItems.EMAIL_ADDRESS,
                 label: t('email_address'),
                 section: SettingsSections.ACCOUNT,
             },
             {
                 description: t('delete_account_desc'),
-                icon: 'person-remove-sharp',
+                icon: 'person-remove',
                 id: SettingsItems.DELETE_ACCOUNT,
                 label: t('delete_account'),
                 section: SettingsSections.ACCOUNT,

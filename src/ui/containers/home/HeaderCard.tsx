@@ -165,16 +165,18 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionButton: {
-            marginTop: 32,
+            marginTop: 24,
         },
         container: {
             alignItems: 'center',
             flexDirection: 'row',
         },
         descText: {
-            color: colors.primary600,
-            fontSize: 15,
-            marginTop: 16,
+            color: colors.white,
+            fontSize: 14,
+            lineHeight: 22,
+            marginTop: 12,
+            opacity: 0.8,
         },
         flag: {
             paddingLeft: 5,
@@ -184,12 +186,13 @@ const getStyles = (colors: CustomTheme['colors']) =>
             color: colors.primary600,
         },
         mainText: {
-            color: colors.primary,
+            color: colors.white,
             flex: 1,
             fontSize: 26,
         },
         progressBar: {
             backgroundColor: colors.cardAccent300,
+            borderRadius: 4,
             height: 7,
             marginTop: 12,
         },
@@ -198,7 +201,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingVertical: MARGIN_VERTICAL,
         },
         streakText: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 18,
             marginRight: 15,
         },

@@ -23,7 +23,7 @@ export const EmptyList: FC<EmptyListProps> = ({ description, icon, onPress, styl
         <Pressable style={[styles.emptyViewContainer, style]} onPress={onPress}>
             <Ionicons
                 color={colors.primary300}
-                name={icon || 'file-tray-sharp'}
+                name={icon || 'file-tray'}
                 size={35}
                 style={styles.icon}
             />

@@ -41,7 +41,7 @@ const TabsNavigator = () => {
         if (route.name === 'Home') {
             return (
                 <MaterialCommunityIcons
-                    color={focused ? colors.primary300 : color}
+                    color={focused ? colors.white : color}
                     name="home"
                     size={iconSize}
                     style={!focused ? { opacity: 0.6 } : undefined}
@@ -52,7 +52,7 @@ const TabsNavigator = () => {
         if (route.name === 'Library') {
             return (
                 <MaterialCommunityIcons
-                    color={focused ? colors.primary300 : color}
+                    color={focused ? colors.white : color}
                     name="view-grid"
                     size={iconSize}
                     style={!focused ? { opacity: 0.6 } : undefined}
@@ -69,7 +69,7 @@ const TabsNavigator = () => {
 
     const renderTabLabel = (route: TabRouteProp, focused: boolean, color: string) => (
         <CustomText
-            style={[styles.tabLabel, { color }, !focused && styles.tabLabelInactive]}
+            style={[styles.tabLabel, { color: colors.white }, !focused && styles.tabLabelInactive]}
             weight={focused ? 'Bold' : 'Regular'}
         >
             {t(route.name.toLowerCase())}
@@ -134,7 +134,7 @@ const TabsNavigator = () => {
                                 <View style={styles.fabBorder}>
                                     <View style={styles.fab}>
                                         <Animated.View style={plusStyle}>
-                                            <Entypo color={colors.card} name="plus" size={24} />
+                                            <Entypo color={colors.white} name="plus" size={24} />
                                         </Animated.View>
                                     </View>
                                 </View>
@@ -182,7 +182,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             top: -20,
         },
         tabBarStyle: {
-            borderTopWidth: 0,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
             height: 60,
             paddingBottom: 6,
             paddingHorizontal: 20,
@@ -192,7 +193,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             fontSize: 12,
         },
         tabLabelInactive: {
-            opacity: 0.6,
+            opacity: 0.35,
         },
     });
 

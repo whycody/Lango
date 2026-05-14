@@ -8,4 +8,5 @@ export type LibraryItem = {
     icon?: keyof typeof Ionicons.glyphMap;
     id: LibraryItems;
     label: string;
+    color: string;
 };

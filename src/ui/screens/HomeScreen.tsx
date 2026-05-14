@@ -31,6 +31,7 @@ import { checkUpdates } from '../../utils/checkUpdates';
 import { isIOS } from '../../utils/deviceUtils';
 import { isNotificationPermissionGranted } from '../../utils/ensureNotificationPermission';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
+import { BottomGradient } from '../components';
 import { HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
 import { OnboardingBottomSheet } from '../sheets/OnboardingBottomSheet';
@@ -149,6 +150,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
 
     return (
         <>
+            <BottomGradient />
             <OnboardingBottomSheet sheetName={HOME_ONBOARDING_SHEET_NAME} />
             <EnableNotificationsBottomSheet sheetName={ENABLE_NOTIFICATIONS_SHEET_NAME} />
             <PickLanguageLevelBottomSheet
@@ -179,6 +181,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 <HeaderCard navigateToSessionScreen={navigateToSessionScreen} />
                 {!languagesAreTheSame && <WordsSuggestionsCard />}
                 <StatisticsCard style={languagesAreTheSame && styles.darkBackground} />
+                <View style={{ height: 50 }} />
             </ScrollView>
         </>
     );

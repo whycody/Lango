@@ -130,7 +130,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         firstFlashcard: {
             flex: 1,
-            marginRight: MARGIN_HORIZONTAL / 2,
+            marginRight: MARGIN_HORIZONTAL / 4,
         },
         flashcardsContainer: {
             flexDirection: 'row',
@@ -138,11 +138,15 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         root: {
             backgroundColor: colors.card,
+            borderColor: colors.cardAccent300,
+            borderRadius: 14,
+            borderWidth: 1,
+            marginHorizontal: MARGIN_HORIZONTAL,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: MARGIN_VERTICAL,
         },
         secondFlashcard: {
             flex: 1,
-            marginLeft: MARGIN_HORIZONTAL / 2,
+            marginLeft: MARGIN_HORIZONTAL / 4,
         },
     });

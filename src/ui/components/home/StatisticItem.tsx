@@ -21,13 +21,13 @@ export const StatisticItem: FC<StatisticItemProps> = ({ description, icon, label
 
     return (
         <LinearGradient
-            colors={[colors.cardAccent600, colors.background]}
+            colors={[colors.card, colors.card]}
             end={{ x: 1, y: 1 }}
             start={{ x: 0, y: 0 }}
             style={[styles.root, style]}
         >
             <View style={styles.header}>
-                <Ionicons color={colors.primary300} name={icon} size={10} />
+                <Ionicons color={colors.white} name={icon} size={11} />
                 <CustomText style={styles.description} weight={'SemiBold'}>
                     {description}
                 </CustomText>
@@ -42,23 +42,26 @@ export const StatisticItem: FC<StatisticItemProps> = ({ description, icon, label
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         description: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 12,
         },
         header: {
             alignItems: 'center',
-            backgroundColor: colors.cardAccent,
+            backgroundColor: colors.cardAccent300,
             flexDirection: 'row',
             gap: 5,
             paddingHorizontal: 10,
-            paddingVertical: 4,
+            paddingVertical: 3,
         },
         root: {
             backgroundColor: colors.cardAccent600,
+            borderColor: colors.card,
+            borderRadius: 6,
+            borderWidth: 1,
             paddingBottom: 5,
         },
         title: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 28,
             paddingVertical: MARGIN_VERTICAL,
             textAlign: 'center',

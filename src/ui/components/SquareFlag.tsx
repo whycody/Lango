@@ -21,5 +21,11 @@ type SquareFlagProps = {
 
 export const SquareFlag: FC<SquareFlagProps> = ({ languageCode, size, style }) => {
     const Flag = flagMap[languageCode];
-    return Flag ? <Flag height={size || 22} style={style} width={size || 22} /> : null;
+    return Flag ? (
+        <Flag
+            height={size || 20}
+            style={[style, { borderRadius: 2, overflow: 'hidden' }]}
+            width={size || 20}
+        />
+    ) : null;
 };

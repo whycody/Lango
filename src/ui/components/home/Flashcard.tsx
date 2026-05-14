@@ -99,7 +99,7 @@ export const Flashcard = forwardRef(
                     onFlipStart={() => handleFlip(true)}
                 >
                     <LinearGradient
-                        colors={[colors.cardAccent, colors.cardAccent600]}
+                        colors={[colors.cardAccent600, colors.cardAccent600]}
                         end={gradientEnd}
                         start={gradientStart}
                         style={styles.face}
@@ -122,16 +122,16 @@ export const Flashcard = forwardRef(
                             {suggestion?.translation}
                         </CustomText>
                         <View style={styles.plusContainer}>
-                            <Foundation color={colors.primary} name={'plus'} size={12} />
+                            <Foundation color={colors.white} name={'plus'} size={12} />
                         </View>
                     </LinearGradient>
                     <LinearGradient
-                        colors={[colors.cardAccent, colors.cardAccent600]}
+                        colors={[colors.green600, colors.green600]}
                         end={gradientEnd}
                         start={gradientStart}
                         style={styles.face}
                     >
-                        <CustomText style={styles.successText} weight={'SemiBold'}>
+                        <CustomText style={styles.successText} weight={'Bold'}>
                             {backText}
                         </CustomText>
                     </LinearGradient>
@@ -148,7 +148,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         face: {
             backfaceVisibility: 'hidden',
-            backgroundColor: colors.cardAccent,
+            borderColor: colors.cardAccent300,
+            borderRadius: 8,
+            borderWidth: 2,
             flex: 1,
             justifyContent: 'center',
             overflow: 'hidden',
@@ -173,6 +175,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         plusContainer: {
             alignItems: 'center',
             backgroundColor: colors.card,
+            borderRadius: 4,
             height: 22,
             justifyContent: 'center',
             position: 'absolute',
@@ -185,17 +188,16 @@ const getStyles = (colors: CustomTheme['colors']) =>
             overflow: 'hidden',
         },
         successText: {
-            color: colors.primary300,
+            color: colors.background,
             fontSize: 14,
             textAlign: 'center',
         },
         translation: {
-            color: colors.primary300,
-            fontSize: 12,
-            opacity: 0.8,
+            color: colors.white300,
+            fontSize: 11.5,
         },
         word: {
-            color: colors.primary300,
-            fontSize: 14,
+            color: colors.white,
+            fontSize: 13.5,
         },
     });

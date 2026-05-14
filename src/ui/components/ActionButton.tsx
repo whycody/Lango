@@ -101,7 +101,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
                 </CustomText>
                 {icon && (
                     <Ionicons
-                        color={primary ? colors.card : colors.primary}
+                        color={colors.white}
                         name={icon}
                         size={14}
                         style={[styles.icon, loading && styles.hidden]}
@@ -109,7 +109,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
                 )}
                 {loading && (
                     <ActivityIndicator
-                        color={primary ? colors.card : colors.primary}
+                        color={primary ? colors.background : colors.primary}
                         size="small"
                         style={StyleSheet.absoluteFill}
                     />
@@ -129,18 +129,19 @@ const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: bool
             marginTop: 2,
         },
         label: {
-            color: primary ? colors.card : colors.primary,
+            color: primary ? colors.white : colors.white,
             fontSize: 13,
         },
         root: {
             alignItems: 'center',
             backgroundColor: primary ? colors.primary : undefined,
-            borderColor: colors.cardAccent,
-            borderWidth: primary ? 0 : 2,
+            borderColor: primary ? colors.primary : colors.cardAccent300,
+            borderRadius: 8,
+            borderWidth: primary ? 0 : 1.5,
             flexDirection: 'row',
             justifyContent: 'center',
             opacity: active ? 1 : 0.5,
             paddingHorizontal: 24,
-            paddingVertical: primary ? 14 : 12,
+            paddingVertical: primary ? 15 : 12,
         },
     });

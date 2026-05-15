@@ -180,7 +180,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 <View style={styles.spacer} />
                 <HeaderCard navigateToSessionScreen={navigateToSessionScreen} />
                 {!languagesAreTheSame && <WordsSuggestionsCard />}
-                <StatisticsCard style={languagesAreTheSame && styles.darkBackground} />
+                <StatisticsCard />
                 <View style={{ height: 50 }} />
             </ScrollView>
         </>

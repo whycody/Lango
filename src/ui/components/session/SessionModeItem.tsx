@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
+import { spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide } from '../../../constants/UserPreferences';
 import { CustomTheme } from '../../Theme';
@@ -71,7 +72,7 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
         },
         pressable: {
             backgroundColor: selected ? colors.cardAccent300 : colors.cardAccent,
-            borderRadius: 8,
+            borderRadius: spacing.m,
             flex: 1,
         },
         root: {

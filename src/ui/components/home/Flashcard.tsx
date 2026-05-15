@@ -14,6 +14,7 @@ import { trackEvent } from '../../../utils/analytics';
 import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 import { FlipCard } from '../session';
+import { spacing } from '../../../constants/margins';
 
 interface FlashcardProps {
     onFlashcardPress?: (add: boolean) => void;
@@ -149,7 +150,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         face: {
             backfaceVisibility: 'hidden',
             borderColor: colors.cardAccent300,
-            borderRadius: 8,
+            borderRadius: spacing.m,
             borderWidth: 2,
             flex: 1,
             justifyContent: 'center',
@@ -175,7 +176,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         plusContainer: {
             alignItems: 'center',
             backgroundColor: colors.card,
-            borderRadius: 4,
+            borderRadius: spacing.s,
             height: 22,
             justifyContent: 'center',
             position: 'absolute',

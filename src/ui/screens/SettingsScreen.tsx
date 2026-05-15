@@ -359,7 +359,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             flex: 1,
         },
         section: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 13,
             marginBottom: 10,
             marginHorizontal: MARGIN_HORIZONTAL,

@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
@@ -56,6 +56,7 @@ const getStyles = (colors: CustomTheme['colors'], type: 'error' | 'success') =>
         },
         root: {
             backgroundColor: type == 'success' ? colors.green600 : colors.red600,
+            borderRadius: spacing.m,
             marginVertical: 5,
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
             paddingVertical: 12,

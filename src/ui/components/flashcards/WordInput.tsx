@@ -24,7 +24,7 @@ import { useTheme } from '@react-navigation/native';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { LanguageCode } from '../../../constants/Language';
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { useVoiceInput } from '../../../hooks';
 import { trackEvent } from '../../../utils/analytics';
 import { isIOS } from '../../../utils/deviceUtils';
@@ -180,10 +180,10 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                         style={styles.icon}
                         color={
                             recording
-                                ? colors.primary
+                                ? colors.white
                                 : micDisabled
-                                  ? colors.cardAccent
-                                  : colors.primary600
+                                  ? colors.white600
+                                  : colors.white300
                         }
                         onPress={handleMicPress}
                     />
@@ -219,7 +219,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         input: {
             backgroundColor: colors.background,
-            color: colors.primary300,
+            color: colors.white,
             flex: 1,
             fontFamily: `Montserrat-Regular`,
             fontSize: 16,
@@ -233,6 +233,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         inputContainer: {
             alignItems: 'center',
             backgroundColor: colors.background,
+            borderRadius: spacing.m,
             flex: 1,
             flexDirection: 'row',
             paddingHorizontal: MARGIN_HORIZONTAL / 2,

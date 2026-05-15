@@ -7,6 +7,7 @@ import { RouteProp, useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
+import { spacing } from '../constants/margins';
 import { useHaptics } from '../hooks';
 import { CustomText } from '../ui/components';
 import { HomeScreen } from '../ui/screens/HomeScreen';
@@ -162,7 +163,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         fab: {
             alignItems: 'center',
             backgroundColor: colors.primary300,
-            borderRadius: 28,
+            borderRadius: spacing.xxxl,
             height: 56,
             justifyContent: 'center',
             width: 56,
@@ -170,7 +171,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         fabBorder: {
             alignItems: 'center',
             backgroundColor: colors.card,
-            borderRadius: 32,
+            borderRadius: spacing.xxxl,
             elevation: 6,
             height: 66,
             justifyContent: 'center',
@@ -182,8 +183,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             top: -20,
         },
         tabBarStyle: {
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
+            borderTopLeftRadius: spacing.xl,
+            borderTopRightRadius: spacing.xl,
             height: 60,
             paddingBottom: 6,
             paddingHorizontal: 20,

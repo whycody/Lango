@@ -1,10 +1,9 @@
 import { FC } from 'react';
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionLength } from '../../../constants/UserPreferences';
 import { CustomTheme } from '../../../ui/Theme';
 import { CustomText } from '..';
@@ -62,7 +61,7 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
         },
         root: {
             backgroundColor: selected ? colors.cardAccent300 : colors.cardAccent,
-            borderRadius: 8,
+            borderRadius: spacing.m,
             justifyContent: 'flex-end',
             opacity: selected ? 1 : 0.4,
             paddingBottom: MARGIN_VERTICAL / 2,
@@ -70,7 +69,7 @@ const getStyles = (colors: CustomTheme['colors'], selected: boolean) =>
         },
         square: {
             backgroundColor: selected ? colors.orange : colors.white,
-            borderRadius: 3,
+            borderRadius: spacing.xs,
             height: 20,
             marginHorizontal: 2,
             marginTop: 4,

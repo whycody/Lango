@@ -14,6 +14,7 @@ import { useTheme } from '@react-navigation/native';
 import { useHaptics } from '../../hooks';
 import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
+import { spacing } from '../../constants/margins';
 
 interface ActionButtonProps {
     active?: boolean;
@@ -136,7 +137,7 @@ const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: bool
             alignItems: 'center',
             backgroundColor: primary ? colors.primary : undefined,
             borderColor: primary ? colors.primary : colors.cardAccent300,
-            borderRadius: 8,
+            borderRadius: spacing.m,
             borderWidth: primary ? 0 : 1.5,
             flexDirection: 'row',
             justifyContent: 'center',

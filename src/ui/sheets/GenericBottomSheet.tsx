@@ -134,11 +134,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
         subtitle: {
             color: colors.white300,
             fontSize: 15,
-            marginTop: MARGIN_VERTICAL / 2,
+            marginTop: 6,
             paddingHorizontal: MARGIN_HORIZONTAL,
         },
         subtitleSmall: {
-            marginTop: MARGIN_VERTICAL / 4,
+            marginTop: 2,
         },
         title: {
             color: colors.white,

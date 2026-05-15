@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Marquee } from '@animatereactnative/marquee';
 import { useTheme } from '@react-navigation/native';
 
+import { spacing } from '../../../constants/margins';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
@@ -50,7 +51,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         wordBox: {
             backgroundColor: colors.primary800,
-            borderRadius: 4,
+            borderRadius: spacing.s,
             flex: 1,
             flexDirection: 'row',
             marginRight: 10,

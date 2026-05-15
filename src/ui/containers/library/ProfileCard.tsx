@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { useAuth } from '../../../store/AuthContext';
 import { CustomText } from '../../components';
 import { CustomTheme } from '../../Theme';
@@ -29,7 +29,7 @@ export const ProfileCard = () => {
             ) : (
                 <View style={styles.profileIconContainer}>
                     <Ionicons
-                        color={colors.primary300}
+                        color={colors.background}
                         name={'person-sharp'}
                         size={80}
                         style={styles.profileFallbackIcon}
@@ -57,13 +57,13 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         profileIconContainer: {
             alignItems: 'center',
-            backgroundColor: colors.cardAccent300,
-            borderRadius: 18,
+            backgroundColor: colors.primary300,
+            borderRadius: spacing.xl,
             height: 100,
             width: 100,
         },
         profileImage: {
-            borderRadius: 12,
+            borderRadius: spacing.l,
             height: 90,
             marginTop: 5,
             width: 90,

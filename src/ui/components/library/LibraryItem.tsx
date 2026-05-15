@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Switch, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
 import { isIOS } from '../../../utils/deviceUtils';
 import { CustomTheme } from '../../Theme';
@@ -88,7 +88,7 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
             alignItems: 'center',
             backgroundColor: colors.card,
             borderColor: colors.cardAccent300,
-            borderRadius: 8,
+            borderRadius: spacing.m,
             borderWidth: 1,
             flexDirection: 'row',
             marginHorizontal: MARGIN_HORIZONTAL,

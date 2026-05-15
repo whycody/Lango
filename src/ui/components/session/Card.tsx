@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionWord } from '../../../types';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
@@ -217,7 +217,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         root: {
             backgroundColor: colors.cardAccent300,
-            borderRadius: 12,
+            borderRadius: spacing.l,
             flex: 1,
         },
         skipSuggestionText: {

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
@@ -56,7 +56,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         root: {
             backgroundColor: colors.cardAccent600,
             borderColor: colors.card,
-            borderRadius: 6,
+            borderRadius: spacing.m,
             borderWidth: 1,
             paddingBottom: 5,
         },

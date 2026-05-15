@@ -23,6 +23,7 @@ export type CustomTheme = Theme & {
         yellow600: string;
         white: string;
         white300: string;
+        white600: string;
     };
     fonts: Theme['fonts'];
 };

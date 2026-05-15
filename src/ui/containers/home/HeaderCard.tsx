@@ -8,7 +8,7 @@ import { ProgressBar } from 'react-native-paper';
 
 import { expo } from '../../../../app.json';
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
 import {
@@ -128,7 +128,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                     {expo.name}
                 </CustomText>
                 <MaterialCommunityIcons
-                    color={streak.active ? colors.red : colors.primary600}
+                    color={streak.active ? colors.red : colors.cardAccent300}
                     name={'fire'}
                     size={30}
                 />
@@ -183,7 +183,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingVertical: 5,
         },
         inactiveStreak: {
-            color: colors.primary600,
+            color: colors.cardAccent300,
         },
         mainText: {
             color: colors.white,
@@ -192,7 +192,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         progressBar: {
             backgroundColor: colors.cardAccent300,
-            borderRadius: 4,
+            borderRadius: spacing.s,
             height: 7,
             marginTop: 12,
         },

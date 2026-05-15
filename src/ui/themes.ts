@@ -34,6 +34,7 @@ export const DarkTheme: CustomTheme = {
         text: '#DCF2F1',
         white: '#fff',
         white300: 'rgba(255,255,255,0.70)',
+        white600: 'rgba(255,255,255,0.50)',
         yellow: '#FFD700',
         yellow300: 'rgba(227,197,98,0.15)',
         yellow600: '#e3c562',

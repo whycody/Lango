@@ -12,7 +12,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { EvaluationGrade } from '../../constants/Evaluation';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { SessionMode } from '../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
 import { WordSource } from '../../constants/Word';
@@ -541,14 +541,9 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
             <SessionSettingsBottomSheet sheetName={SESSION_SETTINGS_BOTTOM_SHEET} />
             <HitFlashcardBottomSheet sheetName={SESSION_HIT_FLASHCARD_BOTTOM_SHEET} />
             <View style={styles.container}>
-                <View
-                    style={[
-                        styles.topInsetSpacer,
-                        { backgroundColor: colors.card, height: insets.top },
-                    ]}
-                />
+                <View style={[styles.topInsetSpacer]} />
 
-                <View style={[styles.sessionHeaderContainer, { backgroundColor: colors.card }]}>
+                <View style={[styles.sessionHeaderContainer]}>
                     <SessionHeader
                         allowExit={!!user?.finishedOnboarding}
                         cardsSetLength={cards.length}
@@ -560,7 +555,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                     <View style={styles.progressBarWrapper}>
                         <ProgressBar
                             animatedValue={progress ? progress / cards.length : 0.000001}
-                            color={colors.primary}
+                            color={colors.primary300}
                             style={styles.progressBar}
                         />
                     </View>
@@ -633,6 +628,8 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         bottomBarContainer: {
             backgroundColor: colors.card,
+            borderTopLeftRadius: spacing.l,
+            borderTopRightRadius: spacing.l,
         },
         card: {
             alignSelf: 'stretch',
@@ -653,13 +650,13 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             flex: 1,
         },
         descriptionText: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 12,
             opacity: 0.8,
             textAlign: 'center',
         },
         headerText: {
-            color: colors.primary300,
+            color: colors.white,
             textAlign: 'center',
         },
         levelItem: {
@@ -698,21 +695,22 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             justifyContent: 'center',
         },
         progressBar: {
-            backgroundColor: colors.cardAccent,
-            height: 5,
+            backgroundColor: colors.cardAccent300,
+            borderRadius: spacing.s,
+            height: 7,
             marginTop: 12,
         },
         progressBarWrapper: {
             marginHorizontal: MARGIN_HORIZONTAL,
         },
         sessionHeaderContainer: {
-            paddingBottom: 20,
+            paddingBottom: 0,
         },
         textContainer: {
             marginVertical: 18,
         },
         topInsetSpacer: {
-            backgroundColor: colors.card,
+            backgroundColor: colors.background,
             height: insets.top,
         },
     });

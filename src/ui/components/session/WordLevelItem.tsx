@@ -4,7 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { SessionLength } from '../../../constants/UserPreferences';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
@@ -24,8 +24,8 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
     const { t } = useTranslation();
 
     const [gradientColors, setGradientColors] = useState<[string, string, ...string[]]>([
-        colors.background,
-        colors.card,
+        colors.cardAccent,
+        colors.cardAccent,
     ]);
 
     const rectangles = [
@@ -49,7 +49,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
                 : level > SessionLength.SHORT
                   ? colors.yellow300
                   : colors.red300;
-        setGradientColors([color, colors.card]);
+        setGradientColors([color, colors.cardAccent]);
 
         Animated.parallel([
             Animated.spring(rectangles[0].scale!, {
@@ -72,7 +72,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
     };
 
     const handlePressOut = () => {
-        setGradientColors([colors.background, colors.card]);
+        setGradientColors([colors.cardAccent, colors.cardAccent]);
 
         Animated.parallel([
             Animated.spring(rectangles[0].scale!, {
@@ -121,7 +121,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
             colors={gradientColors}
             end={{ x: 1, y: 1 }}
             start={{ x: 0, y: 0 }}
-            style={style}
+            style={[style, styles.container]}
         >
             <Pressable
                 style={styles.root}
@@ -176,6 +176,11 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
 
 const getStyles = (colors: CustomTheme['colors'], level: number) =>
     StyleSheet.create({
+        container: {
+            borderColor: colors.cardAccent600,
+            borderRadius: spacing.m,
+            borderWidth: 1,
+        },
         rectangle: {
             backgroundColor:
                 level > SessionLength.MEDIUM
@@ -183,6 +188,7 @@ const getStyles = (colors: CustomTheme['colors'], level: number) =>
                     : level > SessionLength.SHORT
                       ? colors.yellow600
                       : colors.red600,
+            borderRadius: spacing.xxs,
             height: RECT_HEIGHT,
             marginTop: 2,
             width: 40,
@@ -195,7 +201,7 @@ const getStyles = (colors: CustomTheme['colors'], level: number) =>
             paddingTop: MARGIN_HORIZONTAL,
         },
         title: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 11,
             marginTop: 8,
             textAlign: 'center',

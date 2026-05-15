@@ -58,13 +58,7 @@ export const LibraryItem = memo<LibraryItemProps>(
                         </CustomText>
                     )}
                 </View>
-                {enabled !== undefined && (
-                    <Switch
-                        thumbColor={colors.primary}
-                        value={enabled}
-                        onValueChange={handlePress}
-                    />
-                )}
+                {enabled !== undefined && <Switch value={enabled} onValueChange={handlePress} />}
             </Pressable>
         );
     },

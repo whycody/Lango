@@ -2,10 +2,10 @@ import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'rea
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Foundation } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
+import { spacing } from '../../../constants/margins';
 import { WordSource } from '../../../constants/Word';
 import { useHaptics } from '../../../hooks';
 import { useLanguage, useWords } from '../../../store';
@@ -14,7 +14,6 @@ import { trackEvent } from '../../../utils/analytics';
 import { CustomTheme } from '../../Theme';
 import { CustomText, SquareFlag } from '..';
 import { FlipCard } from '../session';
-import { spacing } from '../../../constants/margins';
 
 interface FlashcardProps {
     onFlashcardPress?: (add: boolean) => void;
@@ -48,6 +47,9 @@ export const Flashcard = forwardRef(
         };
 
         const [backText, setBackText] = useState(getRandomMessage());
+        const [flashcardState, setFlashcardState] = useState<'success' | 'error' | 'neutral'>(
+            'neutral',
+        );
 
         useEffect(() => {
             setNewFlashcardIsReady(true);
@@ -80,14 +82,17 @@ export const Flashcard = forwardRef(
                     successfully: !!addWord,
                     suggestionId: suggestion.id,
                 });
-                if (!addWord) setBackText(t('wordNotAdded'));
-            } else setBackText(t('change_flashcard'));
+                if (!addWord) {
+                    setBackText(t('wordNotAdded'));
+                    setFlashcardState('error');
+                } else setFlashcardState('success');
+            } else {
+                setBackText(t('change_flashcard'));
+                setFlashcardState('neutral');
+            }
             setTimeout(() => onFlashcardPress?.(add), 150);
             setTimeout(() => setReadyToFlip(true), 1000);
         };
-
-        const gradientStart = { x: 0, y: 0 };
-        const gradientEnd = { x: 1, y: 1 };
 
         return (
             <View
@@ -99,12 +104,7 @@ export const Flashcard = forwardRef(
                     style={[styles.root, style]}
                     onFlipStart={() => handleFlip(true)}
                 >
-                    <LinearGradient
-                        colors={[colors.cardAccent600, colors.cardAccent600]}
-                        end={gradientEnd}
-                        start={gradientStart}
-                        style={styles.face}
-                    >
+                    <View style={styles.face}>
                         <View style={styles.flagsContainer}>
                             <SquareFlag
                                 languageCode={languageContext.mainLang}
@@ -125,17 +125,30 @@ export const Flashcard = forwardRef(
                         <View style={styles.plusContainer}>
                             <Foundation color={colors.white} name={'plus'} size={12} />
                         </View>
-                    </LinearGradient>
-                    <LinearGradient
-                        colors={[colors.green600, colors.green600]}
-                        end={gradientEnd}
-                        start={gradientStart}
-                        style={styles.face}
+                    </View>
+                    <View
+                        style={[
+                            styles.face,
+                            {
+                                backgroundColor:
+                                    flashcardState === 'success'
+                                        ? colors.green
+                                        : flashcardState === 'error'
+                                          ? colors.red
+                                          : colors.cardAccent600,
+                            },
+                        ]}
                     >
-                        <CustomText style={styles.successText} weight={'Bold'}>
+                        <CustomText
+                            weight={'Bold'}
+                            style={[
+                                styles.successText,
+                                flashcardState === 'neutral' && { color: colors.white },
+                            ]}
+                        >
                             {backText}
                         </CustomText>
-                    </LinearGradient>
+                    </View>
                 </FlipCard>
             </View>
         );
@@ -149,6 +162,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         face: {
             backfaceVisibility: 'hidden',
+            backgroundColor: colors.cardAccent600,
             borderColor: colors.cardAccent300,
             borderRadius: spacing.m,
             borderWidth: 2,

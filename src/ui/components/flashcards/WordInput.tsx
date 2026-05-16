@@ -253,6 +253,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         suggestionItem: {
             backgroundColor: colors.background,
+            borderRadius: spacing.m,
             marginTop: 5,
             paddingHorizontal: 10,
             paddingVertical: 10,
@@ -262,7 +263,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: 10,
         },
         suggestionText: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 14,
         },
     });

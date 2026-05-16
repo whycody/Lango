@@ -3,6 +3,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
 
+import { spacing } from '../../../constants/margins';
 import { getNextMilestone, getPrevMilestone } from '../../../utils/streakUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
@@ -146,7 +147,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
         },
         goal: {
             alignSelf: 'center',
-            color: goalAchieved ? colors.orange : colors.primary300,
+            color: goalAchieved ? colors.orange : colors.white300,
             fontSize: 13,
             marginTop: 21,
             textAlign: 'center',
@@ -162,12 +163,12 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             textTransform: 'uppercase',
         },
         goalLeft: {
-            color: goalAchieved ? colors.orange : colors.primary300,
+            color: goalAchieved ? colors.orange : colors.white300,
             fontSize: 12,
             fontWeight: '800',
         },
         goalRight: {
-            color: goalAchieved ? colors.orange300 : colors.primary300,
+            color: goalAchieved ? colors.orange300 : colors.white300,
             fontSize: 12,
             fontWeight: '600',
             opacity: 0.75,
@@ -186,6 +187,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
         },
         progressBar: {
             backgroundColor: colors.background,
+            borderRadius: spacing.m,
             height: 7,
             overflow: 'hidden',
         },
@@ -194,7 +196,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             height: '100%',
         },
         streakLabel: {
-            color: goalAchieved ? colors.orange : colors.primary,
+            color: goalAchieved ? colors.orange : colors.white,
             fontSize: 12,
             marginTop: 5,
             textAlign: 'center',

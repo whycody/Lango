@@ -167,7 +167,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             zIndex: 2,
         },
         iconMarked: {
-            backgroundColor: colors.cardAccent,
+            backgroundColor: colors.cardAccent300,
             borderRadius: 50,
         },
         longText: {
@@ -186,13 +186,14 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         newWordSuggestion: {
             backgroundColor: colors.primary,
-            color: colors.cardAccent300,
+            color: colors.white,
             fontSize: 12.5,
             left: -1.5,
+            paddingVertical: 3,
             position: 'absolute',
             right: -1.5,
             textAlign: 'center',
-            top: 20,
+            top: 25,
         },
         playButton: {
             alignItems: 'center',
@@ -219,7 +220,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             flex: 1,
         },
         skipSuggestionText: {
-            color: colors.primary600,
+            color: colors.white300,
             flex: 1,
             fontSize: 10,
             marginBottom: 4,

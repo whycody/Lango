@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordUpdate } from '../../types';
 import { CustomText, Header } from '../components';
 import { CustomTheme } from '../Theme';
@@ -101,20 +101,16 @@ const getStyles = (colors: CustomTheme['colors']) =>
             height: 65,
             width: 65,
         },
-        progressBar: {
-            backgroundColor: colors.background,
-            height: 6,
-            marginTop: 20,
-        },
         sessionItemsContainer: {
             flex: 1,
             flexDirection: 'row',
             marginTop: 12,
         },
         statusBar: {
+            borderRadius: spacing.s,
             flexDirection: 'row',
-            paddingBottom: MARGIN_VERTICAL / 2,
-            paddingTop: MARGIN_VERTICAL,
+            marginVertical: 16,
+            overflow: 'hidden',
         },
         statusBarSegment: {
             height: 9,
@@ -127,9 +123,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             padding: MARGIN_HORIZONTAL / 2,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 15,
-            marginTop: MARGIN_VERTICAL / 2,
         },
         title: {
             color: colors.primary300,

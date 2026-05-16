@@ -2,6 +2,7 @@ import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
+import { spacing } from '../../../constants/margins';
 import {
     DIGITS,
     STREAK_ANIMATIONS_DELAY,
@@ -121,6 +122,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved?: boolean) =>
         },
         tile: {
             backgroundColor: goalAchieved ? colors.orange600 : colors.cardAccent600,
+            borderRadius: spacing.s,
             height: TILE_HEIGHT,
             overflow: 'hidden',
             width: TILE_WIDTH,

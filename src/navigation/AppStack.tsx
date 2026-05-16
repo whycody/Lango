@@ -71,6 +71,10 @@ const AppStack = () => {
                                                             <Stack.Screen
                                                                 component={SessionScreen}
                                                                 name={ScreenName.Session}
+                                                                options={{
+                                                                    navigationBarColor:
+                                                                        colors.background,
+                                                                }}
                                                             />
                                                             <Stack.Group
                                                                 screenOptions={modalScreenOptions}
@@ -100,7 +104,6 @@ const getStyles = (bottomInset: number) =>
     StyleSheet.create({
         root: {
             flex: 1,
-            marginBottom: bottomInset,
         },
     });
 

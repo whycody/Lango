@@ -24,8 +24,8 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
     const { t } = useTranslation();
 
     const [gradientColors, setGradientColors] = useState<[string, string, ...string[]]>([
-        colors.cardAccent,
-        colors.cardAccent,
+        'transparent',
+        'transparent',
     ]);
 
     const rectangles = [
@@ -49,7 +49,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
                 : level > SessionLength.SHORT
                   ? colors.yellow300
                   : colors.red300;
-        setGradientColors([color, colors.cardAccent]);
+        setGradientColors([color, colors.background]);
 
         Animated.parallel([
             Animated.spring(rectangles[0].scale!, {
@@ -72,7 +72,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
     };
 
     const handlePressOut = () => {
-        setGradientColors([colors.cardAccent, colors.cardAccent]);
+        setGradientColors(['transparent', 'transparent']);
 
         Animated.parallel([
             Animated.spring(rectangles[0].scale!, {
@@ -177,7 +177,7 @@ export const WordLevelItem: FC<SessionLengthItemProps> = ({ active, level, onPre
 const getStyles = (colors: CustomTheme['colors'], level: number) =>
     StyleSheet.create({
         container: {
-            borderColor: colors.cardAccent600,
+            borderColor: colors.card,
             borderRadius: spacing.m,
             borderWidth: 1,
         },

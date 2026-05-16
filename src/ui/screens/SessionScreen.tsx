@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useFocusEffect, useRoute, useTheme } from '@react-navigation/native';
+import { useFocusEffect, useTheme } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
@@ -627,9 +627,13 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
 const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         bottomBarContainer: {
-            backgroundColor: colors.card,
+            borderColor: colors.card,
+
             borderTopLeftRadius: spacing.l,
             borderTopRightRadius: spacing.l,
+
+            marginBottom: insets.bottom,
+            marginHorizontal: -1,
         },
         card: {
             alignSelf: 'stretch',
@@ -707,7 +711,8 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             paddingBottom: 0,
         },
         textContainer: {
-            marginVertical: 18,
+            marginBottom: 18,
+            marginTop: 4,
         },
         topInsetSpacer: {
             backgroundColor: colors.background,

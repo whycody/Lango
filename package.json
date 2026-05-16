@@ -9,7 +9,7 @@
         "ios:dev:build": "cross-env APP_VARIANT=development expo prebuild --platform ios --clean && cross-env APP_VARIANT=development expo run:ios --device",
         "ios:test": "cross-env APP_VARIANT=test expo run:ios --device",
         "ios:test:prebuild": "cross-env APP_VARIANT=test expo prebuild --platform ios --clean",
-        "ios:test:build": "cross-env APP_VARIANT=test expo prebuild --platform ios --clean && cross-env APP_VARIANT=test expo run:ios --device",
+        "ios:test:build": "cross-env APP_VARIANT=test expo prebuild --platform ios --clean && cross-env APP_VARIANT=test expo run:ios --device --configuration Release",
         "ios:production": "cross-env APP_VARIANT=production expo run:ios --device",
         "ios:production:prebuild": "cross-env APP_VARIANT=production expo prebuild --platform ios --clean",
         "ios:production:build": "cross-env APP_VARIANT=production expo prebuild --platform ios --clean && cross-env APP_VARIANT=production expo run:ios --device",

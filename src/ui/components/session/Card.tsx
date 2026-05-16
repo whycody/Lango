@@ -63,7 +63,7 @@ export const Card = memo<CardProps>(props => {
     return (
         <>
             <LinearGradient
-                colors={[colors.card, colors.cardAccent600]}
+                colors={[colors.cardAccent300, colors.cardAccent]}
                 end={{ x: 1, y: 1 }}
                 start={{ x: 0, y: 0 }}
                 style={styles.root}
@@ -163,8 +163,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             textAlign: 'center',
         },
         icon: {
-            marginVertical: MARGIN_HORIZONTAL,
-            padding: MARGIN_HORIZONTAL / 2,
+            padding: MARGIN_HORIZONTAL,
             zIndex: 2,
         },
         iconMarked: {
@@ -198,7 +197,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         playButton: {
             alignItems: 'center',
             alignSelf: 'center',
-            backgroundColor: colors.cardAccent600,
+            backgroundColor: colors.primary,
             borderRadius: spacing.xs,
             flexDirection: 'row',
             gap: 6,
@@ -216,9 +215,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             backgroundColor: colors.cardAccent300,
             borderColor: colors.cardAccent,
             borderRadius: spacing.l,
-            borderWidth: 1,
+            borderWidth: 2,
             flex: 1,
-            paddingHorizontal: MARGIN_HORIZONTAL,
         },
         skipSuggestionText: {
             color: colors.primary600,
@@ -228,8 +226,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             textAlign: 'center',
         },
         tag: {
-            backgroundColor: colors.cardAccent600,
-            color: colors.primary600,
+            backgroundColor: colors.cardAccent300,
+            borderRadius: spacing.xs,
+            color: colors.white300,
             fontSize: 9,
             height: 18,
             paddingHorizontal: 5,
@@ -241,7 +240,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             flexWrap: 'wrap',
             gap: 4,
             justifyContent: 'center',
-            opacity: 0.6,
             width: '75%',
         },
         text: {

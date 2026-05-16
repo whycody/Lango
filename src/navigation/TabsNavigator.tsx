@@ -5,6 +5,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { spacing } from '../constants/margins';
@@ -29,7 +30,8 @@ const Tab = createBottomTabNavigator<TabsParamList>();
 const TabsNavigator = () => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
+    const insets = useSafeAreaInsets();
+    const styles = getStyles(colors, insets);
 
     const haptics = useHaptics();
     const iconScale = useRef(new Animated.Value(1)).current;
@@ -158,7 +160,7 @@ const TabsNavigator = () => {
     );
 };
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         fab: {
             alignItems: 'center',
@@ -184,9 +186,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
         tabBarStyle: {
             borderTopLeftRadius: spacing.xl,
             borderTopRightRadius: spacing.xl,
-            height: 60,
+            height: 60 + insets.bottom,
             marginBottom: -1,
-            paddingBottom: 6,
+            paddingBottom: 6 + insets.bottom,
             paddingHorizontal: 20,
             paddingTop: 8,
         },

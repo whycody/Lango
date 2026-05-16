@@ -82,11 +82,13 @@ export const SessionSettingsBottomSheet = (props: SessionSettingsBottomSheetProp
             <CustomText style={styles.subtitle}>{t('choose_flashcard_side')}</CustomText>
             <View style={styles.sessionItemsContainer}>
                 <SessionModeItem
+                    color={colors.blue}
                     mode={FlashcardSide.WORD}
                     selected={flashcardSide === FlashcardSide.WORD}
                     onPress={() => handleFlashcardSideItemPress(FlashcardSide.WORD)}
                 />
                 <SessionModeItem
+                    color={colors.blue}
                     mode={FlashcardSide.TRANSLATION}
                     selected={flashcardSide === FlashcardSide.TRANSLATION}
                     onPress={() => handleFlashcardSideItemPress(FlashcardSide.TRANSLATION)}
@@ -98,11 +100,13 @@ export const SessionSettingsBottomSheet = (props: SessionSettingsBottomSheetProp
                     <CustomText style={styles.subtitle}>{t('speech_synthesizer')}</CustomText>
                     <View style={styles.sessionItemsContainer}>
                         <SessionSpeechSynthesizerItem
+                            color={colors.orange}
                             selected={sessionSpeechSynthesizer}
                             synthesizerOn={true}
                             onPress={() => handleSessionSpeechSynthesizerItemPress(true)}
                         />
                         <SessionSpeechSynthesizerItem
+                            color={colors.orange}
                             selected={!sessionSpeechSynthesizer}
                             synthesizerOn={false}
                             onPress={() => handleSessionSpeechSynthesizerItemPress(false)}
@@ -126,7 +130,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: 5,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 14,
             marginHorizontal: MARGIN_HORIZONTAL,
             paddingBottom: 3,

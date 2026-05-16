@@ -114,7 +114,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 13,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: MARGIN_VERTICAL,

@@ -30,7 +30,6 @@ type GenericBottomSheetProps = {
 
 const BOTTOM_SHEET_GRABBER_OPTIONS: GrabberOptions = {
     color: 'white',
-    cornerRadius: 0,
 };
 
 export const GenericBottomSheet = (props: GenericBottomSheetProps) => {

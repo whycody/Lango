@@ -175,7 +175,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
                         />
                     )}
                     <Ionicons
-                        name={'mic-sharp'}
+                        name={'mic'}
                         size={24}
                         style={styles.icon}
                         color={

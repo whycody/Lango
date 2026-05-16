@@ -9,14 +9,14 @@ import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
 import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil';
-import { ActionButton, CustomText, ModalDragHandle } from '../components';
+import { ActionButton, BottomGradient, CustomText, ModalDragHandle } from '../components';
 import { EmptyList, FlashcardListItem, ListFilter } from '../components/flashcards';
 import { StatisticItem } from '../components/home';
 import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
@@ -156,9 +156,10 @@ export const FlashcardsScreen = () => {
     }, []);
 
     const renderFlashcardListItem = useCallback(
-        ({ gradeThreeProb, id, text, translation }: WordWithDetails) => (
+        ({ gradeThreeProb, id, text, translation }: WordWithDetails, index: number) => (
             <FlashcardListItem
                 id={id}
+                index={index}
                 level={gradeThreeProb}
                 text={text}
                 translation={translation}
@@ -217,6 +218,10 @@ export const FlashcardsScreen = () => {
         );
     }, [flashcards.length, numberOfWords, langoWords]);
 
+    const handleClearPress = () => {
+        setFilter('');
+    };
+
     const renderSubheader = useMemo(() => {
         return (
             <View style={styles.subHeaderContainer}>
@@ -224,20 +229,15 @@ export const FlashcardsScreen = () => {
                     <ListFilter
                         editable={false}
                         isSearching={searchingMode}
-                        placeholder={t('searchFlashcard')}
-                        placeholderTextColor={colors.primary600}
-                        onClear={() => setFilter('')}
+                        pointerEvents="none"
+                        onClear={handleClearPress}
                     />
                 </Pressable>
                 <Pressable
                     style={styles.sortingHeader}
                     onPress={() => TrueSheet.present(FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET)}
                 >
-                    <MaterialCommunityIcons
-                        color={colors.primary}
-                        name={'sort-variant'}
-                        size={18}
-                    />
+                    <MaterialCommunityIcons color={colors.white} name={'sort-variant'} size={18} />
                     <CustomText style={styles.sortingLabel} weight={'SemiBold'}>
                         {getSortingMethodLabel(flashcardsSortingMethod)}
                     </CustomText>
@@ -265,7 +265,7 @@ export const FlashcardsScreen = () => {
         return (
             <View style={[styles.row, styles.subHeaderContainer]}>
                 <Ionicons
-                    color={colors.primary300}
+                    color={colors.white300}
                     name={'arrow-back-sharp'}
                     size={24}
                     style={styles.backIcon}
@@ -273,23 +273,21 @@ export const FlashcardsScreen = () => {
                 />
                 <ListFilter
                     isSearching={searchingMode}
-                    placeholder={t('searchFlashcard')}
-                    placeholderTextColor={colors.primary600}
                     ref={inputRef}
                     value={filter}
                     onChangeText={setFilter}
-                    onClear={() => setFilter('')}
+                    onClear={handleClearPress}
                     onFocus={searchingMode ? undefined : turnOnSearchingMode}
                 />
             </View>
         );
     }, [filter]);
 
-    const renderListItem = ({ item }: { item: { id: string } }) => {
+    const renderListItem = ({ index, item }: { item: { id: string }; index: number }) => {
         if (item.id === 'header') return renderHeader;
         if (item.id === 'subheader') return renderSubheader;
         if (item.id === 'emptyList') return renderEmptyList;
-        return renderFlashcardListItem(item as WordWithDetails);
+        return renderFlashcardListItem(item as WordWithDetails, index);
     };
 
     const data = searchingMode
@@ -329,6 +327,7 @@ export const FlashcardsScreen = () => {
                 stickyHeaderHiddenOnScroll={false}
                 stickyHeaderIndices={searchingMode || !flashcards.length ? undefined : [1]}
             />
+            <BottomGradient />
             {!searchingMode && (
                 <View style={styles.buttonContainer}>
                     <ActionButton
@@ -352,13 +351,15 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             paddingBottom: insets.bottom,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingTop: MARGIN_VERTICAL / 2,
+            zIndex: 100,
         },
         headerCard: {
-            backgroundColor: colors.card,
+            backgroundColor: colors.background,
         },
         progressBar: {
             backgroundColor: colors.cardAccent300,
-            height: 6,
+            borderRadius: spacing.s,
+            height: 7,
         },
         progressBarContainer: {
             marginBottom: 6,
@@ -381,7 +382,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             paddingBottom: 8,
         },
         sortingLabel: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 13,
         },
         statisticItem: {
@@ -399,11 +400,11 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginTop: MARGIN_VERTICAL,
         },
         subHeaderContainer: {
-            backgroundColor: colors.card,
+            backgroundColor: colors.background,
             paddingHorizontal: MARGIN_HORIZONTAL,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 15,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL / 3,
@@ -416,14 +417,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             height: 50,
         },
         title: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 24,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
         },
         topSpacer: {
             alignItems: 'center',
-            backgroundColor: colors.card,
+            backgroundColor: colors.background,
             height: isIOS ? MARGIN_VERTICAL : insets.top,
             justifyContent: 'center',
         },

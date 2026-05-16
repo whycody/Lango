@@ -22,7 +22,7 @@ export const EmptyList: FC<EmptyListProps> = ({ description, icon, onPress, styl
     return (
         <Pressable style={[styles.emptyViewContainer, style]} onPress={onPress}>
             <Ionicons
-                color={colors.primary300}
+                color={colors.cardAccent300}
                 name={icon || 'file-tray'}
                 size={35}
                 style={styles.icon}
@@ -41,17 +41,16 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginVertical: 50,
         },
         header: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 18,
             fontWeight: 'bold',
             textAlign: 'center',
         },
         icon: {
             marginBottom: 10,
-            opacity: 0.8,
         },
         text: {
-            color: colors.primary300,
+            color: colors.white300,
             fontSize: 14,
             marginHorizontal: MARGIN_HORIZONTAL * 3,
             opacity: 0.8,

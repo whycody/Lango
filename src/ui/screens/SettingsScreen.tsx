@@ -104,9 +104,9 @@ export const SettingsScreen = () => {
                 section: SettingsSections.LANGUAGE,
             },
             {
-                color: '#4D7CFF',
+                color: '#2EE6A6',
                 description: currentApplicationLang,
-                icon: 'globe',
+                icon: 'language',
                 id: SettingsItems.APPLICATION_LANGUAGE,
                 label: t('application_language'),
                 section: SettingsSections.LANGUAGE,

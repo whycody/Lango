@@ -3,7 +3,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { CustomText } from '../../components';
 import { CustomTheme } from '../../Theme';
 
@@ -63,7 +63,7 @@ export const FlashcardsSelectionSkeleton: FC = () => {
     }, []);
 
     return (
-        <View>
+        <View style={styles.root}>
             <Animated.View style={[styles.footer, { opacity: textAnim }]}>
                 <CustomText style={styles.footerText} weight={'SemiBold'}>
                     {t('word_selection.searching')}
@@ -79,7 +79,6 @@ export const FlashcardsSelectionSkeleton: FC = () => {
                         </View>
                         <View style={styles.checkbox} />
                     </Animated.View>
-                    <View style={styles.divider} />
                 </View>
             ))}
         </View>
@@ -90,14 +89,10 @@ const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         checkbox: {
             backgroundColor: colors.cardAccent,
+            borderRadius: spacing.s,
             height: 20,
             marginLeft: 10,
             width: 20,
-        },
-        divider: {
-            backgroundColor: colors.background,
-            height: 3,
-            width: '100%',
         },
         footer: {
             alignItems: 'center',
@@ -109,25 +104,35 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         icon: {
             backgroundColor: colors.cardAccent,
+            borderRadius: spacing.s,
             height: 22,
             width: 22,
         },
         item: {
             alignItems: 'center',
+            backgroundColor: colors.card,
+            borderRadius: spacing.m,
             flexDirection: 'row',
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: 15,
         },
         lineMain: {
             backgroundColor: colors.cardAccent,
+            borderRadius: spacing.xs,
             height: 14,
             width: '60%',
         },
         lineSub: {
             backgroundColor: colors.cardAccent,
+            borderRadius: spacing.xs,
             height: 13,
             marginTop: 5,
             width: '40%',
+        },
+        root: {
+            backgroundColor: colors.background,
         },
         textContainer: {
             flex: 1,

@@ -15,7 +15,7 @@ import { useAuth, useLanguage } from '../../store';
 import { ExampleFlashcard, LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isSupportedLanguageCode } from '../../utils/languageUtils';
-import { ActionButton } from '../components';
+import { ActionButton, BottomGradient } from '../components';
 import { OnboardingHeader } from '../components/onboarding';
 import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
 import {
@@ -205,6 +205,7 @@ export const OnboardingScreen = () => {
                         <LanguagePicker
                             alwaysAllowPick
                             languageType={LanguageTypes.TRANSLATION}
+                            onboarding={true}
                             style={styles.languagePicker}
                             title={stepTitle(0)}
                         />
@@ -214,6 +215,7 @@ export const OnboardingScreen = () => {
                             alwaysAllowPick
                             allLanguages={false}
                             languageType={LanguageTypes.MAIN}
+                            onboarding={true}
                             style={styles.languagePicker}
                             title={stepTitle(1)}
                         />
@@ -221,6 +223,7 @@ export const OnboardingScreen = () => {
                     <Activity mode={currentStep === 2 ? 'visible' : 'hidden'}>
                         <LanguageLevelPicker
                             language={languages.find(lang => lang.languageCode === mainLang)}
+                            onboarding={true}
                             pickedLevel={pickedLevel}
                             style={styles.languagePicker}
                             title={stepTitle(2)}
@@ -234,6 +237,7 @@ export const OnboardingScreen = () => {
                             errorMessage={flashcardsErrorMessage}
                             flashcards={exampleFlashcards}
                             loading={flashcardsLoading}
+                            pickedLevel={pickedLevel ?? 1}
                             selectedIds={selectedFlashcardsIds}
                             style={styles.languagePicker}
                             title={stepTitle(3)}
@@ -261,6 +265,7 @@ export const OnboardingScreen = () => {
                         onPress={handleBackPress}
                     />
                 </View>
+                <BottomGradient style={{ bottom: 120 }} />
             </LinearGradient>
         </>
     );
@@ -273,12 +278,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             gap: 10,
             paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL,
+            paddingTop: MARGIN_VERTICAL / 2,
+            zIndex: 100,
         },
         content: {
             flex: 1,
         },
         languagePicker: {
+            flex: 1,
             paddingTop: MARGIN_VERTICAL,
         },
         root: {

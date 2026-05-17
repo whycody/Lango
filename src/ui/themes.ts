@@ -15,17 +15,19 @@ export const DarkTheme: CustomTheme = {
         cardAccent300: '#434366',
 
         cardAccent600: '#3a3a58',
+        coral: '#ff7043',
         green: '#73c576',
         green300: 'rgba(115,197,118,0.15)',
         green600: '#73c576',
         notification: '#ffffff',
         orange: '#ff9f43',
         orange300: 'rgba(255, 158, 67, 0.50)',
-        orange600: 'rgba(255, 158, 67, 0.15)',
 
+        orange600: 'rgba(255, 158, 67, 0.15)',
         primary: '#4758c5',
         primary300: '#5465d3',
         primary600: '#4E5AA6',
+
         primary800: '#2e3875',
 
         red: '#ff6060',
@@ -35,7 +37,7 @@ export const DarkTheme: CustomTheme = {
         white: '#fff',
         white300: 'rgba(255,255,255,0.70)',
         white600: 'rgba(255,255,255,0.50)',
-        yellow: '#FFD700',
+        yellow: '#e0c218',
         yellow300: 'rgba(227,197,98,0.15)',
         yellow600: '#e3c562',
     },

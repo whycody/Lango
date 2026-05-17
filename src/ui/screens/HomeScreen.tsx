@@ -72,7 +72,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     }, []);
 
     useEffect(() => {
-        if (user?.finishedOnboarding) return;
+        if (!user?.finishedOnboarding) return;
         setTimeout(() => {
             TrueSheet.present(HOME_ONBOARDING_SHEET_NAME);
         }, 300);

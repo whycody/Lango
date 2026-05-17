@@ -73,7 +73,7 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
             alignItems: 'center',
             flexDirection: 'row',
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 12,
+            paddingVertical: 13,
         },
         icon: {
             marginLeft: 10,
@@ -83,9 +83,9 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
         },
         root: {
             backgroundColor: colors.card,
-            borderColor: colors.card,
+            borderColor: colors.cardAccent,
             borderRadius: spacing.m,
-            borderTopWidth: 3,
+            borderWidth: 1,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: index !== 0 ? 12 : 0,
         },

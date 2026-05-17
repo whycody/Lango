@@ -24,6 +24,7 @@ export type CustomTheme = Theme & {
         white: string;
         white300: string;
         white600: string;
+        coral: string;
     };
     fonts: Theme['fonts'];
 };

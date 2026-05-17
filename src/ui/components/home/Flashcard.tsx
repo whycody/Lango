@@ -182,6 +182,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         inactiveWord: {
             backgroundColor: colors.primary600,
+            borderRadius: spacing.xs,
             opacity: 0.5,
         },
         mainFlag: {

@@ -1,10 +1,15 @@
-import { StyleSheet } from 'react-native';
+import { FC } from 'react';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { CustomTheme } from '../Theme';
 
-export const BottomGradient = () => {
+type BottomGradientProps = {
+    style?: StyleProp<ViewStyle>;
+};
+
+export const BottomGradient: FC<BottomGradientProps> = ({ style }) => {
     const { colors } = useTheme() as CustomTheme;
 
     return (
@@ -13,7 +18,7 @@ export const BottomGradient = () => {
             end={{ x: 0, y: 1 }}
             pointerEvents="none"
             start={{ x: 0, y: 0 }}
-            style={styles.gradient}
+            style={[styles.gradient, style]}
         />
     );
 };

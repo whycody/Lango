@@ -3,11 +3,17 @@ import { PermissionStatus } from 'expo-notifications';
 import { useMMKV } from 'react-native-mmkv';
 
 import { SessionMode } from '../constants/Session';
-import { FlashcardSide, FlashcardSortingMethod, SessionLength } from '../constants/UserPreferences';
+import {
+    AppTheme,
+    FlashcardSide,
+    FlashcardSortingMethod,
+    SessionLength,
+} from '../constants/UserPreferences';
 import { useTypedMMKV } from '../hooks/useTypedMKKV';
 import { useUserStorage } from './UserStorageContext';
 
 interface UserPreferencesContextProps {
+    appTheme: AppTheme;
     askLaterNotifications: number | null;
     askedNotificationsThisSession: boolean;
     flashcardSide: FlashcardSide;
@@ -16,6 +22,7 @@ interface UserPreferencesContextProps {
     sessionLength: SessionLength;
     sessionMode: SessionMode;
     sessionSpeechSynthesizer: boolean;
+    setAppTheme: (theme: AppTheme) => void;
     setAskLaterNotifications: (timestamp: number) => void;
     setFlashcardSide: (side: FlashcardSide) => void;
     setFlashcardsSortingMethod: (method: FlashcardSortingMethod) => void;
@@ -35,6 +42,7 @@ interface UserPreferencesContextProps {
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContextProps>({
+    appTheme: AppTheme.BLUE,
     askedNotificationsThisSession: false,
     askLaterNotifications: null,
     flashcardSide: FlashcardSide.WORD,
@@ -43,6 +51,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContextProps>
     sessionLength: 2,
     sessionMode: SessionMode.STUDY,
     sessionSpeechSynthesizer: true,
+    setAppTheme: () => {},
     setAskedNotificationsThisSession: () => {},
     setAskLaterNotifications: () => {},
     setFlashcardSide: () => {},
@@ -61,6 +70,7 @@ export const UserPreferencesContext = createContext<UserPreferencesContextProps>
     vibrationsEnabled: true,
 });
 
+const APP_THEME_KEY = 'appTheme';
 const FLASHCARD_SIDE_KEY = 'flashcardSide';
 const SESSION_MODE_KEY = 'sessionMode';
 const SESSION_LENGTH_KEY = 'sessionLength';
@@ -78,6 +88,15 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     const fallbackStorage = useMMKV();
     const storage = userStorage.storage ?? fallbackStorage;
     const [askedNotificationsThisSession, setAskedNotificationsThisSession] = useState(false);
+    const [appTheme, setAppThemeInStorage] = useTypedMMKV<AppTheme>(
+        APP_THEME_KEY,
+        AppTheme.BLUE,
+        storage,
+    );
+    const setAppTheme = (theme: AppTheme) => {
+        setAppThemeInStorage(theme);
+        fallbackStorage.set(APP_THEME_KEY, theme);
+    };
     const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(
         FLASHCARD_SIDE_KEY,
         FlashcardSide.WORD,
@@ -136,6 +155,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     return (
         <UserPreferencesContext.Provider
             value={{
+                appTheme,
                 askedNotificationsThisSession,
                 askLaterNotifications,
                 flashcardSide,
@@ -144,6 +164,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
                 sessionLength,
                 sessionMode,
                 sessionSpeechSynthesizer,
+                setAppTheme,
                 setAskedNotificationsThisSession,
                 setAskLaterNotifications,
                 setFlashcardSide,

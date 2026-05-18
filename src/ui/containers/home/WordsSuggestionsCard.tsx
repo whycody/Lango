@@ -142,6 +142,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderRadius: spacing.l,
             borderWidth: 1,
             marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: MARGIN_VERTICAL,
         },

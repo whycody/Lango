@@ -150,6 +150,16 @@
         "open_settings": "Apri impostazioni",
         "cancel": "Annulla"
     },
+    "theme": {
+        "title": "Tema dell'app",
+        "desc": "Scegli il tema colore dell'app.",
+        "blue": "Blu",
+        "green": "Verde",
+        "pink": "Rosa",
+        "red": "Rosso",
+        "orange": "Arancione",
+        "purple": "Viola"
+    },
     "sorting": {
         "title": "Ordine di ordinamento",
         "desc": "Scegli come vengono ordinate le schede nella tua libreria.",

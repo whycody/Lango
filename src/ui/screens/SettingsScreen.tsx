@@ -20,12 +20,13 @@ import { isAndroid, isIOS } from '../../utils/deviceUtils';
 import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
 import { CustomText, ModalDragHandle, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
-import { DeleteAccountBottomSheet, LanguageBottomSheet } from '../sheets';
+import { DeleteAccountBottomSheet, LanguageBottomSheet, ThemeBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const keyExtractor = (item: SettingItem) => item.id.toString();
 const SETTINGS_LANGUAGE_SHEET_NAME = 'settings-language-sheet';
 const SETTINGS_DELETE_ACCOUNT_SHEET_NAME = 'settings-delete-account-sheet';
+const SETTINGS_THEME_SHEET_NAME = 'settings-theme-sheet';
 
 export const SettingsScreen = () => {
     const { colors } = useTheme() as CustomTheme;
@@ -113,6 +114,14 @@ export const SettingsScreen = () => {
             },
 
             {
+                color: colors.primary300,
+                description: t(`theme.${userPreferences.appTheme.toLowerCase()}`),
+                icon: 'color-palette',
+                id: SettingsItems.APP_THEME,
+                label: t('theme.title'),
+                section: SettingsSections.PREFERENCES,
+            },
+            {
                 color: '#FFB84D',
                 description: t(`turned_${userPreferences.vibrationsEnabled ? 'on' : 'off'}_m`),
                 enabled: userPreferences.vibrationsEnabled,
@@ -180,6 +189,7 @@ export const SettingsScreen = () => {
         ],
         [
             t,
+            colors,
             user?.email,
             user?.suggestionsInSession,
             notificationsEnabled,
@@ -236,6 +246,10 @@ export const SettingsScreen = () => {
                     TrueSheet.present(SETTINGS_LANGUAGE_SHEET_NAME);
                     break;
                 }
+                case SettingsItems.APP_THEME:
+                    trackEvent(AnalyticsEventName.THEME_SHEET_OPEN);
+                    TrueSheet.present(SETTINGS_THEME_SHEET_NAME);
+                    break;
                 case SettingsItems.VIBRATIONS:
                     userPreferences.setVibrationsEnabled(!userPreferences.vibrationsEnabled);
                     break;
@@ -318,6 +332,7 @@ export const SettingsScreen = () => {
                 sheetName={SETTINGS_LANGUAGE_SHEET_NAME}
             />
             <DeleteAccountBottomSheet sheetName={SETTINGS_DELETE_ACCOUNT_SHEET_NAME} />
+            <ThemeBottomSheet sheetName={SETTINGS_THEME_SHEET_NAME} />
             <View style={styles.root}>
                 <ModalDragHandle />
                 {isAndroid && <View style={style} />}

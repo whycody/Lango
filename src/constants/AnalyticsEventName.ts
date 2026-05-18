@@ -39,6 +39,8 @@ export const AnalyticsEventName = {
     START_SESSION_SHEET_OPEN: 'start_session_sheet_open',
     SUGGESTION_ADD: 'suggestion_add',
     SUGGESTIONS_SKIPPED: 'suggestions_skipped',
+    THEME_CHANGE: 'theme_change',
+    THEME_SHEET_OPEN: 'theme_sheet_open',
     UPDATE_FAILURE: 'update_failure',
     UPDATE_SUCCESS: 'update_success',
     USER_SET: 'user_set',
@@ -104,6 +106,8 @@ export type AnalyticsEventPayloadMap = {
         restarted: boolean;
     };
     sorting_methods_sheet_open?: undefined;
+    theme_change: { theme: string };
+    theme_sheet_open?: undefined;
     start_session_sheet_open?: undefined;
     suggestion_add: { successfully: boolean; suggestionId: string };
     suggestions_skipped?: undefined;

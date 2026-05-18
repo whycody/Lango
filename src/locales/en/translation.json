@@ -150,6 +150,16 @@
         "open_settings": "Open settings",
         "cancel": "Cancel"
     },
+    "theme": {
+        "title": "App theme",
+        "desc": "Choose the color theme of the app.",
+        "blue": "Blue",
+        "green": "Green",
+        "pink": "Pink",
+        "red": "Red",
+        "orange": "Orange",
+        "purple": "Purple"
+    },
     "sorting": {
         "title": "Sorting order",
         "desc": "Choose how flashcards are sorted in your library.",

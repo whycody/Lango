@@ -174,7 +174,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             position: 'relative',
         },
         root: {
-            paddingBottom: MARGIN_VERTICAL + MARGIN_HORIZONTAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingTop: MARGIN_VERTICAL,
         },

@@ -150,6 +150,16 @@
         "open_settings": "Abrir ajustes",
         "cancel": "Cancelar"
     },
+    "theme": {
+        "title": "Tema de la app",
+        "desc": "Elige el tema de color de la app.",
+        "blue": "Azul",
+        "green": "Verde",
+        "pink": "Rosa",
+        "red": "Rojo",
+        "orange": "Naranja",
+        "purple": "Morado"
+    },
     "sorting": {
         "title": "Orden de clasificación",
         "desc": "Elige cómo se ordenan las tarjetas en tu biblioteca.",

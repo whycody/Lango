@@ -3,7 +3,7 @@ import { AppState, StatusBar, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import './i18n';
 import * as Font from 'expo-font';
-import { DarkTheme } from './src/ui/themes';
+import { themes } from './src/ui/themes';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Root from './src/navigation/Root';
 import {
@@ -12,6 +12,7 @@ import {
     AuthProvider,
     UserStorageProvider,
 } from './src/store';
+import { AppTheme } from './src/constants/UserPreferences';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { checkUpdates } from './src/utils/checkUpdates';
@@ -36,12 +37,15 @@ void SplashScreen.preventAutoHideAsync().catch(() => {
 export default function App() {
     const { i18n } = useTranslation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
+    const globalStorage = useMMKV();
     const [applicationLang] = useTypedMMKV<LanguageCode>(
         APPLICATION_LANG,
         i18n.language as LanguageCode,
-        useMMKV(),
+        globalStorage,
     );
-    const { colors } = DarkTheme;
+    const [appTheme] = useTypedMMKV<AppTheme>('appTheme', AppTheme.BLUE, globalStorage);
+    const activeTheme = themes[appTheme ?? AppTheme.BLUE];
+    const { colors } = activeTheme;
     const styles = getStyles(colors);
 
     useEffect(() => {
@@ -97,7 +101,7 @@ export default function App() {
             <StatusBar barStyle="light-content" translucent backgroundColor={'transparent'} />
             <SafeAreaProvider style={styles.root}>
                 <GestureHandlerRootView>
-                    <NavigationContainer theme={DarkTheme}>
+                    <NavigationContainer theme={activeTheme}>
                         <AuthProvider>
                             <UserStorageProvider>
                                 <AppInitializerProvider>

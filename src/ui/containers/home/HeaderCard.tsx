@@ -177,7 +177,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionButton: {
-            marginTop: 24,
+            marginTop: 18,
         },
         container: {
             alignItems: 'center',
@@ -210,7 +210,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         root: {
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: MARGIN_VERTICAL,
+            paddingTop: MARGIN_VERTICAL,
         },
         streakText: {
             color: colors.white,

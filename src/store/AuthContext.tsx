@@ -61,11 +61,19 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [authError, setAuthError] = useState<string | null>(null);
     const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
+    const globalStorage = useMMKV();
     const storage = useMMKV({ id: user?.userId ? `user-${user.userId}` : 'user-storage' });
     const [userUpdatePayload, setUserUpdatePayload] = useMMKVObject<UserUpdatePayload | null>(
         'user-update-payload',
         storage,
     );
+
+    useEffect(() => {
+        if (user?.userId) {
+            const userTheme = storage.getString('appTheme');
+            globalStorage.set('appTheme', userTheme ?? 'BLUE');
+        }
+    }, [user?.userId]);
 
     useEffect(() => {
         setOnUnauthorized(() => {
@@ -79,6 +87,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const clearState = () => {
         setIsAuthenticated(false);
         setUser(null);
+        globalStorage.set('appTheme', 'BLUE');
     };
 
     const getSession = async () => {

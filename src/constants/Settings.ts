@@ -4,6 +4,7 @@ export enum SettingsItems {
     MAIN_LANGUAGE = LanguageTypes.MAIN,
     TRANSLATION_LANGUAGE = LanguageTypes.TRANSLATION,
     APPLICATION_LANGUAGE = LanguageTypes.APPLICATION,
+    APP_THEME = 'app_theme',
     VIBRATIONS = 'vibrations',
     NOTIFICATIONS = 'notifications',
     SUGGESTIONS_IN_SESSION = 'suggestions_in_session',

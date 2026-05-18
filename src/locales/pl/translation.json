@@ -149,6 +149,16 @@
         "open_settings": "Otwórz ustawienia",
         "cancel": "Anuluj"
     },
+    "theme": {
+        "title": "Motyw aplikacji",
+        "desc": "Wybierz kolorystyczny motyw aplikacji.",
+        "blue": "Niebieski",
+        "green": "Zielony",
+        "pink": "Różowy",
+        "red": "Czerwony",
+        "orange": "Pomarańczowy",
+        "purple": "Fioletowy"
+    },
     "sorting": {
         "title": "Sposób sortowania",
         "desc": "Wybierz sposób sortowania fiszek w Twojej bibliotece.",

@@ -32,7 +32,7 @@ import { isIOS } from '../../utils/deviceUtils';
 import { isNotificationPermissionGranted } from '../../utils/ensureNotificationPermission';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { BottomGradient } from '../components';
-import { HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
+import { ActivityCard, HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
 import { OnboardingBottomSheet } from '../sheets/OnboardingBottomSheet';
 import { CustomTheme } from '../Theme';
@@ -180,7 +180,9 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 <View style={styles.spacer} />
                 <HeaderCard navigateToSessionScreen={navigateToSessionScreen} />
                 {!languagesAreTheSame && <WordsSuggestionsCard />}
+                <ActivityCard />
                 <StatisticsCard />
+
                 <View style={{ height: 50 }} />
             </ScrollView>
         </>

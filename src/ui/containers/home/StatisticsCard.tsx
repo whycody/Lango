@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { WordSource } from '../../../constants/Word';
 import { useSessions, useStatistics, useWords } from '../../../store';
 import { Word } from '../../../types';
@@ -88,9 +88,7 @@ const styles = StyleSheet.create({
         marginRight: 6,
     },
     root: {
-        paddingBottom: MARGIN_VERTICAL + MARGIN_HORIZONTAL / 2,
         paddingHorizontal: MARGIN_HORIZONTAL,
-        paddingTop: MARGIN_VERTICAL,
     },
     statisticsItem: {
         flex: 1,

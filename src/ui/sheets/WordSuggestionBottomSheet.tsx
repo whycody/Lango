@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useUserPreferences } from '../../store';
 import { CustomText } from '../components';
-import { Card, FlipCard } from '../components/session';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
@@ -40,22 +39,14 @@ export const WordSuggestionBottomSheet = (props: WordSuggestionBottomSheetProps)
         return clearFlipTimeout;
     }, [flip, visible]);
 
-    const onFlipStart = () => {
-        clearFlipTimeout();
-        timeoutRef.current = setTimeout(() => setFlip(f => !f), 4000);
-    };
-
     const handlePrimaryButtonPress = () => {
         TrueSheet.dismiss(props.sheetName);
         setUserHasEverSeenSuggestionInSession(true);
     };
 
-    const suggestionWord = {
-        type: 'suggestion',
-    } as any;
-
     return (
         <GenericBottomSheet
+            allowDismiss={false}
             description={t('word_suggestion_bottom_sheet.desc')}
             primaryActionLabel={t('common.got_it')}
             sheetName={props.sheetName}
@@ -64,28 +55,6 @@ export const WordSuggestionBottomSheet = (props: WordSuggestionBottomSheetProps)
             onDidPresent={() => setVisible(true)}
             onPrimaryButtonPress={handlePrimaryButtonPress}
         >
-            <FlipCard
-                flip={flip}
-                flipVertical={false}
-                style={styles.exampleCard}
-                swipeable={false}
-                onFlipStart={onFlipStart}
-            >
-                <Card
-                    text={t('word_suggestion_bottom_sheet.word')}
-                    textStyle={styles.cardText}
-                    userHasEverSkippedSuggestion={false}
-                    word={suggestionWord}
-                    onContinuePress={() => {}}
-                />
-                <Card
-                    text={t('word_suggestion_bottom_sheet.translation')}
-                    textStyle={styles.cardText}
-                    userHasEverSkippedSuggestion={false}
-                    word={suggestionWord}
-                    onContinuePress={() => {}}
-                />
-            </FlipCard>
             <CustomText style={styles.subtitle}>
                 {t('word_suggestion_bottom_sheet.desc2')}
             </CustomText>

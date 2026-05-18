@@ -91,6 +91,7 @@ const getStyles = (colors: CustomTheme['colors'], onboarding: boolean) =>
             flexDirection: 'row',
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 12,
+            overflow: 'hidden',
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: 12,
         },

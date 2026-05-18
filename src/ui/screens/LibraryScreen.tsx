@@ -12,6 +12,7 @@ import { useAuth, useLanguage, useWords } from '../../store';
 import { LibraryNavProp } from '../../types';
 import { LibraryItem as LibraryItemType } from '../../types/utils/LibraryItem';
 import { trackEvent } from '../../utils/analytics';
+import { BottomGradient } from '../components';
 import { LibraryItem as LibraryItemRow } from '../components/library';
 import { ProfileCard } from '../containers';
 import { LanguageBottomSheet } from '../sheets';
@@ -47,34 +48,42 @@ export const LibraryScreen = () => {
 
     const libraryItems: LibraryItemType[] = [
         {
+            color: '#B8B8C7',
             description: t('settings_desc'),
             icon: 'settings-sharp',
             id: LibraryItems.SETTINGS,
             label: t('settings'),
         },
         {
+            color: '#2EE6A6',
             description: currentLang,
-            icon: 'language-sharp',
+            icon: 'language',
             id: LibraryItems.LANGUAGE,
             label: t('main_language'),
         },
         {
+            color: '#9B6BFF',
             description: getMyWordsDesc(),
-            icon: 'albums-sharp',
+            icon: 'albums',
             id: LibraryItems.MY_WORDS,
             label: t('myWords'),
         },
         {
+            color: '#FF5C5C',
             description: t('logout_desc'),
-            icon: 'log-out-sharp',
+            icon: 'log-out',
             id: LibraryItems.LOGOUT,
             label: t('logout'),
         },
         {
+            color: '#4D7CFF',
+            icon: 'shield-checkmark',
             id: LibraryItems.PRIVACY_POLICY,
             label: t('privacyPolicy'),
         },
         {
+            color: '#6A5CFF',
+            icon: 'document-text',
             id: LibraryItems.USE_CONDITIONS,
             label: t('useConditions'),
         },
@@ -115,6 +124,7 @@ export const LibraryScreen = () => {
     const renderLibraryItem = ({ index, item }: { index: number; item: LibraryItemType }) => (
         <LibraryItemRow
             key={item.id}
+            color={item.color}
             description={item.description}
             icon={item.icon}
             index={index}
@@ -126,11 +136,13 @@ export const LibraryScreen = () => {
     return (
         <>
             <View style={style} />
+            <BottomGradient />
             <ScrollView showsHorizontalScrollIndicator={false} onScroll={onScroll}>
                 <LanguageBottomSheet sheetName={LIBRARY_LANGUAGE_SHEET_NAME} />
                 <View style={styles.spacer} />
                 <ProfileCard />
                 <FlatList
+                    ListFooterComponent={<View style={{ height: 50 }} />}
                     data={libraryItems}
                     renderItem={renderLibraryItem}
                     scrollEnabled={false}

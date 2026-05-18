@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ProgressBar } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
@@ -27,7 +27,7 @@ export const OnboardingHeader: FC<OnboardingHeaderProps> = ({
 
     return (
         <>
-            <View style={[styles.topInsetSpacer, { height: top }]} />
+            <View style={{ height: top }} />
             <View style={styles.container}>
                 <CustomText style={styles.logoutText} weight="SemiBold" onPress={onLogout}>
                     {t('logout')}
@@ -47,13 +47,11 @@ export const OnboardingHeader: FC<OnboardingHeaderProps> = ({
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         container: {
-            backgroundColor: colors.card,
             marginBottom: -5,
         },
         logoutText: {
             alignSelf: 'flex-end',
-            backgroundColor: colors.card,
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 13,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingTop: 10,
@@ -61,13 +59,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         progressBar: {
             backgroundColor: colors.cardAccent,
-            height: 5,
+            borderRadius: spacing.s,
+            height: 7,
             marginTop: 12,
         },
         progressBarWrapper: {
             marginHorizontal: MARGIN_HORIZONTAL,
-        },
-        topInsetSpacer: {
-            backgroundColor: colors.card,
         },
     });

@@ -126,8 +126,13 @@ const refreshAccessToken = async (): Promise<void> => {
 
 const retriedRequests = new WeakSet<InternalAxiosRequestConfig>();
 
-const isNetworkError = (err: unknown): boolean =>
-    axios.isAxiosError(err) && err.code === AxiosError.ERR_NETWORK;
+const isNetworkError = (err: unknown): boolean => {
+    if (!axios.isAxiosError(err)) return false;
+
+    return (
+        err.code === AxiosError.ERR_NETWORK || err.code === AxiosError.ECONNABORTED || !err.response
+    );
+};
 
 let unauthorizedPromise: Promise<void> | null = null;
 
@@ -171,7 +176,6 @@ api.interceptors.response.use(
         }
 
         if (retriedRequests.has(originalRequest)) {
-            await handleUnauthorized();
             return Promise.reject(error);
         }
         retriedRequests.add(originalRequest);
@@ -187,8 +191,12 @@ api.interceptors.response.use(
             if (isNetworkError(refreshError)) {
                 return Promise.reject(refreshError);
             }
-            await handleUnauthorized();
-            return Promise.reject(error);
+
+            if (axios.isAxiosError(refreshError) && refreshError.response?.status === 401) {
+                await handleUnauthorized();
+            }
+
+            return Promise.reject(refreshError);
         }
 
         return api(originalRequest);

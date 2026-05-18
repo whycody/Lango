@@ -1,8 +1,9 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, ScrollView, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
-import { ExampleFlashcard } from '../../../types';
+import { ExampleFlashcard, LanguageLevelRange } from '../../../types';
+import { getLanguageLevelColor } from '../../../utils/onboardingUtils';
 import { FlashcardSelectionItem } from '../../components/flashcards';
 import { CustomTheme } from '../../Theme';
 
@@ -11,23 +12,25 @@ type FlashcardEntranceListProps = {
     onToggle: (id: string) => void;
     selectedIds: string[];
     flashcards: ExampleFlashcard[];
+    pickedLevel: LanguageLevelRange;
 };
 
 export const FlashcardEntranceList: FC<FlashcardEntranceListProps> = ({
     flashcards,
     onLastVisibleIndexChange,
     onToggle,
+    pickedLevel,
     selectedIds,
 }) => {
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
-
     const [itemAnims] = useState(() =>
         flashcards.map(() => ({
             opacity: new Animated.Value(0),
             translateY: new Animated.Value(-20),
         })),
     );
+
+    const color = getLanguageLevelColor(pickedLevel, colors);
 
     useEffect(() => {
         const animations = itemAnims.map(({ opacity, translateY }, i) =>
@@ -76,6 +79,7 @@ export const FlashcardEntranceList: FC<FlashcardEntranceListProps> = ({
         <ScrollView
             scrollEventThrottle={100}
             showsVerticalScrollIndicator={false}
+            style={{ backgroundColor: colors.background }}
             onLayout={e => {
                 containerHeightRef.current = e.nativeEvent.layout.height;
                 computeAndReport();
@@ -98,22 +102,14 @@ export const FlashcardEntranceList: FC<FlashcardEntranceListProps> = ({
                     }}
                 >
                     <FlashcardSelectionItem
+                        color={color}
                         flashcard={item}
                         selected={selectedIds.includes(item.id)}
                         onToggle={onToggle}
                     />
-                    <View style={styles.divider} />
                 </Animated.View>
             ))}
+            <View style={{ height: 50 }} />
         </ScrollView>
     );
 };
-
-const getStyles = (colors: CustomTheme['colors']) =>
-    StyleSheet.create({
-        divider: {
-            backgroundColor: colors.background,
-            height: 3,
-            width: '100%',
-        },
-    });

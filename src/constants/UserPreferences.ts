@@ -1,3 +1,12 @@
+export enum AppTheme {
+    BLUE = 'BLUE',
+    GREEN = 'GREEN',
+    PINK = 'PINK',
+    RED = 'RED',
+    ORANGE = 'ORANGE',
+    PURPLE = 'PURPLE',
+}
+
 export enum FlashcardSide {
     TRANSLATION = 'TRANSLATION',
     WORD = 'WORD',

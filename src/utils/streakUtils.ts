@@ -35,12 +35,12 @@ export const getCurrentStreak = (studyDaysList: string[]): Streak => {
 export const getNextMilestone = (value: number) => {
     const base = BASE_MILESTONES.find(m => m > value);
     if (base) return base;
-    return Math.ceil(value / 100) * 100;
+    return Math.ceil(value / 50) * 50;
 };
 
 export const getPrevMilestone = (value: number) => {
     const maxMilestone = Math.max(...BASE_MILESTONES);
     const reversed = [...BASE_MILESTONES].reverse().find(m => value < maxMilestone && m <= value);
-    if (maxMilestone <= value || !reversed) return Math.floor(value / 100) * 100;
+    if (maxMilestone <= value || !reversed) return Math.floor(value / 50) * 50;
     return reversed;
 };

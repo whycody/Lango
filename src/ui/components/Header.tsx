@@ -36,12 +36,13 @@ const getStyles = (colors: CustomTheme['colors']) =>
             textAlign: 'center',
         },
         subtitle: {
-            color: colors.primary600,
-            fontSize: 14,
-            marginTop: 6,
+            color: colors.white,
+            fontSize: 13,
+            marginTop: 2,
+            opacity: 0.7,
         },
         title: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 18,
         },
     });

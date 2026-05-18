@@ -5,6 +5,7 @@ import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL } from '../../constants/margins';
+import { useAuth } from '../../store';
 import { Header } from '../components/Header';
 import { GenericBottomSheet } from './GenericBottomSheet';
 import { START_SESSION_BOTTOM_SHEET } from './StartSessionBottomSheet';
@@ -15,6 +16,7 @@ type OnboardingBottomSheetProps = {
 
 export const OnboardingBottomSheet = (props: OnboardingBottomSheetProps) => {
     const { t } = useTranslation();
+    const { logout } = useAuth();
 
     const handlePrimaryButtonPress = () => {
         TrueSheet.present(START_SESSION_BOTTOM_SHEET);
@@ -25,8 +27,10 @@ export const OnboardingBottomSheet = (props: OnboardingBottomSheetProps) => {
             allowDismiss={false}
             primaryActionIcon="play-sharp"
             primaryActionLabel={t('startLearning')}
+            secondaryActionLabel={t('logout')}
             sheetName={props.sheetName}
             onPrimaryButtonPress={handlePrimaryButtonPress}
+            onSecondaryButtonPress={logout}
         >
             <LottieView
                 autoPlay={true}

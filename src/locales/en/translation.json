@@ -15,6 +15,9 @@
     "wordAdded3": "Perfect choice! \uD83D\uDC4C",
     "wordNotAdded": "Couldn't add ❌",
     "addWord": "Add your own word +",
+    "activity": "Activity",
+    "activityDesc": "Your study sessions over the past months.",
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     "statistics": "Statistics",
     "statisticsDesc": "Let's review your progress",
     "words": "Words",
@@ -147,6 +150,16 @@
         "open_settings": "Open settings",
         "cancel": "Cancel"
     },
+    "theme": {
+        "title": "App theme",
+        "desc": "Choose the color theme of the app.",
+        "blue": "Blue",
+        "green": "Green",
+        "pink": "Pink",
+        "red": "Red",
+        "orange": "Orange",
+        "purple": "Purple"
+    },
     "sorting": {
         "title": "Sorting order",
         "desc": "Choose how flashcards are sorted in your library.",
@@ -168,9 +181,10 @@
     },
     "word_suggestion_bottom_sheet": {
         "title": "New word suggestion ✨",
-        "desc": "You see a flashcard suggestion that is not yet in your dictionary. If you want to add it, *rate how well you know it*. If not, *skip it using the arrow* in the bottom right corner.",
-        "word": "Suggested word",
-        "translation": "Word translation"
+        "desc": "You see a flashcard suggestion that is not yet in your dictionary.",
+        "desc2": "If you want to add it, rate how well you know it. If not, skip it using the arrow in the bottom right corner.",
+        "word": "Word",
+        "translation": "Translation"
     },
     "microphone": {
         "no_permission": "No permission to use the microphone 🎤",

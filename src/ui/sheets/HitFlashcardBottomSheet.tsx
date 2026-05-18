@@ -50,10 +50,10 @@ export const HitFlashcardBottomSheet = (props: HitFlashcardBottomSheetProps) => 
             onPrimaryButtonPress={() => TrueSheet.dismiss(props.sheetName)}
         >
             <FlipCard
-                flipHorizontal
                 flip={flip}
                 flipVertical={false}
                 style={styles.exampleCard}
+                swipeable={false}
                 onFlipStart={onFlipStart}
             >
                 <Card text={t('hit_flashcard_bottom_sheet.word')} />

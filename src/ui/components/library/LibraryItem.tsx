@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Switch, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
 import { isIOS } from '../../../utils/deviceUtils';
 import { CustomTheme } from '../../Theme';
@@ -15,12 +15,13 @@ interface LibraryItemProps {
     icon?: keyof typeof Ionicons.glyphMap;
     index: number;
     label: string;
+    color?: string;
     onPress?: () => void;
     style?: ViewStyle;
 }
 
 export const LibraryItem = memo<LibraryItemProps>(
-    ({ description, enabled, icon, index, label, onPress, style }) => {
+    ({ color, description, enabled, icon, index, label, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors, index);
         const { triggerHaptics } = useHaptics();
@@ -34,13 +35,18 @@ export const LibraryItem = memo<LibraryItemProps>(
             <Pressable
                 style={({ pressed }) => [styles.root, pressed && isIOS && { opacity: 0.8 }, style]}
                 android_ripple={{
-                    color: index % 2 === 0 ? colors.card : colors.background,
+                    color: colors.cardAccent300,
                     foreground: true,
                 }}
                 onPress={handlePress}
             >
                 {icon && (
-                    <Ionicons color={colors.primary300} name={icon} size={24} style={styles.icon} />
+                    <Ionicons
+                        color={color ? color : colors.primary300}
+                        name={icon}
+                        size={24}
+                        style={styles.icon}
+                    />
                 )}
                 <View style={styles.textContainer}>
                     <CustomText style={styles.label} weight={'SemiBold'}>
@@ -54,7 +60,8 @@ export const LibraryItem = memo<LibraryItemProps>(
                 </View>
                 {enabled !== undefined && (
                     <Switch
-                        thumbColor={colors.primary}
+                        thumbColor={isIOS ? undefined : colors.white}
+                        trackColor={isIOS ? undefined : { true: colors.primary }}
                         value={enabled}
                         onValueChange={handlePress}
                     />
@@ -67,22 +74,29 @@ export const LibraryItem = memo<LibraryItemProps>(
 const getStyles = (colors: CustomTheme['colors'], index: number) =>
     StyleSheet.create({
         description: {
-            color: colors.primary600,
+            color: colors.white,
             fontSize: 12,
+            opacity: 0.7,
         },
         icon: {
             marginRight: 12,
         },
         label: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 14,
         },
         root: {
             alignItems: 'center',
-            backgroundColor: index % 2 === 0 ? colors.background : colors.card,
+            backgroundColor: colors.card,
+            borderColor: colors.cardAccent300,
+            borderRadius: spacing.m,
+            borderWidth: 1,
             flexDirection: 'row',
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: index === 0 ? 0 : 12,
+            overflow: 'hidden',
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 18,
+            paddingVertical: 12,
         },
         textContainer: {
             flex: 1,

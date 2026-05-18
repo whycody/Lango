@@ -3,6 +3,7 @@ import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import appBuildNumbers from '../../../app.json';
+import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 
@@ -40,13 +41,14 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: 30,
         },
         smallVersion: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 12,
         },
         version: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 13,
             fontWeight: 'bold',
+            marginTop: MARGIN_HORIZONTAL / 2,
             textAlign: 'center',
         },
     });

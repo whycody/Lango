@@ -4,7 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { useDebouncedSyncSuggestions, useLanguage, useSuggestions } from '../../../store';
 import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
@@ -130,7 +130,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         firstFlashcard: {
             flex: 1,
-            marginRight: MARGIN_HORIZONTAL / 2,
+            marginRight: MARGIN_HORIZONTAL / 4,
         },
         flashcardsContainer: {
             flexDirection: 'row',
@@ -138,11 +138,16 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         root: {
             backgroundColor: colors.card,
+            borderColor: colors.cardAccent300,
+            borderRadius: spacing.l,
+            borderWidth: 1,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: MARGIN_VERTICAL,
         },
         secondFlashcard: {
             flex: 1,
-            marginLeft: MARGIN_HORIZONTAL / 2,
+            marginLeft: MARGIN_HORIZONTAL / 4,
         },
     });

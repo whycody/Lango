@@ -88,9 +88,8 @@ const styles = StyleSheet.create({
         marginRight: 6,
     },
     root: {
-        paddingBottom: MARGIN_VERTICAL + MARGIN_HORIZONTAL / 2,
+        marginTop: MARGIN_VERTICAL,
         paddingHorizontal: MARGIN_HORIZONTAL,
-        paddingTop: MARGIN_VERTICAL,
     },
     statisticsItem: {
         flex: 1,

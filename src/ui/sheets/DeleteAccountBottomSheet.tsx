@@ -4,7 +4,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { useAuth } from '../../store';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
@@ -64,7 +64,7 @@ export const DeleteAccountBottomSheet = (props: DeleteAccountBottomSheetProps) =
                     cursorColor={colors.primary300}
                     keyboardType="email-address"
                     placeholder={t('email_address')}
-                    placeholderTextColor={colors.primary600}
+                    placeholderTextColor={colors.white600}
                     style={styles.textInput}
                     value={emailInput}
                     onChangeText={setEmailInput}
@@ -78,14 +78,15 @@ const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         inputContainer: {
             backgroundColor: colors.background,
+            borderRadius: spacing.m,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL / 2,
         },
         textInput: {
-            color: colors.primary,
+            color: colors.white,
             fontFamily: `Montserrat-Regular`,
             fontSize: 15,
-            paddingHorizontal: 14,
+            marginHorizontal: 14,
             paddingVertical: 14,
         },
     });

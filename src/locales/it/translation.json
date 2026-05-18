@@ -15,6 +15,9 @@
     "wordAdded3": "Scelta perfetta! 👌",
     "wordNotAdded": "Impossibile aggiungere ❌",
     "addWord": "Aggiungi la tua parola +",
+    "activity": "Attività",
+    "activityDesc": "Le tue sessioni di studio negli ultimi mesi.",
+    "months": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
     "statistics": "Statistiche",
     "statisticsDesc": "Rivediamo i tuoi progressi",
     "words": "Parole",
@@ -147,6 +150,16 @@
         "open_settings": "Apri impostazioni",
         "cancel": "Annulla"
     },
+    "theme": {
+        "title": "Tema dell'app",
+        "desc": "Scegli il tema colore dell'app.",
+        "blue": "Blu",
+        "green": "Verde",
+        "pink": "Rosa",
+        "red": "Rosso",
+        "orange": "Arancione",
+        "purple": "Viola"
+    },
     "sorting": {
         "title": "Ordine di ordinamento",
         "desc": "Scegli come vengono ordinate le schede nella tua libreria.",
@@ -168,9 +181,10 @@
     },
     "word_suggestion_bottom_sheet": {
         "title": "Suggerimento nuova parola ✨",
-        "desc": "Visualizzi una scheda suggerita che non è ancora nel tuo dizionario. Se vuoi aggiungerla, *valuta quanto bene la conosci*. Altrimenti, *saltala usando la freccia* in basso a destra.",
-        "word": "Parola suggerita",
-        "translation": "Traduzione della parola"
+        "desc": "Visualizzi una scheda suggerita che non è ancora nel tuo dizionario.",
+        "desc2": "Se vuoi aggiungerla, valuta quanto bene la conosci. Altrimenti, saltala usando la freccia in basso a destra.",
+        "word": "Parola",
+        "translation": "Traduzione"
     },
     "microphone": {
         "no_permission": "Nessun permesso per usare il microfono 🎤",

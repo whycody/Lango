@@ -20,12 +20,13 @@ import { isAndroid, isIOS } from '../../utils/deviceUtils';
 import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
 import { CustomText, ModalDragHandle, VersionFooter } from '../components';
 import { LibraryItem } from '../components/library';
-import { DeleteAccountBottomSheet, LanguageBottomSheet } from '../sheets';
+import { DeleteAccountBottomSheet, LanguageBottomSheet, ThemeBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const keyExtractor = (item: SettingItem) => item.id.toString();
 const SETTINGS_LANGUAGE_SHEET_NAME = 'settings-language-sheet';
 const SETTINGS_DELETE_ACCOUNT_SHEET_NAME = 'settings-delete-account-sheet';
+const SETTINGS_THEME_SHEET_NAME = 'settings-theme-sheet';
 
 export const SettingsScreen = () => {
     const { colors } = useTheme() as CustomTheme;
@@ -88,78 +89,99 @@ export const SettingsScreen = () => {
     const settingsItems: SettingItem[] = useMemo(
         () => [
             {
+                color: '#2EE6A6',
                 description: currentMainLang,
-                icon: 'language-sharp',
+                icon: 'language',
                 id: SettingsItems.MAIN_LANGUAGE,
                 label: t('main_language'),
                 section: SettingsSections.LANGUAGE,
             },
             {
+                color: '#2EE6A6',
                 description: currentTranslationLang,
-                icon: 'language-sharp',
+                icon: 'language',
                 id: SettingsItems.TRANSLATION_LANGUAGE,
                 label: t('translation_language'),
                 section: SettingsSections.LANGUAGE,
             },
             {
+                color: '#2EE6A6',
                 description: currentApplicationLang,
-                icon: 'language-sharp',
+                icon: 'language',
                 id: SettingsItems.APPLICATION_LANGUAGE,
                 label: t('application_language'),
                 section: SettingsSections.LANGUAGE,
             },
+
             {
+                color: colors.primary300,
+                description: t(`theme.${userPreferences.appTheme.toLowerCase()}`),
+                icon: 'color-palette',
+                id: SettingsItems.APP_THEME,
+                label: t('theme.title'),
+                section: SettingsSections.PREFERENCES,
+            },
+            {
+                color: '#FFB84D',
                 description: t(`turned_${userPreferences.vibrationsEnabled ? 'on' : 'off'}_m`),
                 enabled: userPreferences.vibrationsEnabled,
-                icon: 'phone-portrait-sharp',
+                icon: 'phone-portrait',
                 id: SettingsItems.VIBRATIONS,
                 label: t('vibrations'),
                 section: SettingsSections.PREFERENCES,
             },
             {
+                color: '#FF7A59',
                 description: t(`turned_${notificationsEnabled ? 'on' : 'off'}_m`),
                 enabled: notificationsEnabled,
-                icon: 'notifications-sharp',
+                icon: 'notifications',
                 id: SettingsItems.NOTIFICATIONS,
                 label: t('notifications'),
                 section: SettingsSections.PREFERENCES,
             },
+
             {
+                color: '#9B6BFF',
                 description: t(`turned_${user?.suggestionsInSession ? 'on' : 'off'}_m`),
                 enabled: user?.suggestionsInSession,
-                icon: 'create-sharp',
+                icon: 'sparkles',
                 id: SettingsItems.SUGGESTIONS_IN_SESSION,
                 label: t('new_words_suggestions'),
                 section: SettingsSections.SESSION,
             },
             {
+                color: userPreferences.flashcardSide == FlashcardSide.WORD ? '#63E6FF' : '#2EE6A6',
                 description:
                     userPreferences.flashcardSide == FlashcardSide.WORD
                         ? t('word')
                         : t('translation'),
-                icon: 'document-text-sharp',
+                icon: 'document-text',
                 id: SettingsItems.FLASHCARD_SIDE,
                 label: t('flashcard_side'),
                 section: SettingsSections.SESSION,
             },
             {
+                color: '#B06CFF',
                 description: t(`turned_${userPreferences.sessionSpeechSynthesizer ? 'on' : 'off'}`),
                 enabled: userPreferences.sessionSpeechSynthesizer,
-                icon: 'volume-high-sharp',
+                icon: 'volume-high',
                 id: SettingsItems.SESSION_SPEECH_SYNTHESIZER,
                 label: t('speech_synthesizer'),
                 section: SettingsSections.SESSION,
             },
+
             {
+                color: '#7B9CFF',
                 description: user?.email ?? '',
-                icon: 'mail-sharp',
+                icon: 'mail',
                 id: SettingsItems.EMAIL_ADDRESS,
                 label: t('email_address'),
                 section: SettingsSections.ACCOUNT,
             },
             {
+                color: '#FF5C5C',
                 description: t('delete_account_desc'),
-                icon: 'person-remove-sharp',
+                icon: 'person-remove',
                 id: SettingsItems.DELETE_ACCOUNT,
                 label: t('delete_account'),
                 section: SettingsSections.ACCOUNT,
@@ -167,6 +189,7 @@ export const SettingsScreen = () => {
         ],
         [
             t,
+            colors,
             user?.email,
             user?.suggestionsInSession,
             notificationsEnabled,
@@ -223,6 +246,10 @@ export const SettingsScreen = () => {
                     TrueSheet.present(SETTINGS_LANGUAGE_SHEET_NAME);
                     break;
                 }
+                case SettingsItems.APP_THEME:
+                    trackEvent(AnalyticsEventName.THEME_SHEET_OPEN);
+                    TrueSheet.present(SETTINGS_THEME_SHEET_NAME);
+                    break;
                 case SettingsItems.VIBRATIONS:
                     userPreferences.setVibrationsEnabled(!userPreferences.vibrationsEnabled);
                     break;
@@ -262,12 +289,12 @@ export const SettingsScreen = () => {
     const renderSettingsItem = ({ index, item }: { index: number; item: SettingItem }) => (
         <LibraryItem
             key={item.id}
+            color={item.color}
             description={item.description}
             enabled={item.enabled}
             icon={item.icon}
-            index={0}
+            index={index}
             label={item.label}
-            style={index !== 0 ? { borderColor: colors.card, borderTopWidth: 3 } : undefined}
             onPress={() => handlePress(item.id)}
         />
     );
@@ -305,10 +332,13 @@ export const SettingsScreen = () => {
                 sheetName={SETTINGS_LANGUAGE_SHEET_NAME}
             />
             <DeleteAccountBottomSheet sheetName={SETTINGS_DELETE_ACCOUNT_SHEET_NAME} />
+            <ThemeBottomSheet sheetName={SETTINGS_THEME_SHEET_NAME} />
             <View style={styles.root}>
+                <ModalDragHandle />
                 {isAndroid && <View style={style} />}
                 <SectionList
                     ListFooterComponent={renderListFooterComponent}
+                    ListFooterComponentStyle={styles.listFooter}
                     keyExtractor={keyExtractor}
                     renderItem={renderSettingsItem}
                     renderSectionHeader={({ section }) => renderSectionHeader(section.title)}
@@ -317,7 +347,6 @@ export const SettingsScreen = () => {
                     stickySectionHeadersEnabled={false}
                     ListHeaderComponent={
                         <>
-                            <ModalDragHandle />
                             <CustomText
                                 style={[styles.title, isIOS && styles.titleIOS]}
                                 weight="Bold"
@@ -341,12 +370,15 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         footer: {
             marginVertical: MARGIN_VERTICAL / 2,
         },
+        listFooter: {
+            marginBottom: 20,
+        },
         root: {
-            backgroundColor: colors.card,
+            backgroundColor: colors.background,
             flex: 1,
         },
         section: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 13,
             marginBottom: 10,
             marginHorizontal: MARGIN_HORIZONTAL,
@@ -357,13 +389,13 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             backgroundColor: colors.card,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 15,
             marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL / 3,
+            marginTop: 4,
         },
         title: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 24,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,

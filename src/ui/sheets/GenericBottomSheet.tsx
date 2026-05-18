@@ -30,7 +30,6 @@ type GenericBottomSheetProps = {
 
 const BOTTOM_SHEET_GRABBER_OPTIONS: GrabberOptions = {
     color: 'white',
-    cornerRadius: 0,
 };
 
 export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
@@ -115,7 +114,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionText: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 13,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: MARGIN_VERTICAL,
@@ -132,16 +131,16 @@ const getStyles = (colors: CustomTheme['colors']) =>
             height: MARGIN_VERTICAL,
         },
         subtitle: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 15,
-            marginTop: MARGIN_VERTICAL / 2,
+            marginTop: 6,
             paddingHorizontal: MARGIN_HORIZONTAL,
         },
         subtitleSmall: {
-            marginTop: MARGIN_VERTICAL / 4,
+            marginTop: 2,
         },
         title: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 18,
             marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,

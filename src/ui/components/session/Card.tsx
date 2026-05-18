@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionWord } from '../../../types';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
@@ -63,7 +63,7 @@ export const Card = memo<CardProps>(props => {
     return (
         <>
             <LinearGradient
-                colors={[colors.cardAccent, colors.cardAccent600]}
+                colors={[colors.cardAccent300, colors.cardAccent]}
                 end={{ x: 1, y: 1 }}
                 start={{ x: 0, y: 0 }}
                 style={styles.root}
@@ -94,11 +94,7 @@ export const Card = memo<CardProps>(props => {
                             <CustomText style={styles.playText} weight={'SemiBold'}>
                                 {t('play')}
                             </CustomText>
-                            <Ionicons
-                                color={colors.primary300}
-                                name={'volume-high-sharp'}
-                                size={14}
-                            />
+                            <Ionicons color={colors.white} name={'volume-high-sharp'} size={14} />
                         </Pressable>
                     )}
                     <View style={styles.tagsContainer}>
@@ -112,7 +108,7 @@ export const Card = memo<CardProps>(props => {
                 </View>
                 <View style={styles.cardIconsContainer}>
                     <Ionicons
-                        color={colors.primary300}
+                        color={colors.white}
                         name={'arrow-back-sharp'}
                         size={24}
                         style={[styles.icon, { opacity: wordIndex != 0 && onBackPress ? 1 : 0.4 }]}
@@ -124,7 +120,7 @@ export const Card = memo<CardProps>(props => {
                         </CustomText>
                     )}
                     <Ionicons
-                        color={colors.primary300}
+                        color={colors.white}
                         name={isSuggestion ? 'arrow-forward-sharp' : 'pencil-sharp'}
                         size={24}
                         style={[
@@ -161,19 +157,21 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: MARGIN_VERTICAL * 2,
         },
         exampleText: {
-            color: colors.primary600,
-            fontSize: 14,
-            marginHorizontal: MARGIN_HORIZONTAL * 2,
+            color: colors.white300,
+            fontSize: 12,
+            height: 30,
+            marginHorizontal: MARGIN_HORIZONTAL,
             textAlign: 'center',
         },
         icon: {
-            margin: MARGIN_HORIZONTAL / 2,
-            padding: MARGIN_HORIZONTAL / 2,
+            padding: MARGIN_HORIZONTAL,
             zIndex: 2,
         },
         iconMarked: {
-            backgroundColor: colors.cardAccent,
+            backgroundColor: colors.cardAccent300,
             borderRadius: 50,
+            margin: MARGIN_HORIZONTAL / 2,
+            padding: MARGIN_HORIZONTAL / 2,
         },
         longText: {
             marginTop: MARGIN_VERTICAL * 3,
@@ -191,18 +189,23 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         newWordSuggestion: {
             backgroundColor: colors.primary,
-            color: colors.cardAccent300,
+            borderColor: colors.primary800,
+            borderLeftWidth: 2,
+            borderRightWidth: 2,
+            color: colors.white,
             fontSize: 12.5,
             left: -1.5,
+            paddingVertical: 3,
             position: 'absolute',
             right: -1.5,
             textAlign: 'center',
-            top: 20,
+            top: 25,
         },
         playButton: {
             alignItems: 'center',
             alignSelf: 'center',
-            backgroundColor: colors.cardAccent600,
+            backgroundColor: colors.primary,
+            borderRadius: spacing.xs,
             flexDirection: 'row',
             gap: 6,
             marginVertical: 10,
@@ -212,23 +215,27 @@ const getStyles = (colors: CustomTheme['colors']) =>
             zIndex: 2,
         },
         playText: {
-            color: colors.primary300,
+            color: colors.white,
             fontSize: 11,
         },
         root: {
             backgroundColor: colors.cardAccent300,
+            borderColor: colors.cardAccent,
+            borderRadius: spacing.l,
+            borderWidth: 2,
             flex: 1,
         },
         skipSuggestionText: {
-            color: colors.primary600,
+            color: colors.white300,
             flex: 1,
             fontSize: 10,
             marginBottom: 4,
             textAlign: 'center',
         },
         tag: {
-            backgroundColor: colors.cardAccent,
-            color: colors.primary600,
+            backgroundColor: colors.cardAccent300,
+            borderRadius: spacing.xs,
+            color: colors.white300,
             fontSize: 9,
             height: 18,
             paddingHorizontal: 5,
@@ -240,11 +247,10 @@ const getStyles = (colors: CustomTheme['colors']) =>
             flexWrap: 'wrap',
             gap: 4,
             justifyContent: 'center',
-            opacity: 0.6,
             width: '75%',
         },
         text: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 25,
             marginHorizontal: MARGIN_HORIZONTAL * 2,
             marginTop: MARGIN_VERTICAL * 4,

@@ -3,6 +3,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
 
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { getNextMilestone, getPrevMilestone } from '../../../utils/streakUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
@@ -83,7 +84,7 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
         >
             {isGoal && (
                 <View style={styles.goalRow}>
-                    <CustomText style={styles.goalAchievedText} weight="Black">
+                    <CustomText style={styles.goalAchievedText} weight="Bold">
                         {t('streak.goal_achieved')}
                     </CustomText>
                 </View>
@@ -141,12 +142,12 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
         container: {
             backgroundColor: colors.card,
             borderColor: colors.border,
+            marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 16,
-            padding: 12,
         },
         goal: {
             alignSelf: 'center',
-            color: goalAchieved ? colors.orange : colors.primary300,
+            color: goalAchieved ? colors.orange : colors.white300,
             fontSize: 13,
             marginTop: 21,
             textAlign: 'center',
@@ -156,20 +157,17 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             color: colors.yellow,
             flex: 1,
             fontSize: 22,
-            fontWeight: 'bold',
-            marginVertical: 8,
+            marginBottom: 8,
             textAlign: 'center',
             textTransform: 'uppercase',
         },
         goalLeft: {
-            color: goalAchieved ? colors.orange : colors.primary300,
+            color: goalAchieved ? colors.orange : colors.white300,
             fontSize: 12,
-            fontWeight: '800',
         },
         goalRight: {
-            color: goalAchieved ? colors.orange300 : colors.primary300,
+            color: goalAchieved ? colors.orange300 : colors.white300,
             fontSize: 12,
-            fontWeight: '600',
             opacity: 0.75,
         },
         goalRow: {
@@ -186,6 +184,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
         },
         progressBar: {
             backgroundColor: colors.background,
+            borderRadius: spacing.m,
             height: 7,
             overflow: 'hidden',
         },
@@ -194,7 +193,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             height: '100%',
         },
         streakLabel: {
-            color: goalAchieved ? colors.orange : colors.primary,
+            color: goalAchieved ? colors.orange : colors.white,
             fontSize: 12,
             marginTop: 5,
             textAlign: 'center',

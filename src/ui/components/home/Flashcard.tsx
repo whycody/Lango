@@ -1,11 +1,18 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, {
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useState,
+} from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Foundation } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
+import { spacing } from '../../../constants/margins';
 import { WordSource } from '../../../constants/Word';
 import { useHaptics } from '../../../hooks';
 import { useLanguage, useWords } from '../../../store';
@@ -28,25 +35,21 @@ export const Flashcard = forwardRef(
         const [readyToFlip, setReadyToFlip] = useState(false);
         const [flip, setFlip] = useState(false);
         const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors);
+        const styles = useMemo(() => getStyles(colors), [colors]);
         const { t } = useTranslation();
         const wordsContext = useWords();
         const languageContext = useLanguage();
         const { triggerHaptics } = useHaptics();
 
-        useImperativeHandle(ref, () => ({
-            flippable: readyToFlip,
-            flipWithoutAdd: () => handleFlip(false),
-        }));
-
-        const getRandomMessage = () => {
+        const getRandomMessage = useCallback(() => {
             const messages = [t('wordAdded1'), t('wordAdded2'), t('wordAdded3')];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }, [t]);
 
-            const randomIndex = Math.floor(Math.random() * messages.length);
-            return messages[randomIndex];
-        };
-
-        const [backText, setBackText] = useState(getRandomMessage());
+        const [backText, setBackText] = useState(() => getRandomMessage());
+        const [flashcardState, setFlashcardState] = useState<'success' | 'error' | 'neutral'>(
+            'neutral',
+        );
 
         useEffect(() => {
             setNewFlashcardIsReady(true);
@@ -61,32 +64,47 @@ export const Flashcard = forwardRef(
                 setBackText(getRandomMessage());
                 setFlippable(true);
             }, 200);
-        }, [setNewFlashcardIsReady, newFlashcardIsReady, readyToFlip]);
+        }, [newFlashcardIsReady, readyToFlip, getRandomMessage]);
 
-        const handleFlip = (add: boolean = true) => {
-            if (!flippable) return;
-            setFlip(true);
-            setFlippable(false);
-            setNewFlashcardIsReady(false);
-            triggerHaptics('rigid');
-            if (add && suggestion) {
-                const addWord = wordsContext.addWord(
-                    suggestion.word,
-                    suggestion.translation,
-                    WordSource.LANGO,
-                );
-                trackEvent(AnalyticsEventName.SUGGESTION_ADD, {
-                    successfully: !!addWord,
-                    suggestionId: suggestion.id,
-                });
-                if (!addWord) setBackText(t('wordNotAdded'));
-            } else setBackText(t('change_flashcard'));
-            setTimeout(() => onFlashcardPress?.(add), 150);
-            setTimeout(() => setReadyToFlip(true), 1000);
-        };
+        const handleFlip = useCallback(
+            (add: boolean = true) => {
+                if (!flippable) return;
+                setFlip(true);
+                setFlippable(false);
+                setNewFlashcardIsReady(false);
+                triggerHaptics('rigid');
+                if (add && suggestion) {
+                    const addWord = wordsContext.addWord(
+                        suggestion.word,
+                        suggestion.translation,
+                        WordSource.LANGO,
+                    );
+                    trackEvent(AnalyticsEventName.SUGGESTION_ADD, {
+                        successfully: !!addWord,
+                        suggestionId: suggestion.id,
+                    });
+                    if (!addWord) {
+                        setBackText(t('wordNotAdded'));
+                        setFlashcardState('error');
+                    } else setFlashcardState('success');
+                } else {
+                    setBackText(t('change_flashcard'));
+                    setFlashcardState('neutral');
+                }
+                setTimeout(() => onFlashcardPress?.(add), 150);
+                setTimeout(() => setReadyToFlip(true), 1000);
+            },
+            [flippable, suggestion, wordsContext, triggerHaptics, t, onFlashcardPress],
+        );
 
-        const gradientStart = { x: 0, y: 0 };
-        const gradientEnd = { x: 1, y: 1 };
+        useImperativeHandle(
+            ref,
+            () => ({
+                flippable: readyToFlip,
+                flipWithoutAdd: () => handleFlip(false),
+            }),
+            [readyToFlip, handleFlip],
+        );
 
         return (
             <View
@@ -95,15 +113,12 @@ export const Flashcard = forwardRef(
             >
                 <FlipCard
                     flip={flip}
+                    flipVertical={true}
                     style={[styles.root, style]}
+                    swipeable={false}
                     onFlipStart={() => handleFlip(true)}
                 >
-                    <LinearGradient
-                        colors={[colors.cardAccent, colors.cardAccent600]}
-                        end={gradientEnd}
-                        start={gradientStart}
-                        style={styles.face}
-                    >
+                    <View style={styles.face}>
                         <View style={styles.flagsContainer}>
                             <SquareFlag
                                 languageCode={languageContext.mainLang}
@@ -122,19 +137,32 @@ export const Flashcard = forwardRef(
                             {suggestion?.translation}
                         </CustomText>
                         <View style={styles.plusContainer}>
-                            <Foundation color={colors.primary} name={'plus'} size={12} />
+                            <Foundation color={colors.white} name={'plus'} size={12} />
                         </View>
-                    </LinearGradient>
-                    <LinearGradient
-                        colors={[colors.cardAccent, colors.cardAccent600]}
-                        end={gradientEnd}
-                        start={gradientStart}
-                        style={styles.face}
+                    </View>
+                    <View
+                        style={[
+                            styles.face,
+                            {
+                                backgroundColor:
+                                    flashcardState === 'success'
+                                        ? colors.green
+                                        : flashcardState === 'error'
+                                          ? colors.red
+                                          : colors.cardAccent600,
+                            },
+                        ]}
                     >
-                        <CustomText style={styles.successText} weight={'SemiBold'}>
+                        <CustomText
+                            weight={'Bold'}
+                            style={[
+                                styles.successText,
+                                flashcardState === 'neutral' && { color: colors.white },
+                            ]}
+                        >
                             {backText}
                         </CustomText>
-                    </LinearGradient>
+                    </View>
                 </FlipCard>
             </View>
         );
@@ -148,7 +176,10 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         face: {
             backfaceVisibility: 'hidden',
-            backgroundColor: colors.cardAccent,
+            backgroundColor: colors.cardAccent600,
+            borderColor: colors.cardAccent300,
+            borderRadius: spacing.m,
+            borderWidth: 2,
             flex: 1,
             justifyContent: 'center',
             overflow: 'hidden',
@@ -165,6 +196,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         inactiveWord: {
             backgroundColor: colors.primary600,
+            borderRadius: spacing.xs,
             opacity: 0.5,
         },
         mainFlag: {
@@ -173,29 +205,29 @@ const getStyles = (colors: CustomTheme['colors']) =>
         plusContainer: {
             alignItems: 'center',
             backgroundColor: colors.card,
-            height: 22,
+            borderRadius: spacing.s,
+            height: 20,
             justifyContent: 'center',
             position: 'absolute',
-            right: 12,
-            top: 12,
-            width: 22,
+            right: 11,
+            top: 11,
+            width: 20,
         },
         root: {
-            height: 86,
+            height: 80,
             overflow: 'hidden',
         },
         successText: {
-            color: colors.primary300,
+            color: colors.background,
             fontSize: 14,
             textAlign: 'center',
         },
         translation: {
-            color: colors.primary300,
-            fontSize: 12,
-            opacity: 0.8,
+            color: colors.white300,
+            fontSize: 11.5,
         },
         word: {
-            color: colors.primary300,
-            fontSize: 14,
+            color: colors.white,
+            fontSize: 13.5,
         },
     });

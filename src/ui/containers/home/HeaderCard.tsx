@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useLayoutEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { AppState, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
@@ -8,7 +8,7 @@ import { ProgressBar } from 'react-native-paper';
 
 import { expo } from '../../../../app.json';
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
 import {
@@ -50,27 +50,40 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
         numberOfDays: 0,
     });
 
-    const styles = getStyles(colors);
+    const styles = useMemo(() => getStyles(colors), [colors]);
 
-    const last50Words = langWords
-        .sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
-        .slice(0, 50)
-        .map(word => word.id);
-    const langWordsHeuristicStatesFiltered = langWordsHeuristicStates.filter(word =>
-        last50Words.includes(word.wordId),
+    const last50Words = useMemo(
+        () =>
+            [...langWords]
+                .sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
+                .slice(0, 50)
+                .map(word => word.id),
+        [langWords],
     );
 
-    const lastWellKnownWords =
-        last50Words.length < 5
-            ? 1
-            : Math.round(
-                  (langWordsHeuristicStatesFiltered.filter(
-                      word => word.studyCount > 2 && new Date(word.nextReviewDate) > new Date(),
-                  ).length /
-                      last50Words.length) *
-                      100,
-              ) / 100;
-    const wellKnownWords = langWordsHeuristicStates.filter(word => word.studyCount > 2).length;
+    const langWordsHeuristicStatesFiltered = useMemo(
+        () => langWordsHeuristicStates.filter(word => last50Words.includes(word.wordId)),
+        [langWordsHeuristicStates, last50Words],
+    );
+
+    const lastWellKnownWords = useMemo(() => {
+        if (last50Words.length < 5) return 1;
+        const now = new Date();
+        return (
+            Math.round(
+                (langWordsHeuristicStatesFiltered.filter(
+                    word => word.studyCount > 2 && new Date(word.nextReviewDate) > now,
+                ).length /
+                    last50Words.length) *
+                    100,
+            ) / 100
+        );
+    }, [langWordsHeuristicStatesFiltered, last50Words]);
+
+    const wellKnownWords = useMemo(
+        () => langWordsHeuristicStates.filter(word => word.studyCount > 2).length,
+        [langWordsHeuristicStates],
+    );
 
     useLayoutEffect(() => {
         setStreak(getCurrentStreak(studyDaysList));
@@ -85,21 +98,20 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
         return () => subscription.remove();
     }, [studyDaysList]);
 
-    const handleActionButtonPress = () => {
+    const handleActionButtonPress = useCallback(() => {
         trackEvent(AnalyticsEventName.START_SESSION_SHEET_OPEN);
         TrueSheet.present(START_SESSION_BOTTOM_SHEET);
-    };
+    }, []);
 
-    const handleSessionStart = (
-        length: SessionLength,
-        mode: SessionMode,
-        flashcardSide: FlashcardSide,
-    ) => {
-        TrueSheet.dismissAll();
-        navigateToSessionScreen(length, mode, flashcardSide);
-    };
+    const handleSessionStart = useCallback(
+        (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {
+            TrueSheet.dismissAll();
+            navigateToSessionScreen(length, mode, flashcardSide);
+        },
+        [navigateToSessionScreen],
+    );
 
-    const getReportMessage = () => {
+    const reportMessage = useMemo(() => {
         const percentage = Math.floor(lastWellKnownWords * 100);
 
         if (langWordsHeuristicStates.length < 5) return t('report1');
@@ -109,15 +121,15 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
         if (lastWellKnownWords >= 0.1 && wellKnownWords <= 10) return t('report4', { percentage });
         if (lastWellKnownWords >= 0.9) return t('report5', { percentage, wellKnownWords });
         return t('report6', { percentage, wellKnownWords });
-    };
+    }, [lastWellKnownWords, wellKnownWords, langWordsHeuristicStates.length, t]);
 
-    const handleLanguageSheetOpen = () => {
+    const handleLanguageSheetOpen = useCallback(() => {
         trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
             source: 'main_screen',
             type: 'main',
         });
         TrueSheet.present(HOME_LANGUAGE_SHEET_NAME);
-    };
+    }, []);
 
     return (
         <View style={styles.root}>
@@ -128,7 +140,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                     {expo.name}
                 </CustomText>
                 <MaterialCommunityIcons
-                    color={streak.active ? colors.red : colors.primary600}
+                    color={streak.active ? colors.red : colors.cardAccent300}
                     name={'fire'}
                     size={30}
                 />
@@ -148,7 +160,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                 color={colors.primary300}
                 style={styles.progressBar}
             />
-            <CustomText style={styles.descText}>{getReportMessage()}</CustomText>
+            <CustomText style={styles.descText}>{reportMessage}</CustomText>
 
             <ActionButton
                 active={langWords.length + langSuggestions.length >= 5}
@@ -165,40 +177,43 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         actionButton: {
-            marginTop: 32,
+            marginTop: 18,
         },
         container: {
             alignItems: 'center',
             flexDirection: 'row',
         },
         descText: {
-            color: colors.primary600,
-            fontSize: 15,
-            marginTop: 16,
+            color: colors.white,
+            fontSize: 14,
+            lineHeight: 22,
+            marginTop: 12,
+            opacity: 0.8,
         },
         flag: {
             paddingLeft: 5,
             paddingVertical: 5,
         },
         inactiveStreak: {
-            color: colors.primary600,
+            color: colors.cardAccent300,
         },
         mainText: {
-            color: colors.primary,
+            color: colors.white,
             flex: 1,
             fontSize: 26,
         },
         progressBar: {
             backgroundColor: colors.cardAccent300,
+            borderRadius: spacing.s,
             height: 7,
             marginTop: 12,
         },
         root: {
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: MARGIN_VERTICAL,
+            paddingTop: MARGIN_VERTICAL,
         },
         streakText: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 18,
             marginRight: 15,
         },

@@ -33,7 +33,7 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
     return (
         <View style={styles.headerContainer}>
             <MaterialCommunityIcons
-                color={colors.primary300}
+                color={colors.white}
                 name={'exit-to-app'}
                 size={23}
                 style={[styles.transform, styles.icon, !allowExit && styles.disabled]}
@@ -53,7 +53,7 @@ export const SessionHeader: FC<SessionHeaderProps> = ({
                 {`${cardsSetLength - progress}`}
             </CustomText>
             <Ionicons
-                color={colors.primary300}
+                color={colors.white}
                 name={'settings-outline'}
                 size={23}
                 style={styles.icon}
@@ -80,12 +80,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingVertical: 5,
         },
         progressText: {
-            color: colors.primary600,
+            color: colors.primary300,
             textAlign: 'center',
             width: 30,
         },
         title: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 15,
             paddingHorizontal: 10,
             textAlign: 'center',

@@ -5,8 +5,10 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
+import { spacing } from '../constants/margins';
 import { useHaptics } from '../hooks';
 import { CustomText } from '../ui/components';
 import { HomeScreen } from '../ui/screens/HomeScreen';
@@ -28,7 +30,8 @@ const Tab = createBottomTabNavigator<TabsParamList>();
 const TabsNavigator = () => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
+    const insets = useSafeAreaInsets();
+    const styles = getStyles(colors, insets);
 
     const haptics = useHaptics();
     const iconScale = useRef(new Animated.Value(1)).current;
@@ -41,7 +44,7 @@ const TabsNavigator = () => {
         if (route.name === 'Home') {
             return (
                 <MaterialCommunityIcons
-                    color={focused ? colors.primary300 : color}
+                    color={focused ? colors.white : color}
                     name="home"
                     size={iconSize}
                     style={!focused ? { opacity: 0.6 } : undefined}
@@ -52,7 +55,7 @@ const TabsNavigator = () => {
         if (route.name === 'Library') {
             return (
                 <MaterialCommunityIcons
-                    color={focused ? colors.primary300 : color}
+                    color={focused ? colors.white : color}
                     name="view-grid"
                     size={iconSize}
                     style={!focused ? { opacity: 0.6 } : undefined}
@@ -67,9 +70,9 @@ const TabsNavigator = () => {
         transform: [{ scale: iconScale }],
     };
 
-    const renderTabLabel = (route: TabRouteProp, focused: boolean, color: string) => (
+    const renderTabLabel = (route: TabRouteProp, focused: boolean) => (
         <CustomText
-            style={[styles.tabLabel, { color }, !focused && styles.tabLabelInactive]}
+            style={[styles.tabLabel, { color: colors.white }, !focused && styles.tabLabelInactive]}
             weight={focused ? 'Bold' : 'Regular'}
         >
             {t(route.name.toLowerCase())}
@@ -107,8 +110,8 @@ const TabsNavigator = () => {
                 screenOptions={({ route }) => ({
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => renderTabIcon(route, focused, color),
-                    tabBarLabel: ({ color, focused }) =>
-                        route.name === 'Add' ? null : renderTabLabel(route, focused, color),
+                    tabBarLabel: ({ focused }) =>
+                        route.name === 'Add' ? null : renderTabLabel(route, focused),
                     tabBarStyle: styles.tabBarStyle,
                 })}
             >
@@ -134,7 +137,7 @@ const TabsNavigator = () => {
                                 <View style={styles.fabBorder}>
                                     <View style={styles.fab}>
                                         <Animated.View style={plusStyle}>
-                                            <Entypo color={colors.card} name="plus" size={24} />
+                                            <Entypo color={colors.white} name="plus" size={24} />
                                         </Animated.View>
                                     </View>
                                 </View>
@@ -157,12 +160,12 @@ const TabsNavigator = () => {
     );
 };
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         fab: {
             alignItems: 'center',
             backgroundColor: colors.primary300,
-            borderRadius: 28,
+            borderRadius: spacing.xxxl,
             height: 56,
             justifyContent: 'center',
             width: 56,
@@ -170,8 +173,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         fabBorder: {
             alignItems: 'center',
             backgroundColor: colors.card,
-            borderRadius: 32,
-            elevation: 6,
+            borderRadius: spacing.xxxl,
             height: 66,
             justifyContent: 'center',
             width: 66,
@@ -182,9 +184,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
             top: -20,
         },
         tabBarStyle: {
-            borderTopWidth: 0,
-            height: 60,
-            paddingBottom: 6,
+            borderTopLeftRadius: spacing.xl,
+            borderTopRightRadius: spacing.xl,
+            height: 60 + insets.bottom,
+            marginBottom: -1,
+            paddingBottom: 6 + insets.bottom,
             paddingHorizontal: 20,
             paddingTop: 8,
         },
@@ -192,7 +196,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             fontSize: 12,
         },
         tabLabelInactive: {
-            opacity: 0.6,
+            opacity: 0.35,
         },
     });
 

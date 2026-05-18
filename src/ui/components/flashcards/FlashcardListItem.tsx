@@ -3,7 +3,7 @@ import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { getLevelColor } from '../../../utils/getLevelColor';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
@@ -17,12 +17,23 @@ type FlashcardListItemProps = {
     style?: StyleProp<ViewStyle>;
     text: string;
     translation: string;
+    withContrast?: boolean;
 };
 
 export const FlashcardListItem = memo<FlashcardListItemProps>(
-    ({ id, level, onEditPress, onPress, onRemovePress, style, text, translation }) => {
+    ({
+        id,
+        level,
+        onEditPress,
+        onPress,
+        onRemovePress,
+        style,
+        text,
+        translation,
+        withContrast = false,
+    }) => {
         const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors);
+        const styles = getStyles(colors, withContrast);
 
         const getColor = useCallback((level: number) => {
             return getLevelColor(level);
@@ -30,12 +41,12 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
 
         return (
             <Pressable
-                android_ripple={{ color: colors.card, foreground: true }}
+                android_ripple={{ color: colors.cardAccent, foreground: true }}
                 style={[styles.root, style]}
                 onPress={() => onPress?.(id)}
             >
                 <View style={styles.container}>
-                    <Ionicons color={getColor(level)} name={'reader-sharp'} size={22} />
+                    <Ionicons color={getColor(level)} name={'reader'} size={22} />
                     <View style={styles.textContainer}>
                         <CustomText style={styles.text} weight={'SemiBold'}>
                             {text}
@@ -44,8 +55,8 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
                     </View>
                     {onRemovePress && (
                         <Ionicons
-                            color={colors.primary600}
-                            name={'trash-sharp'}
+                            color={colors.red}
+                            name={'trash'}
                             size={22}
                             style={styles.icon}
                             onPress={() => onRemovePress(id)}
@@ -53,8 +64,8 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
                     )}
                     {onEditPress && (
                         <Ionicons
-                            color={colors.primary300}
-                            name={'pencil-sharp'}
+                            color={colors.white}
+                            name={'pencil'}
                             size={21}
                             style={styles.icon}
                             onPress={() => onEditPress(id)}
@@ -66,13 +77,13 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
     },
 );
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (colors: CustomTheme['colors'], withContrast: boolean) =>
     StyleSheet.create({
         container: {
             alignItems: 'center',
             flexDirection: 'row',
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 15,
+            paddingVertical: 13,
         },
         icon: {
             marginLeft: 10,
@@ -81,12 +92,16 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingRight: 0,
         },
         root: {
-            backgroundColor: colors.background,
-            borderColor: colors.card,
-            borderTopWidth: 3,
+            backgroundColor: withContrast ? colors.cardAccent : colors.card,
+            borderColor: withContrast ? colors.cardAccent300 : colors.cardAccent,
+            borderRadius: spacing.m,
+            borderWidth: 1,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: 12,
+            overflow: 'hidden',
         },
         text: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 14,
         },
         textContainer: {
@@ -94,7 +109,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginLeft: 10,
         },
         translation: {
-            color: colors.primary300,
+            color: colors.white300,
             fontSize: 13,
         },
     });

@@ -5,10 +5,13 @@ export type CustomTheme = Theme & {
         cardAccent: string;
         cardAccent300: string;
         cardAccent600: string;
+        blue: string;
+        green: string;
         green300: string;
         green600: string;
         primary300: string;
         primary600: string;
+        primary800: string;
         red: string;
         red300: string;
         red600: string;
@@ -19,6 +22,9 @@ export type CustomTheme = Theme & {
         yellow300: string;
         yellow600: string;
         white: string;
+        white300: string;
+        white600: string;
+        coral: string;
     };
     fonts: Theme['fonts'];
 };

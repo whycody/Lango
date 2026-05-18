@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { FlatList, StyleSheet, View, ViewStyle } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { LanguageCode, LanguageTypes } from '../../../constants/Language';
@@ -9,6 +10,7 @@ import { useAuth, useLanguage } from '../../../store';
 import { Language } from '../../../types';
 import { Header } from '../../components';
 import { LanguageItem } from '../../components/language';
+import { CustomTheme } from '../../Theme';
 
 interface LanguagePickerProps {
     allLanguages?: boolean;
@@ -21,6 +23,7 @@ interface LanguagePickerProps {
     ) => void;
     style?: ViewStyle;
     title?: string;
+    onboarding?: boolean;
 }
 
 export const LanguagePicker = (props: LanguagePickerProps) => {
@@ -29,10 +32,12 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
         alwaysAllowPick,
         languageType = LanguageTypes.MAIN,
         onLanguagePick,
+        onboarding = false,
         style,
         title,
     } = props;
-    const styles = getStyles();
+    const { colors } = useTheme() as CustomTheme;
+    const styles = getStyles(colors, onboarding);
     const { t } = useTranslation();
     const {
         applicationLang,
@@ -130,15 +135,15 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
     );
 
     const renderLanguageItem = useCallback(
-        ({ index, item }: { index: number; item: Language }) => (
+        ({ item }: { item: Language }) => (
             <LanguageItem
                 checked={item.languageCode === pickedLanguage}
-                index={index}
                 language={item}
+                onboarding={onboarding}
                 onPress={() => handleLanguagePick(item)}
             />
         ),
-        [pickedLanguage, handleLanguagePick],
+        [pickedLanguage, onboarding, handleLanguagePick],
     );
 
     return (
@@ -148,15 +153,24 @@ export const LanguagePicker = (props: LanguagePickerProps) => {
                 subtitle={t(`choose_language_${languageType}_desc`)}
                 title={title ?? t(`choose_${langTypeDesc}_language`)}
             />
-            <FlatList data={languagesData} renderItem={renderLanguageItem} scrollEnabled={false} />
+            <FlatList
+                data={languagesData}
+                renderItem={renderLanguageItem}
+                scrollEnabled={false}
+                style={styles.list}
+            />
         </View>
     );
 };
 
-const getStyles = () =>
+const getStyles = (colors: CustomTheme['colors'], onboarding: boolean) =>
     StyleSheet.create({
         header: {
+            paddingBottom: 16,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: MARGIN_VERTICAL / 2,
+            paddingTop: MARGIN_VERTICAL / 2,
+        },
+        list: {
+            backgroundColor: onboarding ? colors.background : colors.card,
         },
     });

@@ -2,23 +2,21 @@ import { memo } from 'react';
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 type SortingMethodItemProps = {
     checked: boolean;
     id: number;
-    index: number;
     label: string;
     onPress: (id: number) => void;
     style?: StyleProp<ViewStyle>;
 };
 
 export const SortingMethodItem = memo<SortingMethodItemProps>(
-    ({ checked, id, index, label, onPress, style }) => {
+    ({ checked, id, label, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
@@ -29,21 +27,14 @@ export const SortingMethodItem = memo<SortingMethodItemProps>(
                 style={style}
                 onPress={() => onPress(id)}
             >
-                {index !== 0 && <View style={styles.divider} />}
-                <LinearGradient
-                    colors={['transparent', checked ? colors.cardAccent600 : 'transparent']}
-                    end={{ x: 1, y: 1 }}
-                    start={{ x: 0, y: 0 }}
-                >
-                    <View style={styles.container}>
-                        <MaterialCommunityIcons color={colors.primary600} name={'sort'} size={22} />
-                        <View style={styles.textContainer}>
-                            <CustomText style={styles.text} weight={'SemiBold'}>
-                                {label}
-                            </CustomText>
-                        </View>
+                <View style={[styles.container, checked && { borderColor: colors.primary }]}>
+                    <MaterialCommunityIcons color={colors.orange} name={'sort'} size={22} />
+                    <View style={styles.textContainer}>
+                        <CustomText style={styles.text} weight={'SemiBold'}>
+                            {label}
+                        </CustomText>
                     </View>
-                </LinearGradient>
+                </View>
             </Pressable>
         );
     },
@@ -53,7 +44,13 @@ const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         container: {
             alignItems: 'center',
+            backgroundColor: colors.cardAccent,
+            borderColor: colors.cardAccent300,
+            borderRadius: spacing.m,
+            borderWidth: 1,
             flexDirection: 'row',
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: 15,
         },
@@ -63,7 +60,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             width: '100%',
         },
         text: {
-            color: colors.primary,
+            color: colors.white,
             fontSize: 14,
         },
         textContainer: {

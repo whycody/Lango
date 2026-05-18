@@ -15,6 +15,9 @@
     "wordAdded3": "Świetny wybór! \uD83D\uDC4C",
     "wordNotAdded": "Nie udało się dodać ❌",
     "addWord": "Dodaj własne słówko +",
+    "activity": "Aktywność",
+    "activityDesc": "Twoje sesje nauki na przestrzeni ostatnich miesięcy.",
+    "months": ["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"],
     "statistics": "Statystyki",
     "statisticsDesc": "Przeanalizujmy Twoje osiągnięcia.",
     "words": "Słówek",
@@ -146,6 +149,16 @@
         "open_settings": "Otwórz ustawienia",
         "cancel": "Anuluj"
     },
+    "theme": {
+        "title": "Motyw aplikacji",
+        "desc": "Wybierz kolorystyczny motyw aplikacji.",
+        "blue": "Niebieski",
+        "green": "Zielony",
+        "pink": "Różowy",
+        "red": "Czerwony",
+        "orange": "Pomarańczowy",
+        "purple": "Fioletowy"
+    },
     "sorting": {
         "title": "Sposób sortowania",
         "desc": "Wybierz sposób sortowania fiszek w Twojej bibliotece.",
@@ -166,10 +179,11 @@
         "translation": "Tłumaczenie"
     },
     "word_suggestion_bottom_sheet": {
-        "title": "Propozycja nowego słówka 🚨",
-        "desc": "Wyświetliła Ci się propozycja fiszki, która nie jest jeszcze w Twoim słowniku. Jeżeli chcesz ją do niego dodać, *oceń jak dobrze ją znasz*. Jeżeli nie, *pomiń ją za pomocą strzałki* w prawym dolnym rogu.",
-        "word": "Proponowane słówko",
-        "translation": "Tłumaczenie słówka"
+        "title": "Propozycja nowego słówka ✨",
+        "desc": "Wyświetliła Ci się propozycja fiszki, która nie jest jeszcze w Twoim słowniku.",
+        "desc2": "Jeżeli chcesz ją do niego dodać, oceń jak dobrze ją znasz. Jeżeli nie, pomiń ją za pomocą strzałki w prawym dolnym rogu.",
+        "word": "Słówko",
+        "translation": "Tłumaczenie"
     },
     "microphone": {
         "no_permission": "Brak uprawnień do mikrofonu \uD83C\uDFA4",

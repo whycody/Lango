@@ -2,7 +2,6 @@ import React, { Activity, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { getLocales } from 'react-native-localize';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,12 +9,12 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fetchExampleFlashcards, updateUserData } from '../../api/apiClient';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageCode, LanguageTypes } from '../../constants/Language';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { useAuth, useLanguage } from '../../store';
 import { ExampleFlashcard, LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isSupportedLanguageCode } from '../../utils/languageUtils';
-import { ActionButton } from '../components';
+import { ActionButton, BottomGradient } from '../components';
 import { OnboardingHeader } from '../components/onboarding';
 import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
 import {
@@ -188,12 +187,7 @@ export const OnboardingScreen = () => {
                 sheetName={SAME_LANGUAGE_SHEET}
                 onConfirm={updateUserOnboardingData}
             />
-            <LinearGradient
-                colors={[colors.card, colors.background]}
-                end={{ x: 1, y: 1 }}
-                start={{ x: 0, y: 0 }}
-                style={styles.root}
-            >
+            <View style={styles.root}>
                 <OnboardingHeader
                     currentStep={currentStep}
                     totalSteps={TOTAL_STEPS}
@@ -205,6 +199,7 @@ export const OnboardingScreen = () => {
                         <LanguagePicker
                             alwaysAllowPick
                             languageType={LanguageTypes.TRANSLATION}
+                            onboarding={true}
                             style={styles.languagePicker}
                             title={stepTitle(0)}
                         />
@@ -214,6 +209,7 @@ export const OnboardingScreen = () => {
                             alwaysAllowPick
                             allLanguages={false}
                             languageType={LanguageTypes.MAIN}
+                            onboarding={true}
                             style={styles.languagePicker}
                             title={stepTitle(1)}
                         />
@@ -221,6 +217,7 @@ export const OnboardingScreen = () => {
                     <Activity mode={currentStep === 2 ? 'visible' : 'hidden'}>
                         <LanguageLevelPicker
                             language={languages.find(lang => lang.languageCode === mainLang)}
+                            onboarding={true}
                             pickedLevel={pickedLevel}
                             style={styles.languagePicker}
                             title={stepTitle(2)}
@@ -234,6 +231,7 @@ export const OnboardingScreen = () => {
                             errorMessage={flashcardsErrorMessage}
                             flashcards={exampleFlashcards}
                             loading={flashcardsLoading}
+                            pickedLevel={pickedLevel ?? 1}
                             selectedIds={selectedFlashcardsIds}
                             style={styles.languagePicker}
                             title={stepTitle(3)}
@@ -261,7 +259,8 @@ export const OnboardingScreen = () => {
                         onPress={handleBackPress}
                     />
                 </View>
-            </LinearGradient>
+                <BottomGradient style={{ bottom: 120 }} />
+            </View>
         </>
     );
 };
@@ -270,18 +269,24 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         bottomBar: {
             backgroundColor: colors.card,
+            borderTopLeftRadius: spacing.l,
+            borderTopRightRadius: spacing.l,
             gap: 10,
+            overflow: 'hidden',
             paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL,
+            paddingTop: MARGIN_VERTICAL / 2,
+            zIndex: 100,
         },
         content: {
             flex: 1,
         },
         languagePicker: {
-            paddingTop: MARGIN_VERTICAL,
+            flex: 1,
+            paddingTop: MARGIN_VERTICAL / 2,
         },
         root: {
+            backgroundColor: colors.background,
             flex: 1,
         },
     });

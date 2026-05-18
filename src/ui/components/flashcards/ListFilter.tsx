@@ -2,7 +2,9 @@ import { forwardRef } from 'react';
 import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
+import { spacing } from '../../../constants/margins';
 import { CustomTheme } from '../../Theme';
 
 interface ListFilterProps extends Omit<TextInputProps, 'style'> {
@@ -14,24 +16,27 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
     ({ isSearching, onClear, ...props }, ref) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
+        const { t } = useTranslation();
 
         return (
-            <View pointerEvents={!props.editable ? 'none' : 'auto'} style={styles.root}>
+            <View style={styles.root}>
                 <Ionicons
-                    color={isSearching ? colors.primary600 : colors.primary300}
+                    color={isSearching ? colors.white300 : colors.white300}
                     name="search-sharp"
                     size={22}
                     style={styles.icon}
                 />
                 <TextInput
-                    cursorColor={colors.primary300}
+                    cursorColor={colors.white300}
+                    placeholder={t('searchFlashcard')}
+                    placeholderTextColor={colors.white600}
                     ref={ref}
                     style={styles.textInput}
                     {...props}
                 />
                 {props.value && (
                     <Ionicons
-                        color={colors.primary300}
+                        color={colors.white}
                         name="close"
                         size={22}
                         style={styles.clearIcon}
@@ -46,8 +51,10 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         clearIcon: {
-            marginLeft: 5,
-            marginRight: 10,
+            alignSelf: 'center',
+            paddingLeft: 5,
+            paddingRight: 10,
+            paddingVertical: 13,
         },
         icon: {
             marginLeft: 10,
@@ -55,14 +62,16 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         root: {
             alignItems: 'center',
-            backgroundColor: colors.background,
+            backgroundColor: colors.card,
+            borderRadius: spacing.m,
             flex: 1,
             flexDirection: 'row',
             marginVertical: 15,
         },
         textInput: {
-            backgroundColor: colors.background,
-            color: colors.primary300,
+            backgroundColor: colors.card,
+            borderRadius: spacing.m,
+            color: colors.white,
             flex: 1,
             fontSize: 18,
             height: 50,

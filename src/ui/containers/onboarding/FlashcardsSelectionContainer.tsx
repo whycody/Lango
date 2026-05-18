@@ -4,9 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
-import { ExampleFlashcard } from '../../../types';
+import { ExampleFlashcard, LanguageLevelRange } from '../../../types';
 import { CustomText, Header } from '../../components';
 import { EmptyList } from '../../components/flashcards';
 import { CustomTheme } from '../../Theme';
@@ -24,6 +24,7 @@ type FlashcardsSelectionContainerProps = {
     selectedIds: string[];
     style?: StyleProp<ViewStyle>;
     title?: string;
+    pickedLevel: LanguageLevelRange;
 };
 
 export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps> = ({
@@ -34,6 +35,7 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
     onLastVisibleIndexChange,
     onSelectAll,
     onToggle,
+    pickedLevel,
     selectedIds,
     style,
     title,
@@ -90,36 +92,41 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
                 </CustomText>
                 <View style={styles.checkboxContainer}>
                     {allSelected ? (
-                        <Ionicons color={colors.primary300} name={'checkbox-sharp'} size={24} />
+                        <Ionicons color={colors.primary300} name={'checkbox'} size={24} />
                     ) : (
                         <View style={styles.uncheckedBox} />
                     )}
                 </View>
             </Pressable>
             <View style={styles.divider} />
-            {showSkeleton ? (
-                <Animated.View style={{ opacity: skeletonOpacity }}>
-                    <FlashcardsSelectionSkeleton />
-                </Animated.View>
-            ) : error ? (
-                <>
-                    <EmptyList
-                        description={t('word_selection.load_failed_desc')}
-                        icon={'sad-outline'}
-                        title={t('word_selection.load_failed')}
+            <View style={styles.content}>
+                {showSkeleton ? (
+                    <Animated.View style={{ opacity: skeletonOpacity }}>
+                        <FlashcardsSelectionSkeleton />
+                    </Animated.View>
+                ) : error ? (
+                    <>
+                        <EmptyList
+                            description={t('word_selection.load_failed_desc')}
+                            icon={'sad-outline'}
+                            title={t('word_selection.load_failed')}
+                        />
+                        {errorMessage ? (
+                            <CustomText style={styles.errorMessage}>
+                                Error: {errorMessage}
+                            </CustomText>
+                        ) : null}
+                    </>
+                ) : (
+                    <FlashcardEntranceList
+                        flashcards={flashcards}
+                        pickedLevel={pickedLevel}
+                        selectedIds={selectedIds}
+                        onLastVisibleIndexChange={onLastVisibleIndexChange}
+                        onToggle={onToggle}
                     />
-                    {errorMessage ? (
-                        <CustomText style={styles.errorMessage}>Error: {errorMessage}</CustomText>
-                    ) : null}
-                </>
-            ) : (
-                <FlashcardEntranceList
-                    flashcards={flashcards}
-                    selectedIds={selectedIds}
-                    onLastVisibleIndexChange={onLastVisibleIndexChange}
-                    onToggle={onToggle}
-                />
-            )}
+                )}
+            </View>
         </View>
     );
 };
@@ -131,6 +138,10 @@ const getStyles = (colors: CustomTheme['colors']) =>
             height: 24,
             justifyContent: 'center',
             width: 24,
+        },
+        content: {
+            backgroundColor: colors.background,
+            flex: 1,
         },
         divider: {
             backgroundColor: colors.background,
@@ -158,11 +169,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingVertical: 12,
         },
         selectAllText: {
-            color: colors.primary300,
+            color: colors.white300,
             fontSize: 13,
         },
         uncheckedBox: {
             borderColor: colors.cardAccent300,
+            borderRadius: spacing.xs,
             borderWidth: 2,
             height: 20,
             width: 20,

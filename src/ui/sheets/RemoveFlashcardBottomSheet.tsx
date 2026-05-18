@@ -38,6 +38,7 @@ export const RemoveFlashcardBottomSheet = (props: RemoveFlashcardBottomSheetProp
                 level={flashcard?.gradeThreeProb ?? 0}
                 text={flashcard?.text ?? ''}
                 translation={flashcard?.translation ?? ''}
+                withContrast={true}
             />
         </GenericBottomSheet>
     );

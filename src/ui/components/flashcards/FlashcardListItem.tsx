@@ -17,13 +17,23 @@ type FlashcardListItemProps = {
     style?: StyleProp<ViewStyle>;
     text: string;
     translation: string;
-    index: number;
+    withContrast?: boolean;
 };
 
 export const FlashcardListItem = memo<FlashcardListItemProps>(
-    ({ id, index, level, onEditPress, onPress, onRemovePress, style, text, translation }) => {
+    ({
+        id,
+        level,
+        onEditPress,
+        onPress,
+        onRemovePress,
+        style,
+        text,
+        translation,
+        withContrast = false,
+    }) => {
         const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors, index);
+        const styles = getStyles(colors, withContrast);
 
         const getColor = useCallback((level: number) => {
             return getLevelColor(level);
@@ -31,7 +41,7 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
 
         return (
             <Pressable
-                android_ripple={{ color: colors.card, foreground: true }}
+                android_ripple={{ color: colors.cardAccent, foreground: true }}
                 style={[styles.root, style]}
                 onPress={() => onPress?.(id)}
             >
@@ -67,7 +77,7 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
     },
 );
 
-const getStyles = (colors: CustomTheme['colors'], index: number) =>
+const getStyles = (colors: CustomTheme['colors'], withContrast: boolean) =>
     StyleSheet.create({
         container: {
             alignItems: 'center',
@@ -82,12 +92,13 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
             paddingRight: 0,
         },
         root: {
-            backgroundColor: colors.card,
-            borderColor: colors.cardAccent,
+            backgroundColor: withContrast ? colors.cardAccent : colors.card,
+            borderColor: withContrast ? colors.cardAccent300 : colors.cardAccent,
             borderRadius: spacing.m,
             borderWidth: 1,
             marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: index !== 0 ? 12 : 0,
+            marginTop: 12,
+            overflow: 'hidden',
         },
         text: {
             color: colors.white,

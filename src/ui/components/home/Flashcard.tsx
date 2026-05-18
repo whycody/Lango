@@ -1,4 +1,11 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, {
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useState,
+} from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Foundation } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
@@ -28,25 +35,18 @@ export const Flashcard = forwardRef(
         const [readyToFlip, setReadyToFlip] = useState(false);
         const [flip, setFlip] = useState(false);
         const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors);
+        const styles = useMemo(() => getStyles(colors), [colors]);
         const { t } = useTranslation();
         const wordsContext = useWords();
         const languageContext = useLanguage();
         const { triggerHaptics } = useHaptics();
 
-        useImperativeHandle(ref, () => ({
-            flippable: readyToFlip,
-            flipWithoutAdd: () => handleFlip(false),
-        }));
-
-        const getRandomMessage = () => {
+        const getRandomMessage = useCallback(() => {
             const messages = [t('wordAdded1'), t('wordAdded2'), t('wordAdded3')];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }, [t]);
 
-            const randomIndex = Math.floor(Math.random() * messages.length);
-            return messages[randomIndex];
-        };
-
-        const [backText, setBackText] = useState(getRandomMessage());
+        const [backText, setBackText] = useState(() => getRandomMessage());
         const [flashcardState, setFlashcardState] = useState<'success' | 'error' | 'neutral'>(
             'neutral',
         );
@@ -64,35 +64,47 @@ export const Flashcard = forwardRef(
                 setBackText(getRandomMessage());
                 setFlippable(true);
             }, 200);
-        }, [setNewFlashcardIsReady, newFlashcardIsReady, readyToFlip]);
+        }, [newFlashcardIsReady, readyToFlip, getRandomMessage]);
 
-        const handleFlip = (add: boolean = true) => {
-            if (!flippable) return;
-            setFlip(true);
-            setFlippable(false);
-            setNewFlashcardIsReady(false);
-            triggerHaptics('rigid');
-            if (add && suggestion) {
-                const addWord = wordsContext.addWord(
-                    suggestion.word,
-                    suggestion.translation,
-                    WordSource.LANGO,
-                );
-                trackEvent(AnalyticsEventName.SUGGESTION_ADD, {
-                    successfully: !!addWord,
-                    suggestionId: suggestion.id,
-                });
-                if (!addWord) {
-                    setBackText(t('wordNotAdded'));
-                    setFlashcardState('error');
-                } else setFlashcardState('success');
-            } else {
-                setBackText(t('change_flashcard'));
-                setFlashcardState('neutral');
-            }
-            setTimeout(() => onFlashcardPress?.(add), 150);
-            setTimeout(() => setReadyToFlip(true), 1000);
-        };
+        const handleFlip = useCallback(
+            (add: boolean = true) => {
+                if (!flippable) return;
+                setFlip(true);
+                setFlippable(false);
+                setNewFlashcardIsReady(false);
+                triggerHaptics('rigid');
+                if (add && suggestion) {
+                    const addWord = wordsContext.addWord(
+                        suggestion.word,
+                        suggestion.translation,
+                        WordSource.LANGO,
+                    );
+                    trackEvent(AnalyticsEventName.SUGGESTION_ADD, {
+                        successfully: !!addWord,
+                        suggestionId: suggestion.id,
+                    });
+                    if (!addWord) {
+                        setBackText(t('wordNotAdded'));
+                        setFlashcardState('error');
+                    } else setFlashcardState('success');
+                } else {
+                    setBackText(t('change_flashcard'));
+                    setFlashcardState('neutral');
+                }
+                setTimeout(() => onFlashcardPress?.(add), 150);
+                setTimeout(() => setReadyToFlip(true), 1000);
+            },
+            [flippable, suggestion, wordsContext, triggerHaptics, t, onFlashcardPress],
+        );
+
+        useImperativeHandle(
+            ref,
+            () => ({
+                flippable: readyToFlip,
+                flipWithoutAdd: () => handleFlip(false),
+            }),
+            [readyToFlip, handleFlip],
+        );
 
         return (
             <View
@@ -101,7 +113,9 @@ export const Flashcard = forwardRef(
             >
                 <FlipCard
                     flip={flip}
+                    flipVertical={true}
                     style={[styles.root, style]}
+                    swipeable={false}
                     onFlipStart={() => handleFlip(true)}
                 >
                     <View style={styles.face}>
@@ -192,12 +206,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
             alignItems: 'center',
             backgroundColor: colors.card,
             borderRadius: spacing.s,
-            height: 22,
+            height: 20,
             justifyContent: 'center',
             position: 'absolute',
-            right: 12,
-            top: 12,
-            width: 22,
+            right: 11,
+            top: 11,
+            width: 20,
         },
         root: {
             height: 86,

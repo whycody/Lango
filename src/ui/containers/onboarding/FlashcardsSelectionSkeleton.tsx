@@ -116,7 +116,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 15,
+            paddingVertical: 16,
         },
         lineMain: {
             backgroundColor: colors.cardAccent,

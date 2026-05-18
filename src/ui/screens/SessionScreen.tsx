@@ -202,9 +202,9 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         return (
             <FlipCard
                 clickable={isActive}
-                flipHorizontal={true}
                 flipVertical={false}
                 style={styles.card}
+                swipeable={true}
                 useNativeDriver={true}
                 onFlipStart={(isFlipped: boolean) => handleFlipPress(wordIndex, !isFlipped)}
             >
@@ -628,10 +628,8 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         bottomBarContainer: {
             borderColor: colors.card,
-
             borderTopLeftRadius: spacing.l,
             borderTopRightRadius: spacing.l,
-
             marginBottom: insets.bottom,
             marginHorizontal: -1,
         },
@@ -708,10 +706,10 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginHorizontal: MARGIN_HORIZONTAL,
         },
         sessionHeaderContainer: {
-            paddingBottom: 0,
+            paddingBottom: 4,
         },
         textContainer: {
-            marginBottom: 18,
+            marginBottom: 14,
             marginTop: 4,
         },
         topInsetSpacer: {

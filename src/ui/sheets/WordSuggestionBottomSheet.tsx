@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useUserPreferences } from '../../store';
+import { CustomText } from '../components';
 import { Card, FlipCard } from '../components/session';
+import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
 type WordSuggestionBottomSheetProps = {
@@ -14,7 +17,8 @@ type WordSuggestionBottomSheetProps = {
 
 export const WordSuggestionBottomSheet = (props: WordSuggestionBottomSheetProps) => {
     const { t } = useTranslation();
-    const styles = getStyles();
+    const { colors } = useTheme() as CustomTheme;
+    const styles = getStyles(colors);
     const [flip, setFlip] = useState(false);
     const [visible, setVisible] = useState(false);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -61,10 +65,10 @@ export const WordSuggestionBottomSheet = (props: WordSuggestionBottomSheetProps)
             onPrimaryButtonPress={handlePrimaryButtonPress}
         >
             <FlipCard
-                flipHorizontal
                 flip={flip}
                 flipVertical={false}
                 style={styles.exampleCard}
+                swipeable={false}
                 onFlipStart={onFlipStart}
             >
                 <Card
@@ -82,11 +86,14 @@ export const WordSuggestionBottomSheet = (props: WordSuggestionBottomSheetProps)
                     onContinuePress={() => {}}
                 />
             </FlipCard>
+            <CustomText style={styles.subtitle}>
+                {t('word_suggestion_bottom_sheet.desc2')}
+            </CustomText>
         </GenericBottomSheet>
     );
 };
 
-const getStyles = () =>
+const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         cardText: {
             marginTop: MARGIN_VERTICAL * 2.5,
@@ -97,5 +104,11 @@ const getStyles = () =>
             height: 350,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
+        },
+        subtitle: {
+            color: colors.white300,
+            fontSize: 15,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: 16,
         },
     });

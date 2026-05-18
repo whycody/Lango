@@ -91,7 +91,8 @@ const getStyles = (colors: CustomTheme['colors'], onboarding: boolean) =>
             flexDirection: 'row',
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 12,
-            padding: MARGIN_HORIZONTAL,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingVertical: 12,
         },
         title: {
             color: colors.white,

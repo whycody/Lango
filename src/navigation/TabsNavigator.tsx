@@ -70,7 +70,7 @@ const TabsNavigator = () => {
         transform: [{ scale: iconScale }],
     };
 
-    const renderTabLabel = (route: TabRouteProp, focused: boolean, color: string) => (
+    const renderTabLabel = (route: TabRouteProp, focused: boolean) => (
         <CustomText
             style={[styles.tabLabel, { color: colors.white }, !focused && styles.tabLabelInactive]}
             weight={focused ? 'Bold' : 'Regular'}
@@ -110,8 +110,8 @@ const TabsNavigator = () => {
                 screenOptions={({ route }) => ({
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => renderTabIcon(route, focused, color),
-                    tabBarLabel: ({ color, focused }) =>
-                        route.name === 'Add' ? null : renderTabLabel(route, focused, color),
+                    tabBarLabel: ({ focused }) =>
+                        route.name === 'Add' ? null : renderTabLabel(route, focused),
                     tabBarStyle: styles.tabBarStyle,
                 })}
             >

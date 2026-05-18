@@ -110,7 +110,6 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         button: {
-            height: 45,
             marginBottom: 15,
         },
         contentContainer: {

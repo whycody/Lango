@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 
 import ENFlag from '../../../assets/flags/eng.svg';
 import ESFlag from '../../../assets/flags/es.svg';
@@ -20,13 +20,26 @@ type SquareFlagProps = {
     style?: StyleProp<ViewStyle>;
 };
 
-export const SquareFlag: FC<SquareFlagProps> = ({ languageCode, size, style }) => {
+export const SquareFlag: FC<SquareFlagProps> = ({ languageCode, size = 20, style }) => {
     const Flag = flagMap[languageCode];
-    return Flag ? (
-        <Flag
-            height={size || 20}
-            style={[style, { borderRadius: spacing.xxs, overflow: 'hidden' }]}
-            width={size || 20}
-        />
-    ) : null;
+
+    if (!Flag) {
+        return null;
+    }
+
+    return (
+        <View
+            style={[
+                {
+                    borderRadius: spacing.xxs,
+                    height: size,
+                    overflow: 'hidden',
+                    width: size,
+                },
+                style,
+            ]}
+        >
+            <Flag height={size} width={size} />
+        </View>
+    );
 };

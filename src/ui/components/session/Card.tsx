@@ -157,7 +157,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: MARGIN_VERTICAL * 2,
         },
         exampleText: {
-            color: colors.primary600,
+            color: colors.white300,
             fontSize: 14,
             marginHorizontal: MARGIN_HORIZONTAL * 2,
             textAlign: 'center',
@@ -169,6 +169,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
         iconMarked: {
             backgroundColor: colors.cardAccent300,
             borderRadius: 50,
+            margin: MARGIN_HORIZONTAL / 2,
+            padding: MARGIN_HORIZONTAL / 2,
         },
         longText: {
             marginTop: MARGIN_VERTICAL * 3,
@@ -186,6 +188,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         newWordSuggestion: {
             backgroundColor: colors.primary,
+            borderColor: colors.primary800,
+            borderLeftWidth: 2,
+            borderRightWidth: 2,
             color: colors.white,
             fontSize: 12.5,
             left: -1.5,

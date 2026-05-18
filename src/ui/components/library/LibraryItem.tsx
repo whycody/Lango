@@ -35,7 +35,7 @@ export const LibraryItem = memo<LibraryItemProps>(
             <Pressable
                 style={({ pressed }) => [styles.root, pressed && isIOS && { opacity: 0.8 }, style]}
                 android_ripple={{
-                    color: index % 2 === 0 ? colors.card : colors.background,
+                    color: colors.cardAccent300,
                     foreground: true,
                 }}
                 onPress={handlePress}
@@ -58,7 +58,14 @@ export const LibraryItem = memo<LibraryItemProps>(
                         </CustomText>
                     )}
                 </View>
-                {enabled !== undefined && <Switch value={enabled} onValueChange={handlePress} />}
+                {enabled !== undefined && (
+                    <Switch
+                        thumbColor={isIOS ? undefined : colors.white}
+                        trackColor={isIOS ? undefined : { true: colors.primary }}
+                        value={enabled}
+                        onValueChange={handlePress}
+                    />
+                )}
             </Pressable>
         );
     },
@@ -87,8 +94,9 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
             flexDirection: 'row',
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: index === 0 ? 0 : 12,
+            overflow: 'hidden',
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 16,
+            paddingVertical: 12,
         },
         textContainer: {
             flex: 1,

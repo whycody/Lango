@@ -317,6 +317,7 @@ export const FlashcardsScreen = () => {
             <SortingMethodBottomSheet sheetName={FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET} />
             {searchingMode && ListFilterHeader}
             <FlashList
+                ListFooterComponent={<View style={{ height: 50 }} />}
                 data={data}
                 keyExtractor={item => item.id}
                 keyboardDismissMode={'on-drag'}

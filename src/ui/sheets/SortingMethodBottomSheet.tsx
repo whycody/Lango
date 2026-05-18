@@ -14,7 +14,7 @@ type SortingMethodBottomSheetProps = {
     sheetName: string;
 };
 
-export const SortingMethodBottomSheet = (props: SortingMethodBottomSheetProps) => {
+export const SortingMethodBottomSheet = ({ sheetName }: SortingMethodBottomSheetProps) => {
     const { t } = useTranslation();
     const { flashcardsSortingMethod, setFlashcardsSortingMethod } = useUserPreferences();
 
@@ -29,17 +29,16 @@ export const SortingMethodBottomSheet = (props: SortingMethodBottomSheetProps) =
     const handlePress = useCallback(
         (method: FlashcardSortingMethod) => {
             setFlashcardsSortingMethod(method);
-            TrueSheet.dismiss(props.sheetName);
+            TrueSheet.dismiss(sheetName);
         },
-        [props.sheetName, setFlashcardsSortingMethod],
+        [sheetName, setFlashcardsSortingMethod],
     );
 
     const renderItem = useCallback(
-        ({ index, item }: { index: number; item: FlashcardSortingMethod }) => (
+        ({ item }: { item: FlashcardSortingMethod }) => (
             <SortingMethodItem
                 checked={flashcardsSortingMethod === item}
                 id={item}
-                index={index}
                 label={getSortingMethodLabel(item)}
                 onPress={handlePress}
             />
@@ -50,9 +49,11 @@ export const SortingMethodBottomSheet = (props: SortingMethodBottomSheetProps) =
     return (
         <GenericBottomSheet
             description={t('sorting.desc')}
-            sheetName={props.sheetName}
+            primaryActionLabel={t('cancel')}
+            sheetName={sheetName}
             style={styles.sheet}
             title={t('sorting.title')}
+            onPrimaryButtonPress={() => TrueSheet.dismiss(sheetName)}
         >
             <FlatList
                 data={sortingMethods}

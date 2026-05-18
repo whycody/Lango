@@ -72,7 +72,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 13,
+            paddingVertical: 12,
         },
         text: {
             color: colors.white,

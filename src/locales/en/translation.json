@@ -168,9 +168,10 @@
     },
     "word_suggestion_bottom_sheet": {
         "title": "New word suggestion ✨",
-        "desc": "You see a flashcard suggestion that is not yet in your dictionary. If you want to add it, *rate how well you know it*. If not, *skip it using the arrow* in the bottom right corner.",
-        "word": "Suggested word",
-        "translation": "Word translation"
+        "desc": "You see a flashcard suggestion that is not yet in your dictionary.",
+        "desc2": "If you want to add it, rate how well you know it. If not, skip it using the arrow in the bottom right corner.",
+        "word": "Word",
+        "translation": "Translation"
     },
     "microphone": {
         "no_permission": "No permission to use the microphone 🎤",

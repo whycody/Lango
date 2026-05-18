@@ -323,6 +323,7 @@ export const SettingsScreen = () => {
                 {isAndroid && <View style={style} />}
                 <SectionList
                     ListFooterComponent={renderListFooterComponent}
+                    ListFooterComponentStyle={styles.footer}
                     keyExtractor={keyExtractor}
                     renderItem={renderSettingsItem}
                     renderSectionHeader={({ section }) => renderSectionHeader(section.title)}
@@ -353,6 +354,9 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         footer: {
             marginVertical: MARGIN_VERTICAL / 2,
+        },
+        footer: {
+            marginBottom: 50,
         },
         root: {
             backgroundColor: colors.background,

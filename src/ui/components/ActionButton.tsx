@@ -11,10 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
+import { spacing } from '../../constants/margins';
 import { useHaptics } from '../../hooks';
 import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
-import { spacing } from '../../constants/margins';
 
 interface ActionButtonProps {
     active?: boolean;
@@ -142,6 +142,7 @@ const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: bool
             flexDirection: 'row',
             justifyContent: 'center',
             opacity: active ? 1 : 0.5,
+            overflow: 'hidden',
             paddingHorizontal: 24,
             paddingVertical: primary ? 15 : 12,
         },

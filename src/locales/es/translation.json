@@ -168,9 +168,10 @@
     },
     "word_suggestion_bottom_sheet": {
         "title": "Sugerencia de nueva palabra ✨",
-        "desc": "Ves una sugerencia de tarjeta que aún no está en tu diccionario. Si quieres añadirla, *valora qué tan bien la conoces*. Si no, *sáltala usando la flecha* en la esquina inferior derecha.",
-        "word": "Palabra sugerida",
-        "translation": "Traducción de la palabra"
+        "desc": "Ves una sugerencia de tarjeta que aún no está en tu diccionario.",
+        "desc2": "Si quieres añadirla, valora qué tan bien la conoces. Si no, sáltala usando la flecha en la esquina inferior derecha.",
+        "word": "Palabra",
+        "translation": "Traducción"
     },
     "microphone": {
         "no_permission": "Sin permiso para usar el micrófono 🎤",

@@ -58,6 +58,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderColor: colors.card,
             borderRadius: spacing.m,
             borderWidth: 1,
+            overflow: 'hidden',
             paddingBottom: 5,
         },
         title: {

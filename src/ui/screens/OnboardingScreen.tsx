@@ -2,7 +2,6 @@ import React, { Activity, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { getLocales } from 'react-native-localize';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +9,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fetchExampleFlashcards, updateUserData } from '../../api/apiClient';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageCode, LanguageTypes } from '../../constants/Language';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { useAuth, useLanguage } from '../../store';
 import { ExampleFlashcard, LanguageLevelRange } from '../../types';
 import { trackEvent } from '../../utils/analytics';
@@ -188,12 +187,7 @@ export const OnboardingScreen = () => {
                 sheetName={SAME_LANGUAGE_SHEET}
                 onConfirm={updateUserOnboardingData}
             />
-            <LinearGradient
-                colors={[colors.card, colors.background]}
-                end={{ x: 1, y: 1 }}
-                start={{ x: 0, y: 0 }}
-                style={styles.root}
-            >
+            <View style={styles.root}>
                 <OnboardingHeader
                     currentStep={currentStep}
                     totalSteps={TOTAL_STEPS}
@@ -266,7 +260,7 @@ export const OnboardingScreen = () => {
                     />
                 </View>
                 <BottomGradient style={{ bottom: 120 }} />
-            </LinearGradient>
+            </View>
         </>
     );
 };
@@ -275,7 +269,10 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         bottomBar: {
             backgroundColor: colors.card,
+            borderTopLeftRadius: spacing.l,
+            borderTopRightRadius: spacing.l,
             gap: 10,
+            overflow: 'hidden',
             paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingTop: MARGIN_VERTICAL / 2,
@@ -286,9 +283,10 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         languagePicker: {
             flex: 1,
-            paddingTop: MARGIN_VERTICAL,
+            paddingTop: MARGIN_VERTICAL / 2,
         },
         root: {
+            backgroundColor: colors.background,
             flex: 1,
         },
     });

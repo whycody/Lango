@@ -26,11 +26,11 @@ export const LanguageItem = memo<LanguageItemProps>(
             <Pressable
                 key={language.languageCode}
                 android_ripple={onPress && { color: colors.background, foreground: true }}
-                style={style}
+                style={[style, styles.root, checked && { borderColor: colors.primary600 }]}
                 onPress={onPress}
             >
-                <View style={[styles.container, checked && { borderColor: colors.primary600 }]}>
-                    {showIcon && <Ionicons color={colors.blue} name={'language-sharp'} size={22} />}
+                <View style={styles.container}>
+                    {showIcon && <Ionicons color={colors.blue} name={'language-sharp'} size={20} />}
                     <View style={styles.textContainer}>
                         <CustomText style={styles.text} weight={'SemiBold'}>
                             {language.languageName}
@@ -52,31 +52,34 @@ const getStyles = (colors: CustomTheme['colors'], onboarding: boolean) =>
     StyleSheet.create({
         container: {
             alignItems: 'center',
-            backgroundColor: onboarding ? colors.card : colors.cardAccent600,
-            borderColor: colors.cardAccent,
-            borderRadius: spacing.m,
-            borderWidth: 1,
+            backgroundColor: onboarding ? colors.card : colors.cardAccent,
             flexDirection: 'row',
             gap: 10,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 15,
+            paddingVertical: 12,
         },
         icon: {
             marginLeft: 10,
             padding: 5,
             paddingRight: 0,
         },
+        root: {
+            borderColor: onboarding ? colors.cardAccent : colors.cardAccent300,
+            borderRadius: spacing.m,
+            borderWidth: 1,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: 12,
+            overflow: 'hidden',
+        },
         text: {
             color: colors.white,
-            fontSize: 14,
+            fontSize: 13,
         },
         textContainer: {
             flex: 1,
         },
         translation: {
             color: colors.white300,
-            fontSize: 13,
+            fontSize: 12,
         },
     });

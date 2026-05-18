@@ -156,10 +156,9 @@ export const FlashcardsScreen = () => {
     }, []);
 
     const renderFlashcardListItem = useCallback(
-        ({ gradeThreeProb, id, text, translation }: WordWithDetails, index: number) => (
+        ({ gradeThreeProb, id, text, translation }: WordWithDetails) => (
             <FlashcardListItem
                 id={id}
-                index={index}
                 level={gradeThreeProb}
                 text={text}
                 translation={translation}
@@ -283,11 +282,11 @@ export const FlashcardsScreen = () => {
         );
     }, [filter]);
 
-    const renderListItem = ({ index, item }: { item: { id: string }; index: number }) => {
+    const renderListItem = ({ item }: { item: { id: string } }) => {
         if (item.id === 'header') return renderHeader;
         if (item.id === 'subheader') return renderSubheader;
         if (item.id === 'emptyList') return renderEmptyList;
-        return renderFlashcardListItem(item as WordWithDetails, index);
+        return renderFlashcardListItem(item as WordWithDetails);
     };
 
     const data = searchingMode

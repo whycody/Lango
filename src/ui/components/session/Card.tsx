@@ -158,8 +158,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         exampleText: {
             color: colors.white300,
-            fontSize: 14,
-            marginHorizontal: MARGIN_HORIZONTAL * 2,
+            fontSize: 12,
+            height: 30,
+            marginHorizontal: MARGIN_HORIZONTAL,
             textAlign: 'center',
         },
         icon: {

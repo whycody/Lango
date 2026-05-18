@@ -214,7 +214,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             width: 20,
         },
         root: {
-            height: 86,
+            height: 80,
             overflow: 'hidden',
         },
         successText: {

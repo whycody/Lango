@@ -39,7 +39,7 @@ export const OnboardingBottomSheet = (props: OnboardingBottomSheetProps) => {
                 style={styles.lottie}
             />
             <Header
-                centered={true}
+                centered
                 style={styles.header}
                 subtitle={t('onboarding.onboarding_desc')}
                 title={t('onboarding.welcome')}

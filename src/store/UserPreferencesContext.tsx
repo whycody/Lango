@@ -85,8 +85,8 @@ const NOTIFICATION_PERMISSION_STATUS = 'lastUserNotificationPermissionStatus';
 
 export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const userStorage = useUserStorage();
-    const fallbackStorage = useMMKV();
-    const storage = userStorage.storage ?? fallbackStorage;
+    const defaultStorage = useMMKV({ id: 'user-storage' });
+    const storage = userStorage.storage ?? defaultStorage;
     const [askedNotificationsThisSession, setAskedNotificationsThisSession] = useState(false);
     const [appTheme, setAppThemeInStorage] = useTypedMMKV<AppTheme>(
         APP_THEME_KEY,
@@ -95,7 +95,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     );
     const setAppTheme = (theme: AppTheme) => {
         setAppThemeInStorage(theme);
-        fallbackStorage.set(APP_THEME_KEY, theme);
+        defaultStorage.set(APP_THEME_KEY, theme);
     };
     const [flashcardSide, setFlashcardSide] = useTypedMMKV<FlashcardSide>(
         FLASHCARD_SIDE_KEY,
@@ -125,7 +125,7 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     const [askLaterNotifications, setAskLaterNotifications] = useTypedMMKV<number>(
         ASK_LATER_NOTIFICATIONS_KEY,
         0,
-        storage,
+        defaultStorage,
     );
     const [flashcardsSortingMethod, setFlashcardsSortingMethod] =
         useTypedMMKV<FlashcardSortingMethod>(

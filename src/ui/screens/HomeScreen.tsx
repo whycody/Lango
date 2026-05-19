@@ -22,6 +22,7 @@ import {
     useEvaluations,
     useLanguage,
     useSessions,
+    useStatistics,
     useSuggestions,
     useUserPreferences,
     useWords,
@@ -31,6 +32,7 @@ import { checkUpdates } from '../../utils/checkUpdates';
 import { isIOS } from '../../utils/deviceUtils';
 import { isNotificationPermissionGranted } from '../../utils/ensureNotificationPermission';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
+import { getCurrentStreak } from '../../utils/streakUtils';
 import { BottomGradient } from '../components';
 import { ActivityCard, HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
@@ -66,6 +68,8 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     const { languages, mainLang, translationLang } = useLanguage();
     const { user } = useAuth();
     const isFocused = useIsFocused();
+    const { studyDaysList } = useStatistics();
+    const streak = getCurrentStreak(studyDaysList);
 
     useEffect(() => {
         trackEvent(AnalyticsEventName.NAVIGATE_HOME);
@@ -99,13 +103,15 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
             const permissions = await Notifications.getPermissionsAsync();
             const hasNotificationPermission = isNotificationPermissionGranted(permissions);
 
-            if (hasNotificationPermission && user?.notificationsEnabled)
+            if (hasNotificationPermission && user?.notificationsEnabled) {
                 registerNotificationsToken();
-            if (
-                (askLaterNotifications && Date.now() < askLaterNotifications) ||
-                hasNotificationPermission
-            )
                 return;
+            }
+
+            const shouldAlreadyAsk = !askLaterNotifications || Date.now() > askLaterNotifications;
+
+            if (!shouldAlreadyAsk || hasNotificationPermission || !streak.active) return;
+
             trackEvent(AnalyticsEventName.ENABLE_NOTIFICATIONS_SHEET_OPEN);
             requestAnimationFrame(() => {
                 setAskedNotificationsThisSession(true);
@@ -118,9 +124,16 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
             });
         };
 
-        if (user?.finishedOnboarding && isFocused && !askedNotificationsThisSession)
+        if (user?.finishedOnboarding && isFocused && !askedNotificationsThisSession) {
             checkNotifications();
-    }, [askLaterNotifications, user?.finishedOnboarding, isFocused, askedNotificationsThisSession]);
+        }
+    }, [
+        askLaterNotifications,
+        user?.finishedOnboarding,
+        streak,
+        isFocused,
+        askedNotificationsThisSession,
+    ]);
 
     useEffect(() => {
         if (

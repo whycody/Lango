@@ -78,7 +78,6 @@
         "react-native-edge-to-edge": "^1.7.0",
         "react-native-fbsdk-next": "~13.4.1",
         "react-native-gesture-handler": "~2.30.0",
-        "react-native-haptic-feedback": "^3.0.0",
         "react-native-keyboard-controller": "1.20.7",
         "react-native-localize": "~3.2.1",
         "react-native-mmkv": "^4.0.0",

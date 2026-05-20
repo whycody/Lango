@@ -9,32 +9,52 @@ import {
     TILE_HEIGHT,
     TILE_WIDTH,
 } from '../../../constants/Streak';
+import { useHaptics } from '../../../hooks/useHaptics';
 import { CustomTheme } from '../../Theme';
 
 type DigitTileProps = {
     digit: number;
+    index: number;
     faded: boolean;
     goalAchieved?: boolean;
 };
 
-const DigitTile = ({ digit, faded, goalAchieved }: DigitTileProps) => {
+const DigitTile = ({ digit, faded, goalAchieved, index }: DigitTileProps) => {
     const translateY = useRef(new Animated.Value(0)).current;
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors, goalAchieved), [colors, goalAchieved]);
+    const { triggerHaptics } = useHaptics();
 
     useEffect(() => {
+        translateY.setValue(0);
+
+        let lastStep = 0;
+        const listenerId = translateY.addListener(({ value }) => {
+            const step = Math.round(-value / TILE_HEIGHT);
+            if (step > lastStep) {
+                lastStep = step;
+                triggerHaptics('soft');
+            }
+        });
+
         Animated.sequence([
-            Animated.delay(STREAK_ANIMATIONS_DELAY),
+            Animated.delay(STREAK_ANIMATIONS_DELAY + index * 80),
             Animated.timing(translateY, {
-                duration: STREAK_ANIMATIONS_DELAY,
+                duration: digit * 120,
                 toValue: -digit * TILE_HEIGHT,
                 useNativeDriver: true,
             }),
-        ]).start();
+        ]).start(() => {
+            translateY.removeListener(listenerId);
+        });
+
+        return () => {
+            translateY.removeListener(listenerId);
+        };
     }, [digit]);
 
     return (
-        <View style={styles.tile}>
+        <View style={[styles.tile, goalAchieved && { backgroundColor: colors.yellow300 }]}>
             <Animated.View style={{ transform: [{ translateY }] }}>
                 {DIGITS.map(d => (
                     <View key={d} style={styles.row}>
@@ -43,7 +63,7 @@ const DigitTile = ({ digit, faded, goalAchieved }: DigitTileProps) => {
                                 style={[
                                     styles.digit,
                                     {
-                                        color: goalAchieved ? colors.yellow : 'white',
+                                        color: goalAchieved ? colors.yellow : colors.orange,
                                         opacity: faded && d === 0 ? 0.25 : 1,
                                     },
                                 ]}
@@ -91,6 +111,7 @@ export const StreakTiles: FC<StreakTilesProps> = ({ goalAchieved, style, value }
                         digit={d}
                         faded={isLeadingZero}
                         goalAchieved={goalAchieved}
+                        index={i}
                     />
                 );
             })}
@@ -121,7 +142,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved?: boolean) =>
             justifyContent: 'center',
         },
         tile: {
-            backgroundColor: goalAchieved ? colors.orange600 : colors.cardAccent600,
+            backgroundColor: goalAchieved ? colors.orange600 : colors.red300,
             borderRadius: spacing.s,
             height: TILE_HEIGHT,
             overflow: 'hidden',

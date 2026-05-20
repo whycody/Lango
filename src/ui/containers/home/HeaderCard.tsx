@@ -20,7 +20,7 @@ import {
 } from '../../../store';
 import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
-import { getCurrentStreak } from '../../../utils/streakUtils';
+import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { ActionButton, CustomText, SquareFlag } from '../../components';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
 import { START_SESSION_BOTTOM_SHEET } from '../../sheets/StartSessionBottomSheet';
@@ -131,6 +131,8 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
         TrueSheet.present(HOME_LANGUAGE_SHEET_NAME);
     }, []);
 
+    const isGoal = streak.active && streak.numberOfDays === getPrevMilestone(streak.numberOfDays);
+
     return (
         <View style={styles.root}>
             <StartSessionBottomSheet onSessionStart={handleSessionStart} />
@@ -140,13 +142,19 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                     {expo.name}
                 </CustomText>
                 <MaterialCommunityIcons
-                    color={streak.active ? colors.red : colors.cardAccent300}
                     name={'fire'}
-                    size={30}
+                    size={32}
+                    color={
+                        streak.active ? (isGoal ? colors.yellow : colors.red) : colors.cardAccent300
+                    }
                 />
                 <CustomText
-                    style={[styles.streakText, !streak.active && styles.inactiveStreak]}
                     weight={'Bold'}
+                    style={[
+                        styles.streakText,
+                        isGoal && { color: colors.yellow },
+                        !streak.active && styles.inactiveStreak,
+                    ]}
                 >
                     {streak.numberOfDays.toString()}
                 </CustomText>

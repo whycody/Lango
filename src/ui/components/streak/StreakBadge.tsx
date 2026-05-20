@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
+import LottieView from 'lottie-react-native';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { getNextMilestone, getPrevMilestone } from '../../../utils/streakUtils';
@@ -82,9 +83,16 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
                 },
             ]}
         >
+            <LottieView
+                autoPlay={true}
+                cacheComposition={false}
+                loop={true}
+                source={require('../../../../assets/fire.json')}
+                style={styles.lottie}
+            />
             {isGoal && (
                 <View style={styles.goalRow}>
-                    <CustomText style={styles.goalAchievedText} weight="Bold">
+                    <CustomText style={styles.goalAchievedText} weight="Black">
                         {t('streak.goal_achieved')}
                     </CustomText>
                 </View>
@@ -158,6 +166,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             flex: 1,
             fontSize: 22,
             marginBottom: 8,
+            marginTop: 8,
             textAlign: 'center',
             textTransform: 'uppercase',
         },
@@ -182,6 +191,11 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             flexDirection: 'row',
             justifyContent: 'space-between',
         },
+        lottie: {
+            height: 140,
+            marginTop: -15,
+            pointerEvents: 'none',
+        },
         progressBar: {
             backgroundColor: colors.background,
             borderRadius: spacing.m,
@@ -189,11 +203,11 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             overflow: 'hidden',
         },
         progressFill: {
-            backgroundColor: goalAchieved ? colors.orange : colors.primary300,
+            backgroundColor: goalAchieved ? colors.yellow : colors.orange,
             height: '100%',
         },
         streakLabel: {
-            color: goalAchieved ? colors.orange : colors.white,
+            color: goalAchieved ? colors.yellow : colors.orange,
             fontSize: 12,
             marginTop: 5,
             textAlign: 'center',

@@ -353,7 +353,6 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
         if (!user?.finishedOnboarding) updateUserFinishedOnboarding(true);
-        if (shouldDisplayStreakSheet) triggerHaptics('heavy');
         TrueSheet.present(
             shouldDisplayStreakSheet
                 ? SESSION_STREAK_BOTTOM_SHEET

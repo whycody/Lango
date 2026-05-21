@@ -84,6 +84,7 @@
     "application_language": "Język aplikacji",
     "choose_main_language": "Wybierz język, którego się uczysz",
     "choose_translation_language": "Wybierz swój język ojczysty",
+    "choose_theme": "Wybierz motyw aplikacji",
     "choose_application_language": "Wybierz język aplikacji",
     "choose_language_main_desc": "Kliknij na kafelek, aby zaznaczyć język, którego chcesz się uczyć.",
     "choose_language_translation_desc": "Kliknij na kafelek, aby zaznaczyć język, który jest Ci najlepiej znany.",
@@ -154,7 +155,7 @@
     },
     "theme": {
         "title": "Motyw aplikacji",
-        "desc": "Wybierz kolorystyczny motyw aplikacji.",
+        "desc": "Wybierz kolorystykę, która najbardziej Ci odpowiada i sprawi, że nauka będzie przyjemniejsza.",
         "blue": "Niebieski",
         "blue_desc": "Chłodna bryza znad Adriatyku o świcie.",
         "green": "Zielony",

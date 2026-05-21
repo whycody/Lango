@@ -4,6 +4,7 @@ import { useAppUpdateCheck } from '../hooks';
 import { useAppInitializer } from '../store/AppInitializerContext';
 import { useAuth } from '../store/AuthContext';
 import { LanguageProvider } from '../store/LanguageContext';
+import { UserPreferencesProvider } from '../store/UserPreferencesContext';
 import { LoadingView } from '../ui/containers/login';
 import { LoginScreen } from '../ui/screens/LoginScreen';
 import { OnboardingScreen } from '../ui/screens/OnboardingScreen';
@@ -29,9 +30,11 @@ const Root = () => {
 
     if (!user?.mainLang || !user?.translationLang) {
         return (
-            <LanguageProvider>
-                <OnboardingScreen />
-            </LanguageProvider>
+            <UserPreferencesProvider>
+                <LanguageProvider>
+                    <OnboardingScreen />
+                </LanguageProvider>
+            </UserPreferencesProvider>
         );
     }
 

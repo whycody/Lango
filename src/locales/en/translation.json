@@ -157,11 +157,17 @@
         "title": "App theme",
         "desc": "Choose the color theme of the app.",
         "blue": "Blue",
+        "blue_desc": "A cool breeze off the Adriatic at dawn.",
         "green": "Green",
+        "green_desc": "A dewy meadow after the first rain of May.",
         "pink": "Pink",
+        "pink_desc": "The scent of peonies in a Parisian flower shop.",
         "red": "Red",
+        "red_desc": "Ripe cherries picked at high noon.",
         "orange": "Orange",
-        "purple": "Purple"
+        "orange_desc": "The warmth of an afternoon sun over Seville.",
+        "purple": "Purple",
+        "purple_desc": "Velvet dusk settling over the hills of Tuscany."
     },
     "sorting": {
         "title": "Sorting order",

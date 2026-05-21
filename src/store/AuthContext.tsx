@@ -61,7 +61,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [authError, setAuthError] = useState<string | null>(null);
     const [user, setUser] = useMMKVObject<User | null>(USER_PROFILE_INFO);
 
-    const globalStorage = useMMKV();
+    const globalStorage = useMMKV({ id: 'user-storage' });
     const storage = useMMKV({ id: user?.userId ? `user-${user.userId}` : 'user-storage' });
     const [userUpdatePayload, setUserUpdatePayload] = useMMKVObject<UserUpdatePayload | null>(
         'user-update-payload',

@@ -157,11 +157,17 @@
         "title": "Tema de la app",
         "desc": "Elige el tema de color de la app.",
         "blue": "Azul",
+        "blue_desc": "Una brisa fresca del Adriático al amanecer.",
         "green": "Verde",
+        "green_desc": "Un prado húmedo tras la primera lluvia de mayo.",
         "pink": "Rosa",
+        "pink_desc": "El aroma de peonías en una floristería parisina.",
         "red": "Rojo",
+        "red_desc": "Cerezas maduras recogidas a pleno mediodía.",
         "orange": "Naranja",
-        "purple": "Morado"
+        "orange_desc": "El calor del sol de la tarde sobre Sevilla.",
+        "purple": "Morado",
+        "purple_desc": "El crepúsculo aterciopelado sobre las colinas de la Toscana."
     },
     "sorting": {
         "title": "Orden de clasificación",

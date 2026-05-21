@@ -37,7 +37,7 @@ void SplashScreen.preventAutoHideAsync().catch(() => {
 export default function App() {
     const { i18n } = useTranslation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
-    const globalStorage = useMMKV();
+    const globalStorage = useMMKV({ id: 'user-storage' });
     const [applicationLang] = useTypedMMKV<LanguageCode>(
         APPLICATION_LANG,
         i18n.language as LanguageCode,

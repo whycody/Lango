@@ -156,11 +156,17 @@
         "title": "Motyw aplikacji",
         "desc": "Wybierz kolorystyczny motyw aplikacji.",
         "blue": "Niebieski",
+        "blue_desc": "Chłodna bryza znad Adriatyku o świcie.",
         "green": "Zielony",
+        "green_desc": "Wilgotna łąka po pierwszym deszczu maja.",
         "pink": "Różowy",
+        "pink_desc": "Zapach peoni w paryskiej kwiaciarni.",
         "red": "Czerwony",
+        "red_desc": "Dojrzałe wiśnie zerwane w samo południe.",
         "orange": "Pomarańczowy",
-        "purple": "Fioletowy"
+        "orange_desc": "Ciepło popołudniowego słońca nad Sewillą.",
+        "purple": "Fioletowy",
+        "purple_desc": "Aksamitna mgła o zmierzchu gdzieś w Toskanii."
     },
     "sorting": {
         "title": "Sposób sortowania",

@@ -157,11 +157,17 @@
         "title": "Tema dell'app",
         "desc": "Scegli il tema colore dell'app.",
         "blue": "Blu",
+        "blue_desc": "Una brezza fresca sull'Adriatico all'alba.",
         "green": "Verde",
+        "green_desc": "Un prato umido dopo la prima pioggia di maggio.",
         "pink": "Rosa",
+        "pink_desc": "Il profumo delle peonie in una fioreria parigina.",
         "red": "Rosso",
+        "red_desc": "Ciliegie mature raccolte a mezzogiorno.",
         "orange": "Arancione",
-        "purple": "Viola"
+        "orange_desc": "Il calore del sole pomeridiano su Siviglia.",
+        "purple": "Viola",
+        "purple_desc": "Il crepuscolo di velluto sulle colline della Toscana."
     },
     "sorting": {
         "title": "Ordine di ordinamento",

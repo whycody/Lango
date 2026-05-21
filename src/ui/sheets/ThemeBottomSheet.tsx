@@ -18,13 +18,13 @@ type ThemeBottomSheetProps = {
     sheetName: string;
 };
 
-const THEME_OPTIONS: { theme: AppTheme; labelKey: string }[] = [
-    { labelKey: 'theme.blue', theme: AppTheme.BLUE },
-    { labelKey: 'theme.green', theme: AppTheme.GREEN },
-    { labelKey: 'theme.pink', theme: AppTheme.PINK },
-    { labelKey: 'theme.red', theme: AppTheme.RED },
-    { labelKey: 'theme.orange', theme: AppTheme.ORANGE },
-    { labelKey: 'theme.purple', theme: AppTheme.PURPLE },
+const THEME_OPTIONS: { descKey: string; labelKey: string; theme: AppTheme }[] = [
+    { descKey: 'theme.blue_desc', labelKey: 'theme.blue', theme: AppTheme.BLUE },
+    { descKey: 'theme.green_desc', labelKey: 'theme.green', theme: AppTheme.GREEN },
+    { descKey: 'theme.pink_desc', labelKey: 'theme.pink', theme: AppTheme.PINK },
+    { descKey: 'theme.red_desc', labelKey: 'theme.red', theme: AppTheme.RED },
+    { descKey: 'theme.orange_desc', labelKey: 'theme.orange', theme: AppTheme.ORANGE },
+    { descKey: 'theme.purple_desc', labelKey: 'theme.purple', theme: AppTheme.PURPLE },
 ];
 
 export const ThemeBottomSheet = ({ sheetName }: ThemeBottomSheetProps) => {
@@ -51,7 +51,7 @@ export const ThemeBottomSheet = ({ sheetName }: ThemeBottomSheetProps) => {
             title={t('theme.title')}
             onPrimaryButtonPress={() => TrueSheet.dismiss(sheetName)}
         >
-            {THEME_OPTIONS.map(({ labelKey, theme }) => {
+            {THEME_OPTIONS.map(({ descKey, labelKey, theme }) => {
                 const themeColors = themes[theme].colors;
                 const isSelected = appTheme === theme;
                 return (
@@ -64,9 +64,12 @@ export const ThemeBottomSheet = ({ sheetName }: ThemeBottomSheetProps) => {
                             <View
                                 style={[styles.colorDot, { backgroundColor: themeColors.primary }]}
                             />
-                            <CustomText style={styles.label} weight="SemiBold">
-                                {t(labelKey)}
-                            </CustomText>
+                            <View style={styles.labelContainer}>
+                                <CustomText style={styles.label} weight="SemiBold">
+                                    {t(labelKey)}
+                                </CustomText>
+                                <CustomText style={styles.desc}>{t(descKey)}</CustomText>
+                            </View>
                         </View>
                     </Pressable>
                 );
@@ -81,6 +84,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderRadius: 10,
             height: 20,
             width: 20,
+        },
+        desc: {
+            color: colors.white600,
+            fontSize: 12,
+            marginTop: 2,
         },
         item: {
             alignItems: 'center',
@@ -97,6 +105,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
         label: {
             color: colors.white,
             fontSize: 14,
+        },
+        labelContainer: {
             marginLeft: 12,
         },
         sheet: {

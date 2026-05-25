@@ -25,6 +25,7 @@ import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { ActionButton, CustomText, SquareFlag } from '../../components';
 import { FlashcardClassBadges } from '../../components/home/FlashcardClassBadges';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
+import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
 import { START_SESSION_BOTTOM_SHEET } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
 
@@ -34,11 +35,15 @@ type HeaderCardProps = {
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ): void;
+    navigateToFlashcardsScreen(masteryFilter: MasteryFilter): void;
 };
 
 const HOME_LANGUAGE_SHEET_NAME = 'home-language-sheet';
 
-export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
+export const HeaderCard: FC<HeaderCardProps> = ({
+    navigateToFlashcardsScreen,
+    navigateToSessionScreen,
+}) => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
@@ -173,7 +178,10 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
             />
             <CustomText style={styles.descText}>{reportMessage}</CustomText>
 
-            <FlashcardClassBadges mlStates={langWordsMLStates ?? []} />
+            <FlashcardClassBadges
+                mlStates={langWordsMLStates ?? []}
+                onBadgePress={navigateToFlashcardsScreen}
+            />
 
             <ActionButton
                 active={langWords.length + langSuggestions.length >= 5}

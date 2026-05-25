@@ -11,21 +11,24 @@ import {
     FLASHCARD_CLASSES_INFO_SHEET,
     FlashcardClassesInfoBottomSheet,
 } from '../../sheets/FlashcardClassesInfoBottomSheet';
+import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '../CustomText';
 
 type Props = {
     mlStates: WordMLState[];
+    onBadgePress?: (masteryFilter: MasteryFilter) => void;
 };
 
-export const FlashcardClassBadges: FC<Props> = ({ mlStates }) => {
+export const FlashcardClassBadges: FC<Props> = ({ mlStates, onBadgePress }) => {
     const { colors } = useTheme() as CustomTheme;
 
-    const badges = [
+    const badges: { color: string; filter: MasteryFilter; count: number }[] = [
         {
             color: colors.red,
             count: mlStates.filter(w => w.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX)
                 .length,
+            filter: 'learning',
         },
         {
             color: colors.yellow,
@@ -34,11 +37,13 @@ export const FlashcardClassBadges: FC<Props> = ({ mlStates }) => {
                     w.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
                     w.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN,
             ).length,
+            filter: 'review',
         },
         {
             color: colors.green,
             count: mlStates.filter(w => w.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN)
                 .length,
+            filter: 'mastered',
         },
     ];
 
@@ -46,13 +51,17 @@ export const FlashcardClassBadges: FC<Props> = ({ mlStates }) => {
         <>
             <FlashcardClassesInfoBottomSheet />
             <View style={styles.row}>
-                {badges.map(({ color, count }, i) => (
-                    <View key={i} style={[styles.pill, { backgroundColor: color + '22' }]}>
+                {badges.map(({ color, count, filter }) => (
+                    <Pressable
+                        key={filter}
+                        style={[styles.pill, { backgroundColor: color + '22' }]}
+                        onPress={() => onBadgePress?.(filter)}
+                    >
                         <Ionicons color={color} name="albums" size={13} />
                         <CustomText style={[styles.count, { color: colors.white }]} weight={'Bold'}>
                             {count}
                         </CustomText>
-                    </View>
+                    </Pressable>
                 ))}
                 <Pressable
                     hitSlop={8}

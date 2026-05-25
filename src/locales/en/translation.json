@@ -185,12 +185,20 @@
     "sorting": {
         "title": "Sorting order",
         "desc": "Choose how flashcards are sorted in your library.",
-        "add_date_desc": "From newest",
-        "add_date_asc": "From oldest",
-        "grade_three_desc": "From best mastered",
-        "grade_three_asc": "From least mastered",
-        "repetitions_count_desc": "From most repeated",
-        "repetitions_count_asc": "From least repeated"
+        "add_date_desc": "Newest first",
+        "add_date_asc": "Oldest first",
+        "grade_three_desc": "Best mastered",
+        "grade_three_asc": "Least mastered",
+        "repetitions_count_desc": "Most repeated",
+        "repetitions_count_asc": "Least repeated"
+    },
+    "mastery_filter": {
+        "all": "All",
+        "desc": "Choose which flashcards to display in your library.",
+        "learning": "To learn",
+        "mastered": "Mastered",
+        "review": "To review",
+        "title": "Filter flashcards"
     },
     "common": {
         "got_it": "Got it"

@@ -13,6 +13,7 @@ export * from './RemoveFlashcardBottomSheet';
 export * from './SameLearningLanguageBottomSheet';
 export * from './SessionSettingsBottomSheet';
 export * from './SkipFlashcardsBottomSheet';
+export * from './MasteryFilterBottomSheet';
 export * from './SortingMethodBottomSheet';
 export * from './StartSessionBottomSheet';
 export * from './ThemeBottomSheet';

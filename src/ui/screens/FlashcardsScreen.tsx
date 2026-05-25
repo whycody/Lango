@@ -1,30 +1,38 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { BackHandler, Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BackHandler, Keyboard, StyleSheet, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useFocusEffect, useTheme } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute, useTheme } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
-import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
+import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
+import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
+import { RootStackParamList } from '../../navigation/navigationTypes';
 import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
-import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil';
-import { ActionButton, BottomGradient, CustomText, ModalDragHandle } from '../components';
-import { EmptyList, FlashcardListItem, ListFilter } from '../components/flashcards';
-import { StatisticItem } from '../components/home';
+import { getSortingMethod } from '../../utils/sortingUtil';
+import { ActionButton, BottomGradient, ModalDragHandle } from '../components';
+import {
+    EmptyList,
+    FlashcardListItem,
+    FlashcardsHeader,
+    FlashcardsSubheader,
+    ListFilter,
+} from '../components/flashcards';
 import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
+import { MasteryFilter, MasteryFilterBottomSheet } from '../sheets/MasteryFilterBottomSheet';
 import { RemoveFlashcardBottomSheet } from '../sheets/RemoveFlashcardBottomSheet';
 import { SortingMethodBottomSheet } from '../sheets/SortingMethodBottomSheet';
 import { CustomTheme } from '../Theme';
 
 const FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'flashcards-handle-flashcard-bottom-sheet';
+const FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET = 'flashcards-mastery-filter-bottom-sheet';
 const FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'flashcards-remove-flashcard-bottom-sheet';
 const FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET = 'flashcards-sorting-method-bottom-sheet';
 
@@ -40,12 +48,30 @@ export const FlashcardsScreen = () => {
         word => word.source == WordSource.LANGO && !word.removed,
     ).length;
     const { flashcardsSortingMethod } = useUserPreferences();
+    const route = useRoute<RouteProp<RootStackParamList, 'Flashcards'>>();
 
     const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
     const [filter, setFilter] = useState('');
+    const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>(
+        route.params?.masteryFilter ?? 'all',
+    );
+    const [searchingMode, setSearchingMode] = useState(false);
 
     const inputRef = useRef<TextInput>(null);
-    const [searchingMode, setSearchingMode] = useState(false);
+
+    useEffect(() => {
+        if (route.params?.masteryFilter) {
+            setMasteryFilter(route.params.masteryFilter);
+        }
+    }, [route.params?.masteryFilter]);
+
+    const allFlashcards = useMemo(
+        () =>
+            wordWithDetailsContext.langWordsWithDetails.filter(
+                (word: WordWithDetails) => !word.removed,
+            ),
+        [wordWithDetailsContext.langWordsWithDetails],
+    );
 
     const flashcards = useMemo(
         () =>
@@ -62,24 +88,34 @@ export const FlashcardsScreen = () => {
                                     word.translation
                                         .trim()
                                         .toLowerCase()
-                                        .includes(filter.trim().toLowerCase())))),
+                                        .includes(filter.trim().toLowerCase())))) &&
+                        (searchingMode ||
+                            masteryFilter === 'all' ||
+                            (masteryFilter === 'learning' &&
+                                word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX) ||
+                            (masteryFilter === 'review' &&
+                                word.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
+                                word.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN) ||
+                            (masteryFilter === 'mastered' &&
+                                word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN)),
                 )
                 .sort(getSortingMethod(flashcardsSortingMethod)),
         [
             searchingMode,
             flashcardsSortingMethod,
             filter,
+            masteryFilter,
             wordWithDetailsContext.langWordsWithDetails,
         ],
     );
 
     const avgGradeThreeProb = useMemo(
         () =>
-            flashcards.length > 0
-                ? flashcards.reduce((sum, card) => sum + (card.gradeThreeProb || 0), 0) /
-                  flashcards.length
+            allFlashcards.length > 0
+                ? allFlashcards.reduce((sum, card) => sum + (card.gradeThreeProb || 0), 0) /
+                  allFlashcards.length
                 : 0,
-        [flashcards],
+        [allFlashcards],
     );
 
     const turnOffSearchingMode = () => {
@@ -98,16 +134,12 @@ export const FlashcardsScreen = () => {
         useCallback(() => {
             const handleBackPress = () => {
                 if (!searchingMode) return false;
-
                 turnOffSearchingMode();
                 return true;
             };
 
             const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-            return () => {
-                subscription.remove();
-            };
+            return () => subscription.remove();
         }, [searchingMode]),
     );
 
@@ -137,6 +169,12 @@ export const FlashcardsScreen = () => {
         TrueSheet.present(FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     }, []);
 
+    const handleRemovePress = useCallback((id: string) => {
+        Keyboard.dismiss();
+        setEditFlashcardId(id);
+        TrueSheet.present(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
+    }, []);
+
     const handleCancel = () => {
         TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
         setEditFlashcardId(undefined);
@@ -148,12 +186,6 @@ export const FlashcardsScreen = () => {
         wordsContext.removeWord(editFlashcardId);
         setEditFlashcardId(undefined);
     };
-
-    const handleRemovePress = useCallback((id: string) => {
-        Keyboard.dismiss();
-        setEditFlashcardId(id);
-        TrueSheet.present(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
-    }, []);
 
     const renderFlashcardListItem = useCallback(
         ({ gradeThreeProb, id, text, translation }: WordWithDetails) => (
@@ -170,83 +202,34 @@ export const FlashcardsScreen = () => {
         [handleEditPress, handleRemovePress],
     );
 
-    const renderHeader = useMemo(() => {
-        return (
-            <View style={styles.headerCard}>
-                <CustomText style={styles.title} weight="Bold">
-                    {t('flashcards')}
-                </CustomText>
-                <CustomText style={styles.subtitle}>
-                    {t('soFar', { wordsCount: numberOfWords }) +
-                        ' ' +
-                        (langoWords > 0 ? t('brag', { langoWords }) : t('nextTime'))}
-                </CustomText>
-                <View style={styles.statsContainer}>
-                    <StatisticItem
-                        description={t('words')}
-                        icon={'layers-outline'}
-                        label={`${numberOfWords}`}
-                        style={styles.statisticItemFlex}
-                    />
-                    <StatisticItem
-                        description={t('langoWords')}
-                        icon={'layers-outline'}
-                        label={`${langoWords}`}
-                        style={styles.statisticItemFlex}
-                    />
-                </View>
-                {flashcards.length > 0 && (
-                    <>
-                        <CustomText style={styles.subtitle}>
-                            {t('avgGradeThree', {
-                                avgGrade: (avgGradeThreeProb * 100).toFixed(0),
-                            }) +
-                                ' ' +
-                                (avgGradeThreeProb >= 0.5 ? t('goodJob') : t('badJob'))}
-                        </CustomText>
-                        <View style={styles.progressBarContainer}>
-                            <ProgressBar
-                                animatedValue={avgGradeThreeProb}
-                                color={colors.primary}
-                                style={styles.progressBar}
-                            />
-                        </View>
-                    </>
-                )}
-            </View>
-        );
-    }, [flashcards.length, numberOfWords, langoWords]);
+    const renderHeader = useMemo(
+        () => (
+            <FlashcardsHeader
+                allFlashcardsCount={allFlashcards.length}
+                avgGradeThreeProb={avgGradeThreeProb}
+                langoWords={langoWords}
+                numberOfWords={numberOfWords}
+            />
+        ),
+        [allFlashcards.length, avgGradeThreeProb, numberOfWords, langoWords],
+    );
 
-    const handleClearPress = () => {
-        setFilter('');
-    };
+    const renderSubheader = useMemo(
+        () => (
+            <FlashcardsSubheader
+                filterSheetName={FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET}
+                masteryFilter={masteryFilter}
+                sortingMethod={flashcardsSortingMethod}
+                sortingSheetName={FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET}
+                onClearSearch={() => setFilter('')}
+                onSearchPress={turnOnSearchingMode}
+            />
+        ),
+        [flashcardsSortingMethod, masteryFilter],
+    );
 
-    const renderSubheader = useMemo(() => {
-        return (
-            <View style={styles.subHeaderContainer}>
-                <Pressable onPress={turnOnSearchingMode}>
-                    <ListFilter
-                        editable={false}
-                        isSearching={searchingMode}
-                        pointerEvents="none"
-                        onClear={handleClearPress}
-                    />
-                </Pressable>
-                <Pressable
-                    style={styles.sortingHeader}
-                    onPress={() => TrueSheet.present(FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET)}
-                >
-                    <MaterialCommunityIcons color={colors.white} name={'sort-variant'} size={18} />
-                    <CustomText style={styles.sortingLabel} weight={'SemiBold'}>
-                        {getSortingMethodLabel(flashcardsSortingMethod)}
-                    </CustomText>
-                </Pressable>
-            </View>
-        );
-    }, [searchingMode, flashcardsSortingMethod, filter, setFilter]);
-
-    const renderEmptyList = useMemo(() => {
-        return (
+    const renderEmptyList = useMemo(
+        () => (
             <EmptyList
                 title={t(searchingMode ? 'empty_search' : 'no_items')}
                 description={t(
@@ -257,12 +240,13 @@ export const FlashcardsScreen = () => {
                         : 'no_items_desc',
                 )}
             />
-        );
-    }, [searchingMode, filter]);
+        ),
+        [searchingMode, filter],
+    );
 
-    const ListFilterHeader = useMemo(() => {
-        return (
-            <View style={[styles.row, styles.subHeaderContainer]}>
+    const renderSearchHeader = useMemo(
+        () => (
+            <View style={[styles.row, styles.searchHeaderContainer]}>
                 <Ionicons
                     color={colors.white300}
                     name={'arrow-back-sharp'}
@@ -275,12 +259,13 @@ export const FlashcardsScreen = () => {
                     ref={inputRef}
                     value={filter}
                     onChangeText={setFilter}
-                    onClear={handleClearPress}
+                    onClear={() => setFilter('')}
                     onFocus={searchingMode ? undefined : turnOnSearchingMode}
                 />
             </View>
-        );
-    }, [filter]);
+        ),
+        [filter],
+    );
 
     const renderListItem = ({ item }: { item: { id: string } }) => {
         if (item.id === 'header') return renderHeader;
@@ -313,8 +298,13 @@ export const FlashcardsScreen = () => {
                 flashcardId={editFlashcardId}
                 sheetName={FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET}
             />
+            <MasteryFilterBottomSheet
+                sheetName={FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET}
+                value={masteryFilter}
+                onChange={setMasteryFilter}
+            />
             <SortingMethodBottomSheet sheetName={FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET} />
-            {searchingMode && ListFilterHeader}
+            {searchingMode && renderSearchHeader}
             <FlashList
                 ListFooterComponent={<View style={{ height: 50 }} />}
                 data={data}
@@ -350,21 +340,8 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             backgroundColor: colors.card,
             paddingBottom: insets.bottom,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL / 2,
+            paddingTop: 8,
             zIndex: 100,
-        },
-        headerCard: {
-            backgroundColor: colors.background,
-        },
-        progressBar: {
-            backgroundColor: colors.cardAccent300,
-            borderRadius: spacing.s,
-            height: 7,
-        },
-        progressBarContainer: {
-            marginBottom: 6,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: 16,
         },
         root: {
             backgroundColor: colors.background,
@@ -375,57 +352,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             alignItems: 'center',
             flexDirection: 'row',
         },
-        sortingHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            gap: 8,
-            paddingBottom: 8,
-        },
-        sortingLabel: {
-            color: colors.white,
-            fontSize: 13,
-        },
-        statisticItem: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        statisticItemFlex: {
-            flex: 1,
-        },
-        statsContainer: {
-            flexDirection: 'row',
-            gap: 12,
-            marginBottom: 12,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL,
-        },
-        subHeaderContainer: {
+        searchHeaderContainer: {
             backgroundColor: colors.background,
             paddingHorizontal: MARGIN_HORIZONTAL,
-        },
-        subtitle: {
-            color: colors.white300,
-            fontSize: 15,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL / 3,
-        },
-        textInput: {
-            backgroundColor: colors.background,
-            color: colors.primary300,
-            flex: 1,
-            fontSize: 18,
-            height: 50,
-        },
-        title: {
-            color: colors.white,
-            fontSize: 24,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL,
         },
         topSpacer: {
             alignItems: 'center',
             backgroundColor: colors.background,
-            height: isIOS ? MARGIN_VERTICAL : insets.top,
+            height: isIOS ? 16 : insets.top,
             justifyContent: 'center',
         },
     });

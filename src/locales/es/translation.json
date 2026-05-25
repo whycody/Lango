@@ -185,12 +185,20 @@
     "sorting": {
         "title": "Orden de clasificación",
         "desc": "Elige cómo se ordenan las tarjetas en tu biblioteca.",
-        "add_date_desc": "De más reciente",
-        "add_date_asc": "De más antiguo",
-        "grade_three_desc": "De mejor dominado",
-        "grade_three_asc": "De menos dominado",
-        "repetitions_count_desc": "De más repetido",
-        "repetitions_count_asc": "De menos repetido"
+        "add_date_desc": "Más recientes",
+        "add_date_asc": "Más antiguas",
+        "grade_three_desc": "Mejor dominadas",
+        "grade_three_asc": "Menos dominadas",
+        "repetitions_count_desc": "Más repetidas",
+        "repetitions_count_asc": "Menos repetidas"
+    },
+    "mastery_filter": {
+        "all": "Todas",
+        "desc": "Elige qué tarjetas mostrar en tu biblioteca.",
+        "learning": "Por aprender",
+        "mastered": "Dominadas",
+        "review": "Por repasar",
+        "title": "Filtrar tarjetas"
     },
     "common": {
         "got_it": "Entendido"

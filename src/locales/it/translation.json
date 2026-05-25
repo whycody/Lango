@@ -185,12 +185,20 @@
     "sorting": {
         "title": "Ordine di ordinamento",
         "desc": "Scegli come vengono ordinate le schede nella tua libreria.",
-        "add_date_desc": "Dal più recente",
-        "add_date_asc": "Dal più vecchio",
-        "grade_three_desc": "Dal più padroneggiato",
-        "grade_three_asc": "Dal meno padroneggiato",
-        "repetitions_count_desc": "Dal più ripetuto",
-        "repetitions_count_asc": "Dal meno ripetuto"
+        "add_date_desc": "Più recenti",
+        "add_date_asc": "Più vecchie",
+        "grade_three_desc": "Meglio padroneggiate",
+        "grade_three_asc": "Meno padroneggiate",
+        "repetitions_count_desc": "Più ripetute",
+        "repetitions_count_asc": "Meno ripetute"
+    },
+    "mastery_filter": {
+        "all": "Tutte",
+        "desc": "Scegli quali schede mostrare nella tua libreria.",
+        "learning": "Da imparare",
+        "mastered": "Padroneggiate",
+        "review": "Da ripassare",
+        "title": "Filtra schede"
     },
     "common": {
         "got_it": "Capito"

@@ -184,12 +184,20 @@
     "sorting": {
         "title": "Sposób sortowania",
         "desc": "Wybierz sposób sortowania fiszek w Twojej bibliotece.",
-        "add_date_desc": "Od najnowszych",
-        "add_date_asc": "Od najstarszych",
-        "grade_three_desc": "Od najlepiej opanowanych",
-        "grade_three_asc": "Od najsłabiej opanowanych",
-        "repetitions_count_desc": "Od najczęściej powtarzanych",
-        "repetitions_count_asc": "Od najrzadziej powtarzanych"
+        "add_date_desc": "Najnowsze",
+        "add_date_asc": "Najstarsze",
+        "grade_three_desc": "Najlepiej opanowane",
+        "grade_three_asc": "Najsłabiej opanowane",
+        "repetitions_count_desc": "Najczęściej powtarzane",
+        "repetitions_count_asc": "Najrzadziej powtarzane"
+    },
+    "mastery_filter": {
+        "all": "Wszystkie",
+        "desc": "Wybierz, które słówka chcesz wyświetlić w bibliotece.",
+        "learning": "Do nauki",
+        "mastered": "Opanowane",
+        "review": "Do powtórki",
+        "title": "Filtruj słówka"
     },
     "common": {
         "got_it": "Rozumiem"

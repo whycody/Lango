@@ -1,4 +1,5 @@
 export * from './DeleteAccountBottomSheet';
+export * from './FlashcardClassesInfoBottomSheet';
 export * from './EnableNotificationsBottomSheet';
 export * from './FinishSessionBottomSheet';
 export * from './GenericBottomSheet';

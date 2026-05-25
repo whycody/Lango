@@ -1,4 +1,16 @@
 {
+    "flashcard_classes": {
+        "title": "Kategorie słówek",
+        "desc": "Lango wykorzystuje model uczenia maszynowego, który analizuje Twoją naukę i ocenia, jak dobrze pamiętasz dane słówka.\n\nNa tej podstawie każde z nich możemy przypisać do jednej z trzech kategorii:",
+        "class_1_title": "Do nauki",
+        "class_1_desc": "Słówka, których jeszcze dobrze nie umiesz.",
+        "class_2_title": "Do powtórki",
+        "class_2_desc": "Słówka, które warto sobie odświeżyć.",
+        "class_3_title": "Dobrze opanowane",
+        "class_3_desc": "Słówka, które pamiętasz już bardzo dobrze.",
+        "got_it": "Rozumiem",
+        "review_words": "Przejrzyj moje słówka"
+    },
     "home": "Główna",
     "library": "Biblioteka",
     "report1": "W Twoim słowniku ciężko jest coś znaleźć. *Dodaj kilka słówek*, aby rozpocząć naukę i śledzić swoje postępy \uD83D\uDCDA Każde nowe słowo przybliża Cię do lepszej znajomości języka!",

@@ -1,4 +1,16 @@
 {
+    "flashcard_classes": {
+        "title": "Categorías de palabras",
+        "desc": "Lango utiliza un modelo de aprendizaje automático que analiza tu aprendizaje y estima cuánto recuerdas cada palabra.\n\nEn base a eso, cada palabra se asigna a una de tres categorías:",
+        "class_1_title": "Por aprender",
+        "class_1_desc": "Palabras que aún no dominas.",
+        "class_2_title": "Por repasar",
+        "class_2_desc": "Palabras que vale la pena repasar.",
+        "class_3_title": "Bien dominadas",
+        "class_3_desc": "Palabras que ya recuerdas muy bien.",
+        "got_it": "Entendido",
+        "review_words": "Revisar mis palabras"
+    },
     "home": "Inicio",
     "library": "Biblioteca",
     "report1": "Tu diccionario aún está bastante vacío... *Añade algunas palabras* para empezar a aprender y seguir tu progreso 📚 ¡Cada nueva palabra te acerca más al dominio del idioma!",

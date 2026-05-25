@@ -1,4 +1,16 @@
 {
+    "flashcard_classes": {
+        "title": "Word categories",
+        "desc": "Lango uses a machine learning model that analyses your learning and estimates how well you remember each word.\n\nBased on that, every word is assigned to one of three categories:",
+        "class_1_title": "To learn",
+        "class_1_desc": "Words you haven't mastered yet.",
+        "class_2_title": "To review",
+        "class_2_desc": "Words worth refreshing.",
+        "class_3_title": "Well mastered",
+        "class_3_desc": "Words you already remember very well.",
+        "got_it": "Got it",
+        "review_words": "Review my words"
+    },
     "home": "Home",
     "library": "Library",
     "report1": "Your dictionary is still quite empty.. *Add a few words* to start learning and track your progress \uD83D\uDCDA Every new word brings you closer to mastering the language!",

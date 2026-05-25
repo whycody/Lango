@@ -18,10 +18,12 @@ import {
     useWords,
     useWordsHeuristicStates,
 } from '../../../store';
+import { useWordsMLStatesContext } from '../../../store/WordsMLStatesContext';
 import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { ActionButton, CustomText, SquareFlag } from '../../components';
+import { FlashcardClassBadges } from '../../components/home/FlashcardClassBadges';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
 import { START_SESSION_BOTTOM_SHEET } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
@@ -43,6 +45,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
     const { langSuggestions } = useSuggestions();
     const { langWords } = useWords();
     const { langWordsHeuristicStates } = useWordsHeuristicStates();
+    const { langWordsMLStates } = useWordsMLStatesContext();
     const { studyDaysList } = useStatistics();
 
     const [streak, setStreak] = useState<Streak>({
@@ -81,8 +84,8 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
     }, [langWordsHeuristicStatesFiltered, last50Words]);
 
     const wellKnownWords = useMemo(
-        () => langWordsHeuristicStates.filter(word => word.studyCount > 2).length,
-        [langWordsHeuristicStates],
+        () => (langWordsMLStates ?? []).filter(w => w.gradeThreeProb >= 0.6).length,
+        [langWordsMLStates],
     );
 
     useLayoutEffect(() => {
@@ -169,6 +172,8 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                 style={styles.progressBar}
             />
             <CustomText style={styles.descText}>{reportMessage}</CustomText>
+
+            <FlashcardClassBadges mlStates={langWordsMLStates ?? []} />
 
             <ActionButton
                 active={langWords.length + langSuggestions.length >= 5}

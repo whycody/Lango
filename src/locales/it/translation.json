@@ -1,4 +1,16 @@
 {
+    "flashcard_classes": {
+        "title": "Categorie di parole",
+        "desc": "Lango utilizza un modello di machine learning che analizza il tuo apprendimento e stima quanto ricordi ogni parola.\n\nSu questa base, ogni parola viene assegnata a una di tre categorie:",
+        "class_1_title": "Da imparare",
+        "class_1_desc": "Parole che non hai ancora padroneggiato.",
+        "class_2_title": "Da ripassare",
+        "class_2_desc": "Parole che vale la pena ripassare.",
+        "class_3_title": "Ben padroneggiato",
+        "class_3_desc": "Parole che ricordi già molto bene.",
+        "got_it": "Capito",
+        "review_words": "Rivedi le mie parole"
+    },
     "home": "Home",
     "library": "Libreria",
     "report1": "Il tuo dizionario è ancora abbastanza vuoto... *Aggiungi alcune parole* per iniziare ad imparare e seguire i tuoi progressi 📚 Ogni nuova parola ti avvicina alla padronanza della lingua!",

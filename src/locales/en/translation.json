@@ -133,6 +133,7 @@
     "translation": "Translation",
     "no_items": "There is nothing here yet",
     "no_items_desc": "Try adding some words to your vocabulary.",
+    "no_items_filter_desc": "Try changing the filters to see more words.",
     "empty_search": "No results found",
     "empty_search_desc": "Try changing the search term.",
     "start_search_desc": "Try to type something above to search for a flashcard.",

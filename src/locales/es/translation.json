@@ -133,6 +133,7 @@
     "translation": "Traducción",
     "no_items": "Todavía no hay nada aquí",
     "no_items_desc": "Intenta añadir algunas palabras a tu vocabulario.",
+    "no_items_filter_desc": "Intenta cambiar los filtros para ver más palabras.",
     "empty_search": "No se encontraron resultados",
     "empty_search_desc": "Prueba a cambiar el término de búsqueda.",
     "start_search_desc": "Escribe algo arriba para buscar una tarjeta.",

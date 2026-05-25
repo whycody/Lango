@@ -14,6 +14,7 @@ import { CustomText } from '../ui/components';
 import { HomeScreen } from '../ui/screens/HomeScreen';
 import { LibraryScreen } from '../ui/screens/LibraryScreen';
 import { HandleFlashcardBottomSheet } from '../ui/sheets';
+import { MicrophonePermissionBottomSheet } from '../ui/sheets/MicrophonePermissionBottomSheet';
 import { CustomTheme } from '../ui/Theme';
 import { trackEvent } from '../utils/analytics';
 
@@ -24,6 +25,7 @@ export type TabsParamList = {
 };
 
 const TABS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'tabs-handle-flashcard-bottom-sheet';
+const TABS_MICROPHONE_PERMISSION_SHEET = 'tabs-microphone-permission';
 
 const Tab = createBottomTabNavigator<TabsParamList>();
 
@@ -104,7 +106,11 @@ const TabsNavigator = () => {
 
     return (
         <>
-            <HandleFlashcardBottomSheet sheetName={TABS_HANDLE_FLASHCARD_BOTTOM_SHEET} />
+            <MicrophonePermissionBottomSheet sheetName={TABS_MICROPHONE_PERMISSION_SHEET} />
+            <HandleFlashcardBottomSheet
+                microphonePermissionSheetName={TABS_MICROPHONE_PERMISSION_SHEET}
+                sheetName={TABS_HANDLE_FLASHCARD_BOTTOM_SHEET}
+            />
 
             <Tab.Navigator
                 screenOptions={({ route }) => ({

@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTranslation } from 'react-i18next';
 
-import { ThemePicker } from '../containers';
+import { ThemePicker } from '../containers/theme/ThemePicker';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
 type ThemeBottomSheetProps = {

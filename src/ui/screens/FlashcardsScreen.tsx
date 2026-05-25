@@ -1,15 +1,24 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Keyboard, StyleSheet, TextInput, View } from 'react-native';
+import {
+    Animated,
+    BackHandler,
+    Keyboard,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    StyleSheet,
+    TextInput,
+    View,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { RouteProp, useFocusEffect, useRoute, useTheme } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
-import { MARGIN_HORIZONTAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
@@ -24,17 +33,22 @@ import {
     FlashcardsHeader,
     FlashcardsSubheader,
     ListFilter,
+    ScrollToTopButton,
 } from '../components/flashcards';
 import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../sheets/MasteryFilterBottomSheet';
+import { MicrophonePermissionBottomSheet } from '../sheets/MicrophonePermissionBottomSheet';
 import { RemoveFlashcardBottomSheet } from '../sheets/RemoveFlashcardBottomSheet';
 import { SortingMethodBottomSheet } from '../sheets/SortingMethodBottomSheet';
 import { CustomTheme } from '../Theme';
 
 const FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'flashcards-handle-flashcard-bottom-sheet';
 const FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET = 'flashcards-mastery-filter-bottom-sheet';
+const FLASHCARDS_MICROPHONE_PERMISSION_SHEET = 'flashcards-microphone-permission';
 const FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'flashcards-remove-flashcard-bottom-sheet';
 const FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET = 'flashcards-sorting-method-bottom-sheet';
+
+const SCROLL_TO_TOP_THRESHOLD = 300;
 
 export const FlashcardsScreen = () => {
     const { t } = useTranslation();
@@ -56,8 +70,21 @@ export const FlashcardsScreen = () => {
         route.params?.masteryFilter ?? 'all',
     );
     const [searchingMode, setSearchingMode] = useState(false);
-
     const inputRef = useRef<TextInput>(null);
+    const listRef = useRef<FlashListRef<{ id: string }>>(null);
+    const lastScrollY = useRef(0);
+    const addButtonAnim = useRef(new Animated.Value(1)).current;
+    const scrollToTopAnim = useRef(new Animated.Value(0)).current;
+    const addButtonVisible = useRef(true);
+    const scrollToTopVisible = useRef(false);
+
+    const animateTo = useCallback((anim: Animated.Value, toValue: number) => {
+        Animated.timing(anim, {
+            duration: 200,
+            toValue,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     useEffect(() => {
         if (route.params?.masteryFilter) {
@@ -73,38 +100,49 @@ export const FlashcardsScreen = () => {
         [wordWithDetailsContext.langWordsWithDetails],
     );
 
+    const matchesSearchQuery = useCallback(
+        (word: WordWithDetails) => {
+            const query = filter.trim().toLowerCase();
+            if (!query) return false;
+            return (
+                word.text.trim().toLowerCase().includes(query) ||
+                word.translation.trim().toLowerCase().includes(query)
+            );
+        },
+        [filter],
+    );
+
+    const matchesMasteryFilter = useCallback(
+        (word: WordWithDetails) => {
+            if (masteryFilter === 'all') return true;
+            if (masteryFilter === 'learning')
+                return word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX;
+            if (masteryFilter === 'review')
+                return (
+                    word.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
+                    word.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN
+                );
+            if (masteryFilter === 'mastered')
+                return word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN;
+            return true;
+        },
+        [masteryFilter],
+    );
+
     const flashcards = useMemo(
         () =>
             wordWithDetailsContext.langWordsWithDetails
-                .filter(
-                    (word: WordWithDetails) =>
-                        !word.removed &&
-                        (!searchingMode ||
-                            (filter.trim() &&
-                                (word.text
-                                    .trim()
-                                    .toLowerCase()
-                                    .includes(filter.trim().toLowerCase()) ||
-                                    word.translation
-                                        .trim()
-                                        .toLowerCase()
-                                        .includes(filter.trim().toLowerCase())))) &&
-                        (searchingMode ||
-                            masteryFilter === 'all' ||
-                            (masteryFilter === 'learning' &&
-                                word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX) ||
-                            (masteryFilter === 'review' &&
-                                word.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
-                                word.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN) ||
-                            (masteryFilter === 'mastered' &&
-                                word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN)),
-                )
+                .filter((word: WordWithDetails) => {
+                    if (word.removed) return false;
+                    if (searchingMode) return matchesSearchQuery(word);
+                    return matchesMasteryFilter(word);
+                })
                 .sort(getSortingMethod(flashcardsSortingMethod)),
         [
             searchingMode,
             flashcardsSortingMethod,
-            filter,
-            masteryFilter,
+            matchesSearchQuery,
+            matchesMasteryFilter,
             wordWithDetailsContext.langWordsWithDetails,
         ],
     );
@@ -118,15 +156,29 @@ export const FlashcardsScreen = () => {
         [allFlashcards],
     );
 
+    const resetScrollButtonVisibility = () => {
+        animateTo(scrollToTopAnim, 0);
+        scrollToTopVisible.current = false;
+    };
+
+    const showAddButton = () => {
+        animateTo(addButtonAnim, 1);
+        addButtonVisible.current = true;
+    };
+
     const turnOffSearchingMode = () => {
         inputRef?.current?.blur();
         Keyboard.dismiss();
         setFilter('');
         setSearchingMode(false);
+        listRef.current?.scrollToOffset({ animated: false, offset: 0 });
+        resetScrollButtonVisibility();
+        showAddButton();
     };
 
     const turnOnSearchingMode = () => {
         setSearchingMode(true);
+        resetScrollButtonVisibility();
         setTimeout(() => inputRef?.current?.focus(), 100);
     };
 
@@ -142,6 +194,34 @@ export const FlashcardsScreen = () => {
             return () => subscription.remove();
         }, [searchingMode]),
     );
+
+    const handleScroll = useCallback(
+        (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+            const offsetY = event.nativeEvent.contentOffset.y;
+            const scrollingDown = offsetY > lastScrollY.current + 5;
+            const scrollingUp = offsetY < lastScrollY.current - 5;
+            lastScrollY.current = offsetY;
+
+            if (scrollingDown && addButtonVisible.current) {
+                addButtonVisible.current = false;
+                animateTo(addButtonAnim, 0);
+            } else if (scrollingUp && !addButtonVisible.current) {
+                addButtonVisible.current = true;
+                animateTo(addButtonAnim, 1);
+            }
+
+            const shouldShowScrollToTop = offsetY > SCROLL_TO_TOP_THRESHOLD;
+            if (shouldShowScrollToTop !== scrollToTopVisible.current) {
+                scrollToTopVisible.current = shouldShowScrollToTop;
+                animateTo(scrollToTopAnim, shouldShowScrollToTop ? 1 : 0);
+            }
+        },
+        [addButtonAnim, scrollToTopAnim, animateTo],
+    );
+
+    const handleScrollToTop = useCallback(() => {
+        listRef.current?.scrollToOffset({ animated: true, offset: 0 });
+    }, []);
 
     const handleActionButtonPress = () => {
         setEditFlashcardId(undefined);
@@ -237,11 +317,13 @@ export const FlashcardsScreen = () => {
                         ? filter
                             ? 'empty_search_desc'
                             : 'start_search_desc'
-                        : 'no_items_desc',
+                        : masteryFilter !== 'all'
+                          ? 'no_items_filter_desc'
+                          : 'no_items_desc',
                 )}
             />
         ),
-        [searchingMode, filter],
+        [searchingMode, filter, masteryFilter],
     );
 
     const renderSearchHeader = useMemo(
@@ -294,8 +376,10 @@ export const FlashcardsScreen = () => {
                 onCancel={handleCancel}
                 onRemove={removeFlashcard}
             />
+            <MicrophonePermissionBottomSheet sheetName={FLASHCARDS_MICROPHONE_PERMISSION_SHEET} />
             <HandleFlashcardBottomSheet
                 flashcardId={editFlashcardId}
+                microphonePermissionSheetName={FLASHCARDS_MICROPHONE_PERMISSION_SHEET}
                 sheetName={FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET}
             />
             <MasteryFilterBottomSheet
@@ -306,27 +390,51 @@ export const FlashcardsScreen = () => {
             <SortingMethodBottomSheet sheetName={FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET} />
             {searchingMode && renderSearchHeader}
             <FlashList
-                ListFooterComponent={<View style={{ height: 50 }} />}
+                key={searchingMode ? 'search' : 'normal'}
+                ListFooterComponent={<View style={{ height: 16 }} />}
                 data={data}
                 keyExtractor={item => item.id}
                 keyboardDismissMode={'on-drag'}
                 keyboardShouldPersistTaps={'always'}
                 overScrollMode={'never'}
+                ref={listRef}
                 renderItem={renderListItem}
+                scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
                 stickyHeaderHiddenOnScroll={false}
                 stickyHeaderIndices={searchingMode || !flashcards.length ? undefined : [1]}
+                onScroll={handleScroll}
             />
             <BottomGradient />
             {!searchingMode && (
-                <View style={styles.buttonContainer}>
+                <Animated.View
+                    style={[
+                        styles.buttonContainer,
+                        {
+                            opacity: addButtonAnim,
+                            transform: [
+                                {
+                                    translateY: addButtonAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [80, 0],
+                                    }),
+                                },
+                            ],
+                        },
+                    ]}
+                >
                     <ActionButton
                         label={t('addWord')}
                         primary={true}
                         onPress={handleActionButtonPress}
                     />
-                </View>
+                </Animated.View>
             )}
+            <ScrollToTopButton
+                addButtonAnim={addButtonAnim}
+                animatedValue={scrollToTopAnim}
+                onPress={handleScrollToTop}
+            />
         </View>
     );
 };
@@ -338,9 +446,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         buttonContainer: {
             backgroundColor: colors.card,
+            borderRadius: spacing.l,
+            bottom: 0,
+            left: 0,
             paddingBottom: insets.bottom,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: 8,
+            paddingTop: MARGIN_VERTICAL / 2,
+            position: 'absolute',
+            right: 0,
             zIndex: 100,
         },
         root: {

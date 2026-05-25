@@ -41,6 +41,7 @@ import {
     LeaveSessionBottomSheet,
     SessionSettingsBottomSheet,
 } from '../sheets';
+import { MicrophonePermissionBottomSheet } from '../sheets/MicrophonePermissionBottomSheet';
 import { StreakBottomSheet } from '../sheets/StreakBottomSheet';
 import { WordSuggestionBottomSheet } from '../sheets/WordSuggestionBottomSheet';
 import { CustomTheme } from '../Theme';
@@ -58,6 +59,7 @@ const SESSION_FINISH_SESSION_BOTTOM_SHEET = 'session-finish-session-bottom-sheet
 const SESSION_SETTINGS_BOTTOM_SHEET = 'session-settings-bottom-sheet';
 const SESSION_STREAK_BOTTOM_SHEET = 'session-streak-bottom-sheet';
 const SESSION_WORD_SUGGESTION_BOTTOM_SHEET = 'session-word-suggestion-bottom-sheet';
+const SESSION_MICROPHONE_PERMISSION_SHEET = 'session-microphone-permission';
 
 type SessionScreenProps = NativeStackScreenProps<RootStackParamList, ScreenName.Session>;
 
@@ -521,8 +523,10 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                 leaveSession={handleSessionExit}
                 sheetName={SESSION_LEAVE_SESSION_BOTTOM_SHEET}
             />
+            <MicrophonePermissionBottomSheet sheetName={SESSION_MICROPHONE_PERMISSION_SHEET} />
             <HandleFlashcardBottomSheet
                 flashcardId={editId}
+                microphonePermissionSheetName={SESSION_MICROPHONE_PERMISSION_SHEET}
                 sheetName={SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET}
                 onWordEdit={handleWordEdit}
             />

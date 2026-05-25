@@ -6,5 +6,6 @@ export * from './FlashcardsHeader';
 export * from './FlashcardsSubheader';
 export * from './ListFilter';
 export * from './MasteryFilterItem';
+export * from './ScrollToTopButton';
 export * from './SortingMethodItem';
 export * from './WordInput';

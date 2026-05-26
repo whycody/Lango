@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { NavigationProp, useNavigation, useTheme } from '@react-navigation/native';
@@ -10,6 +10,7 @@ import { RootStackParamList, ScreenName } from '../../navigation/navigationTypes
 import { CustomText } from '../components/CustomText';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
+import { MasteryFilter } from './MasteryFilterBottomSheet';
 
 export const FLASHCARD_CLASSES_INFO_SHEET = 'flashcard-classes-info-sheet';
 
@@ -18,20 +19,23 @@ export const FlashcardClassesInfoBottomSheet = () => {
     const { t } = useTranslation();
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-    const classes = [
+    const classes: { color: string; desc: string; filter: MasteryFilter; label: string }[] = [
         {
             color: colors.red,
             desc: t('flashcard_classes.class_1_desc'),
+            filter: 'learning',
             label: t('flashcard_classes.class_1_title'),
         },
         {
             color: colors.yellow,
             desc: t('flashcard_classes.class_2_desc'),
+            filter: 'review',
             label: t('flashcard_classes.class_2_title'),
         },
         {
             color: colors.green,
             desc: t('flashcard_classes.class_3_desc'),
+            filter: 'mastered',
             label: t('flashcard_classes.class_3_title'),
         },
     ];
@@ -45,6 +49,11 @@ export const FlashcardClassesInfoBottomSheet = () => {
         navigation.navigate(ScreenName.Flashcards);
     };
 
+    const handleClassPress = (filter: MasteryFilter) => {
+        TrueSheet.dismiss(FLASHCARD_CLASSES_INFO_SHEET);
+        navigation.navigate(ScreenName.Flashcards, { masteryFilter: filter });
+    };
+
     return (
         <GenericBottomSheet
             description={t('flashcard_classes.desc')}
@@ -56,8 +65,8 @@ export const FlashcardClassesInfoBottomSheet = () => {
             onSecondaryButtonPress={handleReviewWords}
         >
             <View style={styles.list}>
-                {classes.map(({ color, desc, label }, i) => (
-                    <View key={i} style={styles.row}>
+                {classes.map(({ color, desc, filter, label }, i) => (
+                    <Pressable key={i} style={styles.row} onPress={() => handleClassPress(filter)}>
                         <View style={[styles.iconWrap, { backgroundColor: color + '22' }]}>
                             <Ionicons color={color} name="albums" size={16} />
                         </View>
@@ -72,7 +81,8 @@ export const FlashcardClassesInfoBottomSheet = () => {
                                 {desc}
                             </CustomText>
                         </View>
-                    </View>
+                        <Ionicons color={colors.white300} name="chevron-forward" size={16} />
+                    </Pressable>
                 ))}
             </View>
         </GenericBottomSheet>
@@ -101,7 +111,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: MARGIN_HORIZONTAL,
     },
     row: {
-        alignItems: 'flex-start',
+        alignItems: 'center',
         flexDirection: 'row',
         gap: spacing.m,
         marginTop: spacing.m,

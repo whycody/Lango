@@ -18,8 +18,8 @@ type MasteryFilterBottomSheetProps = {
 const FILTER_ICONS: Record<MasteryFilter, string> = {
     all: 'filter-remove-outline',
     learning: 'book-open-outline',
-    review: 'refresh',
     mastered: 'check-circle-outline',
+    review: 'refresh',
 };
 
 export const MasteryFilterBottomSheet = ({

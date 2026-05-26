@@ -34,7 +34,13 @@ import { isNotificationPermissionGranted } from '../../utils/ensureNotificationP
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { getCurrentStreak } from '../../utils/streakUtils';
 import { BottomGradient } from '../components';
-import { ActivityCard, HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
+import {
+    ActivityCard,
+    GradeDistributionChart,
+    HeaderCard,
+    StatisticsCard,
+    WordsSuggestionsCard,
+} from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
 import { MasteryFilter } from '../sheets/MasteryFilterBottomSheet';
 import { OnboardingBottomSheet } from '../sheets/OnboardingBottomSheet';
@@ -201,8 +207,10 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                     navigateToSessionScreen={navigateToSessionScreen}
                 />
                 {!languagesAreTheSame && <WordsSuggestionsCard />}
+
                 <ActivityCard />
                 <StatisticsCard />
+                <GradeDistributionChart />
 
                 <View style={{ height: 50 }} />
             </ScrollView>

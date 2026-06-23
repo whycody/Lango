@@ -137,7 +137,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     }, [
         askLaterNotifications,
         user?.finishedOnboarding,
-        streak,
+        streak.active,
         isFocused,
         askedNotificationsThisSession,
     ]);

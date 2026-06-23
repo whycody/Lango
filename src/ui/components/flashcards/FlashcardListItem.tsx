@@ -64,7 +64,7 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
                     {onRemovePress && (
                         <Ionicons
                             color={colors.red}
-                            name={'trash'}
+                            name={'trash-outline'}
                             size={22}
                             style={styles.icon}
                             onPress={() => onRemovePress(id)}
@@ -73,7 +73,7 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
                     {onEditPress && (
                         <Ionicons
                             color={colors.white}
-                            name={'pencil'}
+                            name={'pencil-outline'}
                             size={21}
                             style={styles.icon}
                             onPress={() => onEditPress(id)}
@@ -90,9 +90,8 @@ const getStyles = (colors: CustomTheme['colors'], withContrast: boolean) =>
         container: {
             alignItems: 'center',
             borderColor: colors.yellow,
-            borderLeftWidth: 5,
             flexDirection: 'row',
-            paddingLeft: MARGIN_HORIZONTAL - 5,
+            paddingLeft: MARGIN_HORIZONTAL,
             paddingRight: MARGIN_HORIZONTAL,
             paddingVertical: 13,
         },

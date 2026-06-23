@@ -35,6 +35,10 @@ import {
     ListFilter,
     ScrollToTopButton,
 } from '../components/flashcards';
+import {
+    FLASHCARD_DETAIL_BOTTOM_SHEET,
+    FlashcardDetailBottomSheet,
+} from '../sheets/FlashcardDetailBottomSheet';
 import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../sheets/MasteryFilterBottomSheet';
 import { MicrophonePermissionBottomSheet } from '../sheets/MicrophonePermissionBottomSheet';
@@ -65,6 +69,7 @@ export const FlashcardsScreen = () => {
     const route = useRoute<RouteProp<RootStackParamList, 'Flashcards'>>();
 
     const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
+    const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
     const [filter, setFilter] = useState('');
     const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>(
         route.params?.masteryFilter ?? 'all',
@@ -234,7 +239,10 @@ export const FlashcardsScreen = () => {
 
     const handlePress = useCallback(
         (id: string) => {
-            if (flashcards) console.log(flashcards.find(f => f.id === id));
+            const word = flashcards.find(f => f.id === id);
+            if (!word) return;
+            setDetailWord(word);
+            TrueSheet.present(FLASHCARD_DETAIL_BOTTOM_SHEET);
         },
         [flashcards],
     );
@@ -255,6 +263,14 @@ export const FlashcardsScreen = () => {
         TrueSheet.present(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
     }, []);
 
+    const handleWordEdit = useCallback(
+        (id: string | undefined, word: string, translation: string) => {
+            if (!id) return;
+            setDetailWord(prev => (prev?.id === id ? { ...prev, text: word, translation } : prev));
+        },
+        [],
+    );
+
     const handleCancel = () => {
         TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
         setEditFlashcardId(undefined);
@@ -262,9 +278,11 @@ export const FlashcardsScreen = () => {
 
     const removeFlashcard = () => {
         TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
+        TrueSheet.dismiss(FLASHCARD_DETAIL_BOTTOM_SHEET);
         if (!editFlashcardId) return;
         wordsContext.removeWord(editFlashcardId);
         setEditFlashcardId(undefined);
+        setDetailWord(undefined);
     };
 
     const renderFlashcardListItem = useCallback(
@@ -370,6 +388,11 @@ export const FlashcardsScreen = () => {
             <View style={styles.topSpacer}>
                 <ModalDragHandle />
             </View>
+            <FlashcardDetailBottomSheet
+                word={detailWord}
+                onEdit={detailWord ? () => handleEditPress(detailWord.id) : undefined}
+                onRemove={detailWord ? () => handleRemovePress(detailWord.id) : undefined}
+            />
             <RemoveFlashcardBottomSheet
                 flashcardId={editFlashcardId}
                 sheetName={FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET}
@@ -381,6 +404,7 @@ export const FlashcardsScreen = () => {
                 flashcardId={editFlashcardId}
                 microphonePermissionSheetName={FLASHCARDS_MICROPHONE_PERMISSION_SHEET}
                 sheetName={FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET}
+                onWordEdit={handleWordEdit}
             />
             <MasteryFilterBottomSheet
                 sheetName={FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET}

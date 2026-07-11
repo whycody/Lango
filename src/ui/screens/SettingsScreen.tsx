@@ -10,6 +10,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageTypes } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { palette } from '../../constants/palette';
 import { SettingsItems, SettingsSections } from '../../constants/Settings';
 import { FlashcardSide } from '../../constants/UserPreferences';
 import { useDynamicStatusBar } from '../../hooks';
@@ -89,7 +90,7 @@ export const SettingsScreen = () => {
     const settingsItems: SettingItem[] = useMemo(
         () => [
             {
-                color: '#2EE6A6',
+                color: palette.green,
                 description: currentMainLang,
                 icon: 'language',
                 id: SettingsItems.MAIN_LANGUAGE,
@@ -97,7 +98,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.LANGUAGE,
             },
             {
-                color: '#2EE6A6',
+                color: palette.green,
                 description: currentTranslationLang,
                 icon: 'language',
                 id: SettingsItems.TRANSLATION_LANGUAGE,
@@ -105,7 +106,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.LANGUAGE,
             },
             {
-                color: '#2EE6A6',
+                color: palette.green,
                 description: currentApplicationLang,
                 icon: 'language',
                 id: SettingsItems.APPLICATION_LANGUAGE,
@@ -122,7 +123,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.PREFERENCES,
             },
             {
-                color: '#FFB84D',
+                color: palette.orange,
                 description: t(`turned_${userPreferences.vibrationsEnabled ? 'on' : 'off'}_m`),
                 enabled: userPreferences.vibrationsEnabled,
                 icon: 'phone-portrait',
@@ -131,7 +132,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.PREFERENCES,
             },
             {
-                color: '#FF7A59',
+                color: palette.salmon,
                 description: t(`turned_${notificationsEnabled ? 'on' : 'off'}_m`),
                 enabled: notificationsEnabled,
                 icon: 'notifications',
@@ -141,7 +142,7 @@ export const SettingsScreen = () => {
             },
 
             {
-                color: '#9B6BFF',
+                color: palette.purple,
                 description: t(`turned_${user?.suggestionsInSession ? 'on' : 'off'}_m`),
                 enabled: user?.suggestionsInSession,
                 icon: 'sparkles',
@@ -150,7 +151,10 @@ export const SettingsScreen = () => {
                 section: SettingsSections.SESSION,
             },
             {
-                color: userPreferences.flashcardSide == FlashcardSide.WORD ? '#63E6FF' : '#2EE6A6',
+                color:
+                    userPreferences.flashcardSide == FlashcardSide.WORD
+                        ? palette.cyan
+                        : palette.green,
                 description:
                     userPreferences.flashcardSide == FlashcardSide.WORD
                         ? t('word')
@@ -161,7 +165,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.SESSION,
             },
             {
-                color: '#B06CFF',
+                color: palette.violet,
                 description: t(`turned_${userPreferences.sessionSpeechSynthesizer ? 'on' : 'off'}`),
                 enabled: userPreferences.sessionSpeechSynthesizer,
                 icon: 'volume-high',
@@ -171,7 +175,7 @@ export const SettingsScreen = () => {
             },
 
             {
-                color: '#7B9CFF',
+                color: palette.periwinkle,
                 description: user?.email ?? '',
                 icon: 'mail',
                 id: SettingsItems.EMAIL_ADDRESS,
@@ -179,7 +183,7 @@ export const SettingsScreen = () => {
                 section: SettingsSections.ACCOUNT,
             },
             {
-                color: '#FF5C5C',
+                color: palette.red,
                 description: t('delete_account_desc'),
                 icon: 'person-remove',
                 id: SettingsItems.DELETE_ACCOUNT,

@@ -19,6 +19,7 @@ const SORTING_ICONS: Record<FlashcardSortingMethod, string> = {
 
 type SortingMethodItemProps = {
     checked: boolean;
+    color: string;
     id: FlashcardSortingMethod;
     label: string;
     onPress: (id: FlashcardSortingMethod) => void;
@@ -26,7 +27,7 @@ type SortingMethodItemProps = {
 };
 
 export const SortingMethodItem = memo<SortingMethodItemProps>(
-    ({ checked, id, label, onPress, style }) => {
+    ({ checked, color, id, label, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
@@ -38,7 +39,7 @@ export const SortingMethodItem = memo<SortingMethodItemProps>(
             >
                 <View style={[styles.container, checked && { borderColor: colors.primary }]}>
                     <MaterialCommunityIcons
-                        color={colors.orange}
+                        color={color}
                         name={SORTING_ICONS[id] as any}
                         size={22}
                     />

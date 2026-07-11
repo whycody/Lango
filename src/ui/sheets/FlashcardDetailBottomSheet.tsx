@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordWithDetails } from '../../types/utils/WordWithDetails';
+import { formatDisplayDate } from '../../utils/dateUtil';
 import { getLevelColor } from '../../utils/getLevelColor';
 import { ActionButton, Header, StatRow } from '../components';
 import { CustomText } from '../components/CustomText';
@@ -37,15 +38,7 @@ export const FlashcardDetailBottomSheet: FC<FlashcardDetailBottomSheetProps> = (
     const levelColor = word ? getLevelColor(word.gradeThreeProb) : colors.white300;
     const levelPercent = word ? Math.round(word.gradeThreeProb * 100) : 0;
 
-    const formatDate = (iso: string) =>
-        new Date(iso).toLocaleDateString(undefined, {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-        });
-
-    const addDateLabel = word ? formatDate(word.addDate) : '—';
-    const editedDateLabel = word?.updatedAt ? formatDate(word.updatedAt) : null;
+    const addDateLabel = word ? formatDisplayDate(word.addDate) : '—';
 
     const lastRepetitionLabel = (() => {
         if (!word || word.hoursSinceLastRepetition === 0) return '—';
@@ -57,127 +50,103 @@ export const FlashcardDetailBottomSheet: FC<FlashcardDetailBottomSheetProps> = (
     return (
         <GenericBottomSheet sheetName={FLASHCARD_DETAIL_BOTTOM_SHEET}>
             <View style={styles.root}>
-                {word && (
-                    <>
-                        <View style={styles.header}>
-                            <Header subtitle={word.translation} title={word.text} />
-                        </View>
+                <View style={styles.header}>
+                    <Header subtitle={word?.translation} title={word?.text ?? ''} />
+                </View>
 
-                        <View style={styles.cardMetaPills}>
-                            <View style={styles.cardMetaRow}>
-                                <CustomText style={styles.cardMetaText}>
-                                    <CustomText style={styles.cardMetaTextBold} weight="SemiBold">
-                                        {t('addedOn')}:
-                                    </CustomText>{' '}
-                                    {addDateLabel}
-                                </CustomText>
-                            </View>
-                            {editedDateLabel && (
-                                <View style={styles.cardMetaRow}>
-                                    <CustomText style={styles.cardMetaText}>
-                                        <CustomText
-                                            style={styles.cardMetaTextBold}
-                                            weight="SemiBold"
-                                        >
-                                            {t('editedOn')}:
-                                        </CustomText>{' '}
-                                        {editedDateLabel}
+                <View style={styles.cardMetaPills}>
+                    <View style={styles.cardMetaRow}>
+                        <CustomText style={styles.cardMetaText}>
+                            <CustomText style={styles.cardMetaTextBold} weight="SemiBold">
+                                {t('addedOn')}:
+                            </CustomText>{' '}
+                            {addDateLabel}
+                        </CustomText>
+                    </View>
+                </View>
+
+                <View style={styles.card}>
+                    <View style={styles.levelHeader}>
+                        <CustomText style={styles.levelLabel} weight="SemiBold">
+                            {t('masteryLevel')}
+                        </CustomText>
+                        <CustomText
+                            style={[styles.levelPercent, { color: levelColor }]}
+                            weight="Bold"
+                        >
+                            {levelPercent}%
+                        </CustomText>
+                    </View>
+
+                    <View style={styles.progressTrack}>
+                        <View
+                            style={[
+                                styles.progressFill,
+                                {
+                                    backgroundColor: levelColor,
+                                    width: `${levelPercent}%`,
+                                },
+                            ]}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.statsList}>
+                    <StatRow
+                        color={colors.primary300}
+                        icon="repeat"
+                        label={t('repetitions')}
+                        value={String(word?.repetitionsCount)}
+                    />
+                    <StatRow
+                        color={colors.orange}
+                        icon="flame"
+                        label={t('correct_streak')}
+                        value={String(word?.studyStreak)}
+                    />
+                    <StatRow
+                        color={colors.yellow}
+                        icon="time-outline"
+                        label={t('lastRepetition')}
+                        value={lastRepetitionLabel}
+                    />
+                </View>
+
+                <View style={styles.bottomSection}>
+                    {(onEdit || onRemove) && (
+                        <View style={styles.actionRow}>
+                            {onEdit && (
+                                <Pressable style={styles.actionBtn} onPress={onEdit}>
+                                    <Ionicons
+                                        color={colors.white}
+                                        name="pencil-outline"
+                                        size={18}
+                                    />
+                                    <CustomText style={styles.actionBtnText} weight="SemiBold">
+                                        {t('edit')}
                                     </CustomText>
-                                </View>
+                                </Pressable>
+                            )}
+                            {onRemove && (
+                                <Pressable style={styles.actionBtn} onPress={onRemove}>
+                                    <Ionicons color={colors.red} name="trash-outline" size={18} />
+                                    <CustomText
+                                        style={styles.actionBtnTextDelete}
+                                        weight="SemiBold"
+                                    >
+                                        {t('delete')}
+                                    </CustomText>
+                                </Pressable>
                             )}
                         </View>
-
-                        <View style={styles.card}>
-                            <View style={styles.levelHeader}>
-                                <CustomText style={styles.levelLabel} weight="SemiBold">
-                                    {t('masteryLevel')}
-                                </CustomText>
-                                <CustomText
-                                    style={[styles.levelPercent, { color: levelColor }]}
-                                    weight="Bold"
-                                >
-                                    {levelPercent}%
-                                </CustomText>
-                            </View>
-
-                            <View style={styles.progressTrack}>
-                                <View
-                                    style={[
-                                        styles.progressFill,
-                                        {
-                                            backgroundColor: levelColor,
-                                            width: `${levelPercent}%`,
-                                        },
-                                    ]}
-                                />
-                            </View>
-                        </View>
-
-                        <View style={styles.statsList}>
-                            <StatRow
-                                color={colors.primary300}
-                                icon="repeat"
-                                label={t('repetitions')}
-                                value={String(word.repetitionsCount)}
-                            />
-                            <StatRow
-                                color={colors.orange}
-                                icon="flame"
-                                label={t('correct_streak')}
-                                value={String(word.studyStreak)}
-                            />
-                            <StatRow
-                                color={colors.yellow}
-                                icon="time-outline"
-                                label={t('lastRepetition')}
-                                value={lastRepetitionLabel}
-                            />
-                        </View>
-
-                        <View style={styles.bottomSection}>
-                            {(onEdit || onRemove) && (
-                                <View style={styles.actionRow}>
-                                    {onEdit && (
-                                        <Pressable style={styles.actionBtn} onPress={onEdit}>
-                                            <Ionicons
-                                                color={colors.white}
-                                                name="pencil-outline"
-                                                size={18}
-                                            />
-                                            <CustomText
-                                                style={styles.actionBtnText}
-                                                weight="SemiBold"
-                                            >
-                                                {t('edit')}
-                                            </CustomText>
-                                        </Pressable>
-                                    )}
-                                    {onRemove && (
-                                        <Pressable style={styles.actionBtn} onPress={onRemove}>
-                                            <Ionicons
-                                                color={colors.red}
-                                                name="trash-outline"
-                                                size={18}
-                                            />
-                                            <CustomText
-                                                style={styles.actionBtnTextDelete}
-                                                weight="SemiBold"
-                                            >
-                                                {t('delete')}
-                                            </CustomText>
-                                        </Pressable>
-                                    )}
-                                </View>
-                            )}
-                            <ActionButton
-                                primary
-                                label={t('common.got_it')}
-                                style={styles.gotItButton}
-                                onPress={handleDismiss}
-                            />
-                        </View>
-                    </>
-                )}
+                    )}
+                    <ActionButton
+                        primary
+                        label={t('common.got_it')}
+                        style={styles.gotItButton}
+                        onPress={handleDismiss}
+                    />
+                </View>
             </View>
         </GenericBottomSheet>
     );

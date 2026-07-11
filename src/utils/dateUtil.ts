@@ -31,3 +31,10 @@ export const getTimeDifferenceMs = (from: DateInput, to: DateInput = Date.now())
     if (fromTs === null || toTs === null) return null;
     return toTs - fromTs;
 };
+
+export const formatDisplayDate = (date: DateInput): string =>
+    new Date(date).toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    });

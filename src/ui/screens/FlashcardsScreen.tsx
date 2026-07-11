@@ -292,12 +292,10 @@ export const FlashcardsScreen = () => {
                 level={gradeThreeProb}
                 text={text}
                 translation={translation}
-                onEditPress={handleEditPress}
                 onPress={handlePress}
-                onRemovePress={handleRemovePress}
             />
         ),
-        [handleEditPress, handleRemovePress],
+        [handleEditPress],
     );
 
     const renderHeader = useMemo(

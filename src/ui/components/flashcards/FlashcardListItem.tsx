@@ -12,9 +12,7 @@ import { CustomText } from '..';
 type FlashcardListItemProps = {
     id: string;
     level: number;
-    onEditPress?: (id: string) => void;
     onPress?: (id: string) => void;
-    onRemovePress?: (id: string) => void;
     style?: StyleProp<ViewStyle>;
     text: string;
     translation: string;
@@ -22,17 +20,7 @@ type FlashcardListItemProps = {
 };
 
 export const FlashcardListItem = memo<FlashcardListItemProps>(
-    ({
-        id,
-        level,
-        onEditPress,
-        onPress,
-        onRemovePress,
-        style,
-        text,
-        translation,
-        withContrast = false,
-    }) => {
+    ({ id, level, onPress, style, text, translation, withContrast = false }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors, withContrast);
 
@@ -61,24 +49,12 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
                         </CustomText>
                         <CustomText style={styles.translation}>{translation}</CustomText>
                     </View>
-                    {onRemovePress && (
-                        <Ionicons
-                            color={colors.red}
-                            name={'trash-outline'}
-                            size={22}
-                            style={styles.icon}
-                            onPress={() => onRemovePress(id)}
-                        />
-                    )}
-                    {onEditPress && (
-                        <Ionicons
-                            color={colors.white}
-                            name={'pencil-outline'}
-                            size={21}
-                            style={styles.icon}
-                            onPress={() => onEditPress(id)}
-                        />
-                    )}
+                    <Ionicons
+                        color={colors.white}
+                        name={'information-circle-outline'}
+                        size={22}
+                        style={styles.icon}
+                    />
                 </View>
             </Pressable>
         );

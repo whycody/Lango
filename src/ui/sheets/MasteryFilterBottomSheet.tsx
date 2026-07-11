@@ -4,6 +4,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTranslation } from 'react-i18next';
 import { FlatList } from 'react-native-gesture-handler';
 
+import { palette } from '../../constants/palette';
 import { MasteryFilterItem } from '../components/flashcards';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
@@ -20,6 +21,13 @@ const FILTER_ICONS: Record<MasteryFilter, string> = {
     learning: 'book-open-outline',
     mastered: 'check-circle-outline',
     review: 'refresh',
+};
+
+const FILTER_COLORS: Record<MasteryFilter, string> = {
+    all: palette.gray,
+    learning: palette.red,
+    mastered: palette.green,
+    review: palette.yellow,
 };
 
 export const MasteryFilterBottomSheet = ({
@@ -43,6 +51,7 @@ export const MasteryFilterBottomSheet = ({
         ({ item }: { item: MasteryFilter }) => (
             <MasteryFilterItem
                 checked={value === item}
+                color={FILTER_COLORS[item]}
                 icon={FILTER_ICONS[item]}
                 id={item}
                 label={t(`mastery_filter.${item}`)}

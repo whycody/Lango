@@ -9,6 +9,7 @@ import { CustomText } from '..';
 
 type MasteryFilterItemProps = {
     checked: boolean;
+    color: string;
     icon: string;
     id: string;
     label: string;
@@ -16,7 +17,7 @@ type MasteryFilterItemProps = {
 };
 
 export const MasteryFilterItem = memo<MasteryFilterItemProps>(
-    ({ checked, icon, id, label, onPress }) => {
+    ({ checked, color, icon, id, label, onPress }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
 
@@ -26,7 +27,7 @@ export const MasteryFilterItem = memo<MasteryFilterItemProps>(
                 onPress={() => onPress(id)}
             >
                 <View style={[styles.container, checked && { borderColor: colors.primary }]}>
-                    <MaterialCommunityIcons color={colors.orange} name={icon as any} size={22} />
+                    <MaterialCommunityIcons color={color} name={icon as any} size={22} />
                     <View style={styles.textContainer}>
                         <CustomText style={styles.text} weight={'SemiBold'}>
                             {label}

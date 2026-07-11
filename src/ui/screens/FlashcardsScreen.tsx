@@ -277,8 +277,7 @@ export const FlashcardsScreen = () => {
     };
 
     const removeFlashcard = () => {
-        TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
-        TrueSheet.dismiss(FLASHCARD_DETAIL_BOTTOM_SHEET);
+        TrueSheet.dismissAll();
         if (!editFlashcardId) return;
         wordsContext.removeWord(editFlashcardId);
         setEditFlashcardId(undefined);
@@ -388,8 +387,8 @@ export const FlashcardsScreen = () => {
             </View>
             <FlashcardDetailBottomSheet
                 word={detailWord}
-                onEdit={detailWord ? () => handleEditPress(detailWord.id) : undefined}
-                onRemove={detailWord ? () => handleRemovePress(detailWord.id) : undefined}
+                onEdit={() => handleEditPress(detailWord?.id ?? '')}
+                onRemove={() => handleRemovePress(detailWord?.id ?? '')}
             />
             <RemoveFlashcardBottomSheet
                 flashcardId={editFlashcardId}

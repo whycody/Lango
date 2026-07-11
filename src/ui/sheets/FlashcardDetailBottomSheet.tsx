@@ -1,15 +1,14 @@
 import React, { FC } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordWithDetails } from '../../types/utils/WordWithDetails';
-import { formatDisplayDate } from '../../utils/dateUtil';
+import { formatDisplayDate, formatHoursSince } from '../../utils/dateUtil';
 import { getLevelColor } from '../../utils/getLevelColor';
-import { ActionButton, Header, StatRow } from '../components';
+import { ActionButton, Header, SecondaryButton, StatRow } from '../components';
 import { CustomText } from '../components/CustomText';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
@@ -17,8 +16,8 @@ import { GenericBottomSheet } from './GenericBottomSheet';
 export const FLASHCARD_DETAIL_BOTTOM_SHEET = 'flashcard-detail-bottom-sheet';
 
 type FlashcardDetailBottomSheetProps = {
-    onEdit?: () => void;
-    onRemove?: () => void;
+    onEdit: () => void;
+    onRemove: () => void;
     word: WordWithDetails | undefined;
 };
 
@@ -37,15 +36,8 @@ export const FlashcardDetailBottomSheet: FC<FlashcardDetailBottomSheetProps> = (
 
     const levelColor = word ? getLevelColor(word.gradeThreeProb) : colors.white300;
     const levelPercent = word ? Math.round(word.gradeThreeProb * 100) : 0;
-
     const addDateLabel = word ? formatDisplayDate(word.addDate) : '—';
-
-    const lastRepetitionLabel = (() => {
-        if (!word || word.hoursSinceLastRepetition === 0) return '—';
-        const h = word.hoursSinceLastRepetition;
-        if (h < 24) return `${Math.round(h)}h`;
-        return `${Math.round(h / 24)}d`;
-    })();
+    const lastRepetitionLabel = word ? formatHoursSince(word.hoursSinceLastRepetition) : '—';
 
     return (
         <GenericBottomSheet sheetName={FLASHCARD_DETAIL_BOTTOM_SHEET}>
@@ -113,36 +105,20 @@ export const FlashcardDetailBottomSheet: FC<FlashcardDetailBottomSheetProps> = (
                 </View>
 
                 <View style={styles.bottomSection}>
-                    {(onEdit || onRemove) && (
-                        <View style={styles.actionRow}>
-                            {onEdit && (
-                                <Pressable style={styles.actionBtn} onPress={onEdit}>
-                                    <Ionicons
-                                        color={colors.white}
-                                        name="pencil-outline"
-                                        size={18}
-                                    />
-                                    <CustomText style={styles.actionBtnText} weight="SemiBold">
-                                        {t('edit')}
-                                    </CustomText>
-                                </Pressable>
-                            )}
-                            {onRemove && (
-                                <Pressable style={styles.actionBtn} onPress={onRemove}>
-                                    <Ionicons color={colors.red} name="trash-outline" size={18} />
-                                    <CustomText
-                                        style={styles.actionBtnTextDelete}
-                                        weight="SemiBold"
-                                    >
-                                        {t('delete')}
-                                    </CustomText>
-                                </Pressable>
-                            )}
-                        </View>
-                    )}
+                    <View style={styles.actionRow}>
+                        <SecondaryButton icon="pencil-outline" label={t('edit')} onPress={onEdit} />
+                        <SecondaryButton
+                            color={colors.red}
+                            icon="trash-outline"
+                            label={t('delete')}
+                            onPress={onRemove}
+                        />
+                    </View>
+
                     <ActionButton
                         primary
-                        label={t('common.got_it')}
+                        icon="chevron-down"
+                        label={t('common.close')}
                         style={styles.gotItButton}
                         onPress={handleDismiss}
                     />
@@ -154,25 +130,6 @@ export const FlashcardDetailBottomSheet: FC<FlashcardDetailBottomSheetProps> = (
 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
-        actionBtn: {
-            alignItems: 'center',
-            borderColor: colors.cardAccent300,
-            borderRadius: spacing.m,
-            borderWidth: 1,
-            flex: 1,
-            flexDirection: 'row',
-            gap: spacing.s,
-            justifyContent: 'center',
-            paddingVertical: spacing.m,
-        },
-        actionBtnText: {
-            color: colors.white,
-            fontSize: 13,
-        },
-        actionBtnTextDelete: {
-            color: colors.red,
-            fontSize: 13,
-        },
         actionRow: {
             flexDirection: 'row',
             gap: spacing.m,

@@ -214,6 +214,7 @@
         "title": "Filtra schede"
     },
     "common": {
+        "close": "Chiudi",
         "got_it": "Capito"
     },
     "hit_flashcard_bottom_sheet": {

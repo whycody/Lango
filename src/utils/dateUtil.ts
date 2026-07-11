@@ -32,6 +32,12 @@ export const getTimeDifferenceMs = (from: DateInput, to: DateInput = Date.now())
     return toTs - fromTs;
 };
 
+export const formatHoursSince = (hours: number): string => {
+    if (hours === 0) return '—';
+    if (hours < 24) return `${Math.round(hours)}h`;
+    return `${Math.round(hours / 24)}d`;
+};
+
 export const formatDisplayDate = (date: DateInput): string =>
     new Date(date).toLocaleDateString(undefined, {
         day: 'numeric',

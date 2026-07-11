@@ -218,7 +218,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             padding: 6.5,
         },
         input: {
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardAccent,
             color: colors.white,
             flex: 1,
             fontFamily: `Montserrat-Regular`,
@@ -232,7 +232,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         inputContainer: {
             alignItems: 'center',
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardAccent,
             borderRadius: spacing.m,
             flex: 1,
             flexDirection: 'row',

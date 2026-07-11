@@ -214,6 +214,7 @@
         "title": "Filter flashcards"
     },
     "common": {
+        "close": "Close",
         "got_it": "Got it"
     },
     "hit_flashcard_bottom_sheet": {

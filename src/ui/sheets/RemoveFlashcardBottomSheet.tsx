@@ -25,7 +25,8 @@ export const RemoveFlashcardBottomSheet = (props: RemoveFlashcardBottomSheetProp
     return (
         <GenericBottomSheet
             description={t('removingFlashcardDesc')}
-            primaryActionLabel={t('continue')}
+            primaryActionIcon="trash"
+            primaryActionLabel={t('delete')}
             secondaryActionLabel={t('cancel')}
             sheetName={props.sheetName}
             style={styles.bottomSheet}

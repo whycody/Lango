@@ -214,6 +214,7 @@
         "title": "Filtrar tarjetas"
     },
     "common": {
+        "close": "Cerrar",
         "got_it": "Entendido"
     },
     "hit_flashcard_bottom_sheet": {

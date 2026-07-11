@@ -252,13 +252,16 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                 primaryActionIcon={flashcardId ? 'save-sharp' : undefined}
                 primaryActionLabel={flashcardId ? t('edit') : t('add_1')}
                 primaryButtonEnabled={buttonsActive}
-                secondaryActionLabel={!flashcardId ? t('addAnother') : undefined}
+                secondaryActionLabel={!flashcardId ? t('addAnother') : t('cancel')}
+                secondaryButtonEnabled={buttonsActive}
                 sheetName={sheetName}
                 style={styles.bottomSheet}
                 title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
                 onDidDismiss={handleSheetDismiss}
                 onPrimaryButtonPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
-                onSecondaryButtonPress={handleActionButtonPress}
+                onSecondaryButtonPress={
+                    flashcardId ? () => TrueSheet.dismiss(sheetName) : handleActionButtonPress
+                }
             >
                 {status && statusMessage && (
                     <Alert

@@ -3,6 +3,7 @@ import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
@@ -92,6 +93,14 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
             navigation.setOptions({ gestureEnabled: true });
         };
     }, [navigation]);
+
+    useEffect(() => {
+        Audio.setAudioModeAsync({
+            allowsRecordingIOS: false,
+            playsInSilentModeIOS: true,
+            staysActiveInBackground: false,
+        });
+    }, []);
 
     const confettiRef = useRef<LottieView>(null);
     const pagerRef = useRef<PagerView>(null);

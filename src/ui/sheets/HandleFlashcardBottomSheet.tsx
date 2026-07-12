@@ -250,7 +250,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
             <GenericBottomSheet
                 description={t('wordAndTranslation')}
                 primaryActionIcon={flashcardId ? 'save-sharp' : undefined}
-                primaryActionLabel={flashcardId ? t('edit') : t('add_1')}
+                primaryActionLabel={flashcardId ? t('save') : t('add_1')}
                 primaryButtonEnabled={buttonsActive}
                 secondaryActionLabel={!flashcardId ? t('addAnother') : t('cancel')}
                 secondaryButtonEnabled={buttonsActive}

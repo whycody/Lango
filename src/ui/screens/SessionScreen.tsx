@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
@@ -107,8 +107,9 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     const [editId, setEditId] = useState<string | undefined>();
     const [numberOfSession, setNumberOfSession] = useState(0);
     const [lastPressTime, setLastPressTime] = useState<number>(0);
-    const [scaleValues] = useState(
-        cards.map((_, index) => new Animated.Value(index === 0 ? 1 : 0.8)),
+    const scaleValues = useMemo(
+        () => cards.map((_, index) => new Animated.Value(index === currentIndex ? 1 : 0.8)),
+        [cards],
     );
     const prevActiveIndexRef = useRef(0);
 

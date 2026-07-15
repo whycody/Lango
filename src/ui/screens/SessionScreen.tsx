@@ -572,7 +572,6 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                     />
                     <View style={styles.progressBarWrapper}>
                         <ProgressBar
-                            animate={progress < cards.length}
                             color={colors.primary300}
                             progress={progress ? progress / cards.length : 0}
                             style={styles.progressBar}

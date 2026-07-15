@@ -7,9 +7,6 @@
         "icon": "./assets/logo.png",
         "userInterfaceStyle": "dark",
         "runtimeVersion": "1.5",
-        "splash": {
-            "backgroundColor": "#090B22"
-        },
         "plugins": [
             [
                 "react-native-fbsdk-next",
@@ -62,7 +59,11 @@
                 }
             ],
             "expo-apple-authentication",
-            "@react-native-firebase/app"
+            "@react-native-firebase/app",
+            "expo-secure-store",
+            "expo-sharing",
+            "expo-status-bar",
+            "expo-asset"
         ],
         "ios": {
             "icon": "./assets/icon1024.png",

@@ -36,7 +36,7 @@ type WordToSync = {
 export const WordsHeuristicProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { initialLoad } = useAppInitializer();
     const [wordsHeuristicStates, setWordsHeuristicStates] = useState<WordHeuristicState[]>(
-        initialLoad.wordsHeuristicStates,
+        initialLoad!.wordsHeuristicStates,
     );
     const wordsHeuristicStatesRef = useRef<WordHeuristicState[]>([]);
     const [loading, setLoading] = useState(false);

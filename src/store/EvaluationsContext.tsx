@@ -43,7 +43,7 @@ export const EvaluationsContext = createContext<EvaluationsContextProps>({
 export const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { initialLoad } = useAppInitializer();
     const { getAllEvaluations, saveEvaluations } = useEvaluationsRepository();
-    const [evaluations, setEvaluations] = useState<Evaluation[]>(initialLoad.evaluations);
+    const [evaluations, setEvaluations] = useState<Evaluation[]>(initialLoad!.evaluations);
     const [loading, setLoading] = useState(true);
     const syncing = useRef(false);
 

@@ -66,7 +66,7 @@ const SessionsContext = createContext<SessionsContextProps>({
 export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { initialLoad } = useAppInitializer();
     const { getAllSessions, saveSessions } = useSessionsRepository();
-    const [sessions, setSessions] = useState<Session[]>(initialLoad.sessions);
+    const [sessions, setSessions] = useState<Session[]>(initialLoad!.sessions);
     const [loading, setLoading] = useState(true);
     const auth = useAuth();
     const syncing = useRef(false);

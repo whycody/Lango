@@ -97,8 +97,10 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     useEffect(() => {
         setAudioModeAsync({
             allowsRecording: false,
+            interruptionMode: 'duckOthers',
             playsInSilentMode: true,
-            shouldPlayInBackground: false,
+            shouldPlayInBackground: true,
+            shouldRouteThroughEarpiece: false,
         });
     }, []);
 
@@ -203,7 +205,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
             const text = shouldSpeakTranslation ? word.translation : word.text;
             const language = shouldSpeakTranslation ? word.translationLang : word.mainLang;
             Speech.stop();
-            Speech.speak(text, { language });
+            Speech.speak(text, { language, volume: 1.0 });
         },
         [flipped],
     );
@@ -306,7 +308,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         const shouldSpeak = (flipped && isFrontSide) || (!flipped && !isFrontSide);
         if (shouldSpeak && speechSynthesizer) {
             Speech.stop();
-            Speech.speak(word?.text, { language: word.mainLang });
+            Speech.speak(word?.text, { language: word.mainLang, volume: 1.0 });
         }
     }, [
         flipped,

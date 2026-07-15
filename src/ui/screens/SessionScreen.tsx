@@ -8,7 +8,6 @@ import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 import PagerView from 'react-native-pager-view';
-import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
@@ -33,7 +32,7 @@ import {
 import { SessionWord, Word, WordUpdate } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { getCurrentStreak } from '../../utils/streakUtils';
-import { CustomText } from '../components';
+import { CustomText, ProgressBar } from '../components';
 import { Card, FlipCard, SessionHeader, WordLevelItem } from '../components/session';
 import {
     FinishSessionBottomSheet,
@@ -360,10 +359,9 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     }, [wordsUpdates, skippedSuggestionsIds]);
 
     const finishSession = () => {
-        const shouldDisplayStreakSheet = !streak.active && wordsUpdates.length > 0;
         incrementCurrentIndex();
+        const shouldDisplayStreakSheet = !streak.active && wordsUpdates.length > 0;
         confettiRef.current?.play(0);
-        saveProgress(true);
         triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
         if (!user?.finishedOnboarding) updateUserFinishedOnboarding(true);
@@ -372,6 +370,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                 ? SESSION_STREAK_BOTTOM_SHEET
                 : SESSION_FINISH_SESSION_BOTTOM_SHEET,
         );
+        setImmediate(() => saveProgress(true));
     };
 
     useEffect(() => {
@@ -497,17 +496,21 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                 finished,
             );
 
-            const addedWords = addWords(
-                wordsToAdd.map(w => ({
-                    text: w.text,
-                    translation: w.translation,
-                })),
-                WordSource.LANGO,
-            );
+            requestAnimationFrame(() => {
+                const addedWords = addWords(
+                    wordsToAdd.map(w => ({
+                        text: w.text,
+                        translation: w.translation,
+                    })),
+                    WordSource.LANGO,
+                );
 
-            const wordsMap = mapAddedWordsToSuggestions(addedWords, wordSet.sessionWords);
-            const evaluations = buildEvaluations(wordsUpdates, session.id, wordsMap);
-            evaluationsContext.addEvaluations(evaluations);
+                requestAnimationFrame(() => {
+                    const wordsMap = mapAddedWordsToSuggestions(addedWords, wordSet.sessionWords);
+                    const evaluations = buildEvaluations(wordsUpdates, session.id, wordsMap);
+                    evaluationsContext.addEvaluations(evaluations);
+                });
+            });
         },
         [wordsUpdates, wordSet, skippedSuggestionsIds],
     );
@@ -569,9 +572,11 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                     />
                     <View style={styles.progressBarWrapper}>
                         <ProgressBar
-                            animatedValue={progress ? progress / cards.length : 0.000001}
+                            animate={progress < cards.length}
                             color={colors.primary300}
+                            progress={progress ? progress / cards.length : 0}
                             style={styles.progressBar}
+                            trackColor={colors.cardAccent300}
                         />
                     </View>
                 </View>
@@ -712,9 +717,6 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             justifyContent: 'center',
         },
         progressBar: {
-            backgroundColor: colors.cardAccent300,
-            borderRadius: spacing.s,
-            height: 7,
             marginTop: 12,
         },
         progressBarWrapper: {

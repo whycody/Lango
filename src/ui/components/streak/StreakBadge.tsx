@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
 import LottieView from 'lottie-react-native';
 
-import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL } from '../../../constants/margins';
 import { getNextMilestone, getPrevMilestone } from '../../../utils/streakUtils';
 import { CustomTheme } from '../../Theme';
-import { CustomText } from '..';
+import { CustomText, ProgressBar } from '..';
 import { StreakTiles } from './StreakTiles';
 
 type StreakBadgeProps = {
@@ -18,7 +18,6 @@ type StreakBadgeProps = {
 export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
     const { colors } = useTheme() as CustomTheme;
     const appear = useRef(new Animated.Value(0)).current;
-    const [barWidth, setBarWidth] = useState(0);
 
     const next = getNextMilestone(streak);
     const prev = getPrevMilestone(streak);
@@ -29,7 +28,7 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
     const styles = useMemo(() => getStyles(colors, isGoal), [colors, isGoal]);
 
     useEffect(() => {
-        if (!animate || barWidth === 0) return;
+        if (!animate) return;
         const target = isGoal ? 1 : next ? (streak - prev) / (next - prev) : 1;
         progressAnim.stopAnimation(() => {
             progressAnim.setValue(0);
@@ -39,7 +38,7 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
                 useNativeDriver: false,
             }).start();
         });
-    }, [streak, next, prev, isGoal, animate, barWidth]);
+    }, [streak, next, prev, isGoal, animate]);
 
     useEffect(() => {
         Animated.spring(appear, {
@@ -113,22 +112,10 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
                 </CustomText>
             </View>
 
-            <View
-                style={styles.progressBar}
-                onLayout={e => setBarWidth(e.nativeEvent.layout.width)}
-            >
-                <Animated.View
-                    style={[
-                        styles.progressFill,
-                        {
-                            width: progressAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [0, barWidth],
-                            }),
-                        },
-                    ]}
-                />
-            </View>
+            <ProgressBar
+                color={isGoal ? colors.yellow : colors.orange}
+                progress={progressAnim}
+            />
             <CustomText style={styles.goal}>
                 {t(message, {
                     currentGoal: prev,
@@ -195,16 +182,6 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved: boolean) =>
             height: 140,
             marginTop: -15,
             pointerEvents: 'none',
-        },
-        progressBar: {
-            backgroundColor: colors.background,
-            borderRadius: spacing.m,
-            height: 7,
-            overflow: 'hidden',
-        },
-        progressFill: {
-            backgroundColor: goalAchieved ? colors.yellow : colors.orange,
-            height: '100%',
         },
         streakLabel: {
             color: goalAchieved ? colors.yellow : colors.orange,

@@ -50,7 +50,7 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 createWordsHeuristicStatesTables(),
             ]);
 
-            await runMigrations(user.userId);
+            await runMigrations(user!.userId);
 
             const [sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates] =
                 await Promise.all([

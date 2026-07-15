@@ -15,13 +15,13 @@ import { GenericBottomSheet } from './GenericBottomSheet';
 
 export const FLASHCARD_DETAIL_BOTTOM_SHEET = 'flashcard-detail-bottom-sheet';
 
-type FlashcardDetailBottomSheetProps = {
+type FlashcardDetailsBottomSheetProps = {
     onEdit: () => void;
     onRemove: () => void;
     word: WordWithDetails | undefined;
 };
 
-export const FlashcardDetailBottomSheet: FC<FlashcardDetailBottomSheetProps> = ({
+export const FlashcardDetailsBottomSheet: FC<FlashcardDetailsBottomSheetProps> = ({
     onEdit,
     onRemove,
     word,
@@ -117,7 +117,6 @@ export const FlashcardDetailBottomSheet: FC<FlashcardDetailBottomSheetProps> = (
 
                     <ActionButton
                         primary
-                        icon="chevron-down"
                         label={t('common.close')}
                         style={styles.gotItButton}
                         onPress={handleDismiss}

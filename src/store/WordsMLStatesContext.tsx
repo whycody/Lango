@@ -32,13 +32,13 @@ export const WordsMLStatesContext = createContext<WordsMLStatesContextProps>({
 export const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { initialLoad } = useAppInitializer();
     const [wordsMLStates, setWordsMLStates] = useState<WordMLState[] | null>(
-        initialLoad.wordsMLStates,
+        initialLoad?.wordsMLStates || null,
     );
     const wordsMLStatesRef = useRef<WordMLState[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [initialized, setInitialized] = useState(false);
 
-    const { save: saveWordsMLStates, update: updateWordMLState } = useWordsMLStatesRepository();
+    const { save: saveWordsMLStates } = useWordsMLStatesRepository();
 
     const { evaluations } = useEvaluations();
     const { langWords, words } = useWords();
@@ -141,9 +141,10 @@ export const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children })
                 predictedGrade,
             };
 
-            await updateWordMLState(updated);
             updatedStates.push(updated);
         }
+
+        if (updatedStates.length > 0) await saveWordsMLStates(updatedStates);
 
         setWordsMLStates(prev => {
             const map = new Map(prev?.map(s => [s.wordId, s]));
@@ -231,7 +232,7 @@ export const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children })
 
         for (const wordDetail of wordMLState) {
             const wordId = wordDetail.wordId;
-            const matchingEvaluations = evaluations.filter(e => e.wordId === wordId);
+            const matchingEvaluations = evaluations!.filter(e => e.wordId === wordId);
 
             let lastRelevantDate: Date | null = null;
 
@@ -287,6 +288,7 @@ export const WordsMLStatesProvider: FC<{ children: ReactNode }> = ({ children })
     };
 
     const loadData = async () => {
+        if (!initialLoad) return;
         try {
             setLoading(true);
             await syncHoursSinceLastRepetition(initialLoad.wordsMLStates);

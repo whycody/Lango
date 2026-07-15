@@ -37,8 +37,8 @@ import {
 } from '../components/flashcards';
 import {
     FLASHCARD_DETAIL_BOTTOM_SHEET,
-    FlashcardDetailBottomSheet,
-} from '../sheets/FlashcardDetailBottomSheet';
+    FlashcardDetailsBottomSheet,
+} from '../sheets/FlashcardDetailsBottomSheet';
 import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../sheets/MasteryFilterBottomSheet';
 import { MicrophonePermissionBottomSheet } from '../sheets/MicrophonePermissionBottomSheet';
@@ -385,7 +385,7 @@ export const FlashcardsScreen = () => {
             <View style={styles.topSpacer}>
                 <ModalDragHandle />
             </View>
-            <FlashcardDetailBottomSheet
+            <FlashcardDetailsBottomSheet
                 word={detailWord}
                 onEdit={() => handleEditPress(detailWord?.id ?? '')}
                 onRemove={() => handleRemovePress(detailWord?.id ?? '')}

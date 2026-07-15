@@ -142,7 +142,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             result.push(newWord);
         }
 
-        const updatedWords = [...result, ...words.filter(w => !result.some(r => r.id === w.id))];
+        const resultIds = new Set(result.map(r => r.id));
+        const updatedWords = [...result, ...words.filter(w => !resultIds.has(w.id))];
 
         setWords(updatedWords);
         syncWords(updatedWords);

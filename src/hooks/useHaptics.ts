@@ -24,5 +24,24 @@ export const useHaptics = () => {
         [vibrationsEnabled],
     );
 
-    return { triggerHaptics };
+    const triggerSuccessHaptics = useCallback(() => {
+        if (!vibrationsEnabled) return;
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }, [vibrationsEnabled]);
+
+    const triggerStreakCelebrationHaptics = useCallback(() => {
+        const pattern: Array<{ delay: number; style: HapticImpactStyle }> = [
+            { delay: 0, style: 'heavy' },
+            { delay: 50, style: 'heavy' },
+            { delay: 100, style: 'rigid' },
+            { delay: 150, style: 'rigid' },
+            { delay: 200, style: 'heavy' },
+        ];
+        pattern.forEach(({ delay, style }) => {
+            setTimeout(() => triggerHaptics(style), delay);
+        });
+        setTimeout(() => triggerSuccessHaptics(), 620);
+    }, [triggerHaptics, triggerSuccessHaptics]);
+
+    return { triggerHaptics, triggerStreakCelebrationHaptics, triggerSuccessHaptics };
 };

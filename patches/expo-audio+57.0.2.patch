@@ -1,0 +1,16 @@
+diff --git a/node_modules/expo-audio/ios/AudioModule.swift b/node_modules/expo-audio/ios/AudioModule.swift
+index d265606..acc0025 100644
+--- a/node_modules/expo-audio/ios/AudioModule.swift
++++ b/node_modules/expo-audio/ios/AudioModule.swift
+@@ -819,6 +819,11 @@ public class AudioModule: Module {
+     } else {
+       try session.setCategory(category, options: sessionOptions)
+     }
++
++    if session.isOtherAudioPlaying == false && sessionOptions.contains(.mixWithOthers) {
++      try session.setActive(false)
++      try session.setActive(true)
++    }
+   }
+ 
+   private func activateSession() throws {

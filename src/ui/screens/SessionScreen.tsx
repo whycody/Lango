@@ -3,7 +3,7 @@ import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { setAudioModeAsync } from 'expo-audio';
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
@@ -81,31 +81,14 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
 
     const userPreferences = useUserPreferences();
     const { mainLang, translationLang } = useLanguage();
-    const { triggerHaptics } = useHaptics();
-
-    const { updateUserFinishedOnboarding, user } = useAuth();
-    const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode);
-
-    useEffect(() => {
-        navigation.setOptions({ gestureEnabled: false });
-        return () => {
-            navigation.setOptions({ gestureEnabled: true });
-        };
-    }, [navigation]);
-
-    useEffect(() => {
-        setAudioModeAsync({
-            allowsRecording: false,
-            interruptionMode: 'duckOthers',
-            playsInSilentMode: true,
-            shouldPlayInBackground: true,
-            shouldRouteThroughEarpiece: false,
-        });
-    }, []);
+    const { triggerHaptics, triggerStreakCelebrationHaptics } = useHaptics();
 
     const confettiRef = useRef<LottieView>(null);
     const pagerRef = useRef<PagerView>(null);
     const isInitial = useRef(true);
+
+    const { updateUserFinishedOnboarding, user } = useAuth();
+    const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode);
 
     const [version, setVersion] = useState(wordSet.version);
     const [model, setModel] = useState(wordSet.model);
@@ -129,6 +112,39 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
 
     const { studyDaysList } = useStatistics();
     const streak = getCurrentStreak(studyDaysList);
+
+    const evaluationSoundPlayer = useAudioPlayer(
+        require('../../../assets/session_evaluation.mp3'),
+        { keepAudioSessionActive: true },
+    );
+    const sessionEndSoundPlayer = useAudioPlayer(require('../../../assets/session_end.mp3'), {
+        keepAudioSessionActive: true,
+    });
+    const backSoundPlayer = useAudioPlayer(require('../../../assets/session_back.mp3'), {
+        keepAudioSessionActive: true,
+    });
+
+    useEffect(() => {
+        evaluationSoundPlayer.volume = 1.0;
+        sessionEndSoundPlayer.volume = 1.0;
+        backSoundPlayer.volume = 0.3;
+    }, [evaluationSoundPlayer, sessionEndSoundPlayer, backSoundPlayer]);
+
+    useEffect(() => {
+        navigation.setOptions({ gestureEnabled: false });
+        return () => {
+            navigation.setOptions({ gestureEnabled: true });
+        };
+    }, [navigation]);
+
+    useEffect(() => {
+        setAudioModeAsync({
+            allowsRecording: false,
+            interruptionMode: 'mixWithOthers',
+            playsInSilentMode: true,
+            shouldRouteThroughEarpiece: false,
+        });
+    }, []);
 
     useLayoutEffect(() => {
         confettiRef.current?.reset();
@@ -161,6 +177,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     );
 
     const decrementCurrentIndex = useCallback(() => {
+        backSoundPlayer.seekTo(0).then(() => backSoundPlayer.play());
         setCurrentIndex(prev => (prev == 0 ? prev : prev - 1));
     }, []);
 
@@ -329,6 +346,10 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         if (now - lastPressTime < 300) return;
         setLastPressTime(now);
 
+        const isLastCard = currentIndex === cards.length - 1;
+        const soundPlayer = isLastCard ? sessionEndSoundPlayer : evaluationSoundPlayer;
+        soundPlayer.seekTo(0).then(() => soundPlayer.play());
+
         triggerHaptics('rigid');
 
         const currentCard = cards[currentIndex];
@@ -362,7 +383,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         incrementCurrentIndex();
         const shouldDisplayStreakSheet = !streak.active && wordsUpdates.length > 0;
         confettiRef.current?.play(0);
-        triggerHaptics('heavy');
+        shouldDisplayStreakSheet ? triggerStreakCelebrationHaptics() : triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
         if (!user?.finishedOnboarding) updateUserFinishedOnboarding(true);
         TrueSheet.present(

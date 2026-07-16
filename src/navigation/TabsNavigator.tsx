@@ -17,6 +17,7 @@ import { HandleFlashcardBottomSheet } from '../ui/sheets';
 import { MicrophonePermissionBottomSheet } from '../ui/sheets/MicrophonePermissionBottomSheet';
 import { CustomTheme } from '../ui/Theme';
 import { trackEvent } from '../utils/analytics';
+import { isAndroid } from '../utils/deviceUtils';
 
 export type TabsParamList = {
     Add: undefined;
@@ -192,9 +193,9 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         tabBarStyle: {
             borderTopLeftRadius: spacing.xl,
             borderTopRightRadius: spacing.xl,
-            height: 60 + insets.bottom,
+            height: 60 + insets.bottom + (isAndroid ? 10 : 0),
             marginBottom: -1,
-            paddingBottom: 6 + insets.bottom,
+            paddingBottom: 6 + insets.bottom + (isAndroid ? 10 : 0),
             paddingHorizontal: 20,
             paddingTop: 8,
         },

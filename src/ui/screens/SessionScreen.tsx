@@ -233,6 +233,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         return (
             <FlipCard
                 clickable={isActive}
+                flip={flippedCards[wordIndex]}
                 flipVertical={false}
                 style={styles.card}
                 swipeable={true}

@@ -6,6 +6,7 @@ export enum SettingsItems {
     APPLICATION_LANGUAGE = LanguageTypes.APPLICATION,
     APP_THEME = 'app_theme',
     VIBRATIONS = 'vibrations',
+    SOUND_EFFECTS = 'sound_effects',
     NOTIFICATIONS = 'notifications',
     SUGGESTIONS_IN_SESSION = 'suggestions_in_session',
     FLASHCARD_SIDE = 'flashcard_side',

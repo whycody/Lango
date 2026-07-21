@@ -177,9 +177,10 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     );
 
     const decrementCurrentIndex = useCallback(() => {
-        backSoundPlayer.seekTo(0).then(() => backSoundPlayer.play());
         setCurrentIndex(prev => (prev == 0 ? prev : prev - 1));
-    }, []);
+        if (!userPreferences.soundEffectsEnabled) return;
+        backSoundPlayer.seekTo(0).then(() => backSoundPlayer.play());
+    }, [userPreferences.soundEffectsEnabled]);
 
     const incrementCurrentIndex = useCallback(() => {
         if (currentIndex < cards.length) setCurrentIndex(prev => prev + 1);
@@ -347,10 +348,12 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         setLastPressTime(now);
 
         const isLastCard = currentIndex === cards.length - 1;
-        const soundPlayer = isLastCard ? sessionEndSoundPlayer : evaluationSoundPlayer;
-        soundPlayer.seekTo(0).then(() => soundPlayer.play());
-
         triggerHaptics('rigid');
+
+        if (userPreferences.soundEffectsEnabled) {
+            const soundPlayer = isLastCard ? sessionEndSoundPlayer : evaluationSoundPlayer;
+            soundPlayer.seekTo(0).then(() => soundPlayer.play());
+        }
 
         const currentCard = cards[currentIndex];
         const { id, type } = currentCard;

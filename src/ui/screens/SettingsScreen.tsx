@@ -140,6 +140,15 @@ export const SettingsScreen = () => {
                 label: t('notifications'),
                 section: SettingsSections.PREFERENCES,
             },
+            {
+                color: palette.cyan,
+                description: t(`turned_${userPreferences.soundEffectsEnabled ? 'on' : 'off'}_m`),
+                enabled: userPreferences.soundEffectsEnabled,
+                icon: 'musical-notes',
+                id: SettingsItems.SOUND_EFFECTS,
+                label: t('sound_effects'),
+                section: SettingsSections.PREFERENCES,
+            },
 
             {
                 color: palette.purple,
@@ -256,6 +265,9 @@ export const SettingsScreen = () => {
                     break;
                 case SettingsItems.VIBRATIONS:
                     userPreferences.setVibrationsEnabled(!userPreferences.vibrationsEnabled);
+                    break;
+                case SettingsItems.SOUND_EFFECTS:
+                    userPreferences.setSoundEffectsEnabled(!userPreferences.soundEffectsEnabled);
                     break;
                 case SettingsItems.NOTIFICATIONS:
                     handleNotificationsSettingItemPress();

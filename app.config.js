@@ -58,5 +58,9 @@ export default ({ config }) => {
             'expo-audio',
             withModularHeaders,
         ],
+        extra: {
+            ...config.extra,
+            appVariant: profile,
+        },
     };
 };

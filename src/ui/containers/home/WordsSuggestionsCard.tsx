@@ -1,11 +1,17 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import { useAudioPlayer } from 'expo-audio';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
-import { useDebouncedSyncSuggestions, useLanguage, useSuggestions } from '../../../store';
+import {
+    useDebouncedSyncSuggestions,
+    useLanguage,
+    useSuggestions,
+    useUserPreferences,
+} from '../../../store';
 import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { ActionButton, Header } from '../../components';
@@ -29,11 +35,13 @@ export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) =
         syncSuggestions,
     } = useSuggestions();
 
+    const { soundEffectsEnabled } = useUserPreferences();
+
     const { mainLang, translationLang } = useLanguage();
     const [firstFlashcard, setFirstFlashcard] = useState<Suggestion>();
     const [secondFlashcard, setSecondFlashcard] = useState<Suggestion>();
-    const firstFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
-    const secondFlashcardRef = useRef<{ flipWithoutAdd: () => void }>(null);
+    const firstFlashcardRef = useRef<{ flipWithoutAdd: () => void; flippable: boolean }>(null);
+    const secondFlashcardRef = useRef<{ flipWithoutAdd: () => void; flippable: boolean }>(null);
 
     useEffect(() => {
         const firstSuggestion = suggestions.find(s => s.id === firstFlashcard?.id);
@@ -65,11 +73,20 @@ export const WordsSuggestionsCard: FC<WordsSuggestionsCardProps> = ({ style }) =
 
     const debouncedSyncSuggestions = useDebouncedSyncSuggestions(syncSuggestions, 3000);
 
+    const skipFlashcardSoundPlayer = useAudioPlayer(
+        require('../../../../assets/sounds/skip_flashcard.mp3'),
+        { keepAudioSessionActive: true },
+    );
+
     const flipFlashcards = () => {
         trackEvent(AnalyticsEventName.SUGGESTIONS_SKIPPED);
         if (firstFlashcard) firstFlashcardRef.current?.flipWithoutAdd();
         if (secondFlashcard) secondFlashcardRef.current?.flipWithoutAdd();
         debouncedSyncSuggestions();
+
+        if (!soundEffectsEnabled) return;
+        if (!firstFlashcardRef.current?.flippable && !secondFlashcardRef.current?.flippable) return;
+        skipFlashcardSoundPlayer.seekTo(0).then(() => skipFlashcardSoundPlayer.play());
     };
 
     const handleFlashcardPress = async (first: boolean, add: boolean) => {

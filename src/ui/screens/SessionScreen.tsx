@@ -114,13 +114,16 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     const streak = getCurrentStreak(studyDaysList);
 
     const evaluationSoundPlayer = useAudioPlayer(
-        require('../../../assets/session_evaluation.mp3'),
+        require('../../../assets/sounds/session_evaluation.mp3'),
         { keepAudioSessionActive: true },
     );
-    const sessionEndSoundPlayer = useAudioPlayer(require('../../../assets/session_end.mp3'), {
-        keepAudioSessionActive: true,
-    });
-    const backSoundPlayer = useAudioPlayer(require('../../../assets/session_back.mp3'), {
+    const sessionEndSoundPlayer = useAudioPlayer(
+        require('../../../assets/sounds/session_end.mp3'),
+        {
+            keepAudioSessionActive: true,
+        },
+    );
+    const backSoundPlayer = useAudioPlayer(require('../../../assets/sounds/session_back.mp3'), {
         keepAudioSessionActive: true,
     });
 

@@ -9,13 +9,14 @@ import React, {
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Foundation } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { useAudioPlayer } from 'expo-audio';
 import { useTranslation } from 'react-i18next';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { spacing } from '../../../constants/margins';
 import { WordSource } from '../../../constants/Word';
 import { useHaptics } from '../../../hooks';
-import { useLanguage, useWords } from '../../../store';
+import { useLanguage, useUserPreferences, useWords } from '../../../store';
 import { Suggestion } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { CustomTheme } from '../../Theme';
@@ -40,6 +41,12 @@ export const Flashcard = forwardRef(
         const wordsContext = useWords();
         const languageContext = useLanguage();
         const { triggerHaptics } = useHaptics();
+        const { soundEffectsEnabled } = useUserPreferences();
+
+        const addFlashcardSoundPlayer = useAudioPlayer(
+            require('../../../../assets/sounds/add_flashcard.mp3'),
+            { keepAudioSessionActive: true },
+        );
 
         const getRandomMessage = useCallback(() => {
             const messages = [t('wordAdded1'), t('wordAdded2'), t('wordAdded3')];
@@ -86,7 +93,14 @@ export const Flashcard = forwardRef(
                     if (!addWord) {
                         setBackText(t('wordNotAdded'));
                         setFlashcardState('error');
-                    } else setFlashcardState('success');
+                    } else {
+                        setFlashcardState('success');
+                        if (soundEffectsEnabled) {
+                            addFlashcardSoundPlayer
+                                .seekTo(0)
+                                .then(() => addFlashcardSoundPlayer.play());
+                        }
+                    }
                 } else {
                     setBackText(t('change_flashcard'));
                     setFlashcardState('neutral');
@@ -94,13 +108,22 @@ export const Flashcard = forwardRef(
                 setTimeout(() => onFlashcardPress?.(add), 150);
                 setTimeout(() => setReadyToFlip(true), 1000);
             },
-            [flippable, suggestion, wordsContext, triggerHaptics, t, onFlashcardPress],
+            [
+                flippable,
+                suggestion,
+                wordsContext,
+                triggerHaptics,
+                t,
+                onFlashcardPress,
+                soundEffectsEnabled,
+                addFlashcardSoundPlayer,
+            ],
         );
 
         useImperativeHandle(
             ref,
             () => ({
-                flippable: readyToFlip,
+                flippable,
                 flipWithoutAdd: () => handleFlip(false),
             }),
             [readyToFlip, handleFlip],

@@ -1,6 +1,7 @@
 import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 import { useMMKV, useMMKVObject } from 'react-native-mmkv';
@@ -54,6 +55,7 @@ GoogleSignin.configure({
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 const USER_PROFILE_INFO = '@user_info';
+const SESSION_TIMEOUT_MS = 3000;
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -85,6 +87,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }, []);
 
     const clearState = () => {
+        TrueSheet.dismissAll();
         setIsAuthenticated(false);
         setUser(null);
         globalStorage.set('appTheme', 'BLUE');
@@ -92,7 +95,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const getSession = async () => {
         try {
-            let loggedUser = await getUserInfo();
+            let loggedUser = await getUserInfo(user ? SESSION_TIMEOUT_MS : undefined);
 
             if (loggedUser) {
                 const userUpdated = await sendUserUpdates(userUpdatePayload ?? null);
@@ -111,12 +114,18 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
             setIsAuthenticated(false);
         } catch (error: any) {
-            if (axios.isAxiosError(error) && error.code === AxiosError.ERR_NETWORK && user) {
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                clearState();
+                return;
+            }
+
+            if (user) {
                 setUser(user);
                 setIsAuthenticated(true);
                 return;
             }
-            clearState();
+
+            setIsAuthenticated(false);
         }
     };
 

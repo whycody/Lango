@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 
 import { LanguageCode } from '../constants/Language';
 import {
+    AppConfig,
     Evaluation,
     ExampleFlashcard,
     LanguageLevel,
@@ -53,6 +54,9 @@ export const updateUserData = (
             translationLang,
         }),
     );
+
+export const getAppConfig = (): Promise<AppConfig | null> =>
+    call<AppConfig, null>('GET /app-config', null, () => api.get<AppConfig>('/app-config'));
 
 export const signInWithGoogle = (idToken: string) =>
     call('POST /auth/login/google', null, async () => {

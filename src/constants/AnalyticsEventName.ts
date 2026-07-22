@@ -41,6 +41,8 @@ export const AnalyticsEventName = {
     SUGGESTIONS_SKIPPED: 'suggestions_skipped',
     THEME_CHANGE: 'theme_change',
     THEME_SHEET_OPEN: 'theme_sheet_open',
+    UPDATE_APP_SCREEN_SHOWN: 'update_app_screen_shown',
+    UPDATE_APP_STORE_OPEN: 'update_app_store_open',
     UPDATE_FAILURE: 'update_failure',
     UPDATE_SUCCESS: 'update_success',
     USER_SET: 'user_set',
@@ -111,6 +113,8 @@ export type AnalyticsEventPayloadMap = {
     start_session_sheet_open?: undefined;
     suggestion_add: { successfully: boolean; suggestionId: string };
     suggestions_skipped?: undefined;
+    update_app_screen_shown: { required: boolean };
+    update_app_store_open?: undefined;
     update_failure: { reason: string };
     update_success?: undefined;
     user_set: { online: boolean };

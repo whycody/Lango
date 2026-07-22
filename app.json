@@ -2,11 +2,11 @@
     "expo": {
         "name": "Lango",
         "slug": "lango",
-        "version": "1.5.11",
+        "version": "1.6",
         "orientation": "portrait",
         "icon": "./assets/logo.png",
         "userInterfaceStyle": "dark",
-        "runtimeVersion": "1.5",
+        "runtimeVersion": "1.6",
         "plugins": [
             [
                 "react-native-fbsdk-next",

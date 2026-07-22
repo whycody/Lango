@@ -25,5 +25,6 @@ export * from './utils/WordUpdate';
 export * from './utils/WordWithDetails';
 
 // api
+export * from './api/AppConfig';
 export * from './api/OnboardingWord';
 export * from './api/Translate';

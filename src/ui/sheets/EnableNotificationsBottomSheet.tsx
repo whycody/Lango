@@ -44,6 +44,7 @@ export const EnableNotificationsBottomSheet = (props: EnableNotificationsBottomS
             if (!isNotificationPermissionGranted(permissions)) return;
 
             trackEvent(AnalyticsEventName.NOTIFICATIONS_ENABLE_SUCCESS);
+            console.log('1');
             await registerNotificationsToken();
             TrueSheet.dismiss(sheetName);
         };

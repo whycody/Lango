@@ -9,19 +9,21 @@ import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 interface StatisticItemProps {
+    accentColor?: string;
     description: string;
     icon: keyof typeof Ionicons.glyphMap;
     label: string;
     style?: StyleProp<ViewStyle>;
 }
 
-export const StatisticItem: FC<StatisticItemProps> = ({ description, icon, label, style }) => {
+export const StatisticItem: FC<StatisticItemProps> = ({ accentColor, description, icon, label, style }) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
+    const gradientColor = accentColor ?? colors.card;
 
     return (
         <LinearGradient
-            colors={[colors.card, colors.card]}
+            colors={[gradientColor, gradientColor]}
             end={{ x: 1, y: 1 }}
             start={{ x: 0, y: 0 }}
             style={[styles.root, style]}

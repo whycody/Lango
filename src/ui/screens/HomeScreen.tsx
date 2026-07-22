@@ -34,8 +34,15 @@ import { isNotificationPermissionGranted } from '../../utils/ensureNotificationP
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { getCurrentStreak } from '../../utils/streakUtils';
 import { BottomGradient } from '../components';
-import { ActivityCard, HeaderCard, StatisticsCard, WordsSuggestionsCard } from '../containers';
+import {
+    ActivityCard,
+    GradeDistributionChart,
+    HeaderCard,
+    StatisticsCard,
+    WordsSuggestionsCard,
+} from '../containers';
 import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
+import { MasteryFilter } from '../sheets/MasteryFilterBottomSheet';
 import { OnboardingBottomSheet } from '../sheets/OnboardingBottomSheet';
 import { CustomTheme } from '../Theme';
 
@@ -130,7 +137,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     }, [
         askLaterNotifications,
         user?.finishedOnboarding,
-        streak,
+        streak.active,
         isFocused,
         askedNotificationsThisSession,
     ]);
@@ -148,6 +155,10 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
         trackEvent(AnalyticsEventName.HOME_REFRESH);
         await tryToRefreshData();
     }, [words, sessions, suggestions, evaluations, auth, mainLang, translationLang]);
+
+    const navigateToFlashcardsScreen = (masteryFilter: MasteryFilter) => {
+        navigation.navigate(ScreenName.Flashcards, { masteryFilter });
+    };
 
     const navigateToSessionScreen = (
         length: SessionLength,
@@ -191,10 +202,15 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 onScroll={onScroll}
             >
                 <View style={styles.spacer} />
-                <HeaderCard navigateToSessionScreen={navigateToSessionScreen} />
+                <HeaderCard
+                    navigateToFlashcardsScreen={navigateToFlashcardsScreen}
+                    navigateToSessionScreen={navigateToSessionScreen}
+                />
                 {!languagesAreTheSame && <WordsSuggestionsCard />}
+
                 <ActivityCard />
                 <StatisticsCard />
+                <GradeDistributionChart />
 
                 <View style={{ height: 50 }} />
             </ScrollView>

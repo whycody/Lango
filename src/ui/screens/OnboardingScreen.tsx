@@ -16,7 +16,12 @@ import { trackEvent } from '../../utils/analytics';
 import { isSupportedLanguageCode } from '../../utils/languageUtils';
 import { ActionButton, BottomGradient } from '../components';
 import { OnboardingHeader } from '../components/onboarding';
-import { FlashcardsSelectionContainer, LanguageLevelPicker, LanguagePicker } from '../containers';
+import {
+    FlashcardsSelectionContainer,
+    LanguageLevelPicker,
+    LanguagePicker,
+    ThemePicker,
+} from '../containers';
 import {
     LogoutBottomSheet,
     SameLearningLanguageBottomSheet,
@@ -27,7 +32,7 @@ import { CustomTheme } from '../Theme';
 const SAME_LANGUAGE_SHEET = 'onboarding-same-language-sheet';
 const LOGOUT_SHEET = 'onboarding-logout-sheet';
 const SKIP_FLASHCARDS_SHEET = 'onboarding-skip-flashcards-sheet';
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 export const OnboardingScreen = () => {
     const { colors } = useTheme() as CustomTheme;
@@ -98,7 +103,8 @@ export const OnboardingScreen = () => {
         (currentStep === 0 && !!translationLang) ||
         (currentStep === 1 && !!mainLang) ||
         (currentStep === 2 && !!pickedLevel) ||
-        (currentStep === 3 && !flashcardsLoading);
+        (currentStep === 3 && !flashcardsLoading) ||
+        currentStep === 4;
 
     useEffect(() => {
         trackEvent(AnalyticsEventName.ONBOARDING_INITIALIZED);
@@ -156,6 +162,7 @@ export const OnboardingScreen = () => {
         t('choose_main_language'),
         t('language_level.select', { language: mainLanguageName }),
         t('word_selection.title'),
+        t('choose_theme'),
     ];
 
     const stepTitle = (index: number) => `${index + 1}. ${stepTitles[index]}`;
@@ -169,7 +176,7 @@ export const OnboardingScreen = () => {
             selectedFlashcardsIds.length === 0
         ) {
             TrueSheet.present(SKIP_FLASHCARDS_SHEET);
-        } else if (currentStep < 3) {
+        } else if (currentStep < 4) {
             setCurrentStep(currentStep + 1);
         } else {
             updateUserOnboardingData();
@@ -238,6 +245,13 @@ export const OnboardingScreen = () => {
                             onLastVisibleIndexChange={handleLastVisibleIndexChange}
                             onSelectAll={setSelectedFlashcardsIds}
                             onToggle={handleFlashcardToggle}
+                        />
+                    </Activity>
+                    <Activity mode={currentStep === 4 ? 'visible' : 'hidden'}>
+                        <ThemePicker
+                            onboarding={true}
+                            style={styles.languagePicker}
+                            title={stepTitle(4)}
                         />
                     </Activity>
                 </View>

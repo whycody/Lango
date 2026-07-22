@@ -22,11 +22,11 @@ export const VersionFooter: FC<VersionFooterProps> = ({ small = false, style }) 
             {!small && (
                 <Image
                     resizeMode="contain"
-                    source={require('../../../assets/logo.png')}
+                    source={require('../../../assets/lango-logo.png')}
                     style={styles.image}
                 />
             )}
-            <CustomText style={[style, styles.version, small && styles.smallVersion]}>
+            <CustomText style={[style, styles.version, small && styles.smallVersion]} weight="Bold">
                 {`${version}`}
             </CustomText>
         </View>
@@ -47,7 +47,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
         version: {
             color: colors.white,
             fontSize: 13,
-            fontWeight: 'bold',
             marginTop: MARGIN_HORIZONTAL / 2,
             textAlign: 'center',
         },

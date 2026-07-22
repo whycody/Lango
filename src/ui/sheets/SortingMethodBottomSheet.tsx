@@ -4,6 +4,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTranslation } from 'react-i18next';
 import { FlatList } from 'react-native-gesture-handler';
 
+import { SORTING_COLORS } from '../../constants/SortingColors';
 import { FlashcardSortingMethod } from '../../constants/UserPreferences';
 import { useUserPreferences } from '../../store';
 import { getSortingMethodLabel } from '../../utils/sortingUtil';
@@ -38,6 +39,7 @@ export const SortingMethodBottomSheet = ({ sheetName }: SortingMethodBottomSheet
         ({ item }: { item: FlashcardSortingMethod }) => (
             <SortingMethodItem
                 checked={flashcardsSortingMethod === item}
+                color={SORTING_COLORS[item]}
                 id={item}
                 label={getSortingMethodLabel(item)}
                 onPress={handlePress}

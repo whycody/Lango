@@ -34,11 +34,13 @@ interface UserPreferencesContextProps {
     setUserHasEverSkippedSuggestion: (hasEverSkip: boolean) => void;
     setUserHasEverSeenSuggestionInSession: (hasEverSeen: boolean) => void;
     setVibrationsEnabled: (enabled: boolean) => void;
+    setSoundEffectsEnabled: (enabled: boolean) => void;
     setAskedNotificationsThisSession: (asked: boolean) => void;
     userHasEverHitFlashcard: boolean;
     userHasEverSkippedSuggestion: boolean;
     userHasEverSeenSuggestionInSession: boolean;
     vibrationsEnabled: boolean;
+    soundEffectsEnabled: boolean;
 }
 
 export const UserPreferencesContext = createContext<UserPreferencesContextProps>({
@@ -60,10 +62,12 @@ export const UserPreferencesContext = createContext<UserPreferencesContextProps>
     setSessionLength: () => {},
     setSessionMode: () => {},
     setSessionSpeechSynthesizer: () => {},
+    setSoundEffectsEnabled: () => {},
     setUserHasEverHitFlashcard: () => {},
     setUserHasEverSeenSuggestionInSession: () => {},
     setUserHasEverSkippedSuggestion: () => {},
     setVibrationsEnabled: () => {},
+    soundEffectsEnabled: true,
     userHasEverHitFlashcard: false,
     userHasEverSeenSuggestionInSession: false,
     userHasEverSkippedSuggestion: false,
@@ -76,6 +80,7 @@ const SESSION_MODE_KEY = 'sessionMode';
 const SESSION_LENGTH_KEY = 'sessionLength';
 const SESSION_SPEECH_SYNTHESIZER_KEY = 'sessionSpeechSynthesizer';
 const VIBRATIONS_KEY = 'vibrationsEnabled';
+const SOUND_EFFECTS_KEY = 'soundEffectsEnabled';
 const ASK_LATER_NOTIFICATIONS_KEY = 'askLaterNotifications';
 const FLASHCARDS_SORTING_METHOD = 'flashcardsSortingMethod';
 const USER_HAS_EVER_HIT_FLASHCARD = 'userHasEverHitFlashcard';
@@ -119,6 +124,11 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
     );
     const [vibrationsEnabled, setVibrationsEnabled] = useTypedMMKV<boolean>(
         VIBRATIONS_KEY,
+        true,
+        storage,
+    );
+    const [soundEffectsEnabled, setSoundEffectsEnabled] = useTypedMMKV<boolean>(
+        SOUND_EFFECTS_KEY,
         true,
         storage,
     );
@@ -173,10 +183,12 @@ export const UserPreferencesProvider: FC<{ children: ReactNode }> = ({ children 
                 setSessionLength,
                 setSessionMode,
                 setSessionSpeechSynthesizer,
+                setSoundEffectsEnabled,
                 setUserHasEverHitFlashcard,
                 setUserHasEverSeenSuggestionInSession,
                 setUserHasEverSkippedSuggestion,
                 setVibrationsEnabled,
+                soundEffectsEnabled,
                 userHasEverHitFlashcard,
                 userHasEverSeenSuggestionInSession,
                 userHasEverSkippedSuggestion,

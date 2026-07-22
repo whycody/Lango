@@ -5,6 +5,7 @@ import { GrabberOptions, TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { useHaptics } from '../../hooks';
 import { ActionButton } from '../components/ActionButton';
 import { CustomText } from '../components/CustomText';
 import { CustomTheme } from '../Theme';
@@ -53,7 +54,18 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
     } = props;
 
     const { colors } = useTheme() as CustomTheme;
+    const { triggerHaptics } = useHaptics();
     const styles = getStyles(colors);
+
+    const handlePrimaryButtonPress = () => {
+        onPrimaryButtonPress?.();
+    };
+
+    const handleSecondaryButtonPress = () => {
+        if (!secondaryButtonEnabled) return;
+        triggerHaptics();
+        onSecondaryButtonPress?.();
+    };
 
     return (
         <TrueSheet
@@ -88,7 +100,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
                         loading={primaryButtonLoading}
                         primary={true}
                         style={styles.button}
-                        onPress={() => onPrimaryButtonPress?.()}
+                        onPress={handlePrimaryButtonPress}
                     />
                 )}
 
@@ -99,7 +111,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
                             styles.actionText,
                             !secondaryButtonEnabled && styles.actionTextDisabled,
                         ]}
-                        onPress={secondaryButtonEnabled ? onSecondaryButtonPress : undefined}
+                        onPress={handleSecondaryButtonPress}
                     >
                         {secondaryActionLabel}
                     </CustomText>

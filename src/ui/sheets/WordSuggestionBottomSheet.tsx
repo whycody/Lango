@@ -14,41 +14,59 @@ type WordSuggestionBottomSheetProps = {
     sheetName: string;
 };
 
+const COUNTDOWN_START_SECONDS = 5;
+
 export const WordSuggestionBottomSheet = (props: WordSuggestionBottomSheetProps) => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
-    const [flip, setFlip] = useState(false);
+    const [countdown, setCountdown] = useState(COUNTDOWN_START_SECONDS);
     const [visible, setVisible] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const { setUserHasEverSeenSuggestionInSession } = useUserPreferences();
 
-    const clearFlipTimeout = () => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-            timeoutRef.current = null;
+    const clearCountdownInterval = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
         }
     };
 
-    useEffect(() => clearFlipTimeout, []);
+    useEffect(() => clearCountdownInterval, []);
 
     useEffect(() => {
-        clearFlipTimeout();
+        clearCountdownInterval();
         if (!visible) return;
-        timeoutRef.current = setTimeout(() => setFlip(f => !f), 4000);
-        return clearFlipTimeout;
-    }, [flip, visible]);
+
+        setCountdown(COUNTDOWN_START_SECONDS);
+        intervalRef.current = setInterval(() => {
+            setCountdown(current => {
+                if (current <= 1) {
+                    clearCountdownInterval();
+                    return 0;
+                }
+                return current - 1;
+            });
+        }, 1000);
+
+        return clearCountdownInterval;
+    }, [visible]);
 
     const handlePrimaryButtonPress = () => {
+        if (countdown > 0) return;
         TrueSheet.dismiss(props.sheetName);
         setUserHasEverSeenSuggestionInSession(true);
     };
+
+    const primaryActionLabel =
+        countdown > 0 ? `${t('common.got_it')} (${countdown})` : t('common.got_it');
 
     return (
         <GenericBottomSheet
             allowDismiss={false}
             description={t('word_suggestion_bottom_sheet.desc')}
-            primaryActionLabel={t('common.got_it')}
+            primaryActionLabel={primaryActionLabel}
+            primaryButtonEnabled={countdown === 0}
             sheetName={props.sheetName}
             title={t('word_suggestion_bottom_sheet.title')}
             onDidDismiss={() => setVisible(false)}

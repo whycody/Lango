@@ -55,7 +55,12 @@ export default ({ config }) => {
             ...(config.plugins || []),
             'expo-font',
             'expo-tracking-transparency',
+            'expo-audio',
             withModularHeaders,
         ],
+        extra: {
+            ...config.extra,
+            appVariant: profile,
+        },
     };
 };

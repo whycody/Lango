@@ -27,7 +27,7 @@ import { useAppInitializer } from './AppInitializerContext';
 import { useLanguage } from './LanguageContext';
 
 interface WordsContextProps {
-    addWord: (text: string, translation: string, source?: WordSource) => Word | null;
+    addWord: (text: string, translation: string, source: WordSource) => Word | null;
     addWords: (wordsToAdd: { text: string; translation: string }[], source: WordSource) => Word[];
     editWord: (updatedWord: Partial<Word> & { id: string }) => void;
     getWord: (id: string) => Word | undefined;
@@ -53,7 +53,7 @@ const WordsContext = createContext<WordsContextProps>({
 export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { initialLoad } = useAppInitializer();
     const [loading, setLoading] = useState(false);
-    const [words, setWords] = useState<Word[]>(initialLoad.words);
+    const [words, setWords] = useState<Word[]>(initialLoad!.words);
     const { mainLang, translationLang } = useLanguage();
     const { getAllWords, saveWords, updateWord } = useWordsRepository();
     const syncing = useRef(false);
@@ -83,7 +83,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             text,
             translation,
             translationLang,
-            updatedAt: null,
+            updatedAt: undefined,
         };
     };
 
@@ -142,7 +142,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             result.push(newWord);
         }
 
-        const updatedWords = [...result, ...words.filter(w => !result.some(r => r.id === w.id))];
+        const resultIds = new Set(result.map(r => r.id));
+        const updatedWords = [...result, ...words.filter(w => !resultIds.has(w.id))];
 
         setWords(updatedWords);
         syncWords(updatedWords);

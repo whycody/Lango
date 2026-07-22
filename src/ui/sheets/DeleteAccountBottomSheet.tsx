@@ -77,7 +77,7 @@ export const DeleteAccountBottomSheet = (props: DeleteAccountBottomSheetProps) =
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         inputContainer: {
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardAccent,
             borderRadius: spacing.m,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL / 2,

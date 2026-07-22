@@ -15,8 +15,6 @@ import { Word } from '../../types';
 import { Alert, WordInput } from '../components/flashcards';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
-import { MicrophonePermissionBottomSheet } from './MicrophonePermissionBottomSheet';
-
 type WordTranslations = {
     from: LanguageCode;
     to: LanguageCode;
@@ -26,14 +24,13 @@ type WordTranslations = {
 
 type HandleFlashcardBottomSheetProps = {
     flashcardId?: string;
+    microphonePermissionSheetName: string;
     sheetName: string;
     onWordEdit?: (id: string, word: string, translation: string) => void;
 };
 
-const MICROPHONE_PERMISSION_SHEET_NAME = 'handle-flashcard-microphone-permission';
-
 export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProps) => {
-    const { flashcardId, onWordEdit, sheetName } = props;
+    const { flashcardId, microphonePermissionSheetName, onWordEdit, sheetName } = props;
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
@@ -56,7 +53,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
     const { mainLang, translationLang } = useLanguage();
 
     const voice = useVoiceInput({
-        onPermissionDenied: () => TrueSheet.present(MICROPHONE_PERMISSION_SHEET_NAME),
+        onPermissionDenied: () => TrueSheet.present(microphonePermissionSheetName),
     });
 
     const translationsOfWord =
@@ -250,19 +247,21 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
 
     return (
         <>
-            <MicrophonePermissionBottomSheet sheetName={MICROPHONE_PERMISSION_SHEET_NAME} />
             <GenericBottomSheet
                 description={t('wordAndTranslation')}
                 primaryActionIcon={flashcardId ? 'save-sharp' : undefined}
-                primaryActionLabel={flashcardId ? t('edit') : t('add_1')}
+                primaryActionLabel={flashcardId ? t('save') : t('add_1')}
                 primaryButtonEnabled={buttonsActive}
-                secondaryActionLabel={!flashcardId ? t('addAnother') : undefined}
+                secondaryActionLabel={!flashcardId ? t('addAnother') : t('cancel')}
+                secondaryButtonEnabled={buttonsActive}
                 sheetName={sheetName}
                 style={styles.bottomSheet}
                 title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
                 onDidDismiss={handleSheetDismiss}
                 onPrimaryButtonPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
-                onSecondaryButtonPress={handleActionButtonPress}
+                onSecondaryButtonPress={
+                    flashcardId ? () => TrueSheet.dismiss(sheetName) : handleActionButtonPress
+                }
             >
                 {status && statusMessage && (
                     <Alert

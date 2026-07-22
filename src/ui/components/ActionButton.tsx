@@ -144,6 +144,6 @@ const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: bool
             opacity: active ? 1 : 0.5,
             overflow: 'hidden',
             paddingHorizontal: 24,
-            paddingVertical: primary ? 15 : 12,
+            paddingVertical: primary ? 14 : 12,
         },
     });

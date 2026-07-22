@@ -90,7 +90,7 @@ const mapGroupedEvaluationsToSessions = (
             mode: SessionMode.UNKNOWN,
             sessionModel: SessionModel.HEURISTIC,
             synced: false,
-            updatedAt: null,
+            updatedAt: undefined,
             wordsCount: evaluations.length,
         };
     }) as unknown as Session[];
@@ -106,9 +106,9 @@ const mapStoredEvaluationsToEvaluations = (
         grade: e.grade,
         id: e.id,
         locallyUpdatedAt: timestamp,
-        sessionId: sessions.find(s => s.date === e.date)?.id ?? null,
+        sessionId: sessions.find(s => s.date === e.date)!.id,
         synced: false,
-        updatedAt: null,
+        updatedAt: undefined,
         wordId: e.wordId,
     }));
 };

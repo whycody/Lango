@@ -18,11 +18,14 @@ import {
     useWords,
     useWordsHeuristicStates,
 } from '../../../store';
+import { useWordsMLStatesContext } from '../../../store/WordsMLStatesContext';
 import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
-import { getCurrentStreak } from '../../../utils/streakUtils';
+import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { ActionButton, CustomText, SquareFlag } from '../../components';
+import { FlashcardClassBadges } from '../../components/home/FlashcardClassBadges';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
+import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
 import { START_SESSION_BOTTOM_SHEET } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
 
@@ -32,17 +35,22 @@ type HeaderCardProps = {
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ): void;
+    navigateToFlashcardsScreen(masteryFilter: MasteryFilter): void;
 };
 
 const HOME_LANGUAGE_SHEET_NAME = 'home-language-sheet';
 
-export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => {
+export const HeaderCard: FC<HeaderCardProps> = ({
+    navigateToFlashcardsScreen,
+    navigateToSessionScreen,
+}) => {
     const { t } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
     const { langSuggestions } = useSuggestions();
     const { langWords } = useWords();
     const { langWordsHeuristicStates } = useWordsHeuristicStates();
+    const { langWordsMLStates } = useWordsMLStatesContext();
     const { studyDaysList } = useStatistics();
 
     const [streak, setStreak] = useState<Streak>({
@@ -81,8 +89,8 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
     }, [langWordsHeuristicStatesFiltered, last50Words]);
 
     const wellKnownWords = useMemo(
-        () => langWordsHeuristicStates.filter(word => word.studyCount > 2).length,
-        [langWordsHeuristicStates],
+        () => (langWordsMLStates ?? []).filter(w => w.gradeThreeProb >= 0.6).length,
+        [langWordsMLStates],
     );
 
     useLayoutEffect(() => {
@@ -131,6 +139,8 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
         TrueSheet.present(HOME_LANGUAGE_SHEET_NAME);
     }, []);
 
+    const isGoal = streak.active && streak.numberOfDays === getPrevMilestone(streak.numberOfDays);
+
     return (
         <View style={styles.root}>
             <StartSessionBottomSheet onSessionStart={handleSessionStart} />
@@ -140,13 +150,19 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                     {expo.name}
                 </CustomText>
                 <MaterialCommunityIcons
-                    color={streak.active ? colors.red : colors.cardAccent300}
                     name={'fire'}
-                    size={30}
+                    size={32}
+                    color={
+                        streak.active ? (isGoal ? colors.yellow : colors.red) : colors.cardAccent300
+                    }
                 />
                 <CustomText
-                    style={[styles.streakText, !streak.active && styles.inactiveStreak]}
                     weight={'Bold'}
+                    style={[
+                        styles.streakText,
+                        isGoal && { color: colors.yellow },
+                        !streak.active && styles.inactiveStreak,
+                    ]}
                 >
                     {streak.numberOfDays.toString()}
                 </CustomText>
@@ -161,6 +177,11 @@ export const HeaderCard: FC<HeaderCardProps> = ({ navigateToSessionScreen }) => 
                 style={styles.progressBar}
             />
             <CustomText style={styles.descText}>{reportMessage}</CustomText>
+
+            <FlashcardClassBadges
+                mlStates={langWordsMLStates ?? []}
+                onBadgePress={navigateToFlashcardsScreen}
+            />
 
             <ActionButton
                 active={langWords.length + langSuggestions.length >= 5}

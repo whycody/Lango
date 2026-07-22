@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 import * as Updates from 'expo-updates';
 
@@ -28,7 +29,7 @@ const REFRESH_TOKEN = 'refreshToken';
 const REFRESH_TIMEOUT_MS = 10000;
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
-const profile = Updates.channel;
+const profile = Constants.expoConfig?.extra?.appVariant ?? Updates.channel;
 const apiUrl =
     !profile || ['test', 'development'].includes(profile)
         ? process.env.API_DEV_URL

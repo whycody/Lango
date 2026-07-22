@@ -33,8 +33,8 @@ const call = async <T, F>(
 
 const SKIP_REFRESH = { _skipAuthRefresh: true };
 
-export const getUserInfo = async (): Promise<User | null> => {
-    const res = await api.get<User | null>('/users/users', { timeout: 10000 });
+export const getUserInfo = async (timeout = 10000): Promise<User | null> => {
+    const res = await api.get<User | null>('/users/users', { timeout });
     return res.data;
 };
 

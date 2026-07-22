@@ -6,6 +6,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LibraryItems } from '../../constants/Library';
+import { palette } from '../../constants/palette';
 import { useDynamicStatusBar } from '../../hooks';
 import { ScreenName } from '../../navigation/navigationTypes';
 import { useAuth, useLanguage, useWords } from '../../store';
@@ -48,41 +49,41 @@ export const LibraryScreen = () => {
 
     const libraryItems: LibraryItemType[] = [
         {
-            color: '#B8B8C7',
+            color: palette.gray,
             description: t('settings_desc'),
             icon: 'settings-sharp',
             id: LibraryItems.SETTINGS,
             label: t('settings'),
         },
         {
-            color: '#2EE6A6',
+            color: palette.green,
             description: currentLang,
             icon: 'language',
             id: LibraryItems.LANGUAGE,
             label: t('main_language'),
         },
         {
-            color: '#9B6BFF',
+            color: palette.purple,
             description: getMyWordsDesc(),
             icon: 'albums',
             id: LibraryItems.MY_WORDS,
             label: t('myWords'),
         },
         {
-            color: '#FF5C5C',
+            color: palette.red,
             description: t('logout_desc'),
             icon: 'log-out',
             id: LibraryItems.LOGOUT,
             label: t('logout'),
         },
         {
-            color: '#4D7CFF',
+            color: palette.blue,
             icon: 'shield-checkmark',
             id: LibraryItems.PRIVACY_POLICY,
             label: t('privacyPolicy'),
         },
         {
-            color: '#6A5CFF',
+            color: palette.indigo,
             icon: 'document-text',
             id: LibraryItems.USE_CONDITIONS,
             label: t('useConditions'),

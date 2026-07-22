@@ -22,6 +22,7 @@ import { useMMKV } from 'react-native-mmkv';
 import {
     AVAudioSessionCategory,
     AVAudioSessionCategoryOptions,
+    AVAudioSessionMode,
     ExpoSpeechRecognitionModule,
 } from 'expo-speech-recognition';
 import * as Notifications from 'expo-notifications';
@@ -37,7 +38,7 @@ void SplashScreen.preventAutoHideAsync().catch(() => {
 export default function App() {
     const { i18n } = useTranslation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
-    const globalStorage = useMMKV();
+    const globalStorage = useMMKV({ id: 'user-storage' });
     const [applicationLang] = useTypedMMKV<LanguageCode>(
         APPLICATION_LANG,
         i18n.language as LanguageCode,
@@ -57,6 +58,7 @@ export default function App() {
         ExpoSpeechRecognitionModule.setCategoryIOS({
             category: AVAudioSessionCategory.playback,
             categoryOptions: [AVAudioSessionCategoryOptions.mixWithOthers],
+            mode: AVAudioSessionMode.default,
         });
     }, []);
 

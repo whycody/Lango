@@ -1,32 +1,58 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { BackHandler, Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    Animated,
+    BackHandler,
+    Keyboard,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    StyleSheet,
+    TextInput,
+    View,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useFocusEffect, useTheme } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
+import { RouteProp, useFocusEffect, useRoute, useTheme } from '@react-navigation/native';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
-import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
+import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
+import { RootStackParamList } from '../../navigation/navigationTypes';
 import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
-import { getSortingMethod, getSortingMethodLabel } from '../../utils/sortingUtil';
-import { ActionButton, BottomGradient, CustomText, ModalDragHandle } from '../components';
-import { EmptyList, FlashcardListItem, ListFilter } from '../components/flashcards';
-import { StatisticItem } from '../components/home';
+import { getSortingMethod } from '../../utils/sortingUtil';
+import { ActionButton, BottomGradient, ModalDragHandle } from '../components';
+import {
+    EmptyList,
+    FlashcardListItem,
+    FlashcardsHeader,
+    FlashcardsSubheader,
+    ListFilter,
+    ScrollToTopButton,
+} from '../components/flashcards';
+import {
+    FLASHCARD_DETAIL_BOTTOM_SHEET,
+    FlashcardDetailsBottomSheet,
+} from '../sheets/FlashcardDetailsBottomSheet';
 import { HandleFlashcardBottomSheet } from '../sheets/HandleFlashcardBottomSheet';
+import { MasteryFilter, MasteryFilterBottomSheet } from '../sheets/MasteryFilterBottomSheet';
+import { MicrophonePermissionBottomSheet } from '../sheets/MicrophonePermissionBottomSheet';
 import { RemoveFlashcardBottomSheet } from '../sheets/RemoveFlashcardBottomSheet';
 import { SortingMethodBottomSheet } from '../sheets/SortingMethodBottomSheet';
 import { CustomTheme } from '../Theme';
 
 const FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'flashcards-handle-flashcard-bottom-sheet';
+const FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET = 'flashcards-mastery-filter-bottom-sheet';
+const FLASHCARDS_MICROPHONE_PERMISSION_SHEET = 'flashcards-microphone-permission';
 const FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'flashcards-remove-flashcard-bottom-sheet';
 const FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET = 'flashcards-sorting-method-bottom-sheet';
+
+const SCROLL_TO_TOP_THRESHOLD = 300;
 
 export const FlashcardsScreen = () => {
     const { t } = useTranslation();
@@ -40,57 +66,124 @@ export const FlashcardsScreen = () => {
         word => word.source == WordSource.LANGO && !word.removed,
     ).length;
     const { flashcardsSortingMethod } = useUserPreferences();
+    const route = useRoute<RouteProp<RootStackParamList, 'Flashcards'>>();
 
     const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
+    const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
     const [filter, setFilter] = useState('');
-
-    const inputRef = useRef<TextInput>(null);
+    const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>(
+        route.params?.masteryFilter ?? 'all',
+    );
     const [searchingMode, setSearchingMode] = useState(false);
+    const inputRef = useRef<TextInput>(null);
+    const listRef = useRef<FlashListRef<{ id: string }>>(null);
+    const lastScrollY = useRef(0);
+    const addButtonAnim = useRef(new Animated.Value(1)).current;
+    const scrollToTopAnim = useRef(new Animated.Value(0)).current;
+    const addButtonVisible = useRef(true);
+    const scrollToTopVisible = useRef(false);
+
+    const animateTo = useCallback((anim: Animated.Value, toValue: number) => {
+        Animated.timing(anim, {
+            duration: 200,
+            toValue,
+            useNativeDriver: true,
+        }).start();
+    }, []);
+
+    useEffect(() => {
+        if (route.params?.masteryFilter) {
+            setMasteryFilter(route.params.masteryFilter);
+        }
+    }, [route.params?.masteryFilter]);
+
+    const allFlashcards = useMemo(
+        () =>
+            wordWithDetailsContext.langWordsWithDetails.filter(
+                (word: WordWithDetails) => !word.removed,
+            ),
+        [wordWithDetailsContext.langWordsWithDetails],
+    );
+
+    const matchesSearchQuery = useCallback(
+        (word: WordWithDetails) => {
+            const query = filter.trim().toLowerCase();
+            if (!query) return false;
+            return (
+                word.text.trim().toLowerCase().includes(query) ||
+                word.translation.trim().toLowerCase().includes(query)
+            );
+        },
+        [filter],
+    );
+
+    const matchesMasteryFilter = useCallback(
+        (word: WordWithDetails) => {
+            if (masteryFilter === 'all') return true;
+            if (masteryFilter === 'learning')
+                return word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX;
+            if (masteryFilter === 'review')
+                return (
+                    word.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
+                    word.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN
+                );
+            if (masteryFilter === 'mastered')
+                return word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN;
+            return true;
+        },
+        [masteryFilter],
+    );
 
     const flashcards = useMemo(
         () =>
             wordWithDetailsContext.langWordsWithDetails
-                .filter(
-                    (word: WordWithDetails) =>
-                        !word.removed &&
-                        (!searchingMode ||
-                            (filter.trim() &&
-                                (word.text
-                                    .trim()
-                                    .toLowerCase()
-                                    .includes(filter.trim().toLowerCase()) ||
-                                    word.translation
-                                        .trim()
-                                        .toLowerCase()
-                                        .includes(filter.trim().toLowerCase())))),
-                )
+                .filter((word: WordWithDetails) => {
+                    if (word.removed) return false;
+                    if (searchingMode) return matchesSearchQuery(word);
+                    return matchesMasteryFilter(word);
+                })
                 .sort(getSortingMethod(flashcardsSortingMethod)),
         [
             searchingMode,
             flashcardsSortingMethod,
-            filter,
+            matchesSearchQuery,
+            matchesMasteryFilter,
             wordWithDetailsContext.langWordsWithDetails,
         ],
     );
 
     const avgGradeThreeProb = useMemo(
         () =>
-            flashcards.length > 0
-                ? flashcards.reduce((sum, card) => sum + (card.gradeThreeProb || 0), 0) /
-                  flashcards.length
+            allFlashcards.length > 0
+                ? allFlashcards.reduce((sum, card) => sum + (card.gradeThreeProb || 0), 0) /
+                  allFlashcards.length
                 : 0,
-        [flashcards],
+        [allFlashcards],
     );
+
+    const resetScrollButtonVisibility = () => {
+        animateTo(scrollToTopAnim, 0);
+        scrollToTopVisible.current = false;
+    };
+
+    const showAddButton = () => {
+        animateTo(addButtonAnim, 1);
+        addButtonVisible.current = true;
+    };
 
     const turnOffSearchingMode = () => {
         inputRef?.current?.blur();
         Keyboard.dismiss();
         setFilter('');
         setSearchingMode(false);
+        listRef.current?.scrollToOffset({ animated: false, offset: 0 });
+        resetScrollButtonVisibility();
+        showAddButton();
     };
 
     const turnOnSearchingMode = () => {
         setSearchingMode(true);
+        resetScrollButtonVisibility();
         setTimeout(() => inputRef?.current?.focus(), 100);
     };
 
@@ -98,18 +191,42 @@ export const FlashcardsScreen = () => {
         useCallback(() => {
             const handleBackPress = () => {
                 if (!searchingMode) return false;
-
                 turnOffSearchingMode();
                 return true;
             };
 
             const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-            return () => {
-                subscription.remove();
-            };
+            return () => subscription.remove();
         }, [searchingMode]),
     );
+
+    const handleScroll = useCallback(
+        (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+            const offsetY = event.nativeEvent.contentOffset.y;
+            const scrollingDown = offsetY > lastScrollY.current + 5;
+            const scrollingUp = offsetY < lastScrollY.current - 5;
+            lastScrollY.current = offsetY;
+
+            if (scrollingDown && addButtonVisible.current) {
+                addButtonVisible.current = false;
+                animateTo(addButtonAnim, 0);
+            } else if (scrollingUp && !addButtonVisible.current) {
+                addButtonVisible.current = true;
+                animateTo(addButtonAnim, 1);
+            }
+
+            const shouldShowScrollToTop = offsetY > SCROLL_TO_TOP_THRESHOLD;
+            if (shouldShowScrollToTop !== scrollToTopVisible.current) {
+                scrollToTopVisible.current = shouldShowScrollToTop;
+                animateTo(scrollToTopAnim, shouldShowScrollToTop ? 1 : 0);
+            }
+        },
+        [addButtonAnim, scrollToTopAnim, animateTo],
+    );
+
+    const handleScrollToTop = useCallback(() => {
+        listRef.current?.scrollToOffset({ animated: true, offset: 0 });
+    }, []);
 
     const handleActionButtonPress = () => {
         setEditFlashcardId(undefined);
@@ -122,7 +239,10 @@ export const FlashcardsScreen = () => {
 
     const handlePress = useCallback(
         (id: string) => {
-            if (flashcards) console.log(flashcards.find(f => f.id === id));
+            const word = flashcards.find(f => f.id === id);
+            if (!word) return;
+            setDetailWord(word);
+            TrueSheet.present(FLASHCARD_DETAIL_BOTTOM_SHEET);
         },
         [flashcards],
     );
@@ -137,23 +257,32 @@ export const FlashcardsScreen = () => {
         TrueSheet.present(FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     }, []);
 
+    const handleRemovePress = useCallback((id: string) => {
+        Keyboard.dismiss();
+        setEditFlashcardId(id);
+        TrueSheet.present(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
+    }, []);
+
+    const handleWordEdit = useCallback(
+        (id: string | undefined, word: string, translation: string) => {
+            if (!id) return;
+            setDetailWord(prev => (prev?.id === id ? { ...prev, text: word, translation } : prev));
+        },
+        [],
+    );
+
     const handleCancel = () => {
         TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
         setEditFlashcardId(undefined);
     };
 
     const removeFlashcard = () => {
-        TrueSheet.dismiss(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
+        TrueSheet.dismissAll();
         if (!editFlashcardId) return;
         wordsContext.removeWord(editFlashcardId);
         setEditFlashcardId(undefined);
+        setDetailWord(undefined);
     };
-
-    const handleRemovePress = useCallback((id: string) => {
-        Keyboard.dismiss();
-        setEditFlashcardId(id);
-        TrueSheet.present(FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET);
-    }, []);
 
     const renderFlashcardListItem = useCallback(
         ({ gradeThreeProb, id, text, translation }: WordWithDetails) => (
@@ -162,91 +291,40 @@ export const FlashcardsScreen = () => {
                 level={gradeThreeProb}
                 text={text}
                 translation={translation}
-                onEditPress={handleEditPress}
                 onPress={handlePress}
-                onRemovePress={handleRemovePress}
             />
         ),
-        [handleEditPress, handleRemovePress],
+        [handleEditPress],
     );
 
-    const renderHeader = useMemo(() => {
-        return (
-            <View style={styles.headerCard}>
-                <CustomText style={styles.title} weight="Bold">
-                    {t('flashcards')}
-                </CustomText>
-                <CustomText style={styles.subtitle}>
-                    {t('soFar', { wordsCount: numberOfWords }) +
-                        ' ' +
-                        (langoWords > 0 ? t('brag', { langoWords }) : t('nextTime'))}
-                </CustomText>
-                <View style={styles.statsContainer}>
-                    <StatisticItem
-                        description={t('words')}
-                        icon={'layers-outline'}
-                        label={`${numberOfWords}`}
-                        style={styles.statisticItemFlex}
-                    />
-                    <StatisticItem
-                        description={t('langoWords')}
-                        icon={'layers-outline'}
-                        label={`${langoWords}`}
-                        style={styles.statisticItemFlex}
-                    />
-                </View>
-                {flashcards.length > 0 && (
-                    <>
-                        <CustomText style={styles.subtitle}>
-                            {t('avgGradeThree', {
-                                avgGrade: (avgGradeThreeProb * 100).toFixed(0),
-                            }) +
-                                ' ' +
-                                (avgGradeThreeProb >= 0.5 ? t('goodJob') : t('badJob'))}
-                        </CustomText>
-                        <View style={styles.progressBarContainer}>
-                            <ProgressBar
-                                animatedValue={avgGradeThreeProb}
-                                color={colors.primary}
-                                style={styles.progressBar}
-                            />
-                        </View>
-                    </>
-                )}
-            </View>
-        );
-    }, [flashcards.length, numberOfWords, langoWords]);
+    const renderHeader = useMemo(
+        () => (
+            <FlashcardsHeader
+                allFlashcardsCount={allFlashcards.length}
+                avgGradeThreeProb={avgGradeThreeProb}
+                langoWords={langoWords}
+                numberOfWords={numberOfWords}
+            />
+        ),
+        [allFlashcards.length, avgGradeThreeProb, numberOfWords, langoWords],
+    );
 
-    const handleClearPress = () => {
-        setFilter('');
-    };
+    const renderSubheader = useMemo(
+        () => (
+            <FlashcardsSubheader
+                filterSheetName={FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET}
+                masteryFilter={masteryFilter}
+                sortingMethod={flashcardsSortingMethod}
+                sortingSheetName={FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET}
+                onClearSearch={() => setFilter('')}
+                onSearchPress={turnOnSearchingMode}
+            />
+        ),
+        [flashcardsSortingMethod, masteryFilter],
+    );
 
-    const renderSubheader = useMemo(() => {
-        return (
-            <View style={styles.subHeaderContainer}>
-                <Pressable onPress={turnOnSearchingMode}>
-                    <ListFilter
-                        editable={false}
-                        isSearching={searchingMode}
-                        pointerEvents="none"
-                        onClear={handleClearPress}
-                    />
-                </Pressable>
-                <Pressable
-                    style={styles.sortingHeader}
-                    onPress={() => TrueSheet.present(FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET)}
-                >
-                    <MaterialCommunityIcons color={colors.white} name={'sort-variant'} size={18} />
-                    <CustomText style={styles.sortingLabel} weight={'SemiBold'}>
-                        {getSortingMethodLabel(flashcardsSortingMethod)}
-                    </CustomText>
-                </Pressable>
-            </View>
-        );
-    }, [searchingMode, flashcardsSortingMethod, filter, setFilter]);
-
-    const renderEmptyList = useMemo(() => {
-        return (
+    const renderEmptyList = useMemo(
+        () => (
             <EmptyList
                 title={t(searchingMode ? 'empty_search' : 'no_items')}
                 description={t(
@@ -254,15 +332,18 @@ export const FlashcardsScreen = () => {
                         ? filter
                             ? 'empty_search_desc'
                             : 'start_search_desc'
-                        : 'no_items_desc',
+                        : masteryFilter !== 'all'
+                          ? 'no_items_filter_desc'
+                          : 'no_items_desc',
                 )}
             />
-        );
-    }, [searchingMode, filter]);
+        ),
+        [searchingMode, filter, masteryFilter],
+    );
 
-    const ListFilterHeader = useMemo(() => {
-        return (
-            <View style={[styles.row, styles.subHeaderContainer]}>
+    const renderSearchHeader = useMemo(
+        () => (
+            <View style={[styles.row, styles.searchHeaderContainer]}>
                 <Ionicons
                     color={colors.white300}
                     name={'arrow-back-sharp'}
@@ -275,12 +356,13 @@ export const FlashcardsScreen = () => {
                     ref={inputRef}
                     value={filter}
                     onChangeText={setFilter}
-                    onClear={handleClearPress}
+                    onClear={() => setFilter('')}
                     onFocus={searchingMode ? undefined : turnOnSearchingMode}
                 />
             </View>
-        );
-    }, [filter]);
+        ),
+        [filter],
+    );
 
     const renderListItem = ({ item }: { item: { id: string } }) => {
         if (item.id === 'header') return renderHeader;
@@ -303,40 +385,77 @@ export const FlashcardsScreen = () => {
             <View style={styles.topSpacer}>
                 <ModalDragHandle />
             </View>
+            <FlashcardDetailsBottomSheet
+                word={detailWord}
+                onEdit={() => handleEditPress(detailWord?.id ?? '')}
+                onRemove={() => handleRemovePress(detailWord?.id ?? '')}
+            />
             <RemoveFlashcardBottomSheet
                 flashcardId={editFlashcardId}
                 sheetName={FLASHCARDS_REMOVE_FLASHCARD_BOTTOM_SHEET}
                 onCancel={handleCancel}
                 onRemove={removeFlashcard}
             />
+            <MicrophonePermissionBottomSheet sheetName={FLASHCARDS_MICROPHONE_PERMISSION_SHEET} />
             <HandleFlashcardBottomSheet
                 flashcardId={editFlashcardId}
+                microphonePermissionSheetName={FLASHCARDS_MICROPHONE_PERMISSION_SHEET}
                 sheetName={FLASHCARDS_HANDLE_FLASHCARD_BOTTOM_SHEET}
+                onWordEdit={handleWordEdit}
+            />
+            <MasteryFilterBottomSheet
+                sheetName={FLASHCARDS_MASTERY_FILTER_BOTTOM_SHEET}
+                value={masteryFilter}
+                onChange={setMasteryFilter}
             />
             <SortingMethodBottomSheet sheetName={FLASHCARDS_SORTING_METHOD_BOTTOM_SHEET} />
-            {searchingMode && ListFilterHeader}
+            {searchingMode && renderSearchHeader}
             <FlashList
-                ListFooterComponent={<View style={{ height: 50 }} />}
+                key={searchingMode ? 'search' : 'normal'}
+                ListFooterComponent={<View style={{ height: 16 }} />}
                 data={data}
                 keyExtractor={item => item.id}
                 keyboardDismissMode={'on-drag'}
                 keyboardShouldPersistTaps={'always'}
                 overScrollMode={'never'}
+                ref={listRef}
                 renderItem={renderListItem}
+                scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
                 stickyHeaderHiddenOnScroll={false}
                 stickyHeaderIndices={searchingMode || !flashcards.length ? undefined : [1]}
+                onScroll={handleScroll}
             />
             <BottomGradient />
             {!searchingMode && (
-                <View style={styles.buttonContainer}>
+                <Animated.View
+                    style={[
+                        styles.buttonContainer,
+                        {
+                            opacity: addButtonAnim,
+                            transform: [
+                                {
+                                    translateY: addButtonAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [80, 0],
+                                    }),
+                                },
+                            ],
+                        },
+                    ]}
+                >
                     <ActionButton
                         label={t('addWord')}
                         primary={true}
                         onPress={handleActionButtonPress}
                     />
-                </View>
+                </Animated.View>
             )}
+            <ScrollToTopButton
+                addButtonAnim={addButtonAnim}
+                animatedValue={scrollToTopAnim}
+                onPress={handleScrollToTop}
+            />
         </View>
     );
 };
@@ -348,23 +467,15 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         buttonContainer: {
             backgroundColor: colors.card,
+            borderRadius: spacing.l,
+            bottom: 0,
+            left: 0,
             paddingBottom: insets.bottom,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingTop: MARGIN_VERTICAL / 2,
+            position: 'absolute',
+            right: 0,
             zIndex: 100,
-        },
-        headerCard: {
-            backgroundColor: colors.background,
-        },
-        progressBar: {
-            backgroundColor: colors.cardAccent300,
-            borderRadius: spacing.s,
-            height: 7,
-        },
-        progressBarContainer: {
-            marginBottom: 6,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: 16,
         },
         root: {
             backgroundColor: colors.background,
@@ -375,57 +486,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             alignItems: 'center',
             flexDirection: 'row',
         },
-        sortingHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            gap: 8,
-            paddingBottom: 8,
-        },
-        sortingLabel: {
-            color: colors.white,
-            fontSize: 13,
-        },
-        statisticItem: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        statisticItemFlex: {
-            flex: 1,
-        },
-        statsContainer: {
-            flexDirection: 'row',
-            gap: 12,
-            marginBottom: 12,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL,
-        },
-        subHeaderContainer: {
+        searchHeaderContainer: {
             backgroundColor: colors.background,
             paddingHorizontal: MARGIN_HORIZONTAL,
-        },
-        subtitle: {
-            color: colors.white300,
-            fontSize: 15,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL / 3,
-        },
-        textInput: {
-            backgroundColor: colors.background,
-            color: colors.primary300,
-            flex: 1,
-            fontSize: 18,
-            height: 50,
-        },
-        title: {
-            color: colors.white,
-            fontSize: 24,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL,
         },
         topSpacer: {
             alignItems: 'center',
             backgroundColor: colors.background,
-            height: isIOS ? MARGIN_VERTICAL : insets.top,
+            height: isIOS ? 16 : insets.top,
             justifyContent: 'center',
         },
     });

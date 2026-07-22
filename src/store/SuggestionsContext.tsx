@@ -203,7 +203,7 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
 
 export function useDebouncedSyncSuggestions(syncFn: () => void, delay: number = 1000) {
     const syncFnRef = useRef(syncFn);
-    const debouncedRef = useRef<ReturnType<typeof debounce>>();
+    const debouncedRef = useRef<ReturnType<typeof debounce> | undefined>(undefined);
 
     useEffect(() => {
         syncFnRef.current = syncFn;

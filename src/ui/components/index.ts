@@ -3,5 +3,8 @@ export * from './BottomGradient';
 export * from './CustomText';
 export * from './Header';
 export * from './ModalDragHandle';
+export * from './ProgressBar';
 export * from './SquareFlag';
+export * from './SecondaryButton';
+export * from './StatRow';
 export * from './VersionFooter';

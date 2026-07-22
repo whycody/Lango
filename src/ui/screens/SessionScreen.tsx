@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Animated, BackHandler, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import * as Speech from 'expo-speech';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 import PagerView from 'react-native-pager-view';
-import { ProgressBar } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
@@ -32,7 +32,7 @@ import {
 import { SessionWord, Word, WordUpdate } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { getCurrentStreak } from '../../utils/streakUtils';
-import { CustomText } from '../components';
+import { CustomText, ProgressBar } from '../components';
 import { Card, FlipCard, SessionHeader, WordLevelItem } from '../components/session';
 import {
     FinishSessionBottomSheet,
@@ -41,6 +41,7 @@ import {
     LeaveSessionBottomSheet,
     SessionSettingsBottomSheet,
 } from '../sheets';
+import { MicrophonePermissionBottomSheet } from '../sheets/MicrophonePermissionBottomSheet';
 import { StreakBottomSheet } from '../sheets/StreakBottomSheet';
 import { WordSuggestionBottomSheet } from '../sheets/WordSuggestionBottomSheet';
 import { CustomTheme } from '../Theme';
@@ -58,6 +59,7 @@ const SESSION_FINISH_SESSION_BOTTOM_SHEET = 'session-finish-session-bottom-sheet
 const SESSION_SETTINGS_BOTTOM_SHEET = 'session-settings-bottom-sheet';
 const SESSION_STREAK_BOTTOM_SHEET = 'session-streak-bottom-sheet';
 const SESSION_WORD_SUGGESTION_BOTTOM_SHEET = 'session-word-suggestion-bottom-sheet';
+const SESSION_MICROPHONE_PERMISSION_SHEET = 'session-microphone-permission';
 
 type SessionScreenProps = NativeStackScreenProps<RootStackParamList, ScreenName.Session>;
 
@@ -79,21 +81,14 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
 
     const userPreferences = useUserPreferences();
     const { mainLang, translationLang } = useLanguage();
-    const { triggerHaptics } = useHaptics();
-
-    const { updateUserFinishedOnboarding, user } = useAuth();
-    const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode);
-
-    useEffect(() => {
-        navigation.setOptions({ gestureEnabled: false });
-        return () => {
-            navigation.setOptions({ gestureEnabled: true });
-        };
-    }, [navigation]);
+    const { triggerHaptics, triggerStreakCelebrationHaptics } = useHaptics();
 
     const confettiRef = useRef<LottieView>(null);
     const pagerRef = useRef<PagerView>(null);
     const isInitial = useRef(true);
+
+    const { updateUserFinishedOnboarding, user } = useAuth();
+    const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode);
 
     const [version, setVersion] = useState(wordSet.version);
     const [model, setModel] = useState(wordSet.model);
@@ -105,8 +100,9 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     const [editId, setEditId] = useState<string | undefined>();
     const [numberOfSession, setNumberOfSession] = useState(0);
     const [lastPressTime, setLastPressTime] = useState<number>(0);
-    const [scaleValues] = useState(
-        cards.map((_, index) => new Animated.Value(index === 0 ? 1 : 0.8)),
+    const scaleValues = useMemo(
+        () => cards.map((_, index) => new Animated.Value(index === currentIndex ? 1 : 0.8)),
+        [cards],
     );
     const prevActiveIndexRef = useRef(0);
 
@@ -116,6 +112,42 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
 
     const { studyDaysList } = useStatistics();
     const streak = getCurrentStreak(studyDaysList);
+
+    const evaluationSoundPlayer = useAudioPlayer(
+        require('../../../assets/sounds/session_evaluation.mp3'),
+        { keepAudioSessionActive: true },
+    );
+    const sessionEndSoundPlayer = useAudioPlayer(
+        require('../../../assets/sounds/session_end.mp3'),
+        {
+            keepAudioSessionActive: true,
+        },
+    );
+    const backSoundPlayer = useAudioPlayer(require('../../../assets/sounds/session_back.mp3'), {
+        keepAudioSessionActive: true,
+    });
+
+    useEffect(() => {
+        evaluationSoundPlayer.volume = 1.0;
+        sessionEndSoundPlayer.volume = 1.0;
+        backSoundPlayer.volume = 0.3;
+    }, [evaluationSoundPlayer, sessionEndSoundPlayer, backSoundPlayer]);
+
+    useEffect(() => {
+        navigation.setOptions({ gestureEnabled: false });
+        return () => {
+            navigation.setOptions({ gestureEnabled: true });
+        };
+    }, [navigation]);
+
+    useEffect(() => {
+        setAudioModeAsync({
+            allowsRecording: false,
+            interruptionMode: 'mixWithOthers',
+            playsInSilentMode: true,
+            shouldRouteThroughEarpiece: false,
+        });
+    }, []);
 
     useLayoutEffect(() => {
         confettiRef.current?.reset();
@@ -149,7 +181,9 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
 
     const decrementCurrentIndex = useCallback(() => {
         setCurrentIndex(prev => (prev == 0 ? prev : prev - 1));
-    }, []);
+        if (!userPreferences.soundEffectsEnabled) return;
+        backSoundPlayer.seekTo(0).then(() => backSoundPlayer.play());
+    }, [userPreferences.soundEffectsEnabled]);
 
     const incrementCurrentIndex = useCallback(() => {
         if (currentIndex < cards.length) setCurrentIndex(prev => prev + 1);
@@ -191,7 +225,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
             const text = shouldSpeakTranslation ? word.translation : word.text;
             const language = shouldSpeakTranslation ? word.translationLang : word.mainLang;
             Speech.stop();
-            Speech.speak(text, { language });
+            Speech.speak(text, { language, volume: 1.0 });
         },
         [flipped],
     );
@@ -202,6 +236,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         return (
             <FlipCard
                 clickable={isActive}
+                flip={flippedCards[wordIndex]}
                 flipVertical={false}
                 style={styles.card}
                 swipeable={true}
@@ -294,7 +329,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         const shouldSpeak = (flipped && isFrontSide) || (!flipped && !isFrontSide);
         if (shouldSpeak && speechSynthesizer) {
             Speech.stop();
-            Speech.speak(word?.text, { language: word.mainLang });
+            Speech.speak(word?.text, { language: word.mainLang, volume: 1.0 });
         }
     }, [
         flipped,
@@ -316,7 +351,13 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
         if (now - lastPressTime < 300) return;
         setLastPressTime(now);
 
+        const isLastCard = currentIndex === cards.length - 1;
         triggerHaptics('rigid');
+
+        if (userPreferences.soundEffectsEnabled) {
+            const soundPlayer = isLastCard ? sessionEndSoundPlayer : evaluationSoundPlayer;
+            soundPlayer.seekTo(0).then(() => soundPlayer.play());
+        }
 
         const currentCard = cards[currentIndex];
         const { id, type } = currentCard;
@@ -346,19 +387,18 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     }, [wordsUpdates, skippedSuggestionsIds]);
 
     const finishSession = () => {
-        const shouldDisplayStreakSheet = !streak.active && wordsUpdates.length > 0;
         incrementCurrentIndex();
+        const shouldDisplayStreakSheet = !streak.active && wordsUpdates.length > 0;
         confettiRef.current?.play(0);
-        saveProgress(true);
-        triggerHaptics('heavy');
+        shouldDisplayStreakSheet ? triggerStreakCelebrationHaptics() : triggerHaptics('heavy');
         trackEvent(AnalyticsEventName.FINISH_SESSION_SHEET_OPEN);
         if (!user?.finishedOnboarding) updateUserFinishedOnboarding(true);
-        if (shouldDisplayStreakSheet) triggerHaptics('heavy');
         TrueSheet.present(
             shouldDisplayStreakSheet
                 ? SESSION_STREAK_BOTTOM_SHEET
                 : SESSION_FINISH_SESSION_BOTTOM_SHEET,
         );
+        setImmediate(() => saveProgress(true));
     };
 
     useEffect(() => {
@@ -484,17 +524,21 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                 finished,
             );
 
-            const addedWords = addWords(
-                wordsToAdd.map(w => ({
-                    text: w.text,
-                    translation: w.translation,
-                })),
-                WordSource.LANGO,
-            );
+            requestAnimationFrame(() => {
+                const addedWords = addWords(
+                    wordsToAdd.map(w => ({
+                        text: w.text,
+                        translation: w.translation,
+                    })),
+                    WordSource.LANGO,
+                );
 
-            const wordsMap = mapAddedWordsToSuggestions(addedWords, wordSet.sessionWords);
-            const evaluations = buildEvaluations(wordsUpdates, session.id, wordsMap);
-            evaluationsContext.addEvaluations(evaluations);
+                requestAnimationFrame(() => {
+                    const wordsMap = mapAddedWordsToSuggestions(addedWords, wordSet.sessionWords);
+                    const evaluations = buildEvaluations(wordsUpdates, session.id, wordsMap);
+                    evaluationsContext.addEvaluations(evaluations);
+                });
+            });
         },
         [wordsUpdates, wordSet, skippedSuggestionsIds],
     );
@@ -522,8 +566,10 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                 leaveSession={handleSessionExit}
                 sheetName={SESSION_LEAVE_SESSION_BOTTOM_SHEET}
             />
+            <MicrophonePermissionBottomSheet sheetName={SESSION_MICROPHONE_PERMISSION_SHEET} />
             <HandleFlashcardBottomSheet
                 flashcardId={editId}
+                microphonePermissionSheetName={SESSION_MICROPHONE_PERMISSION_SHEET}
                 sheetName={SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET}
                 onWordEdit={handleWordEdit}
             />
@@ -554,9 +600,10 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
                     />
                     <View style={styles.progressBarWrapper}>
                         <ProgressBar
-                            animatedValue={progress ? progress / cards.length : 0.000001}
                             color={colors.primary300}
+                            progress={progress ? progress / cards.length : 0}
                             style={styles.progressBar}
+                            trackColor={colors.cardAccent300}
                         />
                     </View>
                 </View>
@@ -697,9 +744,6 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             justifyContent: 'center',
         },
         progressBar: {
-            backgroundColor: colors.cardAccent300,
-            borderRadius: spacing.s,
-            height: 7,
             marginTop: 12,
         },
         progressBarWrapper: {

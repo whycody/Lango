@@ -3,3 +3,4 @@ export * from './language';
 export * from './library';
 export * from './login';
 export * from './onboarding';
+export * from './theme';

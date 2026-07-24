@@ -1,5 +1,7 @@
 import {
     AppConfig,
+    BundleJoinCode,
+    BundleMember,
     Evaluation,
     ExampleFlashcard,
     LanguageLevel,
@@ -9,6 +11,7 @@ import {
     User,
     UserSummary,
     Word,
+    WordsBundle,
 } from '../types';
 
 export type ApiErrorCode =
@@ -109,3 +112,19 @@ export type TranslateResponse = {
 };
 
 export type TranslateTextApi = { data: TranslateResponse; kind: 'ok' } | ApiProblem;
+
+// -----BUNDLE MEMBERS-----
+
+export type SyncBundleMembersOnServerApi =
+    | { data: SyncResultWithRejections<BundleMember>; kind: 'ok' }
+    | ApiProblem;
+export type FetchUpdatedBundleMembersApi = { data: BundleMember[]; kind: 'ok' } | ApiProblem;
+
+// -----WORDS BUNDLES-----
+
+export type SyncWordsBundlesOnServerApi =
+    | { data: SyncResultWithRejections<WordsBundle>; kind: 'ok' }
+    | ApiProblem;
+export type FetchUpdatedWordsBundlesApi = { data: WordsBundle[]; kind: 'ok' } | ApiProblem;
+export type GenerateBundleInvitationCodeApi = { data: BundleJoinCode; kind: 'ok' } | ApiProblem;
+export type JoinBundleWithCodeApi = { data: BundleMember; kind: 'ok' } | ApiProblem;

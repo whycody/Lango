@@ -1,5 +1,6 @@
 // core
 export * from './core/app-config';
+export * from './core/BundleJoinCode';
 export * from './core/BundleMember';
 export * from './core/Evaluation';
 export * from './core/example-flashcard';

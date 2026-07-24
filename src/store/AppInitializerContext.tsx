@@ -4,6 +4,7 @@ import { runMigrations } from '../database/migrations/migrations';
 import { useEvaluationsRepository } from '../hooks/repo/useEvaluationsRepository';
 import { useSessionsRepository } from '../hooks/repo/useSessionsRepository';
 import { useSuggestionsRepository } from '../hooks/repo/useSuggestionsRepository';
+import { useWordsBundleRepository } from '../hooks/repo/useWordsBundleRepository';
 import { useWordsHeuristicStatesRepository } from '../hooks/repo/useWordsHeuristicStatesRepository';
 import { useWordsMLStatesRepository } from '../hooks/repo/useWordsMLStatesRepository';
 import { useWordsRepository } from '../hooks/repo/useWordsRepository';
@@ -35,6 +36,8 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
         createTables: createWordsHeuristicStatesTables,
         getAllWordsStates: getAllWordsHeuristicStates,
     } = useWordsHeuristicStatesRepository();
+    const { createTables: createWordsBundlesTables, getAllWordsBundles } =
+        useWordsBundleRepository();
 
     const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
     const [loading, setLoading] = useState(true);
@@ -48,25 +51,35 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 createSuggestionsTables(),
                 createWordsMLStatesTables(),
                 createWordsHeuristicStatesTables(),
+                createWordsBundlesTables(),
             ]);
 
             await runMigrations(user!.userId);
 
-            const [sessions, words, evaluations, suggestions, wordsMLStates, wordsHeuristicStates] =
-                await Promise.all([
-                    getAllSessions(),
-                    getAllWords(),
-                    getAllEvaluations(),
-                    getAllSuggestions(),
-                    getAllWordsMLStates(),
-                    getAllWordsHeuristicStates(),
-                ]);
+            const [
+                sessions,
+                words,
+                evaluations,
+                suggestions,
+                wordsMLStates,
+                wordsHeuristicStates,
+                wordsBundles,
+            ] = await Promise.all([
+                getAllSessions(),
+                getAllWords(),
+                getAllEvaluations(),
+                getAllSuggestions(),
+                getAllWordsMLStates(),
+                getAllWordsHeuristicStates(),
+                getAllWordsBundles(),
+            ]);
 
             setInitialLoad({
                 evaluations,
                 sessions,
                 suggestions,
                 words,
+                wordsBundles,
                 wordsHeuristicStates,
                 wordsMLStates,
             });

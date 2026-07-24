@@ -9,6 +9,7 @@ export * from './core/User';
 export * from './core/user-summary';
 export * from './core/Word';
 export * from './core/WordSet';
+export * from './core/WordsBundle';
 
 // states
 export * from './states/WordHeuristicState';
@@ -27,3 +28,8 @@ export * from './utils/Streak';
 export * from './utils/WordSetStrategy';
 export * from './utils/WordUpdate';
 export * from './utils/WordWithDetails';
+
+// api
+export * from './api/AppConfig';
+export * from './api/OnboardingWord';
+export * from './api/Translate';

@@ -312,6 +312,10 @@
     "bundles": {
         "title": "Bundles",
         "desc": "Create your own word bundles tailored to whatever you're learning right now, and keep your learning organized 📚",
-        "add_new": "Add new bundle +"
+        "add_new": "Add new bundle +",
+        "add_new_title": "Add bundle",
+        "add_new_desc": "You can create a new bundle or join an existing one by entering the code its creator shared with you.",
+        "create_new": "Create a new bundle +",
+        "join_with_code": "Join a bundle with a code"
     }
 }

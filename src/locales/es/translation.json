@@ -312,6 +312,10 @@
     "bundles": {
         "title": "Conjuntos",
         "desc": "Crea tus propios conjuntos de palabras adaptados a lo que estás aprendiendo ahora mismo y mantén tu aprendizaje organizado 📚",
-        "add_new": "Añadir nuevo conjunto +"
+        "add_new": "Añadir nuevo conjunto +",
+        "add_new_title": "Añadir conjunto",
+        "add_new_desc": "Puedes crear un nuevo conjunto o unirte a uno existente introduciendo el código que te compartió su creador.",
+        "create_new": "Crear un nuevo conjunto +",
+        "join_with_code": "Unirse a un conjunto con un código"
     }
 }

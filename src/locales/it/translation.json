@@ -312,6 +312,10 @@
     "bundles": {
         "title": "Set",
         "desc": "Crea i tuoi set di parole personalizzati in base a ciò che stai imparando in questo momento e tieni il tuo apprendimento organizzato 📚",
-        "add_new": "Aggiungi nuovo set +"
+        "add_new": "Aggiungi nuovo set +",
+        "add_new_title": "Aggiungi set",
+        "add_new_desc": "Puoi creare un nuovo set oppure unirti a uno esistente inserendo il codice condiviso dal suo creatore.",
+        "create_new": "Crea un nuovo set +",
+        "join_with_code": "Unisciti a un set con un codice"
     }
 }

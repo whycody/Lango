@@ -311,6 +311,10 @@
     "bundles": {
         "title": "Zestawy",
         "desc": "Twórz własne zestawy słówek dopasowane do tego, czego akurat się uczysz, i miej naukę pod pełną kontrolą 📚",
-        "add_new": "Dodaj nowy zestaw +"
+        "add_new": "Dodaj nowy zestaw +",
+        "add_new_title": "Dodaj zestaw",
+        "add_new_desc": "Możesz stworzyć nowy zestaw słówek albo dołączyć do istniejącego, wpisując kod, który udostępnił Ci jego twórca.",
+        "create_new": "Stwórz nowy zestaw +",
+        "join_with_code": "Dołącz do zestawu za pomocą kodu"
     }
 }

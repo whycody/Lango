@@ -12,10 +12,11 @@ import { Streak } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../utils/streakUtils';
 import { ActionButton, BottomGradient, CustomText, ScreenHeader } from '../components';
-import { LanguageBottomSheet } from '../sheets';
+import { AddBundleBottomSheet, LanguageBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
 const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';
+const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
 
 export const BundlesScreen = () => {
     const insets = useSafeAreaInsets();
@@ -52,10 +53,27 @@ export const BundlesScreen = () => {
         TrueSheet.present(BUNDLES_LANGUAGE_SHEET_NAME);
     }, []);
 
+    const handleAddNewPress = useCallback(() => {
+        TrueSheet.present(ADD_BUNDLE_SHEET_NAME);
+    }, []);
+
+    const handleCreateNewBundle = useCallback(() => {
+        // TODO: navigate to create bundle flow
+    }, []);
+
+    const handleJoinBundleWithCode = useCallback(() => {
+        // TODO: navigate to join bundle flow
+    }, []);
+
     return (
         <>
             <BottomGradient />
             <LanguageBottomSheet sheetName={BUNDLES_LANGUAGE_SHEET_NAME} />
+            <AddBundleBottomSheet
+                sheetName={ADD_BUNDLE_SHEET_NAME}
+                onCreateNew={handleCreateNewBundle}
+                onJoinWithCode={handleJoinBundleWithCode}
+            />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 style={styles.container}
@@ -75,10 +93,14 @@ export const BundlesScreen = () => {
                     streakNumberOfDays={streak.numberOfDays}
                     title={t('bundles.title')}
                     onFlagPress={handleLanguageSheetOpen}
-                />\
-                
+                />
                 <CustomText style={styles.descText}>{t('bundles.desc')}</CustomText>
-                <ActionButton primary label={t('bundles.add_new')} style={styles.actionButton} />
+                <ActionButton
+                    primary
+                    label={t('bundles.add_new')}
+                    style={styles.actionButton}
+                    onPress={handleAddNewPress}
+                />
             </ScrollView>
         </>
     );

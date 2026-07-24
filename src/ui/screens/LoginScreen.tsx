@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { expo } from '../../../app.json';
 import { MARGIN_VERTICAL } from '../../constants/margins';
 import { UserProvider } from '../../constants/User';
-import { isAndroid, isIOS } from '../../utils/deviceUtils';
+import { isIOS } from '../../utils/deviceUtils';
 import { ActionButton, CustomText, VersionFooter } from '../components';
 import { MarqueeRow } from '../components/login';
 import { CustomTheme } from '../Theme';
@@ -77,7 +77,6 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                         icon={'logo-apple'}
                         label={t('login_with_apple')}
                         loading={loading === UserProvider.APPLE}
-                        primary={true}
                         style={styles.button}
                         onPress={() => login(UserProvider.APPLE)}
                     />
@@ -86,7 +85,6 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                     icon={'logo-google'}
                     label={t('login_with_google')}
                     loading={loading === UserProvider.GOOGLE}
-                    primary={isAndroid}
                     style={styles.button}
                     onPress={() => login(UserProvider.GOOGLE)}
                 />
@@ -94,7 +92,6 @@ export const LoginScreen: FC<LoginProps> = ({ authError, loading, login }) => {
                     icon={'logo-facebook'}
                     label={t('login_with_facebook')}
                     loading={loading === UserProvider.FACEBOOK}
-                    primary={isAndroid}
                     style={styles.button}
                     onPress={() => login(UserProvider.FACEBOOK)}
                 />

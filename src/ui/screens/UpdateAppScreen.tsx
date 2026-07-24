@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { trackEvent } from '../../utils/analytics';
 import { getStoreUrl } from '../../utils/versionUtils';
-import { ActionButton, CustomText, Header } from '../components';
+import { ActionButton, CustomText, Header, VersionFooter } from '../components';
 import { CustomTheme } from '../Theme';
 
 type UpdateAppScreenProps = {
@@ -47,11 +47,14 @@ export const UpdateAppScreen: FC<UpdateAppScreenProps> = ({ onAskLater, required
             <View>
                 <ActionButton label={t('update_app_action')} primary={true} onPress={openStore} />
                 {!required && (
-                    <CustomText style={styles.laterText} weight="SemiBold" onPress={onAskLater}>
-                        {t('ask_later')}
-                    </CustomText>
+                    <Pressable onPress={onAskLater}>
+                        <CustomText style={styles.laterText} weight="SemiBold">
+                            {t('ask_later')}
+                        </CustomText>
+                    </Pressable>
                 )}
             </View>
+            <VersionFooter small style={styles.versionFooter} />
         </View>
     );
 };
@@ -79,5 +82,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             backgroundColor: colors.background,
             flex: 1,
             paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+        versionFooter: {
+            paddingTop: MARGIN_VERTICAL,
         },
     });

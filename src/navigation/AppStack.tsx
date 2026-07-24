@@ -10,6 +10,7 @@ import { SessionsProvider } from '../store/SessionsContext';
 import { StatisticsProvider } from '../store/StatisticsContext';
 import { SuggestionsProvider } from '../store/SuggestionsContext';
 import { UserPreferencesProvider } from '../store/UserPreferencesContext';
+import { WordsBundleProvider } from '../store/WordsBundleContext';
 import { WordsProvider } from '../store/WordsContext';
 import { WordsHeuristicProvider } from '../store/WordsHeuristicStatesContext';
 import { WordsMLStatesProvider } from '../store/WordsMLStatesContext';
@@ -46,44 +47,51 @@ const AppStackInner = () => {
                 <SuggestionsProvider>
                     <StatisticsProvider>
                         <WordsProvider>
-                            <EvaluationsProvider>
-                                <WordsMLStatesProvider>
-                                    <WordsHeuristicProvider>
-                                        <WordsWithDetailsProvider>
-                                            <BottomSheetModalProvider>
-                                                <Stack.Navigator
-                                                    id="AppStackNavigator"
-                                                    screenOptions={screenOptions}
-                                                >
-                                                    <Stack.Screen
-                                                        component={TabsNavigator}
-                                                        name={ScreenName.Tabs}
-                                                    />
-                                                    <Stack.Group screenOptions={modalScreenOptions}>
+                            <WordsBundleProvider>
+                                <EvaluationsProvider>
+                                    <WordsMLStatesProvider>
+                                        <WordsHeuristicProvider>
+                                            <WordsWithDetailsProvider>
+                                                <BottomSheetModalProvider>
+                                                    <Stack.Navigator
+                                                        id="AppStackNavigator"
+                                                        screenOptions={screenOptions}
+                                                    >
                                                         <Stack.Screen
-                                                            component={SettingsScreen}
-                                                            name={ScreenName.Settings}
+                                                            component={TabsNavigator}
+                                                            name={ScreenName.Tabs}
                                                         />
-                                                    </Stack.Group>
-                                                    <Stack.Screen
-                                                        component={SessionScreen}
-                                                        name={ScreenName.Session}
-                                                        options={{
-                                                            navigationBarColor: colors.background,
-                                                        }}
-                                                    />
-                                                    <Stack.Group screenOptions={modalScreenOptions}>
+                                                        <Stack.Group
+                                                            screenOptions={modalScreenOptions}
+                                                        >
+                                                            <Stack.Screen
+                                                                component={SettingsScreen}
+                                                                name={ScreenName.Settings}
+                                                            />
+                                                        </Stack.Group>
                                                         <Stack.Screen
-                                                            component={FlashcardsScreen}
-                                                            name={ScreenName.Flashcards}
+                                                            component={SessionScreen}
+                                                            name={ScreenName.Session}
+                                                            options={{
+                                                                navigationBarColor:
+                                                                    colors.background,
+                                                            }}
                                                         />
-                                                    </Stack.Group>
-                                                </Stack.Navigator>
-                                            </BottomSheetModalProvider>
-                                        </WordsWithDetailsProvider>
-                                    </WordsHeuristicProvider>
-                                </WordsMLStatesProvider>
-                            </EvaluationsProvider>
+                                                        <Stack.Group
+                                                            screenOptions={modalScreenOptions}
+                                                        >
+                                                            <Stack.Screen
+                                                                component={FlashcardsScreen}
+                                                                name={ScreenName.Flashcards}
+                                                            />
+                                                        </Stack.Group>
+                                                    </Stack.Navigator>
+                                                </BottomSheetModalProvider>
+                                            </WordsWithDetailsProvider>
+                                        </WordsHeuristicProvider>
+                                    </WordsMLStatesProvider>
+                                </EvaluationsProvider>
+                            </WordsBundleProvider>
                         </WordsProvider>
                     </StatisticsProvider>
                 </SuggestionsProvider>

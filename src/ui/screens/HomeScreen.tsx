@@ -26,6 +26,7 @@ import {
     useSuggestions,
     useUserPreferences,
     useWords,
+    useWordsBundle,
 } from '../../store';
 import { trackEvent } from '../../utils/analytics';
 import { checkUpdates } from '../../utils/checkUpdates';
@@ -61,6 +62,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     const sessions = useSessions();
     const suggestions = useSuggestions();
     const evaluations = useEvaluations();
+    const bundles = useWordsBundle();
     const [refreshing, setRefreshing] = useState(false);
     const { onScroll, style } = useDynamicStatusBar(100, 0.5);
     const insets = useSafeAreaInsets();
@@ -98,6 +100,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 sessions.syncSessions(),
                 mainLang !== translationLang ? suggestions.syncSuggestions() : Promise.resolve(),
                 evaluations.syncEvaluations(),
+                bundles.syncBundles(),
             ]);
         } finally {
             await auth.getSession();

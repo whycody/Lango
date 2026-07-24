@@ -7,7 +7,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
-import { useLanguage, useStatistics } from '../../store';
+import { useLanguage, useStatistics, useWordsBundle } from '../../store';
 import { Streak } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../utils/streakUtils';
@@ -23,7 +23,10 @@ export const BundlesScreen = () => {
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
     const { studyDaysList } = useStatistics();
+    const bundles = useWordsBundle();
     const styles = getStyles(colors, insets);
+
+    const [refreshing, setRefreshing] = useState(false);
 
     const [streak, setStreak] = useState<Streak>({
         active: false,
@@ -65,6 +68,15 @@ export const BundlesScreen = () => {
         // TODO: navigate to join bundle flow
     }, []);
 
+    const onRefresh = useCallback(async () => {
+        try {
+            setRefreshing(true);
+            await bundles.syncBundles();
+        } finally {
+            setRefreshing(false);
+        }
+    }, [bundles]);
+
     return (
         <>
             <BottomGradient />
@@ -80,8 +92,9 @@ export const BundlesScreen = () => {
                 refreshControl={
                     <RefreshControl
                         progressViewOffset={50}
-                        refreshing={false}
+                        refreshing={refreshing}
                         tintColor={colors.text}
+                        onRefresh={onRefresh}
                     />
                 }
             >

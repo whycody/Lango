@@ -7,6 +7,7 @@ export * from './StatisticsContext';
 export * from './SuggestionsContext';
 export * from './UserPreferencesContext';
 export * from './UserStorageContext';
+export * from './WordsBundleContext';
 export * from './WordsContext';
 export * from './WordsHeuristicStatesContext';
 export * from './WordsMLStatesContext';

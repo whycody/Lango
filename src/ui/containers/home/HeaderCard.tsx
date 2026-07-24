@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { AppState, Pressable, StyleSheet, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AppState, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +21,7 @@ import { useWordsMLStatesContext } from '../../../store/WordsMLStatesContext';
 import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
-import { ActionButton, CustomText, SquareFlag } from '../../components';
+import { ActionButton, CustomText, ScreenHeader } from '../../components';
 import { FlashcardClassBadges } from '../../components/home/FlashcardClassBadges';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
 import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
@@ -145,31 +144,14 @@ export const HeaderCard: FC<HeaderCardProps> = ({
         <View style={styles.root}>
             <StartSessionBottomSheet onSessionStart={handleSessionStart} />
             <LanguageBottomSheet sheetName={HOME_LANGUAGE_SHEET_NAME} />
-            <View style={styles.container}>
-                <CustomText style={styles.mainText} weight={'Bold'}>
-                    {expo.name}
-                </CustomText>
-                <MaterialCommunityIcons
-                    name={'fire'}
-                    size={32}
-                    color={
-                        streak.active ? (isGoal ? colors.yellow : colors.red) : colors.cardAccent300
-                    }
-                />
-                <CustomText
-                    weight={'Bold'}
-                    style={[
-                        styles.streakText,
-                        isGoal && { color: colors.yellow },
-                        !streak.active && styles.inactiveStreak,
-                    ]}
-                >
-                    {streak.numberOfDays.toString()}
-                </CustomText>
-                <Pressable style={styles.flag} onPress={handleLanguageSheetOpen}>
-                    <SquareFlag languageCode={mainLang} size={24} />
-                </Pressable>
-            </View>
+            <ScreenHeader
+                mainLang={mainLang}
+                streakActive={streak.active}
+                streakIsGoal={isGoal}
+                streakNumberOfDays={streak.numberOfDays}
+                title={expo.name}
+                onFlagPress={handleLanguageSheetOpen}
+            />
 
             <ProgressBar
                 animatedValue={lastWellKnownWords || 0.000001}
@@ -200,28 +182,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
         actionButton: {
             marginTop: 18,
         },
-        container: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
         descText: {
             color: colors.white,
             fontSize: 14,
             lineHeight: 22,
             marginTop: 12,
             opacity: 0.8,
-        },
-        flag: {
-            paddingLeft: 5,
-            paddingVertical: 5,
-        },
-        inactiveStreak: {
-            color: colors.cardAccent300,
-        },
-        mainText: {
-            color: colors.white,
-            flex: 1,
-            fontSize: 26,
         },
         progressBar: {
             backgroundColor: colors.cardAccent300,
@@ -232,10 +198,5 @@ const getStyles = (colors: CustomTheme['colors']) =>
         root: {
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingTop: MARGIN_VERTICAL,
-        },
-        streakText: {
-            color: colors.white,
-            fontSize: 18,
-            marginRight: 15,
         },
     });

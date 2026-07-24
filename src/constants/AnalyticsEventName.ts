@@ -63,7 +63,7 @@ export type AnalyticsEventPayloadMap = {
     };
     home_refresh?: undefined;
     language_sheet_open?: {
-        source: 'main_screen' | 'library_screen' | 'settings_screen';
+        source: 'main_screen' | 'library_screen' | 'settings_screen' | 'bundles_screen';
         type: 'main' | 'translation' | 'app';
     };
     leave_session_sheet_open?: undefined;

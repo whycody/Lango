@@ -11,6 +11,7 @@ import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { spacing } from '../constants/margins';
 import { useHaptics } from '../hooks';
 import { CustomText } from '../ui/components';
+import { BundlesScreen } from '../ui/screens';
 import { HomeScreen } from '../ui/screens/HomeScreen';
 import { LibraryScreen } from '../ui/screens/LibraryScreen';
 import { HandleFlashcardBottomSheet } from '../ui/sheets';
@@ -23,6 +24,7 @@ export type TabsParamList = {
     Add: undefined;
     Home: undefined;
     Library: undefined;
+    Bundles: undefined;
 };
 
 const TABS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'tabs-handle-flashcard-bottom-sheet';
@@ -43,6 +45,17 @@ const TabsNavigator = () => {
 
     const renderTabIcon = (route: TabRouteProp, focused: boolean, color: string) => {
         const iconSize = 26;
+
+        if (route.name === 'Bundles') {
+            return (
+                <MaterialCommunityIcons
+                    color={focused ? colors.white : color}
+                    name="folder-open"
+                    size={iconSize}
+                    style={!focused ? { opacity: 0.6 } : undefined}
+                />
+            );
+        }
 
         if (route.name === 'Home') {
             return (
@@ -78,7 +91,7 @@ const TabsNavigator = () => {
             style={[styles.tabLabel, { color: colors.white }, !focused && styles.tabLabelInactive]}
             weight={focused ? 'Bold' : 'Regular'}
         >
-            {t(route.name.toLowerCase())}
+            {route.name === 'Bundles' ? t('bundles.title') : t(route.name.toLowerCase())}
         </CustomText>
     );
 
@@ -128,6 +141,12 @@ const TabsNavigator = () => {
                     listeners={{
                         tabPress: () => trackEvent(AnalyticsEventName.NAVIGATE_HOME),
                     }}
+                />
+
+                <Tab.Screen
+                    component={BundlesScreen}
+                    name="Bundles"
+                    options={{ headerShown: false }}
                 />
 
                 <Tab.Screen

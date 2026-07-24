@@ -308,5 +308,10 @@
         "goalReached5": "You did it! Your streak has just climbed to {{currentGoal}} 🚀",
         "goalReached6": "That's already {{currentGoal}} days of regular learning. The next goal is {{nextGoal}} days 💡",
         "goalReached7": "New level unlocked - {{currentGoal}} days of learning in a row 🔥 Next stop: {{nextGoal}} days"
+    },
+    "bundles": {
+        "title": "Bundles",
+        "desc": "Create your own word bundles and learn exactly what you need.",
+        "add_new": "Add new bundle +"
     }
 }

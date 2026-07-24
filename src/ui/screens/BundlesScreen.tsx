@@ -1,0 +1,106 @@
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { AppState, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { useTheme } from '@react-navigation/native';
+import { t } from 'i18next';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { useLanguage, useStatistics } from '../../store';
+import { Streak } from '../../types';
+import { trackEvent } from '../../utils/analytics';
+import { getCurrentStreak, getPrevMilestone } from '../../utils/streakUtils';
+import { ActionButton, BottomGradient, CustomText, ScreenHeader } from '../components';
+import { LanguageBottomSheet } from '../sheets';
+import { CustomTheme } from '../Theme';
+
+const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';
+
+export const BundlesScreen = () => {
+    const insets = useSafeAreaInsets();
+    const { colors } = useTheme() as CustomTheme;
+    const { mainLang } = useLanguage();
+    const { studyDaysList } = useStatistics();
+    const styles = getStyles(colors, insets);
+
+    const [streak, setStreak] = useState<Streak>({
+        active: false,
+        numberOfDays: 0,
+    });
+
+    useLayoutEffect(() => {
+        setStreak(getCurrentStreak(studyDaysList));
+    }, [studyDaysList]);
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', state => {
+            if (state !== 'active') return;
+            setStreak(getCurrentStreak(studyDaysList));
+        });
+
+        return () => subscription.remove();
+    }, [studyDaysList]);
+
+    const isGoal = streak.active && streak.numberOfDays === getPrevMilestone(streak.numberOfDays);
+
+    const handleLanguageSheetOpen = useCallback(() => {
+        trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
+            source: 'bundles_screen',
+            type: 'main',
+        });
+        TrueSheet.present(BUNDLES_LANGUAGE_SHEET_NAME);
+    }, []);
+
+    return (
+        <>
+            <BottomGradient />
+            <LanguageBottomSheet sheetName={BUNDLES_LANGUAGE_SHEET_NAME} />
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={styles.container}
+                refreshControl={
+                    <RefreshControl
+                        progressViewOffset={50}
+                        refreshing={false}
+                        tintColor={colors.text}
+                    />
+                }
+            >
+                <View style={styles.spacer} />
+                <ScreenHeader
+                    mainLang={mainLang}
+                    streakActive={streak.active}
+                    streakIsGoal={isGoal}
+                    streakNumberOfDays={streak.numberOfDays}
+                    title={t('bundles.title')}
+                    onFlagPress={handleLanguageSheetOpen}
+                />\
+                
+                <CustomText style={styles.descText}>{t('bundles.desc')}</CustomText>
+                <ActionButton primary label={t('bundles.add_new')} style={styles.actionButton} />
+            </ScrollView>
+        </>
+    );
+};
+
+const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
+    StyleSheet.create({
+        actionButton: {
+            marginTop: MARGIN_VERTICAL,
+        },
+        container: {
+            flex: 1,
+            marginHorizontal: MARGIN_HORIZONTAL,
+        },
+        descText: {
+            color: colors.white,
+            fontSize: 14,
+            lineHeight: 22,
+            marginTop: 12,
+            opacity: 0.8,
+        },
+        spacer: {
+            height: insets.top + MARGIN_VERTICAL,
+        },
+    });

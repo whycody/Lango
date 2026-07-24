@@ -308,5 +308,10 @@
         "goalReached5": "¡Lo lograste! Tu racha acaba de llegar a {{currentGoal}} 🚀",
         "goalReached6": "Ya son {{currentGoal}} días de aprendizaje regular. El próximo objetivo es {{nextGoal}} días 💡",
         "goalReached7": "Nuevo nivel desbloqueado - {{currentGoal}} días de aprendizaje seguidos 🔥 Próxima parada: {{nextGoal}} días"
+    },
+    "bundles": {
+        "title": "Conjuntos",
+        "desc": "Crea tus propios conjuntos de palabras y aprende exactamente lo que necesitas.",
+        "add_new": "Añadir nuevo conjunto +"
     }
 }

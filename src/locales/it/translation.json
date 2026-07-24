@@ -308,5 +308,10 @@
         "goalReached5": "Ce l'hai fatta! La tua serie è appena arrivata a {{currentGoal}} 🚀",
         "goalReached6": "Sono già {{currentGoal}} giorni di studio regolare. Il prossimo obiettivo è {{nextGoal}} giorni 💡",
         "goalReached7": "Nuovo livello sbloccato - {{currentGoal}} giorni consecutivi di studio 🔥 Prossima fermata: {{nextGoal}} giorni"
+    },
+    "bundles": {
+        "title": "Set",
+        "desc": "Crea i tuoi set di parole personalizzati e impara esattamente ciò di cui hai bisogno.",
+        "add_new": "Aggiungi nuovo set +"
     }
 }

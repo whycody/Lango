@@ -311,7 +311,7 @@
     },
     "bundles": {
         "title": "Bundles",
-        "desc": "Create your own word bundles and learn exactly what you need.",
+        "desc": "Create your own word bundles tailored to whatever you're learning right now, and keep your learning organized 📚",
         "add_new": "Add new bundle +"
     }
 }

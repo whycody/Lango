@@ -1,6 +1,7 @@
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { runMigrations } from '../database/migrations/migrations';
+import { useBundleMemberRepository } from '../hooks/repo/useBundleMemberRepository';
 import { useEvaluationsRepository } from '../hooks/repo/useEvaluationsRepository';
 import { useSessionsRepository } from '../hooks/repo/useSessionsRepository';
 import { useSuggestionsRepository } from '../hooks/repo/useSuggestionsRepository';
@@ -38,6 +39,8 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
     } = useWordsHeuristicStatesRepository();
     const { createTables: createWordsBundlesTables, getAllWordsBundles } =
         useWordsBundleRepository();
+    const { createTables: createBundleMembersTables, getAllBundleMembers } =
+        useBundleMemberRepository();
 
     const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
     const [loading, setLoading] = useState(true);
@@ -52,6 +55,7 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 createWordsMLStatesTables(),
                 createWordsHeuristicStatesTables(),
                 createWordsBundlesTables(),
+                createBundleMembersTables(),
             ]);
 
             await runMigrations(user!.userId);
@@ -64,6 +68,7 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 wordsMLStates,
                 wordsHeuristicStates,
                 wordsBundles,
+                bundleMembers,
             ] = await Promise.all([
                 getAllSessions(),
                 getAllWords(),
@@ -72,9 +77,11 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 getAllWordsMLStates(),
                 getAllWordsHeuristicStates(),
                 getAllWordsBundles(),
+                getAllBundleMembers(),
             ]);
 
             setInitialLoad({
+                bundleMembers,
                 evaluations,
                 sessions,
                 suggestions,

@@ -1,3 +1,4 @@
+export * from './useBundleMemberRepository';
 export * from './useEvaluationsRepository';
 export * from './useSessionsRepository';
 export * from './useSuggestionsRepository';

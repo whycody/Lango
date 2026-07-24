@@ -1,4 +1,5 @@
 import {
+    BundleMember,
     Evaluation,
     Session,
     Suggestion,
@@ -9,6 +10,7 @@ import {
 } from '..';
 
 export type InitialLoad = {
+    bundleMembers: BundleMember[];
     evaluations: Evaluation[];
     sessions: Session[];
     suggestions: Suggestion[];

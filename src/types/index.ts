@@ -1,5 +1,6 @@
 // core
 export * from './core/app-config';
+export * from './core/BundleMember';
 export * from './core/Evaluation';
 export * from './core/example-flashcard';
 export * from './core/Language';
@@ -8,8 +9,8 @@ export * from './core/Suggestion';
 export * from './core/User';
 export * from './core/user-summary';
 export * from './core/Word';
-export * from './core/WordSet';
 export * from './core/WordsBundle';
+export * from './core/WordSet';
 
 // states
 export * from './states/WordHeuristicState';

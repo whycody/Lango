@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { AppState, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { AppState, FlatList, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
@@ -8,10 +8,12 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useLanguage, useStatistics, useWordsBundle } from '../../store';
+import { EnrichedWordsBundle } from '../../store/WordsBundleContext';
 import { Streak } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../utils/streakUtils';
 import { ActionButton, BottomGradient, CustomText, ScreenHeader } from '../components';
+import { BundleItem } from '../components/bundles';
 import { AddBundleBottomSheet, LanguageBottomSheet } from '../sheets';
 import { CustomTheme } from '../Theme';
 
@@ -68,6 +70,14 @@ export const BundlesScreen = () => {
         // TODO: navigate to join bundle flow
     }, []);
 
+    const handleBundlePress = useCallback((_bundle: EnrichedWordsBundle) => {
+        // TODO: navigate to bundle details
+    }, []);
+
+    const renderBundleItem = ({ index, item }: { index: number; item: EnrichedWordsBundle }) => (
+        <BundleItem key={item.id} bundle={item} index={index} onPress={handleBundlePress} />
+    );
+
     const onRefresh = useCallback(async () => {
         try {
             setRefreshing(true);
@@ -114,6 +124,13 @@ export const BundlesScreen = () => {
                     style={styles.actionButton}
                     onPress={handleAddNewPress}
                 />
+                <FlatList
+                    ListFooterComponent={<View style={styles.footer} />}
+                    contentContainerStyle={styles.list}
+                    data={bundles.langBundles}
+                    renderItem={renderBundleItem}
+                    scrollEnabled={false}
+                />
             </ScrollView>
         </>
     );
@@ -134,6 +151,12 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             lineHeight: 22,
             marginTop: 12,
             opacity: 0.8,
+        },
+        footer: {
+            height: 50,
+        },
+        list: {
+            marginTop: MARGIN_VERTICAL,
         },
         spacer: {
             height: insets.top + MARGIN_VERTICAL,

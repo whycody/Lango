@@ -159,7 +159,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
         await tryToRefreshData();
     }, [words, sessions, suggestions, evaluations, auth, mainLang, translationLang]);
 
-    const navigateToFlashcardsScreen = (masteryFilter: MasteryFilter) => {
+    const navigateToFlashcardsScreen = (masteryFilter?: MasteryFilter) => {
         navigation.navigate(ScreenName.Flashcards, { masteryFilter });
     };
 

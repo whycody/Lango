@@ -316,5 +316,12 @@
         "add_new_desc": "Możesz stworzyć nowy zestaw słówek albo dołączyć do istniejącego, wpisując kod, który udostępnił Ci jego twórca.",
         "create_new": "Stwórz nowy zestaw +",
         "join_with_code": "Dołącz do zestawu za pomocą kodu"
+    },
+    "bundle_details": {
+        "members": "Członkowie",
+        "no_members": "Brak członków",
+        "show_in_main_collection": "Wyświetlaj w głównej kolekcji",
+        "show_in_main_collection_desc": "Dołącz słówka z tego zestawu do głównej listy fiszek",
+        "start_session": "Rozpocznij naukę"
     }
 }

@@ -14,10 +14,14 @@ import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { EvaluationGrade } from '../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { SessionMode } from '../../constants/Session';
-import { FlashcardSide, SessionLength } from '../../constants/UserPreferences';
+import { FlashcardSide } from '../../constants/UserPreferences';
 import { WordSource } from '../../constants/Word';
 import { useHaptics, useWordSet } from '../../hooks';
-import { RootStackParamList, ScreenName } from '../../navigation/navigationTypes';
+import {
+    RootStackParamList,
+    ScreenName,
+    SessionScreenParams,
+} from '../../navigation/navigationTypes';
 import {
     useAuth,
     useDebouncedSyncSuggestions,
@@ -46,12 +50,6 @@ import { StreakBottomSheet } from '../sheets/StreakBottomSheet';
 import { WordSuggestionBottomSheet } from '../sheets/WordSuggestionBottomSheet';
 import { CustomTheme } from '../Theme';
 
-export type SessionScreenParams = {
-    flashcardSide: FlashcardSide;
-    length: SessionLength;
-    mode: SessionMode;
-};
-
 const SESSION_HANDLE_FLASHCARD_BOTTOM_SHEET = 'session-handle-flashcard-bottom-sheet';
 const SESSION_HIT_FLASHCARD_BOTTOM_SHEET = 'session-hit-flashcard-bottom-sheet';
 const SESSION_LEAVE_SESSION_BOTTOM_SHEET = 'session-leave-session-bottom-sheet';
@@ -73,6 +71,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     const length = params?.length || 1;
     const mode = params?.mode || SessionMode.STUDY;
     const flashcardSide = params?.flashcardSide || FlashcardSide.WORD;
+    const bundleId = params?.bundleId;
 
     const sessionsContext = useSessions();
     const evaluationsContext = useEvaluations();
@@ -88,7 +87,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
     const isInitial = useRef(true);
 
     const { updateUserFinishedOnboarding, user } = useAuth();
-    const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode);
+    const wordSet = useWordSet(length * (!user?.finishedOnboarding ? 5 : 10), mode, bundleId);
 
     const [version, setVersion] = useState(wordSet.version);
     const [model, setModel] = useState(wordSet.model);

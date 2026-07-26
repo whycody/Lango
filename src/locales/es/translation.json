@@ -317,5 +317,12 @@
         "add_new_desc": "Puedes crear un nuevo conjunto o unirte a uno existente introduciendo el código que te compartió su creador.",
         "create_new": "Crear un nuevo conjunto +",
         "join_with_code": "Unirse a un conjunto con un código"
+    },
+    "bundle_details": {
+        "members": "Miembros",
+        "no_members": "Aún no hay miembros",
+        "show_in_main_collection": "Mostrar en la colección principal",
+        "show_in_main_collection_desc": "Incluye las palabras de este conjunto en tu lista principal de tarjetas",
+        "start_session": "Comenzar a aprender"
     }
 }

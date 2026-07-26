@@ -317,5 +317,12 @@
         "add_new_desc": "Puoi creare un nuovo set oppure unirti a uno esistente inserendo il codice condiviso dal suo creatore.",
         "create_new": "Crea un nuovo set +",
         "join_with_code": "Unisciti a un set con un codice"
+    },
+    "bundle_details": {
+        "members": "Membri",
+        "no_members": "Ancora nessun membro",
+        "show_in_main_collection": "Mostra nella collezione principale",
+        "show_in_main_collection_desc": "Includi le parole di questo set nella tua lista principale di flashcard",
+        "start_session": "Inizia a studiare"
     }
 }

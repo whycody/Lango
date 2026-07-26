@@ -317,5 +317,12 @@
         "add_new_desc": "You can create a new bundle or join an existing one by entering the code its creator shared with you.",
         "create_new": "Create a new bundle +",
         "join_with_code": "Join a bundle with a code"
+    },
+    "bundle_details": {
+        "members": "Members",
+        "no_members": "No members yet",
+        "show_in_main_collection": "Show in main collection",
+        "show_in_main_collection_desc": "Include this bundle's words in your main flashcards list",
+        "start_session": "Start learning"
     }
 }

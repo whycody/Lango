@@ -20,8 +20,9 @@ import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
+import { MAIN_COLLECTION, useWordsForBundle } from '../../hooks';
 import { RootStackParamList } from '../../navigation/navigationTypes';
-import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
+import { useUserPreferences, useWords } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
@@ -60,9 +61,9 @@ export const FlashcardsScreen = () => {
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
     const wordsContext = useWords();
-    const wordWithDetailsContext = useWordsWithDetails();
-    const numberOfWords = wordsContext.langWords.filter(word => !word.removed).length;
-    const langoWords = wordsContext.langWords.filter(
+    const mainCollectionWordsContext = useWordsForBundle(MAIN_COLLECTION);
+    const numberOfWords = mainCollectionWordsContext.words.filter(word => !word.removed).length;
+    const langoWords = mainCollectionWordsContext.words.filter(
         word => word.source == WordSource.LANGO && !word.removed,
     ).length;
     const { flashcardsSortingMethod } = useUserPreferences();
@@ -99,10 +100,10 @@ export const FlashcardsScreen = () => {
 
     const allFlashcards = useMemo(
         () =>
-            wordWithDetailsContext.langWordsWithDetails.filter(
+            mainCollectionWordsContext.wordsWithDetails.filter(
                 (word: WordWithDetails) => !word.removed,
             ),
-        [wordWithDetailsContext.langWordsWithDetails],
+        [mainCollectionWordsContext.wordsWithDetails],
     );
 
     const matchesSearchQuery = useCallback(
@@ -136,7 +137,7 @@ export const FlashcardsScreen = () => {
 
     const flashcards = useMemo(
         () =>
-            wordWithDetailsContext.langWordsWithDetails
+            mainCollectionWordsContext.wordsWithDetails
                 .filter((word: WordWithDetails) => {
                     if (word.removed) return false;
                     if (searchingMode) return matchesSearchQuery(word);
@@ -148,7 +149,7 @@ export const FlashcardsScreen = () => {
             flashcardsSortingMethod,
             matchesSearchQuery,
             matchesMasteryFilter,
-            wordWithDetailsContext.langWordsWithDetails,
+            mainCollectionWordsContext.wordsWithDetails,
         ],
     );
 

@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { AppState, FlatList, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { t } from 'i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { RootStackParamList, ScreenName } from '../../navigation/navigationTypes';
 import { useLanguage, useStatistics, useWordsBundle } from '../../store';
 import { EnrichedWordsBundle } from '../../store/WordsBundleContext';
 import { Streak } from '../../types';
@@ -21,6 +23,7 @@ const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';
 const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
 
 export const BundlesScreen = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const insets = useSafeAreaInsets();
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
@@ -70,9 +73,12 @@ export const BundlesScreen = () => {
         // TODO: navigate to join bundle flow
     }, []);
 
-    const handleBundlePress = useCallback((_bundle: EnrichedWordsBundle) => {
-        // TODO: navigate to bundle details
-    }, []);
+    const handleBundlePress = useCallback(
+        (bundle: EnrichedWordsBundle) => {
+            navigation.navigate(ScreenName.BundleDetails, { bundleId: bundle.id });
+        },
+        [navigation],
+    );
 
     const renderBundleItem = ({ index, item }: { index: number; item: EnrichedWordsBundle }) => (
         <BundleItem key={item.id} bundle={item} index={index} onPress={handleBundlePress} />

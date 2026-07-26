@@ -7,9 +7,9 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LibraryItems } from '../../constants/Library';
 import { palette } from '../../constants/palette';
-import { useDynamicStatusBar } from '../../hooks';
+import { MAIN_COLLECTION, useDynamicStatusBar, useWordsForBundle } from '../../hooks';
 import { ScreenName } from '../../navigation/navigationTypes';
-import { useAuth, useLanguage, useWords } from '../../store';
+import { useAuth, useLanguage } from '../../store';
 import { LibraryNavProp } from '../../types';
 import { LibraryItem as LibraryItemType } from '../../types/utils/LibraryItem';
 import { trackEvent } from '../../utils/analytics';
@@ -22,7 +22,7 @@ const LIBRARY_LANGUAGE_SHEET_NAME = 'library-language-sheet';
 
 export const LibraryScreen = () => {
     const { t } = useTranslation();
-    const { langWords } = useWords();
+    const { words: mainCollectionWords } = useWordsForBundle(MAIN_COLLECTION);
     const navigation = useNavigation<LibraryNavProp>();
     const langContext = useLanguage();
 
@@ -36,7 +36,7 @@ export const LibraryScreen = () => {
     )[0].languageName;
 
     const getMyWordsDesc = () => {
-        const langWordsCount = langWords.filter(w => !w.removed).length;
+        const langWordsCount = mainCollectionWords.filter(w => !w.removed).length;
         switch (langWordsCount) {
             case 0:
                 return t('words_desc_empty');

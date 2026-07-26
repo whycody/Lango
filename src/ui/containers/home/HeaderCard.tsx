@@ -10,14 +10,8 @@ import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
-import {
-    useLanguage,
-    useStatistics,
-    useSuggestions,
-    useWords,
-    useWordsHeuristicStates,
-} from '../../../store';
-import { useWordsMLStatesContext } from '../../../store/WordsMLStatesContext';
+import { MAIN_COLLECTION, useWordsForBundle } from '../../../hooks';
+import { useLanguage, useStatistics, useSuggestions } from '../../../store';
 import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
@@ -34,7 +28,7 @@ type HeaderCardProps = {
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ): void;
-    navigateToFlashcardsScreen(masteryFilter: MasteryFilter): void;
+    navigateToFlashcardsScreen(masteryFilter?: MasteryFilter): void;
 };
 
 const HOME_LANGUAGE_SHEET_NAME = 'home-language-sheet';
@@ -47,9 +41,11 @@ export const HeaderCard: FC<HeaderCardProps> = ({
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
     const { langSuggestions } = useSuggestions();
-    const { langWords } = useWords();
-    const { langWordsHeuristicStates } = useWordsHeuristicStates();
-    const { langWordsMLStates } = useWordsMLStatesContext();
+    const {
+        words: mainCollectionWords,
+        wordsHeuristicStates: mainCollectionWordsHeuristicStates,
+        wordsMLStates: mainCollectionWordsMLStates,
+    } = useWordsForBundle(MAIN_COLLECTION);
     const { studyDaysList } = useStatistics();
 
     const [streak, setStreak] = useState<Streak>({
@@ -61,16 +57,16 @@ export const HeaderCard: FC<HeaderCardProps> = ({
 
     const last50Words = useMemo(
         () =>
-            [...langWords]
+            [...mainCollectionWords]
                 .sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
                 .slice(0, 50)
                 .map(word => word.id),
-        [langWords],
+        [mainCollectionWords],
     );
 
-    const langWordsHeuristicStatesFiltered = useMemo(
-        () => langWordsHeuristicStates.filter(word => last50Words.includes(word.wordId)),
-        [langWordsHeuristicStates, last50Words],
+    const mainCollectionWordsHeuristicStatesFiltered = useMemo(
+        () => mainCollectionWordsHeuristicStates.filter(word => last50Words.includes(word.wordId)),
+        [mainCollectionWordsHeuristicStates, last50Words],
     );
 
     const lastWellKnownWords = useMemo(() => {
@@ -78,18 +74,18 @@ export const HeaderCard: FC<HeaderCardProps> = ({
         const now = new Date();
         return (
             Math.round(
-                (langWordsHeuristicStatesFiltered.filter(
+                (mainCollectionWordsHeuristicStatesFiltered.filter(
                     word => word.studyCount > 2 && new Date(word.nextReviewDate) > now,
                 ).length /
                     last50Words.length) *
                     100,
             ) / 100
         );
-    }, [langWordsHeuristicStatesFiltered, last50Words]);
+    }, [mainCollectionWordsHeuristicStatesFiltered, last50Words]);
 
     const wellKnownWords = useMemo(
-        () => (langWordsMLStates ?? []).filter(w => w.gradeThreeProb >= 0.6).length,
-        [langWordsMLStates],
+        () => (mainCollectionWordsMLStates ?? []).filter(w => w.gradeThreeProb >= 0.6).length,
+        [mainCollectionWordsMLStates],
     );
 
     useLayoutEffect(() => {
@@ -121,14 +117,14 @@ export const HeaderCard: FC<HeaderCardProps> = ({
     const reportMessage = useMemo(() => {
         const percentage = Math.floor(lastWellKnownWords * 100);
 
-        if (langWordsHeuristicStates.length < 5) return t('report1');
+        if (mainCollectionWordsHeuristicStates.length < 5) return t('report1');
         if (wellKnownWords <= 10 && lastWellKnownWords < 0.1) return t('report2');
         if (wellKnownWords > 10 && lastWellKnownWords < 0.1)
             return t('report3', { wellKnownWords });
         if (lastWellKnownWords >= 0.1 && wellKnownWords <= 10) return t('report4', { percentage });
         if (lastWellKnownWords >= 0.9) return t('report5', { percentage, wellKnownWords });
         return t('report6', { percentage, wellKnownWords });
-    }, [lastWellKnownWords, wellKnownWords, langWordsHeuristicStates.length, t]);
+    }, [lastWellKnownWords, wellKnownWords, mainCollectionWordsHeuristicStates.length, t]);
 
     const handleLanguageSheetOpen = useCallback(() => {
         trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
@@ -161,12 +157,14 @@ export const HeaderCard: FC<HeaderCardProps> = ({
             <CustomText style={styles.descText}>{reportMessage}</CustomText>
 
             <FlashcardClassBadges
-                mlStates={langWordsMLStates ?? []}
+                mlStates={mainCollectionWordsMLStates ?? []}
                 onBadgePress={navigateToFlashcardsScreen}
+                onClassPress={navigateToFlashcardsScreen}
+                onReviewWordsPress={navigateToFlashcardsScreen}
             />
 
             <ActionButton
-                active={langWords.length + langSuggestions.length >= 5}
+                active={mainCollectionWords.length + langSuggestions.length >= 5}
                 icon={'play'}
                 label={t('startLearning')}
                 primary={true}

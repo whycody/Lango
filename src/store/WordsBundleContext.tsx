@@ -40,6 +40,7 @@ interface WordsBundleContextProps {
         visibility: WordsBundle['visibility'],
     ) => WordsBundle;
     editBundle: (updatedBundle: Partial<WordsBundle> & { id: string }) => void;
+    editBundleMember: (updatedMember: Partial<BundleMember> & { id: string }) => void;
     generateInvitationCode: (
         bundleId: string,
         role: Extract<BundleMemberRole, 'editor' | 'viewer'>,
@@ -61,6 +62,7 @@ const WordsBundleContext = createContext<WordsBundleContextProps>({
     },
     deleteBundlePhysically: () => Promise.resolve(),
     editBundle: () => {},
+    editBundleMember: () => {},
     generateInvitationCode: () => Promise.resolve(null),
     joinWithCode: () => Promise.resolve(null),
     langBundles: [],
@@ -81,7 +83,8 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
 
     const { deleteWordsBundle, getAllWordsBundles, saveWordsBundles, updateWordsBundle } =
         useWordsBundleRepository();
-    const { getAllBundleMembers, saveBundleMembers } = useBundleMemberRepository();
+    const { getAllBundleMembers, saveBundleMembers, updateBundleMember } =
+        useBundleMemberRepository();
 
     const syncingBundles = useRef(false);
     const syncingMembers = useRef(false);
@@ -167,6 +170,22 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         setBundles(updatedBundles);
         updateWordsBundle(changed);
         syncWordsBundles(updatedBundles);
+    };
+
+    const editBundleMember = (updatedMember: Partial<BundleMember> & { id: string }) => {
+        const locallyUpdatedAt = getCurrentISO();
+
+        const updatedMembers = members.map(member =>
+            member.id === updatedMember.id
+                ? { ...member, ...updatedMember, locallyUpdatedAt, synced: false }
+                : member,
+        );
+
+        const changed = updatedMembers.find(member => member.id === updatedMember.id)!;
+
+        setMembers(updatedMembers);
+        updateBundleMember(changed);
+        syncBundleMembers(updatedMembers);
     };
 
     const deleteBundlePhysically = async (bundleId: string) => {
@@ -382,6 +401,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
                 createBundle,
                 deleteBundlePhysically,
                 editBundle,
+                editBundleMember,
                 generateInvitationCode,
                 joinWithCode,
                 langBundles,

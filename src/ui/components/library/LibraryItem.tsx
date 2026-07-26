@@ -59,12 +59,14 @@ export const LibraryItem = memo<LibraryItemProps>(
                     )}
                 </View>
                 {enabled !== undefined && (
-                    <Switch
-                        thumbColor={isIOS ? undefined : colors.white}
-                        trackColor={isIOS ? undefined : { true: colors.primary }}
-                        value={enabled}
-                        onValueChange={handlePress}
-                    />
+                    <View style={styles.switchContainer}>
+                        <Switch
+                            thumbColor={isIOS ? undefined : colors.white}
+                            trackColor={isIOS ? undefined : { true: colors.primary }}
+                            value={enabled}
+                            onValueChange={handlePress}
+                        />
+                    </View>
                 )}
             </Pressable>
         );
@@ -97,6 +99,9 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
             overflow: 'hidden',
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: 12,
+        },
+        switchContainer: {
+            justifyContent: 'center',
         },
         textContainer: {
             flex: 1,

@@ -17,11 +17,9 @@ import { useAuth } from '../store/AuthContext';
 import { useEvaluations } from '../store/EvaluationsContext';
 import { useSessions } from '../store/SessionsContext';
 import { useSuggestions } from '../store/SuggestionsContext';
-import { useWords } from '../store/WordsContext';
-import { useWordsHeuristicStates } from '../store/WordsHeuristicStatesContext';
-import { useWordsMLStatesContext } from '../store/WordsMLStatesContext';
 import { Session, WordSet, WordSetStrategy } from '../types';
 import { buildFallbackSet, buildOnboardingSet, enhanceWords } from '../utils/strategiesUtils';
+import { MAIN_COLLECTION, useWordsForBundle } from './useWordsForBundle';
 
 const STRATEGIES = {
     HEURISTIC: heuristicStrategy,
@@ -81,24 +79,28 @@ const getFallbackModelAndVersion = (
         : { model: SessionModel.HEURISTIC, version: SessionModelVersion.H1 };
 };
 
-export const useWordSet = (size: number, mode: SessionMode): WordSet => {
-    const { langWords } = useWords();
+export const useWordSet = (size: number, mode: SessionMode, bundleId?: string): WordSet => {
+    const {
+        words: scopedWords,
+        wordsHeuristicStates: scopedWordsHeuristicStates,
+        wordsMLStates: scopedWordsMLStates,
+    } = useWordsForBundle(bundleId ?? MAIN_COLLECTION);
     const { langSuggestions } = useSuggestions();
     const { evaluations } = useEvaluations();
-    const { langWordsMLStates } = useWordsMLStatesContext();
-    const { langWordsHeuristicStates } = useWordsHeuristicStates();
     const { sessions } = useSessions();
     const { user } = useAuth();
+
+    const suggestions = bundleId ? [] : langSuggestions;
 
     return useMemo(() => {
         const lastSessionModel = getLastSessionModel(sessions);
         const currentModel = user?.sessionModel || SessionModel.HYBRID;
-        const shouldUseFallback = langWords.length < size || !evaluations?.length;
+        const shouldUseFallback = scopedWords.length < size || !evaluations?.length;
 
         if (!user?.finishedOnboarding) {
             const fallbackMeta = getFallbackModelAndVersion(mode, currentModel, lastSessionModel);
-            const onboardingSet = buildOnboardingSet(size, langWords, langSuggestions);
-            const enhanced = enhanceWords(onboardingSet, langWordsMLStates ?? []);
+            const onboardingSet = buildOnboardingSet(size, scopedWords, suggestions);
+            const enhanced = enhanceWords(onboardingSet, scopedWordsMLStates ?? []);
 
             return {
                 model: fallbackMeta.model,
@@ -109,8 +111,8 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
 
         if (shouldUseFallback) {
             const fallbackMeta = getFallbackModelAndVersion(mode, currentModel, lastSessionModel);
-            const fallbackSet = buildFallbackSet(size, langWords, langSuggestions);
-            const enhanced = enhanceWords(fallbackSet, langWordsMLStates ?? []);
+            const fallbackSet = buildFallbackSet(size, scopedWords, suggestions);
+            const enhanced = enhanceWords(fallbackSet, scopedWordsMLStates ?? []);
 
             return {
                 model: fallbackMeta.model,
@@ -123,16 +125,16 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
 
         const strategy = strategyFactory(
             size,
-            langWords,
-            langSuggestions,
+            scopedWords,
+            suggestions,
             evaluations,
-            langWordsMLStates ?? [],
-            langWordsHeuristicStates,
+            scopedWordsMLStates ?? [],
+            scopedWordsHeuristicStates,
             lastSessionModel,
             user?.suggestionsInSession,
         );
 
-        const enhanced = enhanceWords(strategy.sessionWords, langWordsMLStates ?? []);
+        const enhanced = enhanceWords(strategy.sessionWords, scopedWordsMLStates ?? []);
 
         return {
             model: strategy.model,
@@ -141,11 +143,11 @@ export const useWordSet = (size: number, mode: SessionMode): WordSet => {
         };
     }, [
         user?.sessionModel,
-        langWords,
-        langSuggestions,
+        scopedWords,
+        suggestions,
         evaluations?.length ?? 0,
-        langWordsMLStates,
-        langWordsHeuristicStates,
+        scopedWordsMLStates,
+        scopedWordsHeuristicStates,
         sessions,
         size,
         mode,

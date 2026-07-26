@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
@@ -31,6 +32,10 @@ import { FlashcardClassBadges } from '../components/home';
 import { LibraryItem } from '../components/library';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../sheets/MasteryFilterBottomSheet';
 import { SortingMethodBottomSheet } from '../sheets/SortingMethodBottomSheet';
+import {
+    START_SESSION_BOTTOM_SHEET,
+    StartSessionBottomSheet,
+} from '../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../Theme';
 
 const BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET = 'bundle-details-mastery-filter-bottom-sheet';
@@ -135,11 +140,20 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     };
 
     const handleStartSessionPress = () => {
+        TrueSheet.present(START_SESSION_BOTTOM_SHEET);
+    };
+
+    const handleSessionStart = (
+        length: SessionLength,
+        mode: SessionMode,
+        flashcardSide: FlashcardSide,
+    ) => {
+        TrueSheet.dismissAll();
         navigation.navigate(ScreenName.Session, {
             bundleId,
-            flashcardSide: FlashcardSide.WORD,
-            length: SessionLength.MEDIUM,
-            mode: SessionMode.STUDY,
+            flashcardSide,
+            length,
+            mode,
         });
     };
 
@@ -271,6 +285,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     return (
         <View style={styles.root}>
             <View style={styles.topSpacer} />
+            <StartSessionBottomSheet onSessionStart={handleSessionStart} />
             <MasteryFilterBottomSheet
                 sheetName={BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET}
                 value={masteryFilter}

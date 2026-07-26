@@ -408,10 +408,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
 
     const endSession = () => {
         TrueSheet.dismissAll();
-        navigation.reset({
-            index: 0,
-            routes: [{ name: ScreenName.Tabs }],
-        });
+        navigation.goBack();
     };
 
     const startNewSession = () => {
@@ -442,10 +439,7 @@ export const SessionScreen = ({ navigation, route }: SessionScreenProps) => {
             length,
             mode,
         });
-        navigation.reset({
-            index: 0,
-            routes: [{ name: ScreenName.Tabs }],
-        });
+        navigation.goBack();
     };
 
     const getSuggestionUpdates = (updates: WordUpdate[]) =>

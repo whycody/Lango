@@ -256,7 +256,6 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         const bundleIdsToRemove = members
             .filter(
                 member =>
-                    member.userId === user?.userId &&
                     member.removed &&
                     localBundleIds.has(member.bundleId) &&
                     !removingBundleWords.current.has(member.bundleId),

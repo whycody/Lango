@@ -16,6 +16,7 @@ import { useBundleMemberRepository, useWordsBundleRepository } from '../hooks/re
 import { BundleJoinCode, BundleMember, BundleMemberRole, WordsBundle } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
 import {
+    applyUnauthorizedItems,
     findChangedItems,
     findLatestUpdatedAt,
     getUnsyncedItems,
@@ -90,9 +91,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         () =>
             bundles.map(bundle => ({
                 ...bundle,
-                membership: members.find(
-                    member => member.bundleId === bundle.id && member.userId === user?.userId,
-                ),
+                membership: members.find(member => member.bundleId === bundle.id),
             })),
         [bundles, members, user?.userId],
     );
@@ -270,12 +269,15 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             syncingMembers.current = true;
             const membersList = inputMembers ?? (await getAllBundleMembers());
             const unsyncedMembers = getUnsyncedItems<BundleMember>(membersList);
-            const { synced: serverUpdates } = await syncInBatches<BundleMember>(
+            const { synced, unauthorized } = await syncInBatches<BundleMember>(
                 unsyncedMembers,
                 membersChunk => bundleMembersApi.syncBundleMembersOnServer(membersChunk),
             );
 
-            const updatedMembers = updateLocalItems<BundleMember>(membersList, serverUpdates);
+            const updatedMembers = applyUnauthorizedItems<BundleMember>(
+                updateLocalItems<BundleMember>(membersList, synced),
+                unauthorized,
+            );
             const latestUpdatedAt = findLatestUpdatedAt<BundleMember>(updatedMembers);
             const result = await bundleMembersApi.fetchUpdatedBundleMembers(latestUpdatedAt);
             const serverMembers = result.kind === 'ok' ? result.data : [];
@@ -351,12 +353,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
 
     useEffect(() => {
         const removedBundleIds = members
-            .filter(
-                member =>
-                    member.userId === user?.userId &&
-                    member.removed &&
-                    !removingBundles.current.has(member.bundleId),
-            )
+            .filter(member => member.removed && !removingBundles.current.has(member.bundleId))
             .map(member => member.bundleId);
 
         if (removedBundleIds.length === 0) return;

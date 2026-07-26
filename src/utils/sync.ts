@@ -95,6 +95,24 @@ export function updateLocalItems<
     });
 }
 
+export function applyUnauthorizedItems<T extends SyncMetadata & { id: string }>(
+    items: T[],
+    unauthorizedItems: T[],
+): T[] {
+    const unauthorizedMap = new Map(unauthorizedItems.map(item => [item.id, item]));
+
+    return items.map(item => {
+        const serverItem = unauthorizedMap.get(item.id);
+        if (!serverItem) return item;
+
+        return {
+            ...serverItem,
+            locallyUpdatedAt: serverItem.updatedAt,
+            synced: true,
+        };
+    });
+}
+
 export function getUnsyncedItems<T extends SyncMetadata>(items: T[]): T[] {
     return items.filter(item => !item.synced);
 }

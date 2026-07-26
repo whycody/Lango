@@ -11,6 +11,7 @@ export const WORDS_BUNDLE_COLUMNS: Array<keyof WordsBundle> = [
     'translationLang',
     'visibility',
     'removed',
+    'wordsBackfilled',
     'synced',
     'locallyUpdatedAt',
     'updatedAt',
@@ -23,17 +24,18 @@ export const createTables = async (userId: string) => {
         tx.executeSql(`
         CREATE TABLE IF NOT EXISTS ${WORDS_BUNDLES}
         (
-            id               TEXT PRIMARY KEY,
-            ownerId          TEXT,
-            title            TEXT,
-            description      TEXT,
-            mainLang         TEXT,
-            translationLang  TEXT,
-            visibility       TEXT,
-            removed          INTEGER,
-            synced           INTEGER,
-            locallyUpdatedAt TEXT,
-            updatedAt        TEXT
+            id                   TEXT PRIMARY KEY,
+            ownerId              TEXT,
+            title                TEXT,
+            description          TEXT,
+            mainLang             TEXT,
+            translationLang      TEXT,
+            visibility           TEXT,
+            removed              INTEGER,
+            wordsBackfilled      INTEGER,
+            synced               INTEGER,
+            locallyUpdatedAt     TEXT,
+            updatedAt            TEXT
         )
     `);
 
@@ -51,7 +53,7 @@ export const saveWordsBundles = async (userId: string, bundles: WordsBundle[]) =
     await db.transaction(tx => {
         bundles.forEach(bundle => {
             const values = WORDS_BUNDLE_COLUMNS.map(col => {
-                if (col === 'removed' || col === 'synced') {
+                if (col === 'removed' || col === 'synced' || col === 'wordsBackfilled') {
                     return bundle[col] ? 1 : 0;
                 }
                 if (col === 'updatedAt') {
@@ -89,6 +91,7 @@ export const getAllWordsBundles = async (userId: string): Promise<WordsBundle[]>
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             removed: row.removed === 1,
                             synced: row.synced === 1,
+                            wordsBackfilled: row.wordsBackfilled === 1,
                         } satisfies WordsBundle);
                     }
                     resolve(bundles);
@@ -101,4 +104,11 @@ export const getAllWordsBundles = async (userId: string): Promise<WordsBundle[]>
 
 export const updateWordsBundle = async (userId: string, bundle: WordsBundle) => {
     await saveWordsBundles(userId, [bundle]);
+};
+
+export const deleteWordsBundle = async (userId: string, bundleId: string) => {
+    const db = await getDb(userId);
+    await db.transaction(tx => {
+        tx.executeSql(`DELETE FROM ${WORDS_BUNDLES} WHERE id = ?`, [bundleId]);
+    });
 };

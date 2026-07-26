@@ -5,12 +5,14 @@ import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 import {
     FetchUpdatedWordsBundlesApi,
+    FetchWordsBundlesByIdsApi,
     GenerateBundleInvitationCodeApi,
     JoinBundleWithCodeApi,
     SyncWordsBundlesOnServerApi,
 } from './api.types';
 
 const WORDS_BUNDLES_API_ROUTES = {
+    byIds: '/words-bundles/by-ids',
     generateInvitationCode: (bundleId: string) =>
         `/words-bundles/${bundleId}/generate-invitation-code`,
     join: (code: string) => `/words-bundles/join/${code}`,
@@ -37,6 +39,19 @@ class WordsBundlesApi {
     async fetchUpdatedWordsBundles(since: string): Promise<FetchUpdatedWordsBundlesApi> {
         const response: ApiResponse<WordsBundle[]> = await this.api.apisauce.get(
             WORDS_BUNDLES_API_ROUTES.wordsBundles(since),
+        );
+        if (!response.ok || !response.data) {
+            return { errorCode: resolveApiErrorCode(response), kind: 'error' };
+        }
+        return { data: response.data, kind: 'ok' };
+    }
+
+    async fetchWordsBundlesByIds(ids: string[]): Promise<FetchWordsBundlesByIdsApi> {
+        if (ids.length === 0) return { data: [], kind: 'ok' };
+
+        const response: ApiResponse<WordsBundle[]> = await this.api.apisauce.get(
+            WORDS_BUNDLES_API_ROUTES.byIds,
+            { ids: ids.join(',') },
         );
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };

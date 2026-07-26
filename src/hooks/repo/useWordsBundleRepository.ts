@@ -1,5 +1,6 @@
 import {
     createTables,
+    deleteWordsBundle,
     getAllWordsBundles,
     saveWordsBundles,
     updateWordsBundle,
@@ -12,6 +13,7 @@ export const useWordsBundleRepository = () => {
 
     return {
         createTables: () => createTables(getUserId()),
+        deleteWordsBundle: (bundleId: string) => deleteWordsBundle(getUserId(), bundleId),
         getAllWordsBundles: () => getAllWordsBundles(getUserId()),
         saveWordsBundles: (bundles: WordsBundle[]) => saveWordsBundles(getUserId(), bundles),
         updateWordsBundle: (bundle: WordsBundle) => updateWordsBundle(getUserId(), bundle),

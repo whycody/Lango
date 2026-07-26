@@ -46,8 +46,8 @@ const AppStackInner = () => {
             <SessionsProvider>
                 <SuggestionsProvider>
                     <StatisticsProvider>
-                        <WordsProvider>
-                            <WordsBundleProvider>
+                        <WordsBundleProvider>
+                            <WordsProvider>
                                 <EvaluationsProvider>
                                     <WordsMLStatesProvider>
                                         <WordsHeuristicProvider>
@@ -91,8 +91,8 @@ const AppStackInner = () => {
                                         </WordsHeuristicProvider>
                                     </WordsMLStatesProvider>
                                 </EvaluationsProvider>
-                            </WordsBundleProvider>
-                        </WordsProvider>
+                            </WordsProvider>
+                        </WordsBundleProvider>
                     </StatisticsProvider>
                 </SuggestionsProvider>
             </SessionsProvider>

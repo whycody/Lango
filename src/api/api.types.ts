@@ -126,5 +126,6 @@ export type SyncWordsBundlesOnServerApi =
     | { data: SyncResultWithRejections<WordsBundle>; kind: 'ok' }
     | ApiProblem;
 export type FetchUpdatedWordsBundlesApi = { data: WordsBundle[]; kind: 'ok' } | ApiProblem;
+export type FetchWordsBundlesByIdsApi = { data: WordsBundle[]; kind: 'ok' } | ApiProblem;
 export type GenerateBundleInvitationCodeApi = { data: BundleJoinCode; kind: 'ok' } | ApiProblem;
 export type JoinBundleWithCodeApi = { data: BundleMember; kind: 'ok' } | ApiProblem;

@@ -24,7 +24,11 @@ import {
     updateLocalItems,
 } from '../utils/sync';
 import { useAppInitializer } from './AppInitializerContext';
+import { useAuth } from './AuthContext';
 import { useLanguage } from './LanguageContext';
+import { useWordsBundle } from './WordsBundleContext';
+
+const EPOCH_ISO = '1970-01-01T00:00:00.000Z';
 
 interface WordsContextProps {
     addWord: (text: string, translation: string, source: WordSource) => Word | null;
@@ -55,8 +59,12 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [words, setWords] = useState<Word[]>(initialLoad!.words);
     const { mainLang, translationLang } = useLanguage();
-    const { getAllWords, saveWords, updateWord } = useWordsRepository();
+    const { deleteWordsByBundleId, getAllWords, saveWords, updateWord } = useWordsRepository();
+    const { bundles, members, setWordsBackfilled } = useWordsBundle();
+    const { user } = useAuth();
     const syncing = useRef(false);
+    const syncingBundleWords = useRef(new Set<string>());
+    const removingBundleWords = useRef(new Set<string>());
 
     const langWords = useMemo(
         () =>
@@ -239,6 +247,88 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     useEffect(() => {
         loadData();
     }, []);
+
+    useEffect(() => {
+        const localBundleIds = new Set(
+            words.map(word => word.bundleId).filter((bundleId): bundleId is string => !!bundleId),
+        );
+
+        const bundleIdsToRemove = members
+            .filter(
+                member =>
+                    member.userId === user?.userId &&
+                    member.removed &&
+                    localBundleIds.has(member.bundleId) &&
+                    !removingBundleWords.current.has(member.bundleId),
+            )
+            .map(member => member.bundleId);
+
+        if (bundleIdsToRemove.length === 0) return;
+
+        bundleIdsToRemove.forEach(bundleId => removingBundleWords.current.add(bundleId));
+
+        const deleteRemovedBundlesWords = async () => {
+            try {
+                for (const bundleId of bundleIdsToRemove) {
+                    await deleteWordsByBundleId(bundleId);
+                }
+
+                const wordsList = await getAllWords();
+                setWords(wordsList);
+            } catch (error) {
+                console.log('Error deleting words of removed bundles:', error);
+            } finally {
+                bundleIdsToRemove.forEach(bundleId => removingBundleWords.current.delete(bundleId));
+            }
+        };
+
+        deleteRemovedBundlesWords();
+    }, [members, user?.userId, words]);
+
+    useEffect(() => {
+        const pendingBundles = bundles.filter(
+            bundle => !bundle.wordsBackfilled && !syncingBundleWords.current.has(bundle.id),
+        );
+
+        if (pendingBundles.length === 0) return;
+
+        pendingBundles.forEach(bundle => syncingBundleWords.current.add(bundle.id));
+
+        const fetchBundleWords = async (bundleId: string): Promise<Word[]> => {
+            const bundleWords = words.filter(word => word.bundleId === bundleId);
+            const since =
+                bundleWords.length > 0 ? findLatestUpdatedAt<Word>(bundleWords) : EPOCH_ISO;
+
+            const result = await wordsApi.fetchUpdatedWords(since, bundleId);
+            return result.kind === 'ok' ? result.data : [];
+        };
+
+        const syncBundlesWords = async () => {
+            try {
+                const serverWordsPerBundle = await Promise.all(
+                    pendingBundles.map(bundle => fetchBundleWords(bundle.id)),
+                );
+                const serverWords = serverWordsPerBundle.flat();
+
+                const wordsList = await getAllWords();
+                const mergedWords = mergeLocalAndServer<Word>(wordsList, serverWords);
+                const changedWords = findChangedItems<Word>(wordsList, mergedWords);
+
+                if (changedWords.length > 0) {
+                    setWords(mergedWords);
+                    await saveWords(changedWords);
+                }
+
+                pendingBundles.forEach(bundle => setWordsBackfilled(bundle.id, true));
+            } catch (error) {
+                console.log('Error syncing bundle words:', error);
+            } finally {
+                pendingBundles.forEach(bundle => syncingBundleWords.current.delete(bundle.id));
+            }
+        };
+
+        syncBundlesWords();
+    }, [bundles, words]);
 
     return (
         <WordsContext.Provider

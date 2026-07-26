@@ -12,4 +12,5 @@ export type WordsBundle = SyncMetadata & {
     title: string;
     translationLang: LanguageCode;
     visibility: WordsBundleVisibility;
+    wordsBackfilled: boolean;
 };

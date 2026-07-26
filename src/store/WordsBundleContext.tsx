@@ -43,10 +43,13 @@ interface WordsBundleContextProps {
         bundleId: string,
         role: Extract<BundleMemberRole, 'editor' | 'viewer'>,
     ) => Promise<BundleJoinCode | null>;
+    deleteBundlePhysically: (bundleId: string) => Promise<void>;
     joinWithCode: (code: string) => Promise<BundleMember | null>;
     langBundles: EnrichedWordsBundle[];
     loading: boolean;
-    removeBundle: (id: string) => void;
+    members: BundleMember[];
+    removeBundle: (id: string) => Promise<void>;
+    setWordsBackfilled: (bundleId: string, backfilled: boolean) => void;
     syncBundles: () => Promise<void>;
 }
 
@@ -55,12 +58,15 @@ const WordsBundleContext = createContext<WordsBundleContextProps>({
     createBundle: () => {
         throw new Error('WordsBundleProvider not mounted');
     },
+    deleteBundlePhysically: () => Promise.resolve(),
     editBundle: () => {},
     generateInvitationCode: () => Promise.resolve(null),
     joinWithCode: () => Promise.resolve(null),
     langBundles: [],
     loading: true,
-    removeBundle: () => {},
+    members: [],
+    removeBundle: () => Promise.resolve(),
+    setWordsBackfilled: () => {},
     syncBundles: () => Promise.resolve(),
 });
 
@@ -72,11 +78,13 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
     const [bundles, setBundles] = useState<WordsBundle[]>(initialLoad!.wordsBundles);
     const [members, setMembers] = useState<BundleMember[]>(initialLoad!.bundleMembers);
 
-    const { getAllWordsBundles, saveWordsBundles, updateWordsBundle } = useWordsBundleRepository();
+    const { deleteWordsBundle, getAllWordsBundles, saveWordsBundles, updateWordsBundle } =
+        useWordsBundleRepository();
     const { getAllBundleMembers, saveBundleMembers } = useBundleMemberRepository();
 
     const syncingBundles = useRef(false);
     const syncingMembers = useRef(false);
+    const removingBundles = useRef(new Set<string>());
 
     const enrichedBundles = useMemo<EnrichedWordsBundle[]>(
         () =>
@@ -118,6 +126,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             translationLang,
             updatedAt: undefined,
             visibility,
+            wordsBackfilled: true,
         };
 
         const ownerMember: BundleMember = {
@@ -161,16 +170,40 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         syncWordsBundles(updatedBundles);
     };
 
-    const removeBundle = (id: string) => {
+    const deleteBundlePhysically = async (bundleId: string) => {
+        await deleteWordsBundle(bundleId);
+        setBundles(prev => prev.filter(bundle => bundle.id !== bundleId));
+    };
+
+    const removeBundle = async (id: string) => {
+        const bundle = bundles.find(b => b.id === id);
+        if (!bundle) return;
+
+        const removedBundle: WordsBundle = {
+            ...bundle,
+            locallyUpdatedAt: getCurrentISO(),
+            removed: true,
+            synced: false,
+        };
+
+        const result = await wordsBundlesApi.syncWordsBundlesOnServer([removedBundle]);
+
+        if (result.kind !== 'ok' || result.data.synced.length === 0) {
+            throw new Error('Could not remove bundle: no connection to server');
+        }
+
+        await deleteBundlePhysically(id);
+    };
+
+    const setWordsBackfilled = (bundleId: string, backfilled: boolean) => {
         const updatedBundles = bundles.map(bundle =>
-            bundle.id === id
-                ? { ...bundle, locallyUpdatedAt: getCurrentISO(), removed: true, synced: false }
-                : bundle,
+            bundle.id === bundleId ? { ...bundle, wordsBackfilled: backfilled } : bundle,
         );
 
-        updateWordsBundle(updatedBundles.find(bundle => bundle.id === id)!);
+        const changed = updatedBundles.find(bundle => bundle.id === bundleId);
+
         setBundles(updatedBundles);
-        syncWordsBundles(updatedBundles);
+        if (changed) updateWordsBundle(changed);
     };
 
     const generateInvitationCode = async (
@@ -210,7 +243,14 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             const latestUpdatedAt = findLatestUpdatedAt<WordsBundle>(updatedBundles);
             const result = await wordsBundlesApi.fetchUpdatedWordsBundles(latestUpdatedAt);
             const serverBundles = result.kind === 'ok' ? result.data : [];
-            const mergedBundles = mergeLocalAndServer<WordsBundle>(updatedBundles, serverBundles);
+            const mergedBundles = mergeLocalAndServer<WordsBundle>(
+                updatedBundles,
+                serverBundles,
+            ).map(bundle => ({
+                ...bundle,
+                wordsBackfilled:
+                    bundlesList.find(local => local.id === bundle.id)?.wordsBackfilled ?? false,
+            }));
             const changedBundles = findChangedItems<WordsBundle>(bundlesList, mergedBundles);
 
             if (changedBundles.length > 0) {
@@ -253,9 +293,45 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         }
     };
 
+    const fetchMissingBundles = async () => {
+        try {
+            const currentBundles = await getAllWordsBundles();
+            const currentMembers = await getAllBundleMembers();
+            const bundleIds = new Set(currentBundles.map(bundle => bundle.id));
+            const missingBundleIds = [
+                ...new Set(
+                    currentMembers
+                        .filter(member => !member.removed)
+                        .map(member => member.bundleId)
+                        .filter(bundleId => !bundleIds.has(bundleId)),
+                ),
+            ];
+
+            if (missingBundleIds.length === 0) return;
+
+            const bundlesResult = await wordsBundlesApi.fetchWordsBundlesByIds(missingBundleIds);
+            const fetchedBundles = bundlesResult.kind === 'ok' ? bundlesResult.data : [];
+            if (fetchedBundles.length === 0) return;
+
+            const newBundles: WordsBundle[] = fetchedBundles.map(bundle => ({
+                ...bundle,
+                locallyUpdatedAt: bundle.updatedAt ?? getCurrentISO(),
+                synced: true,
+                wordsBackfilled: false,
+            }));
+
+            const updatedBundles = [...currentBundles, ...newBundles];
+            setBundles(updatedBundles);
+            await saveWordsBundles(newBundles);
+        } catch (error) {
+            console.log('Error fetching missing bundles:', error);
+        }
+    };
+
     const syncBundles = async () => {
         await syncWordsBundles();
         await syncBundleMembers();
+        await fetchMissingBundles();
     };
 
     const loadData = async () => {
@@ -273,17 +349,49 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         loadData();
     }, []);
 
+    useEffect(() => {
+        const removedBundleIds = members
+            .filter(
+                member =>
+                    member.userId === user?.userId &&
+                    member.removed &&
+                    !removingBundles.current.has(member.bundleId),
+            )
+            .map(member => member.bundleId);
+
+        if (removedBundleIds.length === 0) return;
+
+        removedBundleIds.forEach(bundleId => removingBundles.current.add(bundleId));
+
+        const deletePhysically = async () => {
+            try {
+                for (const bundleId of removedBundleIds) {
+                    await deleteBundlePhysically(bundleId);
+                }
+            } catch (error) {
+                console.log('Error physically deleting removed bundles:', error);
+            } finally {
+                removedBundleIds.forEach(bundleId => removingBundles.current.delete(bundleId));
+            }
+        };
+
+        deletePhysically();
+    }, [members, user?.userId]);
+
     return (
         <WordsBundleContext.Provider
             value={{
                 bundles: enrichedBundles,
                 createBundle,
+                deleteBundlePhysically,
                 editBundle,
                 generateInvitationCode,
                 joinWithCode,
                 langBundles,
                 loading,
+                members,
                 removeBundle,
+                setWordsBackfilled,
                 syncBundles,
             }}
         >

@@ -319,10 +319,14 @@
         "join_with_code": "Join a bundle with a code"
     },
     "bundle_details": {
+        "add_word": "Add new word +",
+        "edit_bundle": "Edit bundle",
+        "flashcards_count": "{{count}} flashcard",
+        "flashcards_count_plural": "{{count}} flashcards",
         "members": "Members",
         "no_members": "No members yet",
         "show_in_main_collection": "Show in main collection",
-        "show_in_main_collection_desc": "Include this bundle's words in your main flashcards list",
+        "show_in_main_collection_desc": "Words will be part of your main collection",
         "start_session": "Start learning"
     }
 }

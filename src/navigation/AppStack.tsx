@@ -15,11 +15,11 @@ import { WordsProvider } from '../store/WordsContext';
 import { WordsHeuristicProvider } from '../store/WordsHeuristicStatesContext';
 import { WordsMLStatesProvider } from '../store/WordsMLStatesContext';
 import { WordsWithDetailsProvider } from '../store/WordsWithDetailsContext';
-import { BundleDetailsScreen } from '../ui/screens/BundleDetailsScreen';
 import { FlashcardsScreen } from '../ui/screens/FlashcardsScreen';
 import { SessionScreen } from '../ui/screens/SessionScreen';
 import { SettingsScreen } from '../ui/screens/SettingsScreen';
 import { CustomTheme } from '../ui/Theme';
+import BundleNavigator from './BundleNavigator';
 import { RootStackParamList, ScreenName } from './navigationTypes';
 import TabsNavigator from './TabsNavigator';
 
@@ -87,8 +87,8 @@ const AppStackInner = () => {
                                                             />
                                                         </Stack.Group>
                                                         <Stack.Screen
-                                                            component={BundleDetailsScreen}
-                                                            name={ScreenName.BundleDetails}
+                                                            component={BundleNavigator}
+                                                            name={ScreenName.BundleNavigator}
                                                         />
                                                     </Stack.Navigator>
                                                 </BottomSheetModalProvider>

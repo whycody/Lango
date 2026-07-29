@@ -8,4 +8,5 @@ export * from './ScreenHeader';
 export * from './SecondaryButton';
 export * from './SquareFlag';
 export * from './StatRow';
+export * from './TopGradient';
 export * from './VersionFooter';

@@ -13,20 +13,25 @@ export type FlashcardsScreenParams = {
     masteryFilter?: MasteryFilter;
 };
 
-export type BundleDetailsScreenParams = {
+export type BundleNavigatorParams = {
     bundleId: string;
 };
 
 export type RootStackParamList = {
-    BundleDetails: BundleDetailsScreenParams;
+    BundleNavigator: BundleNavigatorParams;
     Flashcards: FlashcardsScreenParams | undefined;
     Session: SessionScreenParams;
     Settings: undefined;
     Tabs: undefined;
 };
 
+export type BundleStackParamList = {
+    BundleFlashcards: BundleNavigatorParams;
+};
+
 export enum ScreenName {
-    BundleDetails = 'BundleDetails',
+    BundleFlashcards = 'BundleFlashcards',
+    BundleNavigator = 'BundleNavigator',
     Flashcards = 'Flashcards',
     Session = 'Session',
     Settings = 'Settings',

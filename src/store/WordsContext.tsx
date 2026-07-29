@@ -31,7 +31,12 @@ import { useWordsBundle } from './WordsBundleContext';
 const EPOCH_ISO = '1970-01-01T00:00:00.000Z';
 
 interface WordsContextProps {
-    addWord: (text: string, translation: string, source: WordSource) => Word | null;
+    addWord: (
+        text: string,
+        translation: string,
+        source: WordSource,
+        bundleId?: string,
+    ) => Word | null;
     addWords: (wordsToAdd: { text: string; translation: string }[], source: WordSource) => Word[];
     editWord: (updatedWord: Partial<Word> & { id: string }) => void;
     getWord: (id: string) => Word | undefined;
@@ -77,11 +82,17 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         [words, mainLang, translationLang],
     );
 
-    const createWord = (text: string, translation: string, source: WordSource): Word => {
+    const createWord = (
+        text: string,
+        translation: string,
+        source: WordSource,
+        bundleId?: string,
+    ): Word => {
         const now = getCurrentISO();
         return {
             active: true,
             addDate: now,
+            bundleId,
             id: uuid.v4(),
             locallyUpdatedAt: now,
             mainLang,
@@ -103,12 +114,17 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         return { ...word, removed: false };
     };
 
-    const addWord = (text: string, translation: string, source: WordSource): Word | null => {
+    const addWord = (
+        text: string,
+        translation: string,
+        source: WordSource,
+        bundleId?: string,
+    ): Word | null => {
         const existing = findExistingWord(text, translation);
 
         if (existing) return existing.removed ? reviveWord(existing) : null;
 
-        const newWord = createWord(text, translation, source);
+        const newWord = createWord(text, translation, source, bundleId);
         const updatedWords = [newWord, ...words];
 
         setWords(updatedWords);

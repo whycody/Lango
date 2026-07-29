@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppState, StatusBar, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './i18n';
 import * as Font from 'expo-font';
 import { themes } from './src/ui/themes';
@@ -34,6 +35,8 @@ import { CustomTheme } from './src/ui/Theme';
 void SplashScreen.preventAutoHideAsync().catch(() => {
     // Ignore splash-screen startup errors to avoid unhandled promise rejections.
 });
+
+const queryClient = new QueryClient();
 
 export default function App() {
     const { i18n } = useTranslation();
@@ -103,17 +106,19 @@ export default function App() {
             <StatusBar barStyle="light-content" translucent backgroundColor={'transparent'} />
             <SafeAreaProvider style={styles.root}>
                 <GestureHandlerRootView>
-                    <NavigationContainer theme={activeTheme}>
-                        <AuthProvider>
-                            <UserStorageProvider>
-                                <AppInitializerProvider>
-                                    <KeyboardProvider>
-                                        <Root />
-                                    </KeyboardProvider>
-                                </AppInitializerProvider>
-                            </UserStorageProvider>
-                        </AuthProvider>
-                    </NavigationContainer>
+                    <QueryClientProvider client={queryClient}>
+                        <NavigationContainer theme={activeTheme}>
+                            <AuthProvider>
+                                <UserStorageProvider>
+                                    <AppInitializerProvider>
+                                        <KeyboardProvider>
+                                            <Root />
+                                        </KeyboardProvider>
+                                    </AppInitializerProvider>
+                                </UserStorageProvider>
+                            </AuthProvider>
+                        </NavigationContainer>
+                    </QueryClientProvider>
                 </GestureHandlerRootView>
             </SafeAreaProvider>
         </>

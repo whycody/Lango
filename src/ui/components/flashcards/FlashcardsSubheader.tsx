@@ -5,7 +5,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { FlashcardSortingMethod } from '../../../constants/UserPreferences';
 import { getSortingMethodLabel } from '../../../utils/sortingUtil';
 import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
@@ -16,10 +16,11 @@ import { ListFilter } from './ListFilter';
 type FlashcardsSubheaderProps = {
     filterSheetName: string;
     masteryFilter: MasteryFilter;
+    showSearch?: boolean;
     sortingMethod: FlashcardSortingMethod;
     sortingSheetName: string;
-    onSearchPress: () => void;
-    onClearSearch: () => void;
+    onClearSearch?: () => void;
+    onSearchPress?: () => void;
 };
 
 export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
@@ -28,6 +29,7 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
         masteryFilter,
         onClearSearch,
         onSearchPress,
+        showSearch = true,
         sortingMethod,
         sortingSheetName,
     }) => {
@@ -36,15 +38,17 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
         const styles = getStyles(colors);
 
         return (
-            <View style={styles.container}>
-                <Pressable onPress={onSearchPress}>
-                    <ListFilter
-                        editable={false}
-                        isSearching={false}
-                        pointerEvents="none"
-                        onClear={onClearSearch}
-                    />
-                </Pressable>
+            <View style={[styles.container, !showSearch && styles.containerWithoutSearch]}>
+                {showSearch && (
+                    <Pressable onPress={onSearchPress}>
+                        <ListFilter
+                            editable={false}
+                            isSearching={false}
+                            pointerEvents="none"
+                            onClear={onClearSearch ?? (() => {})}
+                        />
+                    </Pressable>
+                )}
                 <View style={styles.row}>
                     <Pressable
                         style={styles.sortingButton}
@@ -85,6 +89,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
         container: {
             backgroundColor: colors.background,
             paddingHorizontal: MARGIN_HORIZONTAL,
+        },
+        containerWithoutSearch: {
+            paddingTop: MARGIN_VERTICAL,
         },
         filterButton: {
             alignItems: 'center',

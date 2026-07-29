@@ -16,6 +16,8 @@ export const AnalyticsEventName = {
     LOGOUT_FORCED: 'logout_forced',
     LOGOUT_SUCCESS: 'logout_success',
     MICROPHONE_WORD_INPUT: 'microphone_word_input',
+    NAVIGATE_BUNDLE_DETAILS: 'navigate_bundle_details',
+    NAVIGATE_BUNDLE_FLASHCARDS: 'navigate_bundle_flashcards',
     NAVIGATE_FLASHCARDS: 'navigate_flashcards',
     NAVIGATE_HOME: 'navigate_home',
     NAVIGATE_LIBRARY: 'navigate_library',
@@ -59,7 +61,7 @@ export type AnalyticsEventPayloadMap = {
     flip_flashcard?: undefined;
     handle_flashcard_sheet_open: {
         mode: 'add' | 'edit';
-        source: 'main_screen' | 'flashcards_screen' | 'session_screen';
+        source: 'bundle_screen' | 'main_screen' | 'flashcards_screen' | 'session_screen';
     };
     home_refresh?: undefined;
     language_sheet_open?: {
@@ -73,6 +75,8 @@ export type AnalyticsEventPayloadMap = {
     logout_forced?: undefined;
     logout_success: { provider: UserProvider };
     microphone_word_input?: undefined;
+    navigate_bundle_details?: undefined;
+    navigate_bundle_flashcards?: undefined;
     navigate_flashcards?: undefined;
     navigate_home?: undefined;
     navigate_library?: undefined;

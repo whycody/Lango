@@ -22,6 +22,7 @@ type WordTranslations = {
 };
 
 type HandleFlashcardBottomSheetProps = {
+    bundleId?: string;
     flashcardId?: string;
     microphonePermissionSheetName: string;
     sheetName: string;
@@ -29,7 +30,7 @@ type HandleFlashcardBottomSheetProps = {
 };
 
 export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProps) => {
-    const { flashcardId, microphonePermissionSheetName, onWordEdit, sheetName } = props;
+    const { bundleId, flashcardId, microphonePermissionSheetName, onWordEdit, sheetName } = props;
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
     const { t } = useTranslation();
@@ -140,7 +141,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
     const addFlashcard = (multiple: boolean) => {
         if (!validateInputs()) return;
         const { translation, word } = getCurrentWordAndTranslation();
-        const newWord = addWord(word, translation, WordSource.USER);
+        const newWord = addWord(word, translation, WordSource.USER, bundleId);
 
         if (!newWord) {
             setStatus('error');

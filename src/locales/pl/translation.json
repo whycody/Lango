@@ -318,10 +318,15 @@
         "join_with_code": "Dołącz do zestawu za pomocą kodu"
     },
     "bundle_details": {
+        "add_word": "Dodaj nowe słówko +",
+        "edit_bundle": "Edytuj zestaw",
+        "flashcards_count": "{{count}} fiszka",
+        "flashcards_count_few": "{{count}} fiszki",
+        "flashcards_count_many": "{{count}} fiszek",
         "members": "Członkowie",
         "no_members": "Brak członków",
         "show_in_main_collection": "Wyświetlaj w głównej kolekcji",
-        "show_in_main_collection_desc": "Dołącz słówka z tego zestawu do głównej listy fiszek",
+        "show_in_main_collection_desc": "Słówka będą częścią głównej kolekcji",
         "start_session": "Rozpocznij naukę"
     }
 }

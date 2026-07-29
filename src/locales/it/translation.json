@@ -319,10 +319,14 @@
         "join_with_code": "Unisciti a un set con un codice"
     },
     "bundle_details": {
+        "add_word": "Aggiungi nuova parola +",
+        "edit_bundle": "Modifica set",
+        "flashcards_count": "{{count}} flashcard",
+        "flashcards_count_plural": "{{count}} flashcard",
         "members": "Membri",
         "no_members": "Ancora nessun membro",
         "show_in_main_collection": "Mostra nella collezione principale",
-        "show_in_main_collection_desc": "Includi le parole di questo set nella tua lista principale di flashcard",
+        "show_in_main_collection_desc": "Le parole faranno parte della tua collezione principale",
         "start_session": "Inizia a studiare"
     }
 }

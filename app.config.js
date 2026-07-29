@@ -55,7 +55,7 @@ export default ({ config }) => {
             ...(config.plugins || []),
             'expo-font',
             'expo-tracking-transparency',
-            'expo-audio',
+            ['expo-audio', { enableBackgroundPlayback: false }],
             withModularHeaders,
         ],
         extra: {

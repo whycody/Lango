@@ -91,7 +91,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingHorizontal: MARGIN_HORIZONTAL,
         },
         containerWithoutSearch: {
-            paddingTop: MARGIN_VERTICAL,
+            paddingTop: MARGIN_VERTICAL / 2,
         },
         filterButton: {
             alignItems: 'center',

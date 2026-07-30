@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -38,7 +38,12 @@ import { WordWithDetails } from '../../../types';
 import { isIOS } from '../../../utils/deviceUtils';
 import { getSortingMethod } from '../../../utils/sortingUtil';
 import { ActionButton, BottomGradient, CustomText } from '../../components';
-import { EmptyList, FlashcardListItem, FlashcardsSubheader } from '../../components/flashcards';
+import {
+    EmptyList,
+    FlashcardListItem,
+    FlashcardsSubheader,
+    ScrollToTopButton,
+} from '../../components/flashcards';
 import { BundleCreatorInfo, FlashcardClassBadges } from '../../components/home';
 import { LibraryItem } from '../../components/library';
 import {
@@ -61,7 +66,8 @@ const BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET = 'bundle-details-sorting-metho
 const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flashcard-bottom-sheet';
 const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
 const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
-const DOCKED_HIDDEN_TRANSLATE_Y = 100;
+const BOTTOM_PANEL_HIDDEN_TRANSLATE_Y = 100;
+const SCROLL_TO_TOP_THRESHOLD = 300;
 
 type BundleFlashcardsScreenProps = NativeStackScreenProps<
     BundleStackParamList,
@@ -90,6 +96,10 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
     const contentOpacity = useRef(new Animated.Value(0)).current;
     const contentTranslateY = useRef(new Animated.Value(12)).current;
     const scrollY = useRef(new Animated.Value(0)).current;
+    const scrollToTopAnim = useRef(new Animated.Value(0)).current;
+    const listRef =
+        useRef<FlashListRef<WordWithDetails | { id: 'header' } | { id: 'subheader' }>>(null);
+    const scrollToTopVisible = useRef(false);
 
     const TITLE_SCROLL_START = 40;
     const TITLE_SCROLL_END = 80;
@@ -114,10 +124,25 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
 
     const handleScroll = useCallback(
         (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-            scrollY.setValue(event.nativeEvent.contentOffset.y);
+            const offsetY = event.nativeEvent.contentOffset.y;
+            scrollY.setValue(offsetY);
+
+            const shouldShowScrollToTop = offsetY > SCROLL_TO_TOP_THRESHOLD;
+            if (shouldShowScrollToTop !== scrollToTopVisible.current) {
+                scrollToTopVisible.current = shouldShowScrollToTop;
+                Animated.timing(scrollToTopAnim, {
+                    duration: 200,
+                    toValue: shouldShowScrollToTop ? 1 : 0,
+                    useNativeDriver: true,
+                }).start();
+            }
         },
-        [scrollY],
+        [scrollY, scrollToTopAnim],
     );
+
+    const handleScrollToTop = useCallback(() => {
+        listRef.current?.scrollToOffset({ animated: true, offset: 0 });
+    }, []);
 
     useEffect(() => {
         Animated.parallel([
@@ -150,48 +175,43 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
     const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
     const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
     const [refreshing, setRefreshing] = useState(false);
-    const [startSessionButtonBottom, setStartSessionButtonBottom] = useState<number | undefined>(
-        undefined,
-    );
-    const [isDockedStartSessionVisible, setIsDockedStartSessionVisible] = useState(false);
+    const [headerButtonsBottom, setHeaderButtonsBottom] = useState<number | undefined>(undefined);
+    const [isBottomPanelVisible, setIsBottomPanelVisible] = useState(false);
 
-    const fabScale = useRef(new Animated.Value(1)).current;
-    const addWordFabScale = useRef(new Animated.Value(1)).current;
-
-    const dockedStartSessionTranslateY = useRef(
-        new Animated.Value(DOCKED_HIDDEN_TRANSLATE_Y),
+    const bottomPanelTranslateY = useRef(
+        new Animated.Value(BOTTOM_PANEL_HIDDEN_TRANSLATE_Y),
     ).current;
-    const dockedStartSessionOpacity = useRef(new Animated.Value(0)).current;
+    const bottomPanelOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         Animated.parallel([
-            Animated.spring(dockedStartSessionTranslateY, {
+            Animated.spring(bottomPanelTranslateY, {
                 damping: 18,
                 mass: 0.7,
                 stiffness: 220,
-                toValue: isDockedStartSessionVisible ? 0 : DOCKED_HIDDEN_TRANSLATE_Y,
+                toValue: isBottomPanelVisible ? 0 : BOTTOM_PANEL_HIDDEN_TRANSLATE_Y,
                 useNativeDriver: true,
             }),
-            Animated.timing(dockedStartSessionOpacity, {
+            Animated.timing(bottomPanelOpacity, {
                 duration: 220,
-                toValue: isDockedStartSessionVisible ? 1 : 0,
+                toValue: isBottomPanelVisible ? 1 : 0,
                 useNativeDriver: true,
             }),
         ]).start();
-    }, [isDockedStartSessionVisible, dockedStartSessionTranslateY, dockedStartSessionOpacity]);
+    }, [isBottomPanelVisible, bottomPanelTranslateY, bottomPanelOpacity]);
 
-    const handleStartSessionButtonLayout = useCallback((event: LayoutChangeEvent) => {
+    const handleHeaderButtonsLayout = useCallback((event: LayoutChangeEvent) => {
         const { height, y } = event.nativeEvent.layout;
-        setStartSessionButtonBottom(y + height);
+        setHeaderButtonsBottom(y + height);
     }, []);
 
     useEffect(() => {
         const listenerId = scrollY.addListener(({ value }) => {
-            if (startSessionButtonBottom === undefined) return;
-            setIsDockedStartSessionVisible(value > startSessionButtonBottom - 120);
+            if (headerButtonsBottom === undefined) return;
+            setIsBottomPanelVisible(value > headerButtonsBottom - 20);
         });
         return () => scrollY.removeListener(listenerId);
-    }, [scrollY, startSessionButtonBottom]);
+    }, [scrollY, headerButtonsBottom]);
 
     const bundleWords = useMemo(
         () => langWordsWithDetails.filter(word => word.bundleId === bundleId),
@@ -396,20 +416,19 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
                 />
             )}
 
-            {canAddWords && (
-                <ActionButton
-                    label={t('bundle_details.add_word')}
-                    style={styles.addWordButton}
-                    onPress={handleAddWordPress}
-                />
-            )}
-
-            <View onLayout={handleStartSessionButtonLayout}>
+            <View onLayout={handleHeaderButtonsLayout}>
+                {canAddWords && (
+                    <ActionButton
+                        label={t('bundle_details.add_word')}
+                        style={styles.headerAddButton}
+                        onPress={handleAddWordPress}
+                    />
+                )}
                 <ActionButton
                     primary
                     icon={'play'}
                     label={t('bundle_details.start_session')}
-                    style={styles.startSessionButton}
+                    style={styles.headerStartButton}
                     onPress={handleStartSessionPress}
                 />
             </View>
@@ -503,10 +522,11 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
             <SortingMethodBottomSheet sheetName={BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET} />
             <FlashList
                 ListEmptyComponent={renderEmptyList}
-                ListFooterComponent={<View style={{ height: 16 }} />}
+                ListFooterComponent={<View style={styles.listFooter} />}
                 data={listData}
                 keyExtractor={item => item.id}
                 overScrollMode={'never'}
+                ref={listRef}
                 renderItem={renderListItem}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
@@ -523,51 +543,28 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
                 onScroll={handleScroll}
             />
             <Animated.View
-                pointerEvents={isDockedStartSessionVisible ? 'box-none' : 'none'}
+                pointerEvents={isBottomPanelVisible ? 'box-none' : 'none'}
                 style={[
-                    styles.fabWrapper,
+                    styles.bottomPanel,
                     {
-                        opacity: dockedStartSessionOpacity,
-                        transform: [
-                            { scale: fabScale },
-                            { translateY: dockedStartSessionTranslateY },
-                        ],
+                        opacity: bottomPanelOpacity,
+                        transform: [{ translateY: bottomPanelTranslateY }],
                     },
                 ]}
             >
-                <Pressable
-                    style={styles.fab}
+                <ActionButton
+                    primary
+                    icon={'play'}
+                    label={t('bundle_details.start_session')}
                     onPress={handleStartSessionPress}
-                    onPressIn={() => animatePressIn(fabScale)}
-                    onPressOut={() => animatePressOut(fabScale)}
-                >
-                    <Ionicons color={colors.white} name="play" size={18} />
-                </Pressable>
+                />
             </Animated.View>
-            {canAddWords && (
-                <Animated.View
-                    pointerEvents={isDockedStartSessionVisible ? 'box-none' : 'none'}
-                    style={[
-                        styles.addWordFabWrapper,
-                        {
-                            opacity: dockedStartSessionOpacity,
-                            transform: [
-                                { scale: addWordFabScale },
-                                { translateY: dockedStartSessionTranslateY },
-                            ],
-                        },
-                    ]}
-                >
-                    <Pressable
-                        style={styles.addWordFab}
-                        onPress={handleAddWordPress}
-                        onPressIn={() => animatePressIn(addWordFabScale)}
-                        onPressOut={() => animatePressOut(addWordFabScale)}
-                    >
-                        <Ionicons color={colors.white} name="add" size={22} />
-                    </Pressable>
-                </Animated.View>
-            )}
+            <ScrollToTopButton
+                addButtonAnim={bottomPanelOpacity}
+                animatedValue={scrollToTopAnim}
+                liftOffset={insets.bottom + 56}
+                onPress={handleScrollToTop}
+            />
             <BottomGradient />
         </View>
     );
@@ -575,32 +572,21 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
 
 const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
-        addWordButton: {
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL,
-        },
-        addWordFab: {
-            alignItems: 'center',
-            backgroundColor: colors.background,
-            borderColor: colors.cardAccent300,
-            borderRadius: 20,
-            borderWidth: 1.5,
-            elevation: 4,
-            height: 40,
-            justifyContent: 'center',
-            shadowColor: '#000',
-            shadowOffset: { height: 2, width: 0 },
-            shadowRadius: 6,
-            width: 40,
-        },
-        addWordFabWrapper: {
-            bottom: insets.bottom + 24 + 56 + 8,
-            position: 'absolute',
-            right: MARGIN_HORIZONTAL + 8,
-            zIndex: 30,
-        },
         backButton: {
             marginLeft: MARGIN_HORIZONTAL,
+        },
+        bottomPanel: {
+            backgroundColor: colors.card,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            bottom: 0,
+            left: 0,
+            paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingTop: MARGIN_VERTICAL / 2,
+            position: 'absolute',
+            right: 0,
+            zIndex: 30,
         },
         classBadges: {
             marginHorizontal: MARGIN_HORIZONTAL,
@@ -609,24 +595,17 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL / 2,
         },
-        fab: {
-            alignItems: 'center',
-            backgroundColor: colors.primary,
-            borderColor: colors.card,
-            borderRadius: 28,
-            elevation: 4,
-            height: 56,
-            justifyContent: 'center',
-            shadowColor: '#000',
-            shadowOffset: { height: 2, width: 0 },
-            shadowRadius: 6,
-            width: 56,
+        headerAddButton: {
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL,
         },
-        fabWrapper: {
-            bottom: insets.bottom + 24,
-            position: 'absolute',
-            right: MARGIN_HORIZONTAL,
-            zIndex: 30,
+        headerStartButton: {
+            marginBottom: MARGIN_VERTICAL / 2,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL / 3,
+        },
+        listFooter: {
+            height: insets.bottom + MARGIN_VERTICAL / 2 + 56 + MARGIN_VERTICAL,
         },
         moreButton: {
             marginRight: MARGIN_HORIZONTAL,
@@ -635,11 +614,6 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             backgroundColor: colors.background,
             flex: 1,
             height: '100%',
-        },
-        startSessionButton: {
-            marginBottom: MARGIN_VERTICAL / 2,
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: MARGIN_VERTICAL / 3,
         },
         subscribedToggle: {
             marginHorizontal: MARGIN_HORIZONTAL,

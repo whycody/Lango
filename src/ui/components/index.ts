@@ -1,6 +1,7 @@
 export * from './ActionButton';
 export * from './BottomGradient';
 export * from './CustomText';
+export * from './DockedActionPanel';
 export * from './Header';
 export * from './ModalDragHandle';
 export * from './ProgressBar';

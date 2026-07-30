@@ -5,12 +5,10 @@ import {
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
-    Pressable,
     RefreshControl,
     StyleSheet,
     View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -28,6 +26,7 @@ import {
     ScreenName,
 } from '../../../navigation/navigationTypes';
 import {
+    useEvaluations,
     useUserPreferences,
     useWords,
     useWordsBundle,
@@ -37,7 +36,8 @@ import {
 import { WordWithDetails } from '../../../types';
 import { isIOS } from '../../../utils/deviceUtils';
 import { getSortingMethod } from '../../../utils/sortingUtil';
-import { ActionButton, BottomGradient, CustomText } from '../../components';
+import { ActionButton, BottomGradient, CustomText, DockedActionPanel } from '../../components';
+import { BundleFlashcardsTopBar } from '../../components/bundles';
 import {
     EmptyList,
     FlashcardListItem,
@@ -55,19 +55,19 @@ import { MasteryFilter, MasteryFilterBottomSheet } from '../../sheets/MasteryFil
 import { MicrophonePermissionBottomSheet } from '../../sheets/MicrophonePermissionBottomSheet';
 import { RemoveFlashcardBottomSheet } from '../../sheets/RemoveFlashcardBottomSheet';
 import { SortingMethodBottomSheet } from '../../sheets/SortingMethodBottomSheet';
-import {
-    START_SESSION_BOTTOM_SHEET,
-    StartSessionBottomSheet,
-} from '../../sheets/StartSessionBottomSheet';
+import { StartSessionBottomSheet } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
 
+const BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET = 'bundle-details-start-session-bottom-sheet';
 const BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET = 'bundle-details-mastery-filter-bottom-sheet';
 const BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET = 'bundle-details-sorting-method-bottom-sheet';
 const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flashcard-bottom-sheet';
 const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
 const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
-const BOTTOM_PANEL_HIDDEN_TRANSLATE_Y = 100;
 const SCROLL_TO_TOP_THRESHOLD = 300;
+const CONTENT_TITLE_SCROLL_START = 40;
+const CONTENT_TITLE_SCROLL_END = 80;
+const BOTTOM_PANEL_SHOW_OFFSET = -20;
 
 type BundleFlashcardsScreenProps = NativeStackScreenProps<
     BundleStackParamList,
@@ -80,45 +80,29 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
-    const styles = getStyles(colors, insets);
+    const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
 
     const { bundles, editBundleMember, syncBundles } = useWordsBundle();
     const { langWordsWithDetails } = useWordsWithDetails();
     const { langWordsMLStates } = useWordsMLStatesContext();
     const { flashcardsSortingMethod } = useUserPreferences();
 
-    const { removeWord } = useWords();
+    const { removeWord, syncWords } = useWords();
+    const { syncEvaluations } = useEvaluations();
 
     const TOP_BAR_HEIGHT = isIOS ? 44 + insets.top : insets.top + 56;
 
-    const backScale = useRef(new Animated.Value(1)).current;
-    const moreScale = useRef(new Animated.Value(1)).current;
-    const contentOpacity = useRef(new Animated.Value(0)).current;
-    const contentTranslateY = useRef(new Animated.Value(12)).current;
+    const contentAppear = useRef(new Animated.Value(0)).current;
     const scrollY = useRef(new Animated.Value(0)).current;
     const scrollToTopAnim = useRef(new Animated.Value(0)).current;
     const listRef =
         useRef<FlashListRef<WordWithDetails | { id: 'header' } | { id: 'subheader' }>>(null);
     const scrollToTopVisible = useRef(false);
-
-    const TITLE_SCROLL_START = 40;
-    const TITLE_SCROLL_END = 80;
-
-    const topBarTitleOpacity = scrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [TITLE_SCROLL_START, TITLE_SCROLL_END],
-        outputRange: [0, 1],
-    });
-
-    const topBarTitleTranslateY = scrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [TITLE_SCROLL_START, TITLE_SCROLL_END],
-        outputRange: [8, 0],
-    });
+    const headerButtonsBottomRef = useRef<number | undefined>(undefined);
 
     const contentTitleOpacity = scrollY.interpolate({
         extrapolate: 'clamp',
-        inputRange: [TITLE_SCROLL_START, TITLE_SCROLL_END],
+        inputRange: [CONTENT_TITLE_SCROLL_START, CONTENT_TITLE_SCROLL_END],
         outputRange: [1, 0],
     });
 
@@ -136,6 +120,13 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
                     useNativeDriver: true,
                 }).start();
             }
+
+            if (headerButtonsBottomRef.current === undefined) return;
+            const shouldShowBottomPanel =
+                offsetY > headerButtonsBottomRef.current + BOTTOM_PANEL_SHOW_OFFSET;
+            setIsBottomPanelVisible(prev =>
+                prev === shouldShowBottomPanel ? prev : shouldShowBottomPanel,
+            );
         },
         [scrollY, scrollToTopAnim],
     );
@@ -145,73 +136,43 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
     }, []);
 
     useEffect(() => {
-        Animated.parallel([
-            Animated.timing(contentOpacity, {
-                duration: 280,
-                toValue: 1,
-                useNativeDriver: true,
-            }),
-            Animated.timing(contentTranslateY, {
-                duration: 280,
-                toValue: 0,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [contentOpacity, contentTranslateY]);
+        Animated.timing(contentAppear, {
+            duration: 280,
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    }, [contentAppear]);
 
-    const animatePressIn = (scale: Animated.Value) => {
-        Animated.spring(scale, { toValue: 0.85, useNativeDriver: true }).start();
-    };
-
-    const animatePressOut = (scale: Animated.Value) => {
-        Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
-    };
-
-    const bundle = bundles.find(b => b.id === bundleId)!;
-    const membership = bundle.membership;
+    const bundle = bundles.find(b => b.id === bundleId);
+    const membership = bundle?.membership;
     const canAddWords = membership?.role === 'owner' || membership?.role === 'editor';
+
+    useEffect(() => {
+        if (!bundle) {
+            navigation.goBack();
+        }
+    }, [bundle, navigation]);
 
     const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all');
     const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
     const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
     const [refreshing, setRefreshing] = useState(false);
-    const [headerButtonsBottom, setHeaderButtonsBottom] = useState<number | undefined>(undefined);
     const [isBottomPanelVisible, setIsBottomPanelVisible] = useState(false);
 
-    const bottomPanelTranslateY = useRef(
-        new Animated.Value(BOTTOM_PANEL_HIDDEN_TRANSLATE_Y),
-    ).current;
     const bottomPanelOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        Animated.parallel([
-            Animated.spring(bottomPanelTranslateY, {
-                damping: 18,
-                mass: 0.7,
-                stiffness: 220,
-                toValue: isBottomPanelVisible ? 0 : BOTTOM_PANEL_HIDDEN_TRANSLATE_Y,
-                useNativeDriver: true,
-            }),
-            Animated.timing(bottomPanelOpacity, {
-                duration: 220,
-                toValue: isBottomPanelVisible ? 1 : 0,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [isBottomPanelVisible, bottomPanelTranslateY, bottomPanelOpacity]);
+        Animated.timing(bottomPanelOpacity, {
+            duration: 220,
+            toValue: isBottomPanelVisible ? 1 : 0,
+            useNativeDriver: true,
+        }).start();
+    }, [isBottomPanelVisible, bottomPanelOpacity]);
 
     const handleHeaderButtonsLayout = useCallback((event: LayoutChangeEvent) => {
         const { height, y } = event.nativeEvent.layout;
-        setHeaderButtonsBottom(y + height);
+        headerButtonsBottomRef.current = y + height;
     }, []);
-
-    useEffect(() => {
-        const listenerId = scrollY.addListener(({ value }) => {
-            if (headerButtonsBottom === undefined) return;
-            setIsBottomPanelVisible(value > headerButtonsBottom - 20);
-        });
-        return () => scrollY.removeListener(listenerId);
-    }, [scrollY, headerButtonsBottom]);
 
     const bundleWords = useMemo(
         () => langWordsWithDetails.filter(word => word.bundleId === bundleId),
@@ -249,7 +210,7 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
     );
 
     const handleStartSessionPress = () => {
-        TrueSheet.present(START_SESSION_BOTTOM_SHEET);
+        TrueSheet.present(BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET);
     };
 
     const handleAddWordPress = () => {
@@ -261,12 +222,11 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
     const handleRefresh = useCallback(async () => {
         try {
             setRefreshing(true);
-
-            await Promise.all([syncBundles(), new Promise(resolve => setTimeout(resolve, 3000))]);
+            await Promise.all([syncBundles(), syncWords(), syncEvaluations()]);
         } finally {
             setRefreshing(false);
         }
-    }, [syncBundles]);
+    }, [syncBundles, syncWords, syncEvaluations]);
 
     const handleBackPress = () => {
         navigation.goBack();
@@ -351,98 +311,100 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
         [handlePress],
     );
 
-    const renderListItem = useCallback(
-        ({ item }: { item: WordWithDetails | { id: 'header' } | { id: 'subheader' } }) => {
-            if (item.id === 'header') return renderHeader();
-            if (item.id === 'subheader') return renderSubheader();
-            return renderWordItem(item as WordWithDetails);
-        },
+    const renderHeader = useCallback(
+        () => (
+            <Animated.View
+                style={{
+                    opacity: contentAppear,
+                    transform: [
+                        {
+                            translateY: contentAppear.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [12, 0],
+                            }),
+                        },
+                    ],
+                }}
+            >
+                <Animated.View style={{ opacity: contentTitleOpacity }}>
+                    <CustomText style={styles.title} weight="Bold">
+                        {bundle?.title ?? ''}
+                    </CustomText>
+                </Animated.View>
+                {bundle?.description && (
+                    <CustomText style={styles.subtitle}>{bundle.description}</CustomText>
+                )}
+
+                <BundleCreatorInfo
+                    creatorId={bundle?.ownerId ?? ''}
+                    flashcardsCount={bundleWords.length}
+                    style={styles.creatorInfo}
+                />
+
+                <View style={styles.classBadges}>
+                    <FlashcardClassBadges
+                        mlStates={bundleWordsMLStates}
+                        onBadgePress={setMasteryFilter}
+                        onClassPress={setMasteryFilter}
+                        onReviewWordsPress={() => setMasteryFilter('all')}
+                    />
+                </View>
+
+                {membership && (
+                    <LibraryItem
+                        description={t('bundle_details.show_in_main_collection_desc')}
+                        enabled={membership.subscribed}
+                        index={0}
+                        label={t('bundle_details.show_in_main_collection')}
+                        style={styles.subscribedToggle}
+                        onPress={handleSubscribedToggle}
+                    />
+                )}
+
+                <View style={styles.headerButtons} onLayout={handleHeaderButtonsLayout}>
+                    {canAddWords && (
+                        <ActionButton
+                            label={t('bundle_details.add_word')}
+                            style={styles.headerAddButton}
+                            onPress={handleAddWordPress}
+                        />
+                    )}
+                    <ActionButton
+                        primary
+                        active={bundleWords.length > 0}
+                        icon={'play'}
+                        label={t('bundle_details.start_session')}
+                        style={styles.headerStartButton}
+                        onPress={handleStartSessionPress}
+                    />
+                </View>
+            </Animated.View>
+        ),
         [
-            renderWordItem,
+            contentAppear,
+            contentTitleOpacity,
+            styles,
             bundle,
-            bundleWords,
+            bundleWords.length,
             bundleWordsMLStates,
             membership,
             canAddWords,
-            masteryFilter,
-            flashcardsSortingMethod,
+            t,
+            handleHeaderButtonsLayout,
         ],
     );
 
-    const listData = useMemo(
-        () => [{ id: 'header' as const }, { id: 'subheader' as const }, ...words],
-        [words],
-    );
-
-    const renderHeader = () => (
-        <Animated.View
-            style={{
-                opacity: contentOpacity,
-                transform: [{ translateY: contentTranslateY }],
-            }}
-        >
-            <Animated.View style={{ opacity: contentTitleOpacity }}>
-                <CustomText style={styles.title} weight="Bold">
-                    {bundle?.title ?? ''}
-                </CustomText>
-            </Animated.View>
-            {bundle?.description && (
-                <CustomText style={styles.subtitle}>{bundle.description}</CustomText>
-            )}
-
-            <BundleCreatorInfo
-                creatorId={bundle.ownerId}
-                flashcardsCount={bundleWords.length}
-                style={styles.creatorInfo}
+    const renderSubheader = useCallback(
+        () => (
+            <FlashcardsSubheader
+                filterSheetName={BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET}
+                masteryFilter={masteryFilter}
+                showSearch={false}
+                sortingMethod={flashcardsSortingMethod}
+                sortingSheetName={BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET}
             />
-
-            <View style={styles.classBadges}>
-                <FlashcardClassBadges
-                    mlStates={bundleWordsMLStates}
-                    onBadgePress={setMasteryFilter}
-                    onClassPress={setMasteryFilter}
-                    onReviewWordsPress={() => setMasteryFilter('all')}
-                />
-            </View>
-
-            {membership && (
-                <LibraryItem
-                    description={t('bundle_details.show_in_main_collection_desc')}
-                    enabled={membership.subscribed}
-                    index={0}
-                    label={t('bundle_details.show_in_main_collection')}
-                    style={styles.subscribedToggle}
-                    onPress={handleSubscribedToggle}
-                />
-            )}
-
-            <View onLayout={handleHeaderButtonsLayout}>
-                {canAddWords && (
-                    <ActionButton
-                        label={t('bundle_details.add_word')}
-                        style={styles.headerAddButton}
-                        onPress={handleAddWordPress}
-                    />
-                )}
-                <ActionButton
-                    primary
-                    icon={'play'}
-                    label={t('bundle_details.start_session')}
-                    style={styles.headerStartButton}
-                    onPress={handleStartSessionPress}
-                />
-            </View>
-        </Animated.View>
-    );
-
-    const renderSubheader = () => (
-        <FlashcardsSubheader
-            filterSheetName={BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET}
-            masteryFilter={masteryFilter}
-            showSearch={false}
-            sortingMethod={flashcardsSortingMethod}
-            sortingSheetName={BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET}
-        />
+        ),
+        [masteryFilter, flashcardsSortingMethod],
     );
 
     const renderEmptyList = () => (
@@ -452,47 +414,33 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
         />
     );
 
+    const renderListItem = useCallback(
+        ({ item }: { item: WordWithDetails | { id: 'header' } | { id: 'subheader' } }) => {
+            if (item.id === 'header') return renderHeader();
+            if (item.id === 'subheader') return renderSubheader();
+            return renderWordItem(item as WordWithDetails);
+        },
+        [renderHeader, renderSubheader, renderWordItem],
+    );
+
+    const listData = useMemo(
+        () => [{ id: 'header' as const }, { id: 'subheader' as const }, ...words],
+        [words],
+    );
+
     return (
         <View style={styles.root}>
-            <View style={styles.topSpacer}>
-                <Pressable
-                    hitSlop={12}
-                    style={styles.backButton}
-                    onPress={handleBackPress}
-                    onPressIn={() => animatePressIn(backScale)}
-                    onPressOut={() => animatePressOut(backScale)}
-                >
-                    <Animated.View style={{ transform: [{ scale: backScale }] }}>
-                        <Ionicons color={colors.white} name="chevron-back" size={26} />
-                    </Animated.View>
-                </Pressable>
-                <Animated.View
-                    pointerEvents="none"
-                    style={[
-                        styles.topBarTitleContainer,
-                        {
-                            opacity: topBarTitleOpacity,
-                            transform: [{ translateY: topBarTitleTranslateY }],
-                        },
-                    ]}
-                >
-                    <CustomText numberOfLines={1} style={styles.topBarTitle} weight="Bold">
-                        {bundle?.title ?? ''}
-                    </CustomText>
-                </Animated.View>
-                <Pressable
-                    hitSlop={12}
-                    style={styles.moreButton}
-                    onPress={handleMoreOptionsPress}
-                    onPressIn={() => animatePressIn(moreScale)}
-                    onPressOut={() => animatePressOut(moreScale)}
-                >
-                    <Animated.View style={{ transform: [{ scale: moreScale }] }}>
-                        <Ionicons color={colors.white} name="ellipsis-horizontal" size={22} />
-                    </Animated.View>
-                </Pressable>
-            </View>
-            <StartSessionBottomSheet onSessionStart={handleSessionStart} />
+            <BundleFlashcardsTopBar
+                insets={insets}
+                scrollY={scrollY}
+                title={bundle?.title ?? ''}
+                onBackPress={handleBackPress}
+                onMoreOptionsPress={handleMoreOptionsPress}
+            />
+            <StartSessionBottomSheet
+                sheetName={BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET}
+                onSessionStart={handleSessionStart}
+            />
             <FlashcardDetailsBottomSheet
                 word={detailWord}
                 onEdit={() => handleEditPress(detailWord?.id ?? '')}
@@ -542,23 +490,15 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
                 }
                 onScroll={handleScroll}
             />
-            <Animated.View
-                pointerEvents={isBottomPanelVisible ? 'box-none' : 'none'}
-                style={[
-                    styles.bottomPanel,
-                    {
-                        opacity: bottomPanelOpacity,
-                        transform: [{ translateY: bottomPanelTranslateY }],
-                    },
-                ]}
-            >
+            <DockedActionPanel insets={insets} visible={isBottomPanelVisible}>
                 <ActionButton
                     primary
+                    active={bundleWords.length > 0}
                     icon={'play'}
                     label={t('bundle_details.start_session')}
                     onPress={handleStartSessionPress}
                 />
-            </Animated.View>
+            </DockedActionPanel>
             <ScrollToTopButton
                 addButtonAnim={bottomPanelOpacity}
                 animatedValue={scrollToTopAnim}
@@ -572,22 +512,6 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
 
 const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
-        backButton: {
-            marginLeft: MARGIN_HORIZONTAL,
-        },
-        bottomPanel: {
-            backgroundColor: colors.card,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            bottom: 0,
-            left: 0,
-            paddingBottom: insets.bottom + MARGIN_VERTICAL / 2,
-            paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL / 2,
-            position: 'absolute',
-            right: 0,
-            zIndex: 30,
-        },
         classBadges: {
             marginHorizontal: MARGIN_HORIZONTAL,
         },
@@ -597,6 +521,8 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         headerAddButton: {
             marginHorizontal: MARGIN_HORIZONTAL,
+        },
+        headerButtons: {
             marginTop: MARGIN_VERTICAL,
         },
         headerStartButton: {
@@ -606,9 +532,6 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         listFooter: {
             height: insets.bottom + MARGIN_VERTICAL / 2 + 56 + MARGIN_VERTICAL,
-        },
-        moreButton: {
-            marginRight: MARGIN_HORIZONTAL,
         },
         root: {
             backgroundColor: colors.background,
@@ -630,31 +553,5 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             fontSize: 24,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
-        },
-        topBarTitle: {
-            color: colors.white,
-            fontSize: 17,
-        },
-        topBarTitleContainer: {
-            alignItems: 'center',
-            bottom: 0,
-            justifyContent: 'center',
-            left: 56,
-            position: 'absolute',
-            right: 56,
-            top: insets.top,
-        },
-        topSpacer: {
-            alignItems: 'center',
-            backgroundColor: colors.background,
-            flexDirection: 'row',
-            height: isIOS ? 44 + insets.top : insets.top + 56,
-            justifyContent: 'space-between',
-            left: 0,
-            paddingTop: insets.top,
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            zIndex: 20,
         },
     });

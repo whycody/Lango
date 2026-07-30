@@ -18,7 +18,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { MAIN_COLLECTION, useWordsForBundle } from '../../hooks';
 import { RootStackParamList } from '../../navigation/navigationTypes';
@@ -27,7 +27,7 @@ import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
 import { getSortingMethod } from '../../utils/sortingUtil';
-import { ActionButton, BottomGradient, ModalDragHandle } from '../components';
+import { ActionButton, BottomGradient, DockedActionPanel, ModalDragHandle } from '../components';
 import {
     EmptyList,
     FlashcardListItem,
@@ -76,6 +76,7 @@ export const FlashcardsScreen = () => {
         route.params?.masteryFilter ?? 'all',
     );
     const [searchingMode, setSearchingMode] = useState(false);
+    const [isAddButtonVisible, setIsAddButtonVisible] = useState(true);
     const inputRef = useRef<TextInput>(null);
     const listRef = useRef<FlashListRef<{ id: string }>>(null);
     const lastScrollY = useRef(0);
@@ -170,6 +171,7 @@ export const FlashcardsScreen = () => {
     const showAddButton = () => {
         animateTo(addButtonAnim, 1);
         addButtonVisible.current = true;
+        setIsAddButtonVisible(true);
     };
 
     const turnOffSearchingMode = () => {
@@ -211,9 +213,11 @@ export const FlashcardsScreen = () => {
             if (scrollingDown && addButtonVisible.current) {
                 addButtonVisible.current = false;
                 animateTo(addButtonAnim, 0);
+                setIsAddButtonVisible(false);
             } else if (scrollingUp && !addButtonVisible.current) {
                 addButtonVisible.current = true;
                 animateTo(addButtonAnim, 1);
+                setIsAddButtonVisible(true);
             }
 
             const shouldShowScrollToTop = offsetY > SCROLL_TO_TOP_THRESHOLD;
@@ -413,7 +417,7 @@ export const FlashcardsScreen = () => {
             {searchingMode && renderSearchHeader}
             <FlashList
                 key={searchingMode ? 'search' : 'normal'}
-                ListFooterComponent={<View style={{ height: 16 }} />}
+                ListFooterComponent={<View style={styles.listFooter} />}
                 data={data}
                 keyExtractor={item => item.id}
                 keyboardDismissMode={'on-drag'}
@@ -429,32 +433,18 @@ export const FlashcardsScreen = () => {
             />
             <BottomGradient />
             {!searchingMode && (
-                <Animated.View
-                    style={[
-                        styles.buttonContainer,
-                        {
-                            opacity: addButtonAnim,
-                            transform: [
-                                {
-                                    translateY: addButtonAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [80, 0],
-                                    }),
-                                },
-                            ],
-                        },
-                    ]}
-                >
+                <DockedActionPanel insets={insets} visible={isAddButtonVisible}>
                     <ActionButton
                         label={t('addWord')}
                         primary={true}
                         onPress={handleActionButtonPress}
                     />
-                </Animated.View>
+                </DockedActionPanel>
             )}
             <ScrollToTopButton
                 addButtonAnim={addButtonAnim}
                 animatedValue={scrollToTopAnim}
+                liftOffset={insets.bottom + 56}
                 onPress={handleScrollToTop}
             />
         </View>
@@ -466,17 +456,8 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         backIcon: {
             marginRight: 10,
         },
-        buttonContainer: {
-            backgroundColor: colors.card,
-            borderRadius: spacing.l,
-            bottom: 0,
-            left: 0,
-            paddingBottom: insets.bottom,
-            paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL / 2,
-            position: 'absolute',
-            right: 0,
-            zIndex: 100,
+        listFooter: {
+            height: insets.bottom + MARGIN_VERTICAL / 2 + 56 + MARGIN_VERTICAL,
         },
         root: {
             backgroundColor: colors.background,

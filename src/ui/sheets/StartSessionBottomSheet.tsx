@@ -19,6 +19,7 @@ type StartSessionBottomSheetProps = {
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ) => void;
+    sheetName?: string;
 };
 
 export const START_SESSION_BOTTOM_SHEET = 'start-session-bottom-sheet';
@@ -71,7 +72,7 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
             allowDismiss={!!user?.finishedOnboarding}
             primaryActionIcon={'play'}
             primaryActionLabel={t('startSession')}
-            sheetName={START_SESSION_BOTTOM_SHEET}
+            sheetName={props.sheetName || START_SESSION_BOTTOM_SHEET}
             title={t('startSession')}
             onPrimaryButtonPress={handleActionButtonPress}
         >

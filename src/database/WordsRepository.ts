@@ -114,3 +114,12 @@ export const deleteWordsByBundleId = async (userId: string, bundleId: string) =>
         tx.executeSql(`DELETE FROM ${WORDS} WHERE bundleId = ?`, [bundleId]);
     });
 };
+
+export const deleteWordsByIds = async (userId: string, ids: string[]) => {
+    if (ids.length === 0) return;
+    const db = await getDb(userId);
+    const placeholders = ids.map(() => '?').join(', ');
+    await db.transaction(tx => {
+        tx.executeSql(`DELETE FROM ${WORDS} WHERE id IN (${placeholders})`, ids);
+    });
+};

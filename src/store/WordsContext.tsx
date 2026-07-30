@@ -16,6 +16,7 @@ import { useWordsRepository } from '../hooks/repo';
 import { Word } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
 import {
+    applyUnauthorizedItems,
     findChangedItems,
     findLatestUpdatedAt,
     getUnsyncedItems,
@@ -64,7 +65,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [words, setWords] = useState<Word[]>(initialLoad!.words);
     const { mainLang, translationLang } = useLanguage();
-    const { deleteWordsByBundleId, getAllWords, saveWords, updateWord } = useWordsRepository();
+    const { deleteWordsByBundleId, deleteWordsByIds, getAllWords, saveWords, updateWord } =
+        useWordsRepository();
     const { bundles, members, setWordsBackfilled } = useWordsBundle();
     const { user } = useAuth();
     const syncing = useRef(false);
@@ -223,17 +225,32 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             syncing.current = true;
             const wordsList = inputWords ?? (await getAllWords());
             const unsyncedWords = getUnsyncedItems<Word>(wordsList);
-            const { synced: serverUpdates } = await syncInBatches<Word>(unsyncedWords, words =>
-                wordsApi.syncWordsOnServer(words),
+            const { rejectedIds, synced, unauthorized } = await syncInBatches<Word>(
+                unsyncedWords,
+                words => wordsApi.syncWordsOnServer(words),
             );
 
-            const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
-            const serverWords = await fetchNewWords(updatedWords);
-            const mergedWords = mergeLocalAndServer<Word>(updatedWords, serverWords);
+            const rejectedIdsSet = new Set(rejectedIds);
+            const remainingWords = wordsList.filter(word => !rejectedIdsSet.has(word.id));
+
+            const updatedWords = updateLocalItems<Word>(remainingWords, synced);
+            const withUnauthorizedApplied = applyUnauthorizedItems<Word>(
+                updatedWords,
+                unauthorized,
+            );
+            const serverWords = await fetchNewWords(withUnauthorizedApplied);
+            const mergedWords = mergeLocalAndServer<Word>(withUnauthorizedApplied, serverWords);
             const changedWords = findChangedItems<Word>(wordsList, mergedWords);
 
-            if (changedWords.length > 0) {
+            if (rejectedIds.length > 0) {
+                await deleteWordsByIds(rejectedIds);
+            }
+
+            if (changedWords.length > 0 || rejectedIds.length > 0) {
                 setWords(mergedWords);
+            }
+
+            if (changedWords.length > 0) {
                 await saveWords(changedWords);
             }
         } catch (error) {

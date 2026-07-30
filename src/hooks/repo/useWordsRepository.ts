@@ -1,6 +1,7 @@
 import {
     createTables,
     deleteWordsByBundleId,
+    deleteWordsByIds,
     getAllWords,
     saveWords,
     updateWord,
@@ -14,6 +15,7 @@ export const useWordsRepository = () => {
     return {
         createTables: () => createTables(getUserId()),
         deleteWordsByBundleId: (bundleId: string) => deleteWordsByBundleId(getUserId(), bundleId),
+        deleteWordsByIds: (ids: string[]) => deleteWordsByIds(getUserId(), ids),
         getAllWords: () => getAllWords(getUserId()),
         saveWords: (words: Word[]) => saveWords(getUserId(), words),
         updateWord: (word: Word) => updateWord(getUserId(), word),

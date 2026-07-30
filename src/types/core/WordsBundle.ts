@@ -4,6 +4,7 @@ import { SyncMetadata } from '../sync/SyncMetadata';
 export type WordsBundleVisibility = 'friends' | 'private' | 'public';
 
 export type WordsBundle = SyncMetadata & {
+    bundleCreatedOnServer: boolean;
     description?: string;
     id: string;
     mainLang: LanguageCode;

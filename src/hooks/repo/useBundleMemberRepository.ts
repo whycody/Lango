@@ -1,5 +1,6 @@
 import {
     createTables,
+    deleteBundleMembersByIds,
     getAllBundleMembers,
     saveBundleMembers,
     updateBundleMember,
@@ -12,6 +13,7 @@ export const useBundleMemberRepository = () => {
 
     return {
         createTables: () => createTables(getUserId()),
+        deleteBundleMembersByIds: (ids: string[]) => deleteBundleMembersByIds(getUserId(), ids),
         getAllBundleMembers: () => getAllBundleMembers(getUserId()),
         saveBundleMembers: (members: BundleMember[]) => saveBundleMembers(getUserId(), members),
         updateBundleMember: (member: BundleMember) => updateBundleMember(getUserId(), member),

@@ -1,5 +1,5 @@
 import { SyncMetadata } from '../sync/SyncMetadata';
-import { UserSummary } from './User';
+import { UserSummary } from './user-summary';
 
 export type BundleMemberRole = 'editor' | 'owner' | 'viewer';
 

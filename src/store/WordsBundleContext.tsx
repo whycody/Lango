@@ -83,7 +83,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
 
     const { deleteWordsBundle, getAllWordsBundles, saveWordsBundles, updateWordsBundle } =
         useWordsBundleRepository();
-    const { getAllBundleMembers, saveBundleMembers, updateBundleMember } =
+    const { deleteBundleMembersByIds, getAllBundleMembers, saveBundleMembers, updateBundleMember } =
         useBundleMemberRepository();
 
     const syncingBundles = useRef(false);
@@ -117,6 +117,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
     ): WordsBundle => {
         const now = getCurrentISO();
         const newBundle: WordsBundle = {
+            bundleCreatedOnServer: false,
             description,
             id: uuid.v4(),
             locallyUpdatedAt: now,
@@ -150,8 +151,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         setMembers(updatedMembers);
         saveWordsBundles([newBundle]);
         saveBundleMembers([ownerMember]);
-        syncWordsBundles(updatedBundles);
-        syncBundleMembers(updatedMembers);
+        syncWordsBundles(updatedBundles).then(() => syncBundleMembers(updatedMembers));
 
         return newBundle;
     };
@@ -257,18 +257,27 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
                 bundlesChunk => wordsBundlesApi.syncWordsBundlesOnServer(bundlesChunk),
             );
 
-            const updatedBundles = updateLocalItems<WordsBundle>(bundlesList, serverUpdates);
+            const syncedIds = new Set(serverUpdates.map(update => update.id));
+            const updatedBundles = updateLocalItems<WordsBundle>(bundlesList, serverUpdates).map(
+                bundle => ({
+                    ...bundle,
+                    bundleCreatedOnServer: bundle.bundleCreatedOnServer || syncedIds.has(bundle.id),
+                }),
+            );
             const latestUpdatedAt = findLatestUpdatedAt<WordsBundle>(updatedBundles);
             const result = await wordsBundlesApi.fetchUpdatedWordsBundles(latestUpdatedAt);
             const serverBundles = result.kind === 'ok' ? result.data : [];
             const mergedBundles = mergeLocalAndServer<WordsBundle>(
                 updatedBundles,
                 serverBundles,
-            ).map(bundle => ({
-                ...bundle,
-                wordsBackfilled:
-                    bundlesList.find(local => local.id === bundle.id)?.wordsBackfilled ?? false,
-            }));
+            ).map(bundle => {
+                const local = bundlesList.find(b => b.id === bundle.id);
+                return {
+                    ...bundle,
+                    bundleCreatedOnServer: local ? bundle.bundleCreatedOnServer : true,
+                    wordsBackfilled: local?.wordsBackfilled ?? false,
+                };
+            });
             const changedBundles = findChangedItems<WordsBundle>(bundlesList, mergedBundles);
 
             if (changedBundles.length > 0) {
@@ -287,14 +296,25 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             if (syncingMembers.current) return;
             syncingMembers.current = true;
             const membersList = inputMembers ?? (await getAllBundleMembers());
-            const unsyncedMembers = getUnsyncedItems<BundleMember>(membersList);
-            const { synced, unauthorized } = await syncInBatches<BundleMember>(
+            const bundlesList = await getAllWordsBundles();
+            const bundlesNotCreatedOnServer = new Set(
+                bundlesList
+                    .filter(bundle => !bundle.bundleCreatedOnServer)
+                    .map(bundle => bundle.id),
+            );
+            const unsyncedMembers = getUnsyncedItems<BundleMember>(membersList).filter(
+                member => !bundlesNotCreatedOnServer.has(member.bundleId),
+            );
+            const { rejectedIds, synced, unauthorized } = await syncInBatches<BundleMember>(
                 unsyncedMembers,
                 membersChunk => bundleMembersApi.syncBundleMembersOnServer(membersChunk),
             );
 
+            const rejectedIdsSet = new Set(rejectedIds);
+            const remainingMembers = membersList.filter(member => !rejectedIdsSet.has(member.id));
+
             const updatedMembers = applyUnauthorizedItems<BundleMember>(
-                updateLocalItems<BundleMember>(membersList, synced),
+                updateLocalItems<BundleMember>(remainingMembers, synced),
                 unauthorized,
             );
             const latestUpdatedAt = findLatestUpdatedAt<BundleMember>(updatedMembers);
@@ -303,8 +323,15 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             const mergedMembers = mergeLocalAndServer<BundleMember>(updatedMembers, serverMembers);
             const changedMembers = findChangedItems<BundleMember>(membersList, mergedMembers);
 
-            if (changedMembers.length > 0) {
+            if (rejectedIds.length > 0) {
+                await deleteBundleMembersByIds(rejectedIds);
+            }
+
+            if (changedMembers.length > 0 || rejectedIds.length > 0) {
                 setMembers(mergedMembers);
+            }
+
+            if (changedMembers.length > 0) {
                 await saveBundleMembers(changedMembers);
             }
         } catch (error) {
@@ -336,6 +363,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
 
             const newBundles: WordsBundle[] = fetchedBundles.map(bundle => ({
                 ...bundle,
+                bundleCreatedOnServer: true,
                 locallyUpdatedAt: bundle.updatedAt ?? getCurrentISO(),
                 synced: true,
                 wordsBackfilled: false,

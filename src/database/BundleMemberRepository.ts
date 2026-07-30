@@ -104,3 +104,12 @@ export const getAllBundleMembers = async (userId: string): Promise<BundleMember[
 export const updateBundleMember = async (userId: string, member: BundleMember) => {
     await saveBundleMembers(userId, [member]);
 };
+
+export const deleteBundleMembersByIds = async (userId: string, ids: string[]) => {
+    if (ids.length === 0) return;
+    const db = await getDb(userId);
+    const placeholders = ids.map(() => '?').join(', ');
+    await db.transaction(tx => {
+        tx.executeSql(`DELETE FROM ${BUNDLE_MEMBERS} WHERE id IN (${placeholders})`, ids);
+    });
+};

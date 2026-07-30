@@ -12,6 +12,7 @@ export const WORDS_BUNDLE_COLUMNS: Array<keyof WordsBundle> = [
     'visibility',
     'removed',
     'wordsBackfilled',
+    'bundleCreatedOnServer',
     'synced',
     'locallyUpdatedAt',
     'updatedAt',
@@ -33,6 +34,7 @@ export const createTables = async (userId: string) => {
             visibility           TEXT,
             removed              INTEGER,
             wordsBackfilled      INTEGER,
+            bundleCreatedOnServer INTEGER,
             synced               INTEGER,
             locallyUpdatedAt     TEXT,
             updatedAt            TEXT
@@ -53,7 +55,12 @@ export const saveWordsBundles = async (userId: string, bundles: WordsBundle[]) =
     await db.transaction(tx => {
         bundles.forEach(bundle => {
             const values = WORDS_BUNDLE_COLUMNS.map(col => {
-                if (col === 'removed' || col === 'synced' || col === 'wordsBackfilled') {
+                if (
+                    col === 'removed' ||
+                    col === 'synced' ||
+                    col === 'wordsBackfilled' ||
+                    col === 'bundleCreatedOnServer'
+                ) {
                     return bundle[col] ? 1 : 0;
                 }
                 if (col === 'updatedAt') {
@@ -88,6 +95,7 @@ export const getAllWordsBundles = async (userId: string): Promise<WordsBundle[]>
                         const row = rows.item(i);
                         bundles.push({
                             ...row,
+                            bundleCreatedOnServer: row.bundleCreatedOnServer === 1,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             removed: row.removed === 1,
                             synced: row.synced === 1,

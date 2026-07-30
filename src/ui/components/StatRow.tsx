@@ -19,7 +19,7 @@ export const StatRow: FC<StatRowProps> = ({ color, icon, label, value }) => {
     return (
         <View style={styles.root}>
             <View style={[styles.iconWrap, { backgroundColor: color + '22' }]}>
-                <Ionicons color={color} name={icon} size={15} />
+                <Ionicons color={color} name={icon} size={17} />
             </View>
             <CustomText style={[styles.label, { color: colors.white }]}>{label}</CustomText>
             <CustomText style={[styles.value, { color: colors.white }]} weight="Bold">
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     },
     label: {
         flex: 1,
-        fontSize: 13,
+        fontSize: 14,
     },
     root: {
         alignItems: 'center',
@@ -48,6 +48,6 @@ const styles = StyleSheet.create({
         paddingVertical: spacing.s,
     },
     value: {
-        fontSize: 15,
+        fontSize: 16,
     },
 });

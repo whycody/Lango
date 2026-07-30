@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
+import { useWordsBundle } from '../../store/WordsBundleContext';
 import { WordWithDetails } from '../../types/utils/WordWithDetails';
 import { formatDisplayDate, formatHoursSince } from '../../utils/dateUtil';
 import { getLevelColor } from '../../utils/getLevelColor';
@@ -29,10 +30,17 @@ export const FlashcardDetailsBottomSheet: FC<FlashcardDetailsBottomSheetProps> =
     const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
     const styles = getStyles(colors);
+    const { bundles } = useWordsBundle();
 
     const handleDismiss = () => {
         TrueSheet.dismiss(FLASHCARD_DETAIL_BOTTOM_SHEET);
     };
+
+    const bundle = word?.bundleId ? bundles.find(b => b.id === word.bundleId) : undefined;
+    const canEditOrRemove =
+        !word?.bundleId ||
+        bundle?.membership?.role === 'owner' ||
+        bundle?.membership?.role === 'editor';
 
     const levelColor = word ? getLevelColor(word.gradeThreeProb) : colors.white300;
     const levelPercent = word ? Math.round(word.gradeThreeProb * 100) : 0;
@@ -105,15 +113,21 @@ export const FlashcardDetailsBottomSheet: FC<FlashcardDetailsBottomSheetProps> =
                 </View>
 
                 <View style={styles.bottomSection}>
-                    <View style={styles.actionRow}>
-                        <SecondaryButton icon="pencil-outline" label={t('edit')} onPress={onEdit} />
-                        <SecondaryButton
-                            color={colors.red}
-                            icon="trash-outline"
-                            label={t('delete')}
-                            onPress={onRemove}
-                        />
-                    </View>
+                    {canEditOrRemove && (
+                        <View style={styles.actionRow}>
+                            <SecondaryButton
+                                icon="pencil-outline"
+                                label={t('edit')}
+                                onPress={onEdit}
+                            />
+                            <SecondaryButton
+                                color={colors.red}
+                                icon="trash-outline"
+                                label={t('delete')}
+                                onPress={onRemove}
+                            />
+                        </View>
+                    )}
 
                     <ActionButton
                         primary
@@ -162,11 +176,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         cardMetaText: {
             color: colors.white300,
-            fontSize: 12,
+            fontSize: 13,
         },
         cardMetaTextBold: {
             color: colors.white,
-            fontSize: 12,
+            fontSize: 13,
         },
         gotItButton: {
             marginHorizontal: MARGIN_HORIZONTAL,
@@ -188,19 +202,19 @@ const getStyles = (colors: CustomTheme['colors']) =>
         levelLabel: {
             color: colors.white,
             flex: 1,
-            fontSize: 13,
+            fontSize: 14,
         },
         levelPercent: {
-            fontSize: 13,
+            fontSize: 14,
         },
         progressFill: {
             borderRadius: 3,
-            height: 7,
+            height: 8,
         },
         progressTrack: {
             backgroundColor: colors.cardAccent300,
             borderRadius: 3,
-            height: 7,
+            height: 8,
             overflow: 'hidden',
             width: '100%',
         },

@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GRADE_THREE_PROB_THRESHOLDS } from '../../../constants/Evaluation';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
 import {
@@ -491,13 +491,24 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
                 onScroll={handleScroll}
             />
             <DockedActionPanel insets={insets} visible={isBottomPanelVisible}>
-                <ActionButton
-                    primary
-                    active={bundleWords.length > 0}
-                    icon={'play'}
-                    label={t('bundle_details.start_session')}
-                    onPress={handleStartSessionPress}
-                />
+                <View style={styles.buttonsContainer}>
+                    {canAddWords && (
+                        <ActionButton
+                            active={bundleWords.length > 0}
+                            label={t('bundle_details.add_word')}
+                            style={styles.button}
+                            onPress={handleAddWordPress}
+                        />
+                    )}
+                    <ActionButton
+                        primary
+                        active={bundleWords.length > 0}
+                        icon={'play'}
+                        label={t('bundle_details.start_session')}
+                        style={styles.button}
+                        onPress={handleStartSessionPress}
+                    />
+                </View>
             </DockedActionPanel>
             <ScrollToTopButton
                 addButtonAnim={bottomPanelOpacity}
@@ -512,6 +523,14 @@ export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) =
 
 const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
+        button: {
+            flex: 1,
+        },
+        buttonsContainer: {
+            flex: 1,
+            flexDirection: 'row',
+            gap: spacing.m,
+        },
         classBadges: {
             marginHorizontal: MARGIN_HORIZONTAL,
         },

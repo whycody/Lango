@@ -85,14 +85,17 @@ export const ActionButton: FC<ActionButtonProps> = ({
 
     return (
         <Animated.View
-            style={{
-                opacity: opacityAnim,
-                transform: [{ scale: scaleAnim }],
-            }}
+            style={[
+                {
+                    opacity: opacityAnim,
+                    transform: [{ scale: scaleAnim }],
+                },
+                style,
+            ]}
         >
             <Pressable
                 android_ripple={{ color: primary ? 'white' : colors.card, foreground: true }}
-                style={[styles.root, style]}
+                style={styles.root}
                 onPress={active && !loading ? handlePress : undefined}
                 onPressIn={active && !loading ? handlePressIn : undefined}
                 onPressOut={active && !loading ? handlePressOut : undefined}
@@ -143,7 +146,6 @@ const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: bool
             justifyContent: 'center',
             opacity: active ? 1 : 0.5,
             overflow: 'hidden',
-            paddingHorizontal: 24,
-            paddingVertical: primary ? 14 : 12,
+            paddingVertical: 13,
         },
     });

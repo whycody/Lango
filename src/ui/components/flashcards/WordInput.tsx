@@ -218,7 +218,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             padding: 6.5,
         },
         input: {
-            backgroundColor: colors.cardAccent,
             color: colors.white,
             flex: 1,
             fontFamily: `Montserrat-Regular`,
@@ -228,11 +227,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
             paddingHorizontal: MARGIN_HORIZONTAL / 2,
         },
         inputAsPlaceholder: {
-            color: colors.cardAccent,
+            color: colors.white600,
         },
         inputContainer: {
             alignItems: 'center',
-            backgroundColor: colors.cardAccent,
+            backgroundColor: colors.cardAccent600,
             borderRadius: spacing.m,
             flex: 1,
             flexDirection: 'row',
@@ -252,7 +251,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             flexDirection: 'row',
         },
         suggestionItem: {
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardAccent,
             borderRadius: spacing.m,
             marginTop: 5,
             paddingHorizontal: 10,

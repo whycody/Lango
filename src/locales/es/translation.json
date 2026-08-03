@@ -321,7 +321,11 @@
         "recommended_bundles": "Conjuntos recomendados",
         "no_bundles": "Todavía no hay nada aquí",
         "no_bundles_desc": "Crea tu primer conjunto para empezar a aprender.",
-        "no_recommended_bundles": "Por ahora no tenemos nada para tu nivel. ¡Vuelve más tarde!"
+        "no_recommended_bundles": "Por ahora no tenemos nada para tu nivel. ¡Vuelve más tarde!",
+        "start_search": "Buscar nuevos conjuntos",
+        "start_search_desc": "Escribe el nombre del conjunto que buscas.",
+        "empty_search": "Sin resultados",
+        "empty_search_desc": "No se encontraron conjuntos que coincidan con tu búsqueda."
     },
     "bundle_details": {
         "add_word": "Añadir nueva palabra +",

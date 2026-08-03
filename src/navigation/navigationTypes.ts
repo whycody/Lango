@@ -20,6 +20,7 @@ export type BundleNavigatorParams = {
 export type RootStackParamList = {
     BundleNavigator: BundleNavigatorParams;
     Flashcards: FlashcardsScreenParams | undefined;
+    SearchBundles: undefined;
     Session: SessionScreenParams;
     Settings: undefined;
     Tabs: undefined;
@@ -33,6 +34,7 @@ export enum ScreenName {
     BundleFlashcards = 'BundleFlashcards',
     BundleNavigator = 'BundleNavigator',
     Flashcards = 'Flashcards',
+    SearchBundles = 'SearchBundles',
     Session = 'Session',
     Settings = 'Settings',
     Tabs = 'Tabs',

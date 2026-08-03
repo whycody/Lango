@@ -320,7 +320,11 @@
         "recommended_bundles": "Polecane zestawy",
         "no_bundles": "Na razie tu nic nie ma",
         "no_bundles_desc": "Stwórz swój pierwszy zestaw słówek, aby zacząć naukę.",
-        "no_recommended_bundles": "Na ten moment nie możemy Ci zaproponować niczego na Twoim poziomie. Wróć tutaj później!"
+        "no_recommended_bundles": "Na ten moment nie możemy Ci zaproponować niczego na Twoim poziomie. Wróć tutaj później!",
+        "start_search": "Wyszukaj nowy zestaw",
+        "start_search_desc": "Wpisz nazwę zestawu, którego szukasz.",
+        "empty_search": "Brak wyników",
+        "empty_search_desc": "Nie znaleziono zestawów pasujących do wyszukiwania."
     },
     "bundle_details": {
         "add_word": "Dodaj nowe słówko +",

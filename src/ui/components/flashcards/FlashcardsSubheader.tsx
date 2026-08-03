@@ -5,7 +5,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { FlashcardSortingMethod } from '../../../constants/UserPreferences';
 import { getSortingMethodLabel } from '../../../utils/sortingUtil';
 import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
@@ -45,6 +45,7 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
                             editable={false}
                             isSearching={false}
                             pointerEvents="none"
+                            styleRoot={styles.listFilter}
                             onClear={onClearSearch ?? (() => {})}
                         />
                     </Pressable>
@@ -103,6 +104,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
         filterLabel: {
             color: colors.white,
             fontSize: 13,
+        },
+        listFilter: {
+            marginVertical: spacing.l,
         },
         row: {
             alignItems: 'center',

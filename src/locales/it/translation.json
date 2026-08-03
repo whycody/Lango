@@ -321,7 +321,11 @@
         "recommended_bundles": "Set consigliati",
         "no_bundles": "Non c'è ancora niente qui",
         "no_bundles_desc": "Crea il tuo primo set per iniziare a imparare.",
-        "no_recommended_bundles": "Al momento non abbiamo nulla adatto al tuo livello. Torna più tardi!"
+        "no_recommended_bundles": "Al momento non abbiamo nulla adatto al tuo livello. Torna più tardi!",
+        "start_search": "Cerca nuovi set",
+        "start_search_desc": "Digita il nome del set che stai cercando.",
+        "empty_search": "Nessun risultato",
+        "empty_search_desc": "Nessun set corrisponde alla tua ricerca."
     },
     "bundle_details": {
         "add_word": "Aggiungi nuova parola +",

@@ -321,7 +321,11 @@
         "recommended_bundles": "Recommended bundles",
         "no_bundles": "Nothing here yet",
         "no_bundles_desc": "Create your first bundle to start learning.",
-        "no_recommended_bundles": "We don't have anything at your level to suggest right now. Check back later!"
+        "no_recommended_bundles": "We don't have anything at your level to suggest right now. Check back later!",
+        "start_search": "Search new bundles",
+        "start_search_desc": "Type the name of the bundle you're looking for.",
+        "empty_search": "No results",
+        "empty_search_desc": "No bundles matched your search."
     },
     "bundle_details": {
         "add_word": "Add new word +",

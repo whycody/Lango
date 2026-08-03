@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import { StyleProp, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -10,16 +10,17 @@ import { CustomTheme } from '../../Theme';
 interface ListFilterProps extends Omit<TextInputProps, 'style'> {
     isSearching: boolean;
     onClear: () => void;
+    styleRoot?: StyleProp<ViewStyle>;
 }
 
 export const ListFilter = forwardRef<TextInput, ListFilterProps>(
-    ({ isSearching, onClear, ...props }, ref) => {
+    ({ isSearching, onClear, styleRoot, ...props }, ref) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { t } = useTranslation();
 
         return (
-            <View style={styles.root}>
+            <View style={[styles.root, styleRoot]}>
                 <Ionicons
                     color={isSearching ? colors.white300 : colors.white300}
                     name="search-sharp"
@@ -66,7 +67,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderRadius: spacing.m,
             flex: 1,
             flexDirection: 'row',
-            marginVertical: 15,
+            height: 45,
         },
         textInput: {
             backgroundColor: colors.card,
@@ -74,6 +75,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             color: colors.white,
             flex: 1,
             fontSize: 18,
-            height: 50,
+            height: 45,
         },
     });

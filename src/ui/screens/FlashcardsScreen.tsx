@@ -18,7 +18,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { MAIN_COLLECTION, useWordsForBundle } from '../../hooks';
 import { RootStackParamList } from '../../navigation/navigationTypes';
@@ -359,6 +359,7 @@ export const FlashcardsScreen = () => {
                 <ListFilter
                     isSearching={searchingMode}
                     ref={inputRef}
+                    styleRoot={styles.listFilter}
                     value={filter}
                     onChangeText={setFilter}
                     onClear={() => setFilter('')}
@@ -366,7 +367,7 @@ export const FlashcardsScreen = () => {
                 />
             </View>
         ),
-        [filter],
+        [filter, styles.listFilter],
     );
 
     const renderListItem = ({ item }: { item: { id: string } }) => {
@@ -455,6 +456,9 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         backIcon: {
             marginRight: 10,
+        },
+        listFilter: {
+            marginVertical: spacing.l,
         },
         listFooter: {
             height: insets.bottom + MARGIN_VERTICAL / 2 + 56 + MARGIN_VERTICAL,

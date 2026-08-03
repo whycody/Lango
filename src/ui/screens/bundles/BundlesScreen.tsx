@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { AppState, FlatList, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import {
+    AppState,
+    FlatList,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    View,
+} from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,7 +25,7 @@ import { trackEvent } from '../../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { ActionButton, BottomGradient, CustomText, Header, ScreenHeader } from '../../components';
 import { BundleItem } from '../../components/bundles';
-import { EmptyList } from '../../components/flashcards';
+import { EmptyList, ListFilter } from '../../components/flashcards';
 import { AddBundleBottomSheet, LanguageBottomSheet } from '../../sheets';
 import { CustomTheme } from '../../Theme';
 
@@ -67,6 +75,10 @@ export const BundlesScreen = () => {
     const handleAddNewPress = useCallback(() => {
         TrueSheet.present(ADD_BUNDLE_SHEET_NAME);
     }, []);
+
+    const handleSearchPress = useCallback(() => {
+        navigation.navigate(ScreenName.SearchBundles);
+    }, [navigation]);
 
     const handleCreateNewBundle = useCallback(() => {
         // TODO: navigate to create bundle flow
@@ -135,6 +147,16 @@ export const BundlesScreen = () => {
                     style={styles.actionButton}
                     onPress={handleAddNewPress}
                 />
+                <Pressable onPress={handleSearchPress}>
+                    <ListFilter
+                        editable={false}
+                        isSearching={false}
+                        placeholder={t('bundles.start_search')}
+                        pointerEvents="none"
+                        styleRoot={{ marginTop: 15 }}
+                        onClear={() => {}}
+                    />
+                </Pressable>
                 <Header style={styles.sectionTitle} title={t('bundles.your_bundles')} />
                 <FlatList
                     data={bundles.langBundles}

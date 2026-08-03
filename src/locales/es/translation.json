@@ -316,7 +316,12 @@
         "add_new_title": "Añadir conjunto",
         "add_new_desc": "Puedes crear un nuevo conjunto o unirte a uno existente introduciendo el código que te compartió su creador.",
         "create_new": "Crear un nuevo conjunto +",
-        "join_with_code": "Unirse a un conjunto con un código"
+        "join_with_code": "Unirse a un conjunto con un código",
+        "your_bundles": "Tus conjuntos",
+        "recommended_bundles": "Conjuntos recomendados",
+        "no_bundles": "Todavía no hay nada aquí",
+        "no_bundles_desc": "Crea tu primer conjunto para empezar a aprender.",
+        "no_recommended_bundles": "Por ahora no tenemos nada para tu nivel. ¡Vuelve más tarde!"
     },
     "bundle_details": {
         "add_word": "Añadir nueva palabra +",

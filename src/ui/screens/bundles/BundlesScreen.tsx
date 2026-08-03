@@ -7,15 +7,17 @@ import { t } from 'i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
+import { useDynamicStatusBar } from '../../../hooks';
 import { RootStackParamList, ScreenName } from '../../../navigation/navigationTypes';
 import { useLanguage, useStatistics, useWordsBundle } from '../../../store';
 import { EnrichedWordsBundle } from '../../../store/WordsBundleContext';
 import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
-import { ActionButton, BottomGradient, CustomText, ScreenHeader } from '../../components';
+import { ActionButton, BottomGradient, CustomText, Header, ScreenHeader } from '../../components';
 import { BundleItem } from '../../components/bundles';
+import { EmptyList } from '../../components/flashcards';
 import { AddBundleBottomSheet, LanguageBottomSheet } from '../../sheets';
 import { CustomTheme } from '../../Theme';
 
@@ -30,6 +32,7 @@ export const BundlesScreen = () => {
     const { studyDaysList } = useStatistics();
     const bundles = useWordsBundle();
     const styles = getStyles(colors, insets);
+    const { onScroll, style } = useDynamicStatusBar(100, 0.5);
 
     const [refreshing, setRefreshing] = useState(false);
 
@@ -102,6 +105,7 @@ export const BundlesScreen = () => {
                 onCreateNew={handleCreateNewBundle}
                 onJoinWithCode={handleJoinBundleWithCode}
             />
+            <View style={style} />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 style={styles.container}
@@ -113,6 +117,7 @@ export const BundlesScreen = () => {
                         onRefresh={onRefresh}
                     />
                 }
+                onScroll={onScroll}
             >
                 <View style={styles.spacer} />
                 <ScreenHeader
@@ -130,13 +135,23 @@ export const BundlesScreen = () => {
                     style={styles.actionButton}
                     onPress={handleAddNewPress}
                 />
+                <Header style={styles.sectionTitle} title={t('bundles.your_bundles')} />
                 <FlatList
-                    ListFooterComponent={<View style={styles.footer} />}
-                    contentContainerStyle={styles.list}
                     data={bundles.langBundles}
                     renderItem={renderBundleItem}
                     scrollEnabled={false}
+                    ListEmptyComponent={
+                        <EmptyList
+                            description={t('bundles.no_bundles_desc')}
+                            title={t('bundles.no_bundles')}
+                        />
+                    }
                 />
+                <Header style={styles.sectionTitle} title={t('bundles.recommended_bundles')} />
+                <CustomText style={styles.recommendedText}>
+                    {t('bundles.no_recommended_bundles')}
+                </CustomText>
+                <View style={styles.footer} />
             </ScrollView>
         </>
     );
@@ -161,7 +176,18 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         footer: {
             height: 50,
         },
-        list: {
+        recommendedText: {
+            color: colors.white300,
+            fontSize: 13,
+            lineHeight: 22,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: spacing.xxl,
+            textAlign: 'center',
+        },
+        sectionTitle: {
+            color: colors.white,
+            fontSize: 16,
+            marginBottom: MARGIN_VERTICAL / 2,
             marginTop: MARGIN_VERTICAL,
         },
         spacer: {

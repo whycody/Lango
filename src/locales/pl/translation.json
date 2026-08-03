@@ -315,7 +315,12 @@
         "add_new_title": "Dodaj zestaw",
         "add_new_desc": "Możesz stworzyć nowy zestaw słówek albo dołączyć do istniejącego, wpisując kod, który udostępnił Ci jego twórca.",
         "create_new": "Stwórz nowy zestaw +",
-        "join_with_code": "Dołącz do zestawu za pomocą kodu"
+        "join_with_code": "Dołącz do zestawu za pomocą kodu",
+        "your_bundles": "Twoje zestawy",
+        "recommended_bundles": "Polecane zestawy",
+        "no_bundles": "Na razie tu nic nie ma",
+        "no_bundles_desc": "Stwórz swój pierwszy zestaw słówek, aby zacząć naukę.",
+        "no_recommended_bundles": "Na ten moment nie możemy Ci zaproponować niczego na Twoim poziomie. Wróć tutaj później!"
     },
     "bundle_details": {
         "add_word": "Dodaj nowe słówko +",

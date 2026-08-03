@@ -10,12 +10,18 @@ import { CustomTheme } from '../../Theme';
 import { CustomText } from '../CustomText';
 
 type Props = {
+    compact?: boolean;
     creatorId: string;
     flashcardsCount: number;
     style?: StyleProp<ViewStyle>;
 };
 
-export const BundleCreatorInfo: FC<Props> = ({ creatorId, flashcardsCount, style }) => {
+export const BundleCreatorInfo: FC<Props> = ({
+    compact = false,
+    creatorId,
+    flashcardsCount,
+    style,
+}) => {
     const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
     const { data: userSummary } = useUserSummaryQuery(creatorId);
@@ -24,24 +30,33 @@ export const BundleCreatorInfo: FC<Props> = ({ creatorId, flashcardsCount, style
 
     return (
         <View style={[styles.row, style]}>
-            {userSummary.picture ? (
-                <Image
-                    resizeMode="cover"
-                    source={{ uri: userSummary.picture }}
-                    style={styles.avatar}
-                />
-            ) : (
-                <View
-                    style={[
-                        styles.avatar,
-                        styles.avatarFallback,
-                        { backgroundColor: colors.primary300 },
-                    ]}
-                >
-                    <Ionicons color={colors.background} name="person-sharp" size={14} />
-                </View>
-            )}
-            <CustomText style={[styles.text, { color: colors.white300 }]} weight="SemiBold">
+            {!compact &&
+                (userSummary.picture ? (
+                    <Image
+                        resizeMode="cover"
+                        source={{ uri: userSummary.picture }}
+                        style={styles.avatar}
+                    />
+                ) : (
+                    <View
+                        style={[
+                            styles.avatar,
+                            styles.avatarFallback,
+                            { backgroundColor: colors.primary300 },
+                        ]}
+                    >
+                        <Ionicons color={colors.background} name="person-sharp" size={14} />
+                    </View>
+                ))}
+            <CustomText
+                numberOfLines={1}
+                style={[
+                    styles.text,
+                    compact && styles.textCompact,
+                    { color: colors.white300 },
+                ]}
+                weight="SemiBold"
+            >
                 {userSummary.name}
                 {' • '}
                 {t('bundle_details.flashcards_count', { count: flashcardsCount })}
@@ -68,5 +83,8 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 13,
+    },
+    textCompact: {
+        fontSize: 12,
     },
 });

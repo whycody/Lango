@@ -4,6 +4,7 @@ export const MARGIN_VERTICAL = 24;
 export const spacing = {
     l: 12,
     m: 8,
+    none: 0,
     s: 4,
     xl: 16,
     xs: 4,

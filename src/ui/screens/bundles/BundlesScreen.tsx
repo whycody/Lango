@@ -16,6 +16,8 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
+import { SessionMode } from '../../../constants/Session';
+import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
 import { useDynamicStatusBar } from '../../../hooks';
 import { RootStackParamList, ScreenName } from '../../../navigation/navigationTypes';
 import { useLanguage, useStatistics, useWordsBundle } from '../../../store';
@@ -27,10 +29,12 @@ import { ActionButton, BottomGradient, CustomText, Header, ScreenHeader } from '
 import { BundleItem } from '../../components/bundles';
 import { EmptyList, ListFilter } from '../../components/flashcards';
 import { AddBundleBottomSheet, LanguageBottomSheet } from '../../sheets';
+import { StartSessionBottomSheet } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
 
 const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';
 const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
+const BUNDLES_START_SESSION_SHEET_NAME = 'bundles-start-session-sheet';
 
 export const BundlesScreen = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -43,6 +47,7 @@ export const BundlesScreen = () => {
     const { onScroll, style } = useDynamicStatusBar(100, 0.5);
 
     const [refreshing, setRefreshing] = useState(false);
+    const [sessionBundleId, setSessionBundleId] = useState<string>();
 
     const [streak, setStreak] = useState<Streak>({
         active: false,
@@ -95,8 +100,33 @@ export const BundlesScreen = () => {
         [navigation],
     );
 
+    const handleBundlePlayPress = useCallback((bundle: EnrichedWordsBundle) => {
+        setSessionBundleId(bundle.id);
+        TrueSheet.present(BUNDLES_START_SESSION_SHEET_NAME);
+    }, []);
+
+    const handleSessionStart = useCallback(
+        (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {
+            if (!sessionBundleId) return;
+            TrueSheet.dismissAll();
+            navigation.navigate(ScreenName.Session, {
+                bundleId: sessionBundleId,
+                flashcardSide,
+                length,
+                mode,
+            });
+        },
+        [navigation, sessionBundleId],
+    );
+
     const renderBundleItem = ({ index, item }: { index: number; item: EnrichedWordsBundle }) => (
-        <BundleItem key={item.id} bundle={item} index={index} onPress={handleBundlePress} />
+        <BundleItem
+            key={item.id}
+            bundle={item}
+            index={index}
+            onPlayPress={handleBundlePlayPress}
+            onPress={handleBundlePress}
+        />
     );
 
     const onRefresh = useCallback(async () => {
@@ -112,6 +142,10 @@ export const BundlesScreen = () => {
         <>
             <BottomGradient />
             <LanguageBottomSheet sheetName={BUNDLES_LANGUAGE_SHEET_NAME} />
+            <StartSessionBottomSheet
+                sheetName={BUNDLES_START_SESSION_SHEET_NAME}
+                onSessionStart={handleSessionStart}
+            />
             <AddBundleBottomSheet
                 sheetName={ADD_BUNDLE_SHEET_NAME}
                 onCreateNew={handleCreateNewBundle}

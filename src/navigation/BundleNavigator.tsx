@@ -1,6 +1,6 @@
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { BundleFlashcardsScreen } from '../ui/screens/bundles/BundleFlashcardsScreen';
+import { BundleDetailsScreen } from '../ui/screens/bundles/BundleDetailsScreen';
 import { BundleStackParamList, RootStackParamList, ScreenName } from './navigationTypes';
 
 const Stack = createNativeStackNavigator<BundleStackParamList>();
@@ -13,7 +13,7 @@ const BundleNavigator = ({ route }: BundleNavigatorProps) => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
-                component={BundleFlashcardsScreen}
+                component={BundleDetailsScreen}
                 initialParams={{ bundleId }}
                 name={ScreenName.BundleFlashcards}
             />

@@ -1,4 +1,4 @@
-export * from './bundles/BundleFlashcardsScreen';
+export * from './bundles/BundleDetailsScreen';
 export * from './bundles/BundlesScreen';
 export * from './FlashcardsScreen';
 export * from './HomeScreen';

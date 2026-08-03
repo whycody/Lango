@@ -69,12 +69,12 @@ const CONTENT_TITLE_SCROLL_START = 40;
 const CONTENT_TITLE_SCROLL_END = 80;
 const BOTTOM_PANEL_SHOW_OFFSET = -20;
 
-type BundleFlashcardsScreenProps = NativeStackScreenProps<
+type BundleDetailsScreenProps = NativeStackScreenProps<
     BundleStackParamList,
     ScreenName.BundleFlashcards
 >;
 
-export const BundleFlashcardsScreen = ({ route }: BundleFlashcardsScreenProps) => {
+export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const { bundleId } = route.params;
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

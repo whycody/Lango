@@ -2,6 +2,7 @@ export * from './repo';
 export * from './useAppUpdateCheck';
 export * from './useDynamicStatusBar';
 export * from './useHaptics';
+export * from './useSearchBundlesQuery';
 export * from './useTypedMKKV';
 export * from './useUserSummaryQuery';
 export * from './useVoiceInput';

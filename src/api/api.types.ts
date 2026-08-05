@@ -2,6 +2,7 @@ import {
     AppConfig,
     BundleJoinCode,
     BundleMember,
+    BundleSearchResponse,
     Evaluation,
     ExampleFlashcard,
     LanguageLevel,
@@ -129,3 +130,4 @@ export type FetchUpdatedWordsBundlesApi = { data: WordsBundle[]; kind: 'ok' } | 
 export type FetchWordsBundlesByIdsApi = { data: WordsBundle[]; kind: 'ok' } | ApiProblem;
 export type GenerateBundleInvitationCodeApi = { data: BundleJoinCode; kind: 'ok' } | ApiProblem;
 export type JoinBundleWithCodeApi = { data: BundleMember; kind: 'ok' } | ApiProblem;
+export type SearchWordsBundlesApi = { data: BundleSearchResponse; kind: 'ok' } | ApiProblem;

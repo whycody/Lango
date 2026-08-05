@@ -3,15 +3,19 @@ import { SyncMetadata } from '../sync/SyncMetadata';
 
 export type WordsBundleVisibility = 'friends' | 'private' | 'public';
 
-export type WordsBundle = SyncMetadata & {
-    bundleCreatedOnServer: boolean;
+export type WordsBundleBase = {
     description?: string;
     id: string;
     mainLang: LanguageCode;
     ownerId: string;
-    removed: boolean;
     title: string;
     translationLang: LanguageCode;
     visibility: WordsBundleVisibility;
-    wordsBackfilled: boolean;
 };
+
+export type WordsBundle = WordsBundleBase &
+    SyncMetadata & {
+        bundleCreatedOnServer: boolean;
+        removed: boolean;
+        wordsBackfilled: boolean;
+    };

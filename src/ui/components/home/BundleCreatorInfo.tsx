@@ -50,11 +50,7 @@ export const BundleCreatorInfo: FC<Props> = ({
                 ))}
             <CustomText
                 numberOfLines={1}
-                style={[
-                    styles.text,
-                    compact && styles.textCompact,
-                    { color: colors.white300 },
-                ]}
+                style={[styles.text, compact && styles.textCompact, { color: colors.white300 }]}
                 weight="SemiBold"
             >
                 {userSummary.name}

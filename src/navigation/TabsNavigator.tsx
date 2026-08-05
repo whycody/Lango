@@ -190,7 +190,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         fab: {
             alignItems: 'center',
-            backgroundColor: colors.primary300,
+            backgroundColor: colors.primary,
             borderRadius: spacing.xxxl,
             height: 56,
             justifyContent: 'center',

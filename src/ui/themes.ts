@@ -37,9 +37,9 @@ export const DarkTheme: CustomTheme = {
         cardAccent300: '#434366',
         cardAccent600: '#3a3a58',
         primary: '#4758c5',
-        primary300: '#5465d3',
+        primary300: '#7d8aff',
         primary600: '#4E5AA6',
-        primary800: '#2e3875',
+        primary800: '#414d8f',
     },
     dark: true,
 };

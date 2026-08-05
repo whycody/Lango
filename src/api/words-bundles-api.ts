@@ -1,6 +1,14 @@
 import { ApiResponse } from 'apisauce';
 
-import { BundleJoinCode, BundleMember, BundleMemberRole, SyncResultWithRejections, WordsBundle } from '../types';
+import { LanguageCode } from '../constants/Language';
+import {
+    BundleJoinCode,
+    BundleMember,
+    BundleMemberRole,
+    BundleSearchResponse,
+    SyncResultWithRejections,
+    WordsBundle,
+} from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 import {
@@ -8,6 +16,7 @@ import {
     FetchWordsBundlesByIdsApi,
     GenerateBundleInvitationCodeApi,
     JoinBundleWithCodeApi,
+    SearchWordsBundlesApi,
     SyncWordsBundlesOnServerApi,
 } from './api.types';
 
@@ -16,6 +25,7 @@ const WORDS_BUNDLES_API_ROUTES = {
     generateInvitationCode: (bundleId: string) =>
         `/words-bundles/${bundleId}/generate-invitation-code`,
     join: (code: string) => `/words-bundles/join/${code}`,
+    search: '/words-bundles/search',
     sync: '/words-bundles/sync',
     wordsBundles: (since: string) => `/words-bundles?since=${since}`,
 } as const;
@@ -76,6 +86,23 @@ class WordsBundlesApi {
     async joinBundleWithCode(code: string): Promise<JoinBundleWithCodeApi> {
         const response: ApiResponse<BundleMember> = await this.api.apisauce.post(
             WORDS_BUNDLES_API_ROUTES.join(code),
+        );
+        if (!response.ok || !response.data) {
+            return { errorCode: resolveApiErrorCode(response), kind: 'error' };
+        }
+        return { data: response.data, kind: 'ok' };
+    }
+
+    async searchWordsBundles(
+        q: string,
+        mainLang: LanguageCode,
+        translationLang: LanguageCode,
+        limit: number,
+        offset: number,
+    ): Promise<SearchWordsBundlesApi> {
+        const response: ApiResponse<BundleSearchResponse> = await this.api.apisauce.get(
+            WORDS_BUNDLES_API_ROUTES.search,
+            { limit, mainLang, offset, q, translationLang },
         );
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };

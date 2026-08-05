@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { FlatList, StyleSheet, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,11 +7,17 @@ import { t } from 'i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
+import { useSearchBundlesQuery } from '../../../hooks';
 import { RootStackParamList } from '../../../navigation/navigationTypes';
+import { useLanguage } from '../../../store';
+import { BundleSearchResult } from '../../../types';
 import { isIOS } from '../../../utils/deviceUtils';
 import { ModalDragHandle } from '../../components';
+import { SearchBundleItem } from '../../components/bundles';
 import { EmptyList, ListFilter } from '../../components/flashcards';
 import { CustomTheme } from '../../Theme';
+
+const SEARCH_DEBOUNCE_MS = 400;
 
 export const SearchBundlesScreen = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -19,10 +25,27 @@ export const SearchBundlesScreen = () => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, insets);
     const inputRef = useRef<TextInput>(null);
+    const { mainLang, translationLang } = useLanguage();
 
     const [query, setQuery] = useState('');
+    const [debouncedQuery, setDebouncedQuery] = useState('');
 
-    const remoteBundles: never[] = [];
+    useEffect(() => {
+        const timeout = setTimeout(() => setDebouncedQuery(query.trim()), SEARCH_DEBOUNCE_MS);
+        return () => clearTimeout(timeout);
+    }, [query]);
+
+    const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
+        useSearchBundlesQuery(debouncedQuery, mainLang, translationLang);
+
+    const isSearchPending = query.trim() !== debouncedQuery;
+    const isLoading = isSearchPending || isFetching;
+
+    const remoteBundles = isSearchPending ? [] : (data?.pages.flatMap(page => page.data) ?? []);
+
+    const renderItem = ({ index, item }: { index: number; item: BundleSearchResult }) => (
+        <SearchBundleItem bundle={item} index={index} />
+    );
 
     return (
         <View style={styles.root}>
@@ -50,16 +73,29 @@ export const SearchBundlesScreen = () => {
             <FlatList
                 contentContainerStyle={styles.list}
                 data={remoteBundles}
-                keyboardShouldPersistTaps={'always'}
-                renderItem={null}
+                keyExtractor={item => item.id}
+                keyboardDismissMode="on-drag"
+                keyboardShouldPersistTaps="handled"
+                renderItem={renderItem}
                 ListEmptyComponent={
-                    <EmptyList
-                        title={t(query ? 'bundles.empty_search' : 'bundles.start_search')}
-                        description={t(
-                            query ? 'bundles.empty_search_desc' : 'bundles.start_search_desc',
-                        )}
-                    />
+                    isLoading ? null : (
+                        <EmptyList
+                            title={t(query ? 'bundles.empty_search' : 'bundles.start_search')}
+                            description={t(
+                                query ? 'bundles.empty_search_desc' : 'bundles.start_search_desc',
+                            )}
+                        />
+                    )
                 }
+                ListFooterComponent={
+                    isLoading || isFetchingNextPage ? (
+                        <ActivityIndicator color={colors.white300} style={styles.loader} />
+                    ) : null
+                }
+                onEndReachedThreshold={0.5}
+                onEndReached={() => {
+                    if (hasNextPage) fetchNextPage();
+                }}
             />
         </View>
     );
@@ -74,6 +110,9 @@ const getStyles = (colors: CustomTheme['colors'], insets: { top: number }) =>
             marginTop: MARGIN_VERTICAL,
             paddingHorizontal: MARGIN_HORIZONTAL,
         },
+        loader: {
+            marginVertical: MARGIN_VERTICAL,
+        },
         root: {
             backgroundColor: colors.background,
             flex: 1,
@@ -83,6 +122,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: { top: number }) =>
             backgroundColor: colors.background,
             flexDirection: 'row',
             marginTop: MARGIN_VERTICAL / 2,
+            paddingBottom: MARGIN_VERTICAL / 2,
             paddingHorizontal: MARGIN_HORIZONTAL,
         },
         topSpacer: {

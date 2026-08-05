@@ -75,6 +75,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             color: colors.white,
             flex: 1,
             fontSize: 18,
-            height: 45,
+            height: 44,
         },
     });

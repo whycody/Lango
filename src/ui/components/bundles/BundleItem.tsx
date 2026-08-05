@@ -99,7 +99,7 @@ export const BundleItem = memo<BundleItemProps>(
                             />
                         </View>
                         <Pressable hitSlop={8} style={styles.playButton} onPress={handlePlayPress}>
-                            <Ionicons color={colors.card} name="play" size={18} />
+                            <Ionicons color={colors.primary300} name="play" size={18} />
                         </Pressable>
                     </View>
                 </View>
@@ -148,7 +148,7 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
         },
         metaRow: {
             alignItems: 'center',
-            backgroundColor: colors.cardAccent300,
+            backgroundColor: colors.cardAccent600,
             borderRadius: spacing.m,
             borderTopLeftRadius: 0,
             borderTopRightRadius: 0,
@@ -160,7 +160,7 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
         },
         playButton: {
             alignItems: 'center',
-            backgroundColor: colors.primary300,
+            backgroundColor: colors.cardAccent600,
             borderRadius: 100,
             height: 36,
             justifyContent: 'center',

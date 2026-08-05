@@ -13,6 +13,7 @@ type Props = {
     compact?: boolean;
     creatorId: string;
     flashcardsCount: number;
+    name?: string;
     style?: StyleProp<ViewStyle>;
 };
 
@@ -20,18 +21,21 @@ export const BundleCreatorInfo: FC<Props> = ({
     compact = false,
     creatorId,
     flashcardsCount,
+    name,
     style,
 }) => {
     const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
-    const { data: userSummary } = useUserSummaryQuery(creatorId);
+    const { data: userSummary } = useUserSummaryQuery(name ? undefined : creatorId);
 
-    if (!userSummary) return null;
+    const displayName = name ?? userSummary?.name;
+
+    if (!displayName) return null;
 
     return (
         <View style={[styles.row, style]}>
             {!compact &&
-                (userSummary.picture ? (
+                (userSummary?.picture ? (
                     <Image
                         resizeMode="cover"
                         source={{ uri: userSummary.picture }}
@@ -53,7 +57,7 @@ export const BundleCreatorInfo: FC<Props> = ({
                 style={[styles.text, compact && styles.textCompact, { color: colors.white300 }]}
                 weight="SemiBold"
             >
-                {userSummary.name}
+                {displayName}
                 {' • '}
                 {t('bundle_details.flashcards_count', { count: flashcardsCount })}
             </CustomText>

@@ -347,6 +347,7 @@
         "flashcards_count_plural": "{{count}} tarjetas",
         "members": "Miembros",
         "no_members": "Aún no hay miembros",
+        "no_items_desc": "Intenta añadir algunas palabras a este conjunto.",
         "show_in_main_collection": "Mostrar en la colección principal",
         "show_in_main_collection_desc": "Las palabras formarán parte de tu colección principal",
         "start_session": "Comenzar a aprender"

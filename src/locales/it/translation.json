@@ -347,6 +347,7 @@
         "flashcards_count_plural": "{{count}} flashcard",
         "members": "Membri",
         "no_members": "Ancora nessun membro",
+        "no_items_desc": "Prova ad aggiungere alcune parole a questo set.",
         "show_in_main_collection": "Mostra nella collezione principale",
         "show_in_main_collection_desc": "Le parole faranno parte della tua collezione principale",
         "start_session": "Inizia a studiare"

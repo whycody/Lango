@@ -347,6 +347,7 @@
         "flashcards_count_plural": "{{count}} flashcards",
         "members": "Members",
         "no_members": "No members yet",
+        "no_items_desc": "Try adding some words to this bundle.",
         "show_in_main_collection": "Show in main collection",
         "show_in_main_collection_desc": "Words will be part of your main collection",
         "start_session": "Start learning"

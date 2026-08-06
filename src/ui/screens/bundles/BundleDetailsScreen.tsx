@@ -78,6 +78,8 @@ type BundleDetailsScreenProps = NativeStackScreenProps<
     ScreenName.BundleFlashcards
 >;
 
+type BundleListItem = WordWithDetails | { id: 'header' | 'subheader' | 'empty' };
+
 export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const { bundleId, isNewBundle } = route.params;
     const { t } = useTranslation();
@@ -99,8 +101,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const contentAppear = useRef(new Animated.Value(0)).current;
     const scrollY = useRef(new Animated.Value(0)).current;
     const scrollToTopAnim = useRef(new Animated.Value(0)).current;
-    const listRef =
-        useRef<FlashListRef<WordWithDetails | { id: 'header' } | { id: 'subheader' }>>(null);
+    const listRef = useRef<FlashListRef<BundleListItem>>(null);
     const scrollToTopVisible = useRef(false);
     const headerButtonsBottomRef = useRef<number | undefined>(undefined);
 
@@ -429,24 +430,36 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         [masteryFilter, flashcardsSortingMethod],
     );
 
-    const renderEmptyList = () => (
-        <EmptyList
-            description={t(masteryFilter !== 'all' ? 'no_items_filter_desc' : 'no_items_desc')}
-            title={t('no_items')}
-        />
+    const renderEmptyList = useCallback(
+        () => (
+            <EmptyList
+                title={t('no_items')}
+                description={t(
+                    masteryFilter !== 'all'
+                        ? 'no_items_filter_desc'
+                        : 'bundle_details.no_items_desc',
+                )}
+            />
+        ),
+        [masteryFilter, t],
     );
 
     const renderListItem = useCallback(
-        ({ item }: { item: WordWithDetails | { id: 'header' } | { id: 'subheader' } }) => {
+        ({ item }: { item: BundleListItem }) => {
             if (item.id === 'header') return renderHeader();
             if (item.id === 'subheader') return renderSubheader();
+            if (item.id === 'empty') return renderEmptyList();
             return renderWordItem(item as WordWithDetails);
         },
-        [renderHeader, renderSubheader, renderWordItem],
+        [renderHeader, renderSubheader, renderEmptyList, renderWordItem],
     );
 
-    const listData = useMemo(
-        () => [{ id: 'header' as const }, { id: 'subheader' as const }, ...words],
+    const listData = useMemo<BundleListItem[]>(
+        () => [
+            { id: 'header' as const },
+            { id: 'subheader' as const },
+            ...(words.length > 0 ? words : [{ id: 'empty' as const }]),
+        ],
         [words],
     );
 

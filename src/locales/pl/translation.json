@@ -347,6 +347,7 @@
         "flashcards_count_many": "{{count}} fiszek",
         "members": "Członkowie",
         "no_members": "Brak członków",
+        "no_items_desc": "Spróbuj dodać kilka słówek do tego zestawu.",
         "show_in_main_collection": "Wyświetlaj w głównej kolekcji",
         "show_in_main_collection_desc": "Słówka będą częścią głównej kolekcji",
         "start_session": "Rozpocznij naukę"

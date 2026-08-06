@@ -267,6 +267,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                 )}
                 <WordInput
                     active={buttonsActive}
+                    autoFocus={!flashcardId}
                     languageCode={mainLang}
                     pointerEvents="box-only"
                     ref={wordInputRef}

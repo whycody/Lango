@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
-import { BUNDLE_DESCRIPTION_MAX_LENGTH, BUNDLE_TITLE_MAX_LENGTH } from '../../constants/WordsBundle';
+import {
+    BUNDLE_DESCRIPTION_MAX_LENGTH,
+    BUNDLE_TITLE_MAX_LENGTH,
+} from '../../constants/WordsBundle';
 import { useWordsBundle } from '../../store';
 import { WordsBundle } from '../../types';
+import { CustomText } from '../components/CustomText';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
@@ -27,21 +31,16 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
     const bundle = bundleId ? bundles.find(b => b.id === bundleId) : undefined;
     const isEditing = !!bundle;
 
-    const [titleInput, setTitleInput] = useState('');
-    const [descriptionInput, setDescriptionInput] = useState('');
+    const [titleInput, setTitleInput] = useState(bundle?.title ?? '');
+    const [descriptionInput, setDescriptionInput] = useState(bundle?.description ?? '');
 
     const descriptionInputRef = useRef<TextInput>(null);
 
     const isConfirmed = titleInput.trim().length > 0;
 
-    useEffect(() => {
+    const handleSheetDismiss = () => {
         setTitleInput(bundle?.title ?? '');
         setDescriptionInput(bundle?.description ?? '');
-    }, [bundle]);
-
-    const handleDismiss = () => {
-        setTitleInput('');
-        setDescriptionInput('');
     };
 
     const handlePrimaryButtonPress = () => {
@@ -74,20 +73,23 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
 
     return (
         <GenericBottomSheet
+            primaryButtonEnabled={isConfirmed}
+            secondaryActionLabel={t('cancel')}
+            sheetName={sheetName}
+            title={t(isEditing ? 'bundle_details.edit_bundle' : 'bundles.create_new_title')}
             description={t(
                 isEditing ? 'bundle_details.edit_bundle_desc' : 'bundles.create_new_desc',
             )}
             primaryActionLabel={t(
                 isEditing ? 'bundle_details.edit_bundle_confirm' : 'bundles.create_new_confirm',
             )}
-            primaryButtonEnabled={isConfirmed}
-            secondaryActionLabel={t('cancel')}
-            sheetName={sheetName}
-            title={t(isEditing ? 'bundle_details.edit_bundle' : 'bundles.create_new_title')}
-            onDidDismiss={handleDismiss}
+            onDidDismiss={handleSheetDismiss}
             onPrimaryButtonPress={handlePrimaryButtonPress}
             onSecondaryButtonPress={handleSecondaryButtonPress}
         >
+            <CustomText style={styles.inputLabel} weight="SemiBold">
+                {t('bundles.create_new_title_label')}
+            </CustomText>
             <View style={styles.inputContainer}>
                 <TextInput
                     autoFocus
@@ -95,8 +97,6 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
                     autoCorrect={true}
                     cursorColor={colors.primary300}
                     maxLength={BUNDLE_TITLE_MAX_LENGTH}
-                    placeholder={t('bundles.create_new_placeholder')}
-                    placeholderTextColor={colors.white600}
                     returnKeyType="next"
                     style={styles.textInput}
                     submitBehavior="submit"
@@ -105,6 +105,9 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
                     onSubmitEditing={handleTitleSubmitEditing}
                 />
             </View>
+            <CustomText style={styles.inputLabel} weight="SemiBold">
+                {t('bundles.create_new_description_label')}
+            </CustomText>
             <View style={styles.inputContainer}>
                 <TextInput
                     multiline
@@ -112,8 +115,6 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
                     autoCorrect={true}
                     cursorColor={colors.primary300}
                     maxLength={BUNDLE_DESCRIPTION_MAX_LENGTH}
-                    placeholder={t('bundles.create_new_description_placeholder')}
-                    placeholderTextColor={colors.white600}
                     ref={descriptionInputRef}
                     returnKeyType="done"
                     style={[styles.textInput, styles.descriptionInput]}
@@ -136,6 +137,12 @@ const getStyles = (colors: CustomTheme['colors']) =>
         inputContainer: {
             backgroundColor: colors.cardAccent,
             borderRadius: spacing.m,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: 6,
+        },
+        inputLabel: {
+            color: colors.white300,
+            fontSize: 13,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL / 2,
         },

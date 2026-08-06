@@ -54,6 +54,7 @@ import { HandleBundleBottomSheet } from '../../sheets/HandleBundleBottomSheet';
 import { HandleFlashcardBottomSheet } from '../../sheets/HandleFlashcardBottomSheet';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../../sheets/MasteryFilterBottomSheet';
 import { MicrophonePermissionBottomSheet } from '../../sheets/MicrophonePermissionBottomSheet';
+import { NewBundleBottomSheet } from '../../sheets/NewBundleBottomSheet';
 import { RemoveFlashcardBottomSheet } from '../../sheets/RemoveFlashcardBottomSheet';
 import { SortingMethodBottomSheet } from '../../sheets/SortingMethodBottomSheet';
 import { StartSessionBottomSheet } from '../../sheets/StartSessionBottomSheet';
@@ -66,6 +67,7 @@ const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flas
 const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
 const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
 const BUNDLE_DETAILS_HANDLE_BUNDLE_BOTTOM_SHEET = 'bundle-details-handle-bundle-bottom-sheet';
+const BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET = 'bundle-details-new-bundle-bottom-sheet';
 const SCROLL_TO_TOP_THRESHOLD = 300;
 const CONTENT_TITLE_SCROLL_START = 40;
 const CONTENT_TITLE_SCROLL_END = 80;
@@ -77,7 +79,7 @@ type BundleDetailsScreenProps = NativeStackScreenProps<
 >;
 
 export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
-    const { bundleId } = route.params;
+    const { bundleId, isNewBundle } = route.params;
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { colors } = useTheme() as CustomTheme;
@@ -155,6 +157,17 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         }
     }, [bundle, navigation]);
 
+    useEffect(() => {
+        if (!isNewBundle) return;
+
+        const presentNewBundleSheet = () => {
+            TrueSheet.present(BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET);
+            navigation.setParams({ isNewBundle: false });
+        };
+
+        return navigation.addListener('transitionEnd', presentNewBundleSheet);
+    }, [isNewBundle, navigation]);
+
     const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all');
     const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
     const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
@@ -217,6 +230,12 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
 
     const handleAddWordPress = () => {
         Keyboard.dismiss();
+        setEditFlashcardId(undefined);
+        TrueSheet.present(BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET);
+    };
+
+    const handleNewBundleAddWordsPress = () => {
+        TrueSheet.dismiss(BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET);
         setEditFlashcardId(undefined);
         TrueSheet.present(BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     };
@@ -462,6 +481,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             />
             <MicrophonePermissionBottomSheet
                 sheetName={BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET}
+            />
+            <NewBundleBottomSheet
+                sheetName={BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET}
+                onAddWordsPress={handleNewBundleAddWordsPress}
             />
             <HandleFlashcardBottomSheet
                 bundleId={bundleId}

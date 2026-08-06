@@ -31,7 +31,7 @@ export const DarkTheme: CustomTheme = {
     colors: {
         ...NavigationDarkTheme.colors,
         ...baseColors,
-        background: '#090B22',
+        background: '#080a1f',
         card: '#23233d',
         cardAccent: '#2f2f47',
         cardAccent300: '#434366',

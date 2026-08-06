@@ -92,7 +92,10 @@ export const BundlesScreen = () => {
 
     const handleBundleCreated = useCallback(
         (bundle: WordsBundle) => {
-            navigation.navigate(ScreenName.BundleNavigator, { bundleId: bundle.id });
+            navigation.navigate(ScreenName.BundleNavigator, {
+                bundleId: bundle.id,
+                isNewBundle: true,
+            });
         },
         [navigation],
     );
@@ -103,7 +106,10 @@ export const BundlesScreen = () => {
 
     const handleBundlePress = useCallback(
         (bundle: EnrichedWordsBundle) => {
-            navigation.navigate(ScreenName.BundleNavigator, { bundleId: bundle.id });
+            navigation.navigate(ScreenName.BundleNavigator, {
+                bundleId: bundle.id,
+                isNewBundle: false,
+            });
         },
         [navigation],
     );

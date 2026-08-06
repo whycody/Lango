@@ -15,6 +15,7 @@ export type FlashcardsScreenParams = {
 
 export type BundleNavigatorParams = {
     bundleId: string;
+    isNewBundle?: boolean;
 };
 
 export type RootStackParamList = {

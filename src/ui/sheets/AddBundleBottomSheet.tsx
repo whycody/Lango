@@ -18,7 +18,6 @@ export const AddBundleBottomSheet = (props: AddBundleBottomSheetProps) => {
     const { t } = useTranslation();
 
     const handleCreateNewPress = () => {
-        TrueSheet.dismiss(sheetName);
         onCreateNew();
     };
 

@@ -7,7 +7,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import uuid from 'react-native-uuid';
+import { ObjectId } from 'bson';
 
 import { sessionsApi } from '../api/sessions-api';
 import { LanguageCode } from '../constants/Language';
@@ -86,7 +86,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             averageScore,
             date: now,
             finished,
-            id: uuid.v4(),
+            id: new ObjectId().toHexString(),
             localDay: getTodayDate(),
             locallyUpdatedAt: now,
             mainLang,

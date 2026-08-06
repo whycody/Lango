@@ -8,7 +8,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import uuid from 'react-native-uuid';
+import { ObjectId } from 'bson';
 
 import { wordsApi } from '../api/words-api';
 import { WordSource } from '../constants/Word';
@@ -95,7 +95,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             active: true,
             addDate: now,
             bundleId,
-            id: uuid.v4(),
+            id: new ObjectId().toHexString(),
             locallyUpdatedAt: now,
             mainLang,
             removed: false,

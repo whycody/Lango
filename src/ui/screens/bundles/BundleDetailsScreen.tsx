@@ -50,6 +50,7 @@ import {
     FLASHCARD_DETAIL_BOTTOM_SHEET,
     FlashcardDetailsBottomSheet,
 } from '../../sheets/FlashcardDetailsBottomSheet';
+import { HandleBundleBottomSheet } from '../../sheets/HandleBundleBottomSheet';
 import { HandleFlashcardBottomSheet } from '../../sheets/HandleFlashcardBottomSheet';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../../sheets/MasteryFilterBottomSheet';
 import { MicrophonePermissionBottomSheet } from '../../sheets/MicrophonePermissionBottomSheet';
@@ -64,6 +65,7 @@ const BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET = 'bundle-details-sorting-metho
 const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flashcard-bottom-sheet';
 const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
 const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
+const BUNDLE_DETAILS_HANDLE_BUNDLE_BOTTOM_SHEET = 'bundle-details-handle-bundle-bottom-sheet';
 const SCROLL_TO_TOP_THRESHOLD = 300;
 const CONTENT_TITLE_SCROLL_START = 40;
 const CONTENT_TITLE_SCROLL_END = 80;
@@ -233,7 +235,8 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     };
 
     const handleMoreOptionsPress = () => {
-        // TODO: open bundle options menu once available
+        if (membership?.role !== 'owner') return;
+        TrueSheet.present(BUNDLE_DETAILS_HANDLE_BUNDLE_BOTTOM_SHEET);
     };
 
     const handleSubscribedToggle = () => {
@@ -451,6 +454,11 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                 sheetName={BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET}
                 onCancel={handleRemoveCancel}
                 onRemove={handleRemoveConfirm}
+            />
+            <HandleBundleBottomSheet
+                bundleId={bundleId}
+                sheetName={BUNDLE_DETAILS_HANDLE_BUNDLE_BOTTOM_SHEET}
+                onBundleCreated={() => {}}
             />
             <MicrophonePermissionBottomSheet
                 sheetName={BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET}

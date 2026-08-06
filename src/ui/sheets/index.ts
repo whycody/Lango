@@ -4,6 +4,7 @@ export * from './EnableNotificationsBottomSheet';
 export * from './FinishSessionBottomSheet';
 export * from './FlashcardClassesInfoBottomSheet';
 export * from './GenericBottomSheet';
+export * from './HandleBundleBottomSheet';
 export * from './HandleFlashcardBottomSheet';
 export * from './HitFlashcardBottomSheet';
 export * from './LanguageBottomSheet';

@@ -8,7 +8,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import uuid from 'react-native-uuid';
+import { ObjectId } from 'bson';
 
 import { bundleMembersApi } from '../api/bundle-members-api';
 import { wordsBundlesApi } from '../api/words-bundles-api';
@@ -119,7 +119,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         const newBundle: WordsBundle = {
             bundleCreatedOnServer: false,
             description,
-            id: uuid.v4(),
+            id: new ObjectId().toHexString(),
             locallyUpdatedAt: now,
             mainLang,
             ownerId: user!.userId,
@@ -134,7 +134,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
 
         const ownerMember: BundleMember = {
             bundleId: newBundle.id,
-            id: uuid.v4(),
+            id: new ObjectId().toHexString(),
             locallyUpdatedAt: now,
             removed: false,
             role: 'owner',

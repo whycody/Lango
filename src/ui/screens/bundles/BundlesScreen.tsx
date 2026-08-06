@@ -22,19 +22,20 @@ import { useDynamicStatusBar } from '../../../hooks';
 import { RootStackParamList, ScreenName } from '../../../navigation/navigationTypes';
 import { useLanguage, useStatistics, useWordsBundle } from '../../../store';
 import { EnrichedWordsBundle } from '../../../store/WordsBundleContext';
-import { Streak } from '../../../types';
+import { Streak, WordsBundle } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { ActionButton, BottomGradient, CustomText, Header, ScreenHeader } from '../../components';
 import { BundleItem } from '../../components/bundles';
 import { EmptyList, ListFilter } from '../../components/flashcards';
-import { AddBundleBottomSheet, LanguageBottomSheet } from '../../sheets';
+import { AddBundleBottomSheet, HandleBundleBottomSheet, LanguageBottomSheet } from '../../sheets';
 import { StartSessionBottomSheet } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
 
 export const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
 const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';
 const BUNDLES_START_SESSION_SHEET_NAME = 'bundles-start-session-sheet';
+const HANDLE_BUNDLE_SHEET_NAME = 'handle-bundle-sheet';
 
 export const BundlesScreen = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -86,8 +87,15 @@ export const BundlesScreen = () => {
     }, [navigation]);
 
     const handleCreateNewBundle = useCallback(() => {
-        // TODO: navigate to create bundle flow
+        TrueSheet.present(HANDLE_BUNDLE_SHEET_NAME);
     }, []);
+
+    const handleBundleCreated = useCallback(
+        (bundle: WordsBundle) => {
+            navigation.navigate(ScreenName.BundleNavigator, { bundleId: bundle.id });
+        },
+        [navigation],
+    );
 
     const handleJoinBundleWithCode = useCallback(() => {
         // TODO: navigate to join bundle flow
@@ -150,6 +158,10 @@ export const BundlesScreen = () => {
                 sheetName={ADD_BUNDLE_SHEET_NAME}
                 onCreateNew={handleCreateNewBundle}
                 onJoinWithCode={handleJoinBundleWithCode}
+            />
+            <HandleBundleBottomSheet
+                sheetName={HANDLE_BUNDLE_SHEET_NAME}
+                onBundleCreated={handleBundleCreated}
             />
             <View style={style} />
             <ScrollView

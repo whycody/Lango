@@ -1,0 +1,2 @@
+export const BUNDLE_TITLE_MAX_LENGTH = 50;
+export const BUNDLE_DESCRIPTION_MAX_LENGTH = 200;

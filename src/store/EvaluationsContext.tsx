@@ -7,7 +7,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import uuid from 'react-native-uuid';
+import { ObjectId } from 'bson';
 
 import { evaluationsApi } from '../api/evaluations-api';
 import { EvaluationGrade } from '../constants/Evaluation';
@@ -56,7 +56,7 @@ export const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) =
         return {
             date: now,
             grade,
-            id: uuid.v4(),
+            id: new ObjectId().toHexString(),
             locallyUpdatedAt: now,
             sessionId,
             synced: false,

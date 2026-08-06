@@ -32,8 +32,8 @@ import { AddBundleBottomSheet, LanguageBottomSheet } from '../../sheets';
 import { StartSessionBottomSheet } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
 
+export const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
 const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';
-const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
 const BUNDLES_START_SESSION_SHEET_NAME = 'bundles-start-session-sheet';
 
 export const BundlesScreen = () => {

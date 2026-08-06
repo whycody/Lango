@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
@@ -11,7 +11,7 @@ import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { spacing } from '../constants/margins';
 import { useHaptics } from '../hooks';
 import { CustomText } from '../ui/components';
-import { BundlesScreen } from '../ui/screens';
+import { ADD_BUNDLE_SHEET_NAME, BundlesScreen } from '../ui/screens';
 import { HomeScreen } from '../ui/screens/HomeScreen';
 import { LibraryScreen } from '../ui/screens/LibraryScreen';
 import { HandleFlashcardBottomSheet } from '../ui/sheets';
@@ -40,6 +40,8 @@ const TabsNavigator = () => {
 
     const haptics = useHaptics();
     const iconScale = useRef(new Animated.Value(1)).current;
+
+    const [focusedRouteName, setFocusedRouteName] = useState<keyof TabsParamList>('Home');
 
     type TabRouteProp = RouteProp<TabsParamList, keyof TabsParamList>;
 
@@ -111,6 +113,12 @@ const TabsNavigator = () => {
 
     const handleAddTabPress = () => {
         haptics.triggerHaptics('rigid');
+
+        if (focusedRouteName === 'Bundles') {
+            TrueSheet.present(ADD_BUNDLE_SHEET_NAME);
+            return;
+        }
+
         trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, {
             mode: 'add',
             source: 'main_screen',
@@ -139,6 +147,7 @@ const TabsNavigator = () => {
                     component={HomeScreen}
                     name="Home"
                     listeners={{
+                        focus: () => setFocusedRouteName('Home'),
                         tabPress: () => trackEvent(AnalyticsEventName.NAVIGATE_HOME),
                     }}
                 />
@@ -147,6 +156,9 @@ const TabsNavigator = () => {
                     component={BundlesScreen}
                     name="Bundles"
                     options={{ headerShown: false }}
+                    listeners={{
+                        focus: () => setFocusedRouteName('Bundles'),
+                    }}
                 />
 
                 <Tab.Screen
@@ -178,6 +190,7 @@ const TabsNavigator = () => {
                     component={LibraryScreen}
                     name="Library"
                     listeners={{
+                        focus: () => setFocusedRouteName('Library'),
                         tabPress: () => trackEvent(AnalyticsEventName.NAVIGATE_LIBRARY),
                     }}
                 />

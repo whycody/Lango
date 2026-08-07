@@ -12,6 +12,7 @@ import {
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 import {
+    DeleteWordsBundleOnServerApi,
     FetchUpdatedWordsBundlesApi,
     FetchWordsBundlesByIdsApi,
     GenerateBundleInvitationCodeApi,
@@ -22,6 +23,7 @@ import {
 
 const WORDS_BUNDLES_API_ROUTES = {
     byIds: '/words-bundles/by-ids',
+    delete: (bundleId: string) => `/words-bundles/${bundleId}`,
     generateInvitationCode: (bundleId: string) =>
         `/words-bundles/${bundleId}/generate-invitation-code`,
     join: (code: string) => `/words-bundles/join/${code}`,
@@ -108,6 +110,16 @@ class WordsBundlesApi {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }
         return { data: response.data, kind: 'ok' };
+    }
+
+    async deleteWordsBundleOnServer(bundleId: string): Promise<DeleteWordsBundleOnServerApi> {
+        const response: ApiResponse<null> = await this.api.apisauce.delete(
+            WORDS_BUNDLES_API_ROUTES.delete(bundleId),
+        );
+        if (!response.ok) {
+            return { errorCode: resolveApiErrorCode(response), kind: 'error' };
+        }
+        return { data: null, kind: 'ok' };
     }
 }
 

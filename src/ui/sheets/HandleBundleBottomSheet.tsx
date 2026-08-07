@@ -45,15 +45,15 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
 
     const handlePrimaryButtonPress = () => {
         const title = titleInput.trim();
-        const description = descriptionInput.trim() || undefined;
+        const description = descriptionInput.trim();
 
         if (isEditing && bundle) {
-            editBundle({ description, id: bundle.id, title });
+            editBundle({ description: description || null, id: bundle.id, title });
             TrueSheet.dismissAll();
             return;
         }
 
-        const newBundle = createBundle(title, description, 'public');
+        const newBundle = createBundle(title, description || undefined, 'public');
         TrueSheet.dismissAll();
         onBundleCreated(newBundle);
     };
@@ -73,15 +73,13 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
 
     return (
         <GenericBottomSheet
+            description={t(isEditing ? 'bundle_details.edit.desc' : 'bundles.create_new_desc')}
             primaryButtonEnabled={isConfirmed}
             secondaryActionLabel={t('cancel')}
             sheetName={sheetName}
-            title={t(isEditing ? 'bundle_details.edit_bundle' : 'bundles.create_new_title')}
-            description={t(
-                isEditing ? 'bundle_details.edit_bundle_desc' : 'bundles.create_new_desc',
-            )}
+            title={t(isEditing ? 'bundle_details.edit.title' : 'bundles.create_new_title')}
             primaryActionLabel={t(
-                isEditing ? 'bundle_details.edit_bundle_confirm' : 'bundles.create_new_confirm',
+                isEditing ? 'bundle_details.edit.confirm' : 'bundles.create_new_confirm',
             )}
             onDidDismiss={handleSheetDismiss}
             onPrimaryButtonPress={handlePrimaryButtonPress}

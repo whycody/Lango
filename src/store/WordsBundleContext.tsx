@@ -13,7 +13,13 @@ import { ObjectId } from 'bson';
 import { bundleMembersApi } from '../api/bundle-members-api';
 import { wordsBundlesApi } from '../api/words-bundles-api';
 import { useBundleMemberRepository, useWordsBundleRepository } from '../hooks/repo';
-import { BundleJoinCode, BundleMember, BundleMemberRole, WordsBundle } from '../types';
+import {
+    BundleJoinCode,
+    BundleMember,
+    BundleMemberRole,
+    DeleteBundleResult,
+    WordsBundle,
+} from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
 import {
     applyUnauthorizedItems,
@@ -50,7 +56,7 @@ interface WordsBundleContextProps {
     langBundles: EnrichedWordsBundle[];
     loading: boolean;
     members: BundleMember[];
-    removeBundle: (id: string) => Promise<void>;
+    removeBundle: (id: string) => Promise<DeleteBundleResult>;
     setWordsBackfilled: (bundleId: string, backfilled: boolean) => void;
     syncBundles: () => Promise<void>;
 }
@@ -68,7 +74,7 @@ const WordsBundleContext = createContext<WordsBundleContextProps>({
     langBundles: [],
     loading: true,
     members: [],
-    removeBundle: () => Promise.resolve(),
+    removeBundle: () => Promise.resolve({ success: true }),
     setWordsBackfilled: () => {},
     syncBundles: () => Promise.resolve(),
 });
@@ -193,24 +199,17 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         setBundles(prev => prev.filter(bundle => bundle.id !== bundleId));
     };
 
-    const removeBundle = async (id: string) => {
+    const removeBundle = async (id: string): Promise<DeleteBundleResult> => {
         const bundle = bundles.find(b => b.id === id);
-        if (!bundle) return;
+        if (!bundle) return { success: true };
 
-        const removedBundle: WordsBundle = {
-            ...bundle,
-            locallyUpdatedAt: getCurrentISO(),
-            removed: true,
-            synced: false,
-        };
+        const result = await wordsBundlesApi.deleteWordsBundleOnServer(id);
+        if (result.kind !== 'ok') return { errorCode: result.errorCode, success: false };
 
-        const result = await wordsBundlesApi.syncWordsBundlesOnServer([removedBundle]);
-
-        if (result.kind !== 'ok' || result.data.synced.length === 0) {
-            throw new Error('Could not remove bundle: no connection to server');
-        }
-
+        await syncBundleMembers();
         await deleteBundlePhysically(id);
+
+        return { success: true };
     };
 
     const setWordsBackfilled = (bundleId: string, backfilled: boolean) => {

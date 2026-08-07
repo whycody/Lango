@@ -3,6 +3,7 @@ export * from './core/app-config';
 export * from './core/BundleJoinCode';
 export * from './core/BundleMember';
 export * from './core/BundleSearchResult';
+export * from './core/DeleteBundleResult';
 export * from './core/Evaluation';
 export * from './core/example-flashcard';
 export * from './core/Language';

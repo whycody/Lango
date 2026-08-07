@@ -83,6 +83,7 @@
     "addNewWord": "Dodano nowe słówko: *{{word}}*.",
     "editWord": "Edytowano fiszkę: *{{word}}*.",
     "invalidData": "Niewłaściwe dane",
+    "error": "Błąd",
     "bothInputs": "Musisz wypełnić oba pola.",
     "alreadyExists": "Ta fiszka już istnieje w Twoim słowniku.",
     "success": "Powodzenie",
@@ -335,13 +336,6 @@
     },
     "bundle_details": {
         "add_word": "Dodaj nowe słówko +",
-        "new_bundle_ready_title": "Twój nowy zestaw jest już gotowy",
-        "new_bundle_ready_desc": "Dodaj do niego pierwsze fiszki",
-        "new_bundle_ready_confirm": "Dodaj nowe słówka do zestawu",
-        "new_bundle_add_later": "Dodaj później",
-        "edit_bundle": "Edytuj zestaw",
-        "edit_bundle_desc": "Zmień nazwę i opis zestawu.",
-        "edit_bundle_confirm": "Zapisz zmiany",
         "flashcards_count": "{{count}} fiszka",
         "flashcards_count_few": "{{count}} fiszki",
         "flashcards_count_many": "{{count}} fiszek",
@@ -350,6 +344,46 @@
         "no_items_desc": "Spróbuj dodać kilka słówek do tego zestawu.",
         "show_in_main_collection": "Wyświetlaj w głównej kolekcji",
         "show_in_main_collection_desc": "Słówka będą częścią głównej kolekcji",
-        "start_session": "Rozpocznij naukę"
+        "start_session": "Rozpocznij naukę",
+        "options": {
+            "edit_title_or_description": "Edytuj tytuł lub opis",
+            "change_visibility": "Zmień widoczność",
+            "delete_bundle": "Usuń zestaw",
+            "leave_bundle": "Opuść ten zestaw"
+        },
+        "new_bundle_ready": {
+            "title": "Twój nowy zestaw jest już gotowy",
+            "desc": "Dodaj do niego pierwsze fiszki",
+            "confirm": "Dodaj nowe słówka do zestawu",
+            "add_later": "Dodaj później"
+        },
+        "edit": {
+            "title": "Edytuj zestaw",
+            "desc": "Zmień nazwę i opis zestawu.",
+            "confirm": "Zapisz zmiany"
+        },
+        "removing": {
+            "title": "Usuwanie zestawu",
+            "desc": "Czy jesteś pewien, że chcesz usunąć ten zestaw? Wraz z nim usunięte zostaną wszystkie należące do niego fiszki, a osoby, które miały do niego dostęp, utracą go. Ta czynność jest nieodwracalna.",
+            "error_network": "Nie udało się usunąć zestawu. Sprawdź połączenie z internetem i spróbuj ponownie.",
+            "error_forbidden": "Tylko właściciel zestawu może go usunąć.",
+            "error_not_found": "Ten zestaw już nie istnieje.",
+            "error_unauthorized": "Twoja sesja wygasła. Zaloguj się ponownie.",
+            "error_unknown": "Coś poszło nie tak podczas usuwania zestawu. Spróbuj ponownie."
+        },
+        "visibility": {
+            "title": "Widoczność zestawu",
+            "desc": "Wybierz, kto może zobaczyć ten zestaw.",
+            "public": "Publiczny",
+            "public_desc": "Każdy może znaleźć i zobaczyć ten zestaw.",
+            "friends": "Przyjaciele",
+            "friends_desc": "Tylko twoi przyjaciele mogą znaleźć i zobaczyć ten zestaw.",
+            "private": "Prywatny",
+            "private_desc": "Tylko ty widzisz ten zestaw."
+        },
+        "leaving": {
+            "title": "Opuszczanie zestawu",
+            "desc": "Czy na pewno chcesz opuścić ten zestaw? Utracisz do niego dostęp."
+        }
     }
 }

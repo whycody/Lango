@@ -83,6 +83,7 @@
     "addNewWord": "Se añadió una nueva palabra: *{{word}}*.",
     "editWord": "La tarjeta fue editada: *{{word}}*.",
     "invalidData": "Datos inválidos",
+    "error": "Error",
     "bothInputs": "Debes rellenar ambos campos.",
     "alreadyExists": "Esta tarjeta ya existe en tu diccionario.",
     "success": "Éxito",
@@ -336,13 +337,6 @@
     },
     "bundle_details": {
         "add_word": "Añadir nueva palabra +",
-        "new_bundle_ready_title": "Tu nuevo conjunto ya está listo",
-        "new_bundle_ready_desc": "Añade sus primeras fichas",
-        "new_bundle_ready_confirm": "Añadir nuevas palabras al conjunto",
-        "new_bundle_add_later": "Añadir más tarde",
-        "edit_bundle": "Editar conjunto",
-        "edit_bundle_desc": "Cambia el nombre y la descripción del conjunto.",
-        "edit_bundle_confirm": "Guardar cambios",
         "flashcards_count": "{{count}} tarjeta",
         "flashcards_count_plural": "{{count}} tarjetas",
         "members": "Miembros",
@@ -350,6 +344,46 @@
         "no_items_desc": "Intenta añadir algunas palabras a este conjunto.",
         "show_in_main_collection": "Mostrar en la colección principal",
         "show_in_main_collection_desc": "Las palabras formarán parte de tu colección principal",
-        "start_session": "Comenzar a aprender"
+        "start_session": "Comenzar a aprender",
+        "options": {
+            "edit_title_or_description": "Editar título o descripción",
+            "change_visibility": "Cambiar visibilidad",
+            "delete_bundle": "Eliminar paquete",
+            "leave_bundle": "Abandonar paquete"
+        },
+        "new_bundle_ready": {
+            "title": "Tu nuevo conjunto ya está listo",
+            "desc": "Añade sus primeras fichas",
+            "confirm": "Añadir nuevas palabras al conjunto",
+            "add_later": "Añadir más tarde"
+        },
+        "edit": {
+            "title": "Editar conjunto",
+            "desc": "Cambia el nombre y la descripción del conjunto.",
+            "confirm": "Guardar cambios"
+        },
+        "removing": {
+            "title": "Eliminando paquete",
+            "desc": "¿Seguro que quieres eliminar este paquete? Se eliminarán todas las tarjetas que contiene y las personas que tenían acceso a él lo perderán. Esta acción no se puede deshacer.",
+            "error_network": "No se ha podido eliminar el paquete. Comprueba tu conexión e inténtalo de nuevo.",
+            "error_forbidden": "Solo el propietario de este paquete puede eliminarlo.",
+            "error_not_found": "Este paquete ya no existe.",
+            "error_unauthorized": "Tu sesión ha caducado. Vuelve a iniciar sesión.",
+            "error_unknown": "Algo ha salido mal al eliminar el paquete. Inténtalo de nuevo."
+        },
+        "visibility": {
+            "title": "Visibilidad del paquete",
+            "desc": "Elige quién puede ver este paquete.",
+            "public": "Público",
+            "public_desc": "Cualquiera puede encontrar y ver este paquete.",
+            "friends": "Amigos",
+            "friends_desc": "Solo tus amigos pueden encontrar y ver este paquete.",
+            "private": "Privado",
+            "private_desc": "Solo tú puedes ver este paquete."
+        },
+        "leaving": {
+            "title": "Abandonando paquete",
+            "desc": "¿Seguro que quieres abandonar este paquete? Perderás el acceso a él."
+        }
     }
 }

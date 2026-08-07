@@ -131,3 +131,4 @@ export type FetchWordsBundlesByIdsApi = { data: WordsBundle[]; kind: 'ok' } | Ap
 export type GenerateBundleInvitationCodeApi = { data: BundleJoinCode; kind: 'ok' } | ApiProblem;
 export type JoinBundleWithCodeApi = { data: BundleMember; kind: 'ok' } | ApiProblem;
 export type SearchWordsBundlesApi = { data: BundleSearchResponse; kind: 'ok' } | ApiProblem;
+export type DeleteWordsBundleOnServerApi = { data: null; kind: 'ok' } | ApiProblem;

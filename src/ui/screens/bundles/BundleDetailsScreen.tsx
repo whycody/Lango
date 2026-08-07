@@ -46,11 +46,11 @@ import {
 } from '../../components/flashcards';
 import { BundleCreatorInfo, FlashcardClassBadges } from '../../components/home';
 import { LibraryItem } from '../../components/library';
+import { BundleOptionsBottomSheet } from '../../sheets/BundleOptionsBottomSheet';
 import {
     FLASHCARD_DETAIL_BOTTOM_SHEET,
     FlashcardDetailsBottomSheet,
 } from '../../sheets/FlashcardDetailsBottomSheet';
-import { HandleBundleBottomSheet } from '../../sheets/HandleBundleBottomSheet';
 import { HandleFlashcardBottomSheet } from '../../sheets/HandleFlashcardBottomSheet';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../../sheets/MasteryFilterBottomSheet';
 import { MicrophonePermissionBottomSheet } from '../../sheets/MicrophonePermissionBottomSheet';
@@ -66,8 +66,8 @@ const BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET = 'bundle-details-sorting-metho
 const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flashcard-bottom-sheet';
 const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
 const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
-const BUNDLE_DETAILS_HANDLE_BUNDLE_BOTTOM_SHEET = 'bundle-details-handle-bundle-bottom-sheet';
 const BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET = 'bundle-details-new-bundle-bottom-sheet';
+const BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET = 'bundle-details-bundle-options-bottom-sheet';
 const SCROLL_TO_TOP_THRESHOLD = 300;
 const CONTENT_TITLE_SCROLL_START = 40;
 const CONTENT_TITLE_SCROLL_END = 80;
@@ -255,8 +255,15 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     };
 
     const handleMoreOptionsPress = () => {
-        if (membership?.role !== 'owner') return;
-        TrueSheet.present(BUNDLE_DETAILS_HANDLE_BUNDLE_BOTTOM_SHEET);
+        TrueSheet.present(BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET);
+    };
+
+    const handleBundleRemoved = () => {
+        navigation.goBack();
+    };
+
+    const handleBundleLeft = () => {
+        navigation.goBack();
     };
 
     const handleSubscribedToggle = () => {
@@ -487,10 +494,12 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                 onCancel={handleRemoveCancel}
                 onRemove={handleRemoveConfirm}
             />
-            <HandleBundleBottomSheet
+            <BundleOptionsBottomSheet
                 bundleId={bundleId}
-                sheetName={BUNDLE_DETAILS_HANDLE_BUNDLE_BOTTOM_SHEET}
-                onBundleCreated={() => {}}
+                isOwner={membership?.role === 'owner'}
+                sheetName={BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET}
+                onBundleLeft={handleBundleLeft}
+                onBundleRemoved={handleBundleRemoved}
             />
             <MicrophonePermissionBottomSheet
                 sheetName={BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET}

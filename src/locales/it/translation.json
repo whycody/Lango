@@ -83,6 +83,7 @@
     "addNewWord": "È stata aggiunta una nuova parola: *{{word}}*.",
     "editWord": "La scheda è stata modificata: *{{word}}*.",
     "invalidData": "Dati non validi",
+    "error": "Errore",
     "bothInputs": "Devi compilare entrambi i campi.",
     "alreadyExists": "Questa scheda esiste già nel tuo dizionario.",
     "success": "Successo",
@@ -336,13 +337,6 @@
     },
     "bundle_details": {
         "add_word": "Aggiungi nuova parola +",
-        "new_bundle_ready_title": "Il tuo nuovo set è pronto",
-        "new_bundle_ready_desc": "Aggiungi le sue prime flashcard",
-        "new_bundle_ready_confirm": "Aggiungi nuove parole al set",
-        "new_bundle_add_later": "Aggiungi più tardi",
-        "edit_bundle": "Modifica set",
-        "edit_bundle_desc": "Cambia il nome e la descrizione del set.",
-        "edit_bundle_confirm": "Salva modifiche",
         "flashcards_count": "{{count}} flashcard",
         "flashcards_count_plural": "{{count}} flashcard",
         "members": "Membri",
@@ -350,6 +344,46 @@
         "no_items_desc": "Prova ad aggiungere alcune parole a questo set.",
         "show_in_main_collection": "Mostra nella collezione principale",
         "show_in_main_collection_desc": "Le parole faranno parte della tua collezione principale",
-        "start_session": "Inizia a studiare"
+        "start_session": "Inizia a studiare",
+        "options": {
+            "edit_title_or_description": "Modifica titolo o descrizione",
+            "change_visibility": "Cambia visibilità",
+            "delete_bundle": "Elimina bundle",
+            "leave_bundle": "Abbandona il bundle"
+        },
+        "new_bundle_ready": {
+            "title": "Il tuo nuovo set è pronto",
+            "desc": "Aggiungi le sue prime flashcard",
+            "confirm": "Aggiungi nuove parole al set",
+            "add_later": "Aggiungi più tardi"
+        },
+        "edit": {
+            "title": "Modifica set",
+            "desc": "Cambia il nome e la descrizione del set.",
+            "confirm": "Salva modifiche"
+        },
+        "removing": {
+            "title": "Eliminazione bundle",
+            "desc": "Sei sicuro di voler eliminare questo bundle? Verranno eliminate tutte le flashcard che contiene e le persone che vi avevano accesso lo perderanno. Questa azione è irreversibile.",
+            "error_network": "Non è stato possibile eliminare il bundle. Controlla la connessione e riprova.",
+            "error_forbidden": "Solo il proprietario di questo bundle può eliminarlo.",
+            "error_not_found": "Questo bundle non esiste più.",
+            "error_unauthorized": "La tua sessione è scaduta. Accedi di nuovo.",
+            "error_unknown": "Si è verificato un errore durante l'eliminazione del bundle. Riprova."
+        },
+        "visibility": {
+            "title": "Visibilità del bundle",
+            "desc": "Scegli chi può vedere questo bundle.",
+            "public": "Pubblico",
+            "public_desc": "Chiunque può trovare e vedere questo bundle.",
+            "friends": "Amici",
+            "friends_desc": "Solo i tuoi amici possono trovare e vedere questo bundle.",
+            "private": "Privato",
+            "private_desc": "Solo tu puoi vedere questo bundle."
+        },
+        "leaving": {
+            "title": "Abbandono del bundle 👋",
+            "desc": "Sei sicuro di voler abbandonare questo bundle? Perderai l'accesso ad esso."
+        }
     }
 }

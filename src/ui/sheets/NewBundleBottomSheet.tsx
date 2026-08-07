@@ -33,8 +33,8 @@ export const NewBundleBottomSheet = (props: NewBundleBottomSheetProps) => {
 
     return (
         <GenericBottomSheet
-            primaryActionLabel={t('bundle_details.new_bundle_ready_confirm')}
-            secondaryActionLabel={t('bundle_details.new_bundle_add_later')}
+            primaryActionLabel={t('bundle_details.new_bundle_ready.confirm')}
+            secondaryActionLabel={t('bundle_details.new_bundle_ready.add_later')}
             sheetName={sheetName}
             onPrimaryButtonPress={onAddWordsPress}
             onSecondaryButtonPress={handleSecondaryButtonPress}
@@ -43,8 +43,8 @@ export const NewBundleBottomSheet = (props: NewBundleBottomSheetProps) => {
             <Header
                 centered
                 style={styles.header}
-                subtitle={t('bundle_details.new_bundle_ready_desc')}
-                title={t('bundle_details.new_bundle_ready_title')}
+                subtitle={t('bundle_details.new_bundle_ready.desc')}
+                title={t('bundle_details.new_bundle_ready.title')}
             />
         </GenericBottomSheet>
     );

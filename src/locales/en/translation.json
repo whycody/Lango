@@ -83,6 +83,7 @@
     "addNewWord": "New word has been added: *{{word}}*.",
     "editWord": "The flashcard has been edited: *{{word}}*.",
     "invalidData": "Invalid data",
+    "error": "Error",
     "bothInputs": "You have to fill both inputs.",
     "alreadyExists": "This flashcard already exists in your dictionary.",
     "success": "Success",
@@ -336,13 +337,6 @@
     },
     "bundle_details": {
         "add_word": "Add new word +",
-        "new_bundle_ready_title": "Your new bundle is ready",
-        "new_bundle_ready_desc": "Add its first flashcards",
-        "new_bundle_ready_confirm": "Add new words to the bundle",
-        "new_bundle_add_later": "Add later",
-        "edit_bundle": "Edit bundle",
-        "edit_bundle_desc": "Change the bundle's name and description.",
-        "edit_bundle_confirm": "Save changes",
         "flashcards_count": "{{count}} flashcard",
         "flashcards_count_plural": "{{count}} flashcards",
         "members": "Members",
@@ -350,6 +344,46 @@
         "no_items_desc": "Try adding some words to this bundle.",
         "show_in_main_collection": "Show in main collection",
         "show_in_main_collection_desc": "Words will be part of your main collection",
-        "start_session": "Start learning"
+        "start_session": "Start learning",
+        "options": {
+            "edit_title_or_description": "Edit title or description",
+            "change_visibility": "Change visibility",
+            "delete_bundle": "Delete bundle",
+            "leave_bundle": "Leave bundle"
+        },
+        "new_bundle_ready": {
+            "title": "Your new bundle is ready",
+            "desc": "Add its first flashcards",
+            "confirm": "Add new words to the bundle",
+            "add_later": "Add later"
+        },
+        "edit": {
+            "title": "Edit bundle",
+            "desc": "Change the bundle's name and description.",
+            "confirm": "Save changes"
+        },
+        "removing": {
+            "title": "Removing bundle",
+            "desc": "Are you sure you want to delete this bundle? All flashcards it contains will be deleted, and anyone else with access to it will lose access. This action cannot be undone.",
+            "error_network": "Could not delete the bundle. Please check your connection and try again.",
+            "error_forbidden": "Only the owner of this bundle can delete it.",
+            "error_not_found": "This bundle no longer exists.",
+            "error_unauthorized": "Your session has expired. Please sign in again.",
+            "error_unknown": "Something went wrong while deleting the bundle. Please try again."
+        },
+        "visibility": {
+            "title": "Bundle visibility",
+            "desc": "Choose who can see this bundle.",
+            "public": "Public",
+            "public_desc": "Anyone can find and view this bundle.",
+            "friends": "Friends",
+            "friends_desc": "Only your friends can find and view this bundle.",
+            "private": "Private",
+            "private_desc": "Only you can see this bundle."
+        },
+        "leaving": {
+            "title": "Leaving bundle",
+            "desc": "Are you sure you want to leave this bundle? You will lose access to it."
+        }
     }
 }

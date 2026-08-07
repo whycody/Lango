@@ -30,7 +30,7 @@ export const VisibilityPicker = ({ onSelect, style, value }: VisibilityPickerPro
                     onPress={() => onSelect(item.visibility)}
                 >
                     <View style={[styles.item, isSelected && { borderColor: colors.primary }]}>
-                        <Ionicons color={colors.primary300} name={item.icon} size={20} />
+                        <Ionicons color={item.color} name={item.icon} size={20} />
                         <View style={styles.labelContainer}>
                             <CustomText style={styles.label} weight="SemiBold">
                                 {t(item.labelKey)}

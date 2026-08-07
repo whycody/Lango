@@ -1,12 +1,11 @@
 import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_VERTICAL } from '../../constants/margins';
+import { palette } from '../../constants/palette';
 import { useWordsBundle } from '../../store';
 import { LibraryItem } from '../components/library';
-import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
 import { HandleBundleBottomSheet } from './HandleBundleBottomSheet';
 import { LeaveBundleBottomSheet } from './LeaveBundleBottomSheet';
@@ -34,7 +33,6 @@ export const BundleOptionsBottomSheet = ({
     sheetName,
 }: BundleOptionsBottomSheetProps) => {
     const { bundles, editBundleMember, removeBundle } = useWordsBundle();
-    const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
 
     const membership = bundles.find(b => b.id === bundleId)?.membership;
@@ -91,19 +89,21 @@ export const BundleOptionsBottomSheet = ({
                 {isOwner ? (
                     <>
                         <LibraryItem
+                            color={palette.blue}
                             icon="pencil"
                             index={0}
                             label={t('bundle_details.options.edit_title_or_description')}
                             onPress={handleEditPress}
                         />
                         <LibraryItem
+                            color={palette.purple}
                             icon="eye"
                             index={1}
                             label={t('bundle_details.options.change_visibility')}
                             onPress={handleVisibilityPress}
                         />
                         <LibraryItem
-                            color={colors.red}
+                            color={palette.red}
                             icon="trash"
                             index={2}
                             label={t('bundle_details.options.delete_bundle')}
@@ -112,7 +112,7 @@ export const BundleOptionsBottomSheet = ({
                     </>
                 ) : (
                     <LibraryItem
-                        color={colors.red}
+                        color={palette.red}
                         icon="exit"
                         index={0}
                         label={t('bundle_details.options.leave_bundle')}

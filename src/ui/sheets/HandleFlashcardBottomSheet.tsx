@@ -145,7 +145,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
 
         if (!newWord) {
             setStatus('error');
-            setStatusMessage(t('alreadyExists'));
+            setStatusMessage(t(bundleId ? 'alreadyExistsInBundle' : 'alreadyExists'));
             return;
         }
 

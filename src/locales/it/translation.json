@@ -54,6 +54,8 @@
     "lastRepetition": "Ultima rep",
     "masteryLevel": "Livello di padronanza",
     "addedOn": "Aggiunto il",
+    "bundle": "Set",
+    "mainCollection": "Collezione principale",
     "editedOn": "Modificato",
     "repetitions": "Ripetizioni",
     "avg_grade": "Voto medio",
@@ -86,6 +88,7 @@
     "error": "Errore",
     "bothInputs": "Devi compilare entrambi i campi.",
     "alreadyExists": "Questa scheda esiste già nel tuo dizionario.",
+    "alreadyExistsInBundle": "Questa scheda esiste già in questo set.",
     "success": "Successo",
     "failure": "Errore",
     "soFar": "Finora hai aggiunto *{{wordsCount}}* parole al tuo vocabolario.",
@@ -348,8 +351,8 @@
         "options": {
             "edit_title_or_description": "Modifica titolo o descrizione",
             "change_visibility": "Cambia visibilità",
-            "delete_bundle": "Elimina bundle",
-            "leave_bundle": "Abbandona il bundle"
+            "delete_bundle": "Elimina set",
+            "leave_bundle": "Abbandona il set"
         },
         "new_bundle_ready": {
             "title": "Il tuo nuovo set è pronto",
@@ -363,27 +366,27 @@
             "confirm": "Salva modifiche"
         },
         "removing": {
-            "title": "Eliminazione bundle",
-            "desc": "Sei sicuro di voler eliminare questo bundle? Verranno eliminate tutte le flashcard che contiene e le persone che vi avevano accesso lo perderanno. Questa azione è irreversibile.",
-            "error_network": "Non è stato possibile eliminare il bundle. Controlla la connessione e riprova.",
-            "error_forbidden": "Solo il proprietario di questo bundle può eliminarlo.",
-            "error_not_found": "Questo bundle non esiste più.",
+            "title": "Eliminazione set",
+            "desc": "Sei sicuro di voler eliminare questo set? Verranno eliminate tutte le flashcard che contiene e le persone che vi avevano accesso lo perderanno. Questa azione è irreversibile.",
+            "error_network": "Non è stato possibile eliminare il set. Controlla la connessione e riprova.",
+            "error_forbidden": "Solo il proprietario di questo set può eliminarlo.",
+            "error_not_found": "Questo set non esiste più.",
             "error_unauthorized": "La tua sessione è scaduta. Accedi di nuovo.",
-            "error_unknown": "Si è verificato un errore durante l'eliminazione del bundle. Riprova."
+            "error_unknown": "Si è verificato un errore durante l'eliminazione del set. Riprova."
         },
         "visibility": {
-            "title": "Visibilità del bundle",
-            "desc": "Scegli chi può vedere questo bundle.",
+            "title": "Visibilità del set",
+            "desc": "Scegli chi può vedere questo set.",
             "public": "Pubblico",
-            "public_desc": "Chiunque può trovare e vedere questo bundle.",
+            "public_desc": "Chiunque può trovare e vedere questo set.",
             "friends": "Amici",
-            "friends_desc": "Solo i tuoi amici possono trovare e vedere questo bundle.",
+            "friends_desc": "Solo i tuoi amici possono trovare e vedere questo set.",
             "private": "Privato",
-            "private_desc": "Solo tu puoi vedere questo bundle."
+            "private_desc": "Solo tu puoi vedere questo set."
         },
         "leaving": {
-            "title": "Abbandono del bundle 👋",
-            "desc": "Sei sicuro di voler abbandonare questo bundle? Perderai l'accesso ad esso."
+            "title": "Abbandono del set 👋",
+            "desc": "Sei sicuro di voler abbandonare questo set? Perderai l'accesso ad esso."
         }
     }
 }

@@ -45,6 +45,7 @@ export const FlashcardDetailsBottomSheet: FC<FlashcardDetailsBottomSheetProps> =
     const levelColor = word ? getLevelColor(word.gradeThreeProb) : colors.white300;
     const levelPercent = word ? Math.round(word.gradeThreeProb * 100) : 0;
     const addDateLabel = word ? formatDisplayDate(word.addDate) : '—';
+    const bundleLabel = bundle ? bundle.title : t('mainCollection');
     const lastRepetitionLabel = word ? formatHoursSince(word.hoursSinceLastRepetition) : '—';
 
     return (
@@ -61,6 +62,14 @@ export const FlashcardDetailsBottomSheet: FC<FlashcardDetailsBottomSheetProps> =
                                 {t('addedOn')}:
                             </CustomText>{' '}
                             {addDateLabel}
+                        </CustomText>
+                    </View>
+                    <View style={styles.cardMetaRow}>
+                        <CustomText style={styles.cardMetaText}>
+                            <CustomText style={styles.cardMetaTextBold} weight="SemiBold">
+                                {t('bundle')}:
+                            </CustomText>{' '}
+                            {bundleLabel}
                         </CustomText>
                     </View>
                 </View>

@@ -108,8 +108,12 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         };
     };
 
-    const findExistingWord = (text: string, translation: string): Word | undefined =>
-        words.find(w => w.text === text && w.translation === translation);
+    const findExistingWord = (
+        text: string,
+        translation: string,
+        bundleId?: string,
+    ): Word | undefined =>
+        words.find(w => w.text === text && w.translation === translation && w.bundleId == bundleId);
 
     const reviveWord = (word: Word): Word => {
         editWord({ id: word.id, removed: false });
@@ -122,7 +126,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         source: WordSource,
         bundleId?: string,
     ): Word | null => {
-        const existing = findExistingWord(text, translation);
+        const existing = findExistingWord(text, translation, bundleId);
 
         if (existing) return existing.removed ? reviveWord(existing) : null;
 

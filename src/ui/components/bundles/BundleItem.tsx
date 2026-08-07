@@ -8,7 +8,6 @@ import { useHaptics } from '../../../hooks';
 import { useWordsWithDetails } from '../../../store';
 import { EnrichedWordsBundle } from '../../../store/WordsBundleContext';
 import { CustomTheme } from '../../Theme';
-import { CustomText } from '..';
 import { BundleCardItem } from './BundleCardItem';
 import { MasteryRing } from './MasteryRing';
 
@@ -56,39 +55,24 @@ export const BundleItem = memo<BundleItemProps>(
 
         return (
             <BundleCardItem
-                description={bundle.description}
                 flashcardsCount={bundleWords.length}
                 index={index}
                 ownerId={bundle.ownerId}
                 style={style}
                 title={bundle.title}
                 actionSlot={
-                    <>
+                    <View style={styles.actionSlot}>
                         <View pointerEvents="none" style={styles.ring}>
                             <MasteryRing
                                 learningCount={wordCounts.learning}
                                 masteredCount={wordCounts.mastered}
                                 reviewCount={wordCounts.review}
-                                size={47}
+                                size={36}
                             />
                         </View>
                         <Pressable hitSlop={8} style={styles.playButton} onPress={handlePlayPress}>
-                            <Ionicons color={colors.primary300} name="play" size={18} />
+                            <Ionicons color={colors.primary300} name="play" size={14} />
                         </Pressable>
-                    </>
-                }
-                metaSlot={
-                    <View style={styles.wordCounts}>
-                        <Ionicons color={colors.white300} name="albums" size={14} />
-                        <CustomText style={styles.wordCount} weight="SemiBold">
-                            {wordCounts.mastered}
-                        </CustomText>
-                        <CustomText style={styles.wordCountSeparator} weight="SemiBold">
-                            {'/'}
-                        </CustomText>
-                        <CustomText style={styles.wordCount} weight="SemiBold">
-                            {bundleWords.length}
-                        </CustomText>
                     </View>
                 }
                 onPress={() => onPress?.(bundle)}
@@ -99,28 +83,25 @@ export const BundleItem = memo<BundleItemProps>(
 
 const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
-        playButton: {
+        actionSlot: {
             alignItems: 'center',
-            backgroundColor: colors.cardAccent600,
-            borderRadius: 100,
             height: 36,
             justifyContent: 'center',
             width: 36,
         },
-        ring: {
-            position: 'absolute',
-        },
-        wordCount: {
-            color: colors.white300,
-            fontSize: 12,
-        },
-        wordCounts: {
+        playButton: {
             alignItems: 'center',
-            flexDirection: 'row',
-            gap: 4,
+            backgroundColor: colors.cardAccent600,
+            borderRadius: 100,
+            height: 28,
+            justifyContent: 'center',
+            width: 28,
         },
-        wordCountSeparator: {
-            color: colors.white300,
-            fontSize: 12,
+        ring: {
+            alignItems: 'center',
+            height: 36,
+            justifyContent: 'center',
+            position: 'absolute',
+            width: 36,
         },
     });

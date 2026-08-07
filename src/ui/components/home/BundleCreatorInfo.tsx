@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     textCompact: {
-        fontSize: 12,
+        fontSize: 11,
     },
 });

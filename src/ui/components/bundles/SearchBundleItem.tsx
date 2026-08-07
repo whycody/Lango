@@ -30,7 +30,6 @@ export const SearchBundleItem = memo<SearchBundleItemProps>(
         return (
             <BundleCardItem
                 creatorName={bundle.creatorName}
-                description={bundle.description}
                 flashcardsCount={bundle.flashcardsCount}
                 index={index}
                 ownerId={bundle.ownerId}

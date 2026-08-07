@@ -1,5 +1,6 @@
 import { memo, ReactNode } from 'react';
 import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
@@ -12,10 +13,8 @@ import { BundleCreatorInfo } from '../home';
 interface BundleCardItemProps {
     actionSlot?: ReactNode;
     creatorName?: string;
-    description?: string;
     flashcardsCount: number;
     index: number;
-    metaSlot?: ReactNode;
     onPress?: () => void;
     ownerId: string;
     style?: ViewStyle;
@@ -23,18 +22,7 @@ interface BundleCardItemProps {
 }
 
 export const BundleCardItem = memo<BundleCardItemProps>(
-    ({
-        actionSlot,
-        creatorName,
-        description,
-        flashcardsCount,
-        index,
-        metaSlot,
-        onPress,
-        ownerId,
-        style,
-        title,
-    }) => {
+    ({ actionSlot, creatorName, flashcardsCount, index, onPress, ownerId, style, title }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors, index);
         const { triggerHaptics } = useHaptics();
@@ -57,24 +45,10 @@ export const BundleCardItem = memo<BundleCardItemProps>(
                 ]}
                 onPress={handlePress}
             >
-                <View style={styles.root}>
-                    <View style={styles.textContainer}>
-                        <CustomText numberOfLines={1} style={styles.label} weight="SemiBold">
-                            {title}
-                        </CustomText>
-                        {description && (
-                            <CustomText
-                                numberOfLines={1}
-                                style={styles.description}
-                                weight="Regular"
-                            >
-                                {description}
-                            </CustomText>
-                        )}
-                    </View>
-                    {actionSlot && <View style={styles.actionSlotContainer}>{actionSlot}</View>}
-                </View>
-                <View style={styles.metaRow}>
+                <View style={styles.textContainer}>
+                    <CustomText numberOfLines={1} style={styles.label} weight="SemiBold">
+                        {title}
+                    </CustomText>
                     <BundleCreatorInfo
                         compact
                         creatorId={ownerId}
@@ -82,8 +56,8 @@ export const BundleCardItem = memo<BundleCardItemProps>(
                         name={creatorName}
                         style={styles.creatorInfo}
                     />
-                    {metaSlot}
                 </View>
+                {actionSlot && <View style={styles.actionSlotContainer}>{actionSlot}</View>}
             </Pressable>
         );
     },
@@ -93,50 +67,36 @@ const getStyles = (colors: CustomTheme['colors'], index: number) =>
     StyleSheet.create({
         actionSlotContainer: {
             alignItems: 'center',
+            flexShrink: 0,
             justifyContent: 'center',
             marginLeft: MARGIN_HORIZONTAL,
         },
         container: {
+            alignItems: 'center',
             backgroundColor: colors.card,
-            borderRadius: spacing.m,
+            borderColor: colors.cardAccent300,
+            borderRadius: spacing.l,
+            borderWidth: 1,
+            flexDirection: 'row',
             marginTop: index === 0 ? 0 : 12,
-            overflow: 'hidden',
+            paddingHorizontal: MARGIN_HORIZONTAL,
+            paddingVertical: 12,
         },
         creatorInfo: {
-            marginTop: 0,
-        },
-        description: {
-            color: colors.white,
-            fontSize: 12,
             marginTop: 2,
-            opacity: 0.7,
+        },
+        icon: {
+            alignItems: 'center',
+            backgroundColor: colors.cardAccent600,
+            borderRadius: 100,
+            height: 36,
+            justifyContent: 'center',
+            marginRight: MARGIN_HORIZONTAL / 2,
+            width: 36,
         },
         label: {
             color: colors.white,
-            fontSize: 17,
-        },
-        metaRow: {
-            alignItems: 'center',
-            backgroundColor: colors.cardAccent600,
-            borderRadius: spacing.m,
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 6,
-        },
-        root: {
-            alignItems: 'center',
-            borderBottomLeftRadius: spacing.none,
-            borderBottomRightRadius: spacing.none,
-            borderColor: colors.cardAccent300,
-            borderRadius: spacing.m,
-            borderWidth: 1,
-            flexDirection: 'row',
-            overflow: 'hidden',
-            paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 10,
+            fontSize: 14,
         },
         textContainer: {
             flex: 1,

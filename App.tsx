@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { AppState, StatusBar, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { createMMKV } from 'react-native-mmkv';
 import './i18n';
 import * as Font from 'expo-font';
 import { themes } from './src/ui/themes';
@@ -37,6 +40,18 @@ void SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 const queryClient = new QueryClient();
+
+const queryStorage = createMMKV({ id: 'query-cache' });
+
+const queryPersister = createAsyncStoragePersister({
+    storage: {
+        getItem: key => queryStorage.getString(key) ?? null,
+        removeItem: key => {
+            queryStorage.remove(key);
+        },
+        setItem: (key, value) => queryStorage.set(key, value),
+    },
+});
 
 export default function App() {
     const { i18n } = useTranslation();
@@ -106,7 +121,10 @@ export default function App() {
             <StatusBar barStyle="light-content" translucent backgroundColor={'transparent'} />
             <SafeAreaProvider style={styles.root}>
                 <GestureHandlerRootView>
-                    <QueryClientProvider client={queryClient}>
+                    <PersistQueryClientProvider
+                        client={queryClient}
+                        persistOptions={{ maxAge: Infinity, persister: queryPersister }}
+                    >
                         <NavigationContainer theme={activeTheme}>
                             <AuthProvider>
                                 <UserStorageProvider>
@@ -118,7 +136,7 @@ export default function App() {
                                 </UserStorageProvider>
                             </AuthProvider>
                         </NavigationContainer>
-                    </QueryClientProvider>
+                    </PersistQueryClientProvider>
                 </GestureHandlerRootView>
             </SafeAreaProvider>
         </>

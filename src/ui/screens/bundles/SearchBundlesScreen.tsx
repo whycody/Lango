@@ -8,10 +8,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { useSearchBundlesQuery } from '../../../hooks';
-import { RootStackParamList } from '../../../navigation/navigationTypes';
+import { RootStackParamList, ScreenName } from '../../../navigation/navigationTypes';
 import { useLanguage } from '../../../store';
-import { BundleSearchResult } from '../../../types';
-import { isIOS } from '../../../utils/deviceUtils';
+import { WordsBundleWithOwnerInfo } from '../../../types';
 import { ModalDragHandle } from '../../components';
 import { SearchBundleItem } from '../../components/bundles';
 import { EmptyList, ListFilter } from '../../components/flashcards';
@@ -43,8 +42,15 @@ export const SearchBundlesScreen = () => {
 
     const remoteBundles = isSearchPending ? [] : (data?.pages.flatMap(page => page.data) ?? []);
 
-    const renderItem = ({ index, item }: { index: number; item: BundleSearchResult }) => (
-        <SearchBundleItem bundle={item} index={index} />
+    const handleBundlePress = (bundle: WordsBundleWithOwnerInfo) => {
+        navigation.navigate(ScreenName.BundleNavigator, {
+            bundleId: bundle.id,
+            previewBundle: bundle,
+        });
+    };
+
+    const renderItem = ({ index, item }: { index: number; item: WordsBundleWithOwnerInfo }) => (
+        <SearchBundleItem bundle={item} index={index} onPress={handleBundlePress} />
     );
 
     return (
@@ -128,7 +134,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: { top: number }) =>
         topSpacer: {
             alignItems: 'center',
             backgroundColor: colors.background,
-            height: isIOS ? 16 : insets.top,
+            height: insets.top,
             justifyContent: 'center',
         },
     });

@@ -16,6 +16,7 @@ import { ListFilter } from './ListFilter';
 type FlashcardsSubheaderProps = {
     filterSheetName: string;
     masteryFilter: MasteryFilter;
+    showFilter?: boolean;
     showSearch?: boolean;
     sortingMethod: FlashcardSortingMethod;
     sortingSheetName: string;
@@ -29,6 +30,7 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
         masteryFilter,
         onClearSearch,
         onSearchPress,
+        showFilter = true,
         showSearch = true,
         sortingMethod,
         sortingSheetName,
@@ -64,21 +66,23 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
                             {getSortingMethodLabel(sortingMethod)}
                         </CustomText>
                     </Pressable>
-                    <Pressable
-                        style={styles.filterButton}
-                        onPress={() => TrueSheet.present(filterSheetName)}
-                    >
-                        {masteryFilter !== 'all' && (
-                            <CustomText style={styles.filterLabel} weight={'SemiBold'}>
-                                {t(`mastery_filter.${masteryFilter}`)}
-                            </CustomText>
-                        )}
-                        <MaterialCommunityIcons
-                            color={masteryFilter !== 'all' ? colors.primary300 : colors.white}
-                            name={'filter-variant'}
-                            size={20}
-                        />
-                    </Pressable>
+                    {showFilter && (
+                        <Pressable
+                            style={styles.filterButton}
+                            onPress={() => TrueSheet.present(filterSheetName)}
+                        >
+                            {masteryFilter !== 'all' && (
+                                <CustomText style={styles.filterLabel} weight={'SemiBold'}>
+                                    {t(`mastery_filter.${masteryFilter}`)}
+                                </CustomText>
+                            )}
+                            <MaterialCommunityIcons
+                                color={masteryFilter !== 'all' ? colors.primary300 : colors.white}
+                                name={'filter-variant'}
+                                size={20}
+                            />
+                        </Pressable>
+                    )}
                 </View>
             </View>
         );

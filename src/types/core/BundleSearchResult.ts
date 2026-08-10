@@ -1,11 +1,6 @@
-import { WordsBundleBase } from './WordsBundle';
-
-export type BundleSearchResult = WordsBundleBase & {
-    creatorName?: string;
-    flashcardsCount: number;
-};
+import { WordsBundleWithOwnerInfo } from './WordsBundle';
 
 export type BundleSearchResponse = {
-    data: BundleSearchResult[];
+    data: WordsBundleWithOwnerInfo[];
     total: number;
 };

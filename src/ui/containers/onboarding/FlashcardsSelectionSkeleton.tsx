@@ -1,43 +1,36 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, ReactNode, useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
-import { CustomText } from '../../components';
+import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { CustomTheme } from '../../Theme';
 
-const SKELETON_COUNT = 7;
+const DEFAULT_SKELETON_COUNT = 7;
 const STAGGER_MS = 150;
 const FADE_MS = 350;
 
-export const FlashcardsSelectionSkeleton: FC = () => {
+type FlashcardsSelectionSkeletonProps = {
+    count?: number;
+    header?: ReactNode;
+};
+
+export const FlashcardsSelectionSkeleton: FC<FlashcardsSelectionSkeletonProps> = ({
+    count = DEFAULT_SKELETON_COUNT,
+    header,
+}) => {
     const { colors } = useTheme() as CustomTheme;
-    const { t } = useTranslation();
     const styles = getStyles(colors);
 
-    const anims = useRef(
-        Array.from({ length: SKELETON_COUNT }, () => new Animated.Value(0.3)),
-    ).current;
+    const anims = useRef(Array.from({ length: count }, () => new Animated.Value(0.3))).current;
 
     const lineWidths = useRef(
-        Array.from({ length: SKELETON_COUNT }, () => ({
+        Array.from({ length: count }, () => ({
             main: `${35 + Math.floor(Math.random() * 41)}%` as const,
             sub: `${25 + Math.floor(Math.random() * 41)}%` as const,
         })),
     ).current;
 
-    const textAnim = useRef(new Animated.Value(0.4)).current;
-
     useEffect(() => {
-        const textLoop = Animated.loop(
-            Animated.sequence([
-                Animated.timing(textAnim, { duration: 900, toValue: 1, useNativeDriver: true }),
-                Animated.timing(textAnim, { duration: 900, toValue: 0.4, useNativeDriver: true }),
-            ]),
-        );
-        textLoop.start();
-
         const animations = anims.map((anim, i) =>
             Animated.loop(
                 Animated.sequence([
@@ -48,8 +41,8 @@ export const FlashcardsSelectionSkeleton: FC = () => {
                         toValue: 0.3,
                         useNativeDriver: true,
                     }),
-                    ...(i < SKELETON_COUNT - 1
-                        ? [Animated.delay((SKELETON_COUNT - 1 - i) * STAGGER_MS)]
+                    ...(i < anims.length - 1
+                        ? [Animated.delay((anims.length - 1 - i) * STAGGER_MS)]
                         : []),
                 ]),
             ),
@@ -57,18 +50,13 @@ export const FlashcardsSelectionSkeleton: FC = () => {
 
         animations.forEach(a => a.start());
         return () => {
-            textLoop.stop();
             animations.forEach(a => a.stop());
         };
     }, []);
 
     return (
         <View style={styles.root}>
-            <Animated.View style={[styles.footer, { opacity: textAnim }]}>
-                <CustomText style={styles.footerText} weight={'SemiBold'}>
-                    {t('word_selection.searching')}
-                </CustomText>
-            </Animated.View>
+            {header}
             {anims.map((anim, i) => (
                 <View key={i}>
                     <Animated.View style={[styles.item, { opacity: anim }]}>
@@ -94,14 +82,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginLeft: 10,
             width: 20,
         },
-        footer: {
-            alignItems: 'center',
-            paddingVertical: MARGIN_VERTICAL,
-        },
-        footerText: {
-            color: colors.primary300,
-            fontSize: 13,
-        },
         icon: {
             backgroundColor: colors.cardAccent,
             borderRadius: spacing.s,
@@ -116,7 +96,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: 12,
             paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingVertical: 16,
+            paddingVertical: 15,
         },
         lineMain: {
             backgroundColor: colors.cardAccent,

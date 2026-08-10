@@ -14,6 +14,7 @@ type Props = {
     creatorId: string;
     flashcardsCount: number;
     name?: string;
+    picture?: string;
     style?: StyleProp<ViewStyle>;
 };
 
@@ -22,6 +23,7 @@ export const BundleCreatorInfo: FC<Props> = ({
     creatorId,
     flashcardsCount,
     name,
+    picture,
     style,
 }) => {
     const { colors } = useTheme() as CustomTheme;
@@ -29,16 +31,17 @@ export const BundleCreatorInfo: FC<Props> = ({
     const { data: userSummary } = useUserSummaryQuery(name ? undefined : creatorId);
 
     const displayName = name ?? userSummary?.name;
+    const displayPicture = picture ? picture : userSummary?.picture;
 
     if (!displayName) return null;
 
     return (
         <View style={[styles.row, style]}>
             {!compact &&
-                (userSummary?.picture ? (
+                (displayPicture ? (
                     <Image
                         resizeMode="cover"
-                        source={{ uri: userSummary.picture }}
+                        source={{ uri: displayPicture }}
                         style={styles.avatar}
                     />
                 ) : (

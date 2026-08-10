@@ -19,7 +19,13 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GRADE_THREE_PROB_THRESHOLDS } from '../../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
-import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
+import {
+    FlashcardSide,
+    FlashcardSortingMethod,
+    SessionLength,
+} from '../../../constants/UserPreferences';
+import { useBundleQuery } from '../../../hooks/useBundleQuery';
+import { useBundleWordsQuery } from '../../../hooks/useBundleWordsQuery';
 import {
     BundleStackParamList,
     RootStackParamList,
@@ -33,7 +39,7 @@ import {
     useWordsMLStatesContext,
     useWordsWithDetails,
 } from '../../../store';
-import { WordWithDetails } from '../../../types';
+import { Word, WordWithDetails } from '../../../types';
 import { isIOS } from '../../../utils/deviceUtils';
 import { getSortingMethod } from '../../../utils/sortingUtil';
 import { ActionButton, BottomGradient, CustomText, DockedActionPanel } from '../../components';
@@ -46,6 +52,7 @@ import {
 } from '../../components/flashcards';
 import { BundleCreatorInfo, FlashcardClassBadges } from '../../components/home';
 import { LibraryItem } from '../../components/library';
+import { FlashcardsSelectionSkeleton } from '../../containers/onboarding/FlashcardsSelectionSkeleton';
 import { BundleOptionsBottomSheet } from '../../sheets/BundleOptionsBottomSheet';
 import {
     FLASHCARD_DETAIL_BOTTOM_SHEET,
@@ -78,10 +85,12 @@ type BundleDetailsScreenProps = NativeStackScreenProps<
     ScreenName.BundleFlashcards
 >;
 
-type BundleListItem = WordWithDetails | { id: 'header' | 'subheader' | 'empty' };
+type BundleWord = Word & { gradeThreeProb: number };
+
+type BundleListItem = BundleWord | { id: 'header' | 'subheader' | 'empty' };
 
 export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
-    const { bundleId, isNewBundle } = route.params;
+    const { bundleId, isNewBundle, previewBundle } = route.params;
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { colors } = useTheme() as CustomTheme;
@@ -148,9 +157,28 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         }).start();
     }, [contentAppear]);
 
-    const bundle = bundles.find(b => b.id === bundleId);
+    const localBundle = bundles.find(b => b.id === bundleId);
+    const isPreview = !localBundle;
+
+    const { data: previewOwnerInfo, refetch: refetchBundle } = useBundleQuery(
+        bundleId,
+        isPreview,
+        previewBundle,
+    );
+
+    const bundle =
+        localBundle ??
+        (previewOwnerInfo ? { ...previewOwnerInfo, membership: undefined } : undefined);
+
     const membership = bundle?.membership;
-    const canAddWords = membership?.role === 'owner' || membership?.role === 'editor';
+    const canAddWords =
+        !isPreview && (membership?.role === 'owner' || membership?.role === 'editor');
+
+    const {
+        data: remoteBundleWords,
+        isFetching: isBundleWordsFetching,
+        refetch: refetchBundleWords,
+    } = useBundleWordsQuery(bundleId, isPreview || (!!localBundle && !localBundle.wordsBackfilled));
 
     useEffect(() => {
         if (!bundle) {
@@ -190,10 +218,21 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         headerButtonsBottomRef.current = y + height;
     }, []);
 
-    const bundleWords = useMemo(
+    const previewBundleWords = useMemo<BundleWord[]>(
+        () => (remoteBundleWords ?? []).map(word => ({ ...word, gradeThreeProb: 0 })),
+        [remoteBundleWords],
+    );
+
+    const localBundleWords = useMemo(
         () => langWordsWithDetails.filter(word => word.bundleId === bundleId),
         [langWordsWithDetails, bundleId],
     );
+
+    const bundleWords: BundleWord[] = isPreview ? previewBundleWords : localBundleWords;
+
+    const flashcardsCount = isPreview
+        ? (previewOwnerInfo?.flashcardsCount ?? bundleWords.length)
+        : bundleWords.length;
 
     const bundleWordsMLStates = useMemo(() => {
         const bundleWordIds = new Set(bundleWords.map(word => word.id));
@@ -201,7 +240,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     }, [langWordsMLStates, bundleWords]);
 
     const matchesMasteryFilter = useCallback(
-        (word: WordWithDetails) => {
+        (word: BundleWord) => {
             if (masteryFilter === 'all') return true;
             if (masteryFilter === 'learning')
                 return word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX;
@@ -217,12 +256,34 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         [masteryFilter],
     );
 
+    const previewSortingMethod =
+        flashcardsSortingMethod === FlashcardSortingMethod.ADD_DATE_ASC
+            ? FlashcardSortingMethod.ADD_DATE_ASC
+            : FlashcardSortingMethod.ADD_DATE_DESC;
+
+    const sortByAddDate = useCallback(
+        (a: BundleWord, b: BundleWord) => {
+            const direction = previewSortingMethod === FlashcardSortingMethod.ADD_DATE_ASC ? 1 : -1;
+            return direction * (new Date(a.addDate).getTime() - new Date(b.addDate).getTime());
+        },
+        [previewSortingMethod],
+    );
+
     const words = useMemo(
         () =>
-            bundleWords
-                .filter(matchesMasteryFilter)
-                .sort(getSortingMethod(flashcardsSortingMethod)),
-        [bundleWords, matchesMasteryFilter, flashcardsSortingMethod],
+            isPreview
+                ? previewBundleWords.slice().sort(sortByAddDate)
+                : localBundleWords
+                      .filter(matchesMasteryFilter)
+                      .sort(getSortingMethod(flashcardsSortingMethod)),
+        [
+            isPreview,
+            previewBundleWords,
+            sortByAddDate,
+            localBundleWords,
+            matchesMasteryFilter,
+            flashcardsSortingMethod,
+        ],
     );
 
     const handleStartSessionPress = () => {
@@ -244,17 +305,22 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const handleRefresh = useCallback(async () => {
         try {
             setRefreshing(true);
-            await Promise.all([syncBundles(), syncWords(), syncEvaluations()]);
+            await Promise.all(
+                isPreview
+                    ? [refetchBundle(), refetchBundleWords()]
+                    : [syncBundles(), syncWords(), syncEvaluations()],
+            );
         } finally {
             setRefreshing(false);
         }
-    }, [syncBundles, syncWords, syncEvaluations]);
+    }, [isPreview, refetchBundle, refetchBundleWords, syncBundles, syncWords, syncEvaluations]);
 
     const handleBackPress = () => {
         navigation.goBack();
     };
 
     const handleMoreOptionsPress = () => {
+        if (isPreview) return;
         TrueSheet.present(BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET);
     };
 
@@ -287,12 +353,12 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
 
     const handlePress = useCallback(
         (id: string) => {
-            const word = bundleWords.find(w => w.id === id);
+            const word = langWordsWithDetails.find(w => w.id === id);
             if (!word) return;
             setDetailWord(word);
             TrueSheet.present(FLASHCARD_DETAIL_BOTTOM_SHEET);
         },
-        [bundleWords],
+        [langWordsWithDetails],
     );
 
     const handleEditPress = useCallback((id: string) => {
@@ -329,16 +395,17 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     };
 
     const renderWordItem = useCallback(
-        ({ gradeThreeProb, id, text, translation }: WordWithDetails) => (
+        ({ gradeThreeProb, id, text, translation }: BundleWord, index: number) => (
             <FlashcardListItem
                 id={id}
+                index={index}
                 level={gradeThreeProb}
                 text={text}
                 translation={translation}
-                onPress={handlePress}
+                onPress={isPreview ? undefined : handlePress}
             />
         ),
-        [handlePress],
+        [isPreview, handlePress],
     );
 
     const renderHeader = useCallback(
@@ -367,18 +434,22 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
 
                 <BundleCreatorInfo
                     creatorId={bundle?.ownerId ?? ''}
-                    flashcardsCount={bundleWords.length}
+                    flashcardsCount={flashcardsCount}
+                    name={isPreview ? previewOwnerInfo?.ownerName : undefined}
+                    picture={isPreview ? previewOwnerInfo?.ownerPicture : undefined}
                     style={styles.creatorInfo}
                 />
 
-                <View style={styles.classBadges}>
-                    <FlashcardClassBadges
-                        mlStates={bundleWordsMLStates}
-                        onBadgePress={setMasteryFilter}
-                        onClassPress={setMasteryFilter}
-                        onReviewWordsPress={() => setMasteryFilter('all')}
-                    />
-                </View>
+                {!isPreview && (
+                    <View style={styles.classBadges}>
+                        <FlashcardClassBadges
+                            mlStates={bundleWordsMLStates}
+                            onBadgePress={setMasteryFilter}
+                            onClassPress={setMasteryFilter}
+                            onReviewWordsPress={() => setMasteryFilter('all')}
+                        />
+                    </View>
+                )}
 
                 {membership && (
                     <LibraryItem
@@ -415,8 +486,11 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             contentTitleOpacity,
             styles,
             bundle,
+            isPreview,
+            previewOwnerInfo,
             bundleWords.length,
             bundleWordsMLStates,
+            flashcardsCount,
             membership,
             canAddWords,
             t,
@@ -429,16 +503,21 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             <FlashcardsSubheader
                 filterSheetName={BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET}
                 masteryFilter={masteryFilter}
+                showFilter={!isPreview}
                 showSearch={false}
-                sortingMethod={flashcardsSortingMethod}
+                sortingMethod={isPreview ? previewSortingMethod : flashcardsSortingMethod}
                 sortingSheetName={BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET}
             />
         ),
-        [masteryFilter, flashcardsSortingMethod],
+        [masteryFilter, isPreview, previewSortingMethod, flashcardsSortingMethod],
     );
 
-    const renderEmptyList = useCallback(
-        () => (
+    const renderEmptyList = useCallback(() => {
+        if (isBundleWordsFetching) {
+            return <FlashcardsSelectionSkeleton count={flashcardsCount || undefined} />;
+        }
+
+        return (
             <EmptyList
                 title={t('no_items')}
                 description={t(
@@ -447,16 +526,15 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                         : 'bundle_details.no_items_desc',
                 )}
             />
-        ),
-        [masteryFilter, t],
-    );
+        );
+    }, [isBundleWordsFetching, flashcardsCount, masteryFilter, t]);
 
     const renderListItem = useCallback(
-        ({ item }: { item: BundleListItem }) => {
+        ({ index, item }: { index: number; item: BundleListItem }) => {
             if (item.id === 'header') return renderHeader();
             if (item.id === 'subheader') return renderSubheader();
             if (item.id === 'empty') return renderEmptyList();
-            return renderWordItem(item as WordWithDetails);
+            return renderWordItem(item as BundleWord, index - 2);
         },
         [renderHeader, renderSubheader, renderEmptyList, renderWordItem],
     );
@@ -469,6 +547,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         ],
         [words],
     );
+
+    const availableSortingMethods = isPreview
+        ? [FlashcardSortingMethod.ADD_DATE_DESC, FlashcardSortingMethod.ADD_DATE_ASC]
+        : undefined;
 
     return (
         <View style={styles.root}>
@@ -520,7 +602,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                 value={masteryFilter}
                 onChange={setMasteryFilter}
             />
-            <SortingMethodBottomSheet sheetName={BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET} />
+            <SortingMethodBottomSheet
+                availableMethods={availableSortingMethods}
+                sheetName={BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET}
+            />
             <FlashList
                 ListEmptyComponent={renderEmptyList}
                 ListFooterComponent={<View style={styles.listFooter} />}

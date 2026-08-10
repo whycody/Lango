@@ -4,15 +4,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { useHaptics } from '../../../hooks';
-import { BundleSearchResult } from '../../../types';
+import { WordsBundleWithOwnerInfo } from '../../../types';
 import { CustomTheme } from '../../Theme';
 import { BundleCardItem } from './BundleCardItem';
 
 interface SearchBundleItemProps {
-    bundle: BundleSearchResult;
+    bundle: WordsBundleWithOwnerInfo;
     index: number;
-    onInfoPress?: (bundle: BundleSearchResult) => void;
-    onPress?: (bundle: BundleSearchResult) => void;
+    onInfoPress?: (bundle: WordsBundleWithOwnerInfo) => void;
+    onPress?: (bundle: WordsBundleWithOwnerInfo) => void;
     style?: ViewStyle;
 }
 
@@ -29,7 +29,7 @@ export const SearchBundleItem = memo<SearchBundleItemProps>(
 
         return (
             <BundleCardItem
-                creatorName={bundle.creatorName}
+                creatorName={bundle.ownerName}
                 flashcardsCount={bundle.flashcardsCount}
                 index={index}
                 ownerId={bundle.ownerId}

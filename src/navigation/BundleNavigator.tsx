@@ -8,13 +8,13 @@ const Stack = createNativeStackNavigator<BundleStackParamList>();
 type BundleNavigatorProps = NativeStackScreenProps<RootStackParamList, ScreenName.BundleNavigator>;
 
 const BundleNavigator = ({ route }: BundleNavigatorProps) => {
-    const { bundleId, isNewBundle } = route.params;
+    const { bundleId, isNewBundle, previewBundle } = route.params;
 
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
                 component={BundleDetailsScreen}
-                initialParams={{ bundleId, isNewBundle }}
+                initialParams={{ bundleId, isNewBundle, previewBundle }}
                 name={ScreenName.BundleFlashcards}
             />
         </Stack.Navigator>

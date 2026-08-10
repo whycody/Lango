@@ -1,6 +1,5 @@
 import { memo, ReactNode } from 'react';
 import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';

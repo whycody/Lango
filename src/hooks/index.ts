@@ -1,5 +1,7 @@
 export * from './repo';
 export * from './useAppUpdateCheck';
+export * from './useBundleQuery';
+export * from './useBundleWordsQuery';
 export * from './useDynamicStatusBar';
 export * from './useHaptics';
 export * from './useSearchBundlesQuery';

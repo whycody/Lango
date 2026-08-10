@@ -8,6 +8,7 @@ import {
     BundleSearchResponse,
     SyncResultWithRejections,
     WordsBundle,
+    WordsBundleWithOwnerInfo,
 } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
@@ -61,7 +62,7 @@ class WordsBundlesApi {
     async fetchWordsBundlesByIds(ids: string[]): Promise<FetchWordsBundlesByIdsApi> {
         if (ids.length === 0) return { data: [], kind: 'ok' };
 
-        const response: ApiResponse<WordsBundle[]> = await this.api.apisauce.get(
+        const response: ApiResponse<WordsBundleWithOwnerInfo[]> = await this.api.apisauce.get(
             WORDS_BUNDLES_API_ROUTES.byIds,
             { ids: ids.join(',') },
         );

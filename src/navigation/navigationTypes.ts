@@ -1,5 +1,6 @@
 import { SessionMode } from '../constants/Session';
 import { FlashcardSide, SessionLength } from '../constants/UserPreferences';
+import { WordsBundleWithOwnerInfo } from '../types';
 import { MasteryFilter } from '../ui/sheets/MasteryFilterBottomSheet';
 
 export type SessionScreenParams = {
@@ -16,6 +17,7 @@ export type FlashcardsScreenParams = {
 export type BundleNavigatorParams = {
     bundleId: string;
     isNewBundle?: boolean;
+    previewBundle?: WordsBundleWithOwnerInfo;
 };
 
 export type RootStackParamList = {

@@ -11,11 +11,17 @@ export type WordsBundleBase = {
     title: string;
     translationLang: LanguageCode;
     visibility: WordsBundleVisibility;
+    removed: boolean;
 };
 
 export type WordsBundle = WordsBundleBase &
     SyncMetadata & {
         bundleCreatedOnServer: boolean;
-        removed: boolean;
         wordsBackfilled: boolean;
     };
+
+export type WordsBundleWithOwnerInfo = WordsBundle & {
+    flashcardsCount: number;
+    ownerName: string;
+    ownerPicture?: string;
+};

@@ -177,6 +177,10 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
         if (!flashcardId) clearInputs();
     };
 
+    const handleSheetPresent = () => {
+        if (!flashcardId) wordInputRef.current?.focus();
+    };
+
     const wordDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const translationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const abortControllerRef = useRef(new AbortController());
@@ -253,6 +257,7 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
                 title={flashcardId ? t('editFlashcard') : t('addNewFlashcard')}
                 onDidDismiss={handleSheetDismiss}
                 onPrimaryButtonPress={() => (flashcardId ? editFlashcard() : addFlashcard(false))}
+                onWillPresent={handleSheetPresent}
                 onSecondaryButtonPress={
                     flashcardId ? () => TrueSheet.dismiss(sheetName) : handleActionButtonPress
                 }

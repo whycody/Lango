@@ -16,6 +16,7 @@ type GenericBottomSheetProps = {
     description?: string;
     onDidDismiss?: () => void;
     onDidPresent?: () => void;
+    onWillPresent?: () => void;
     onPrimaryButtonPress?: () => void;
     onSecondaryButtonPress?: () => void;
     primaryActionIcon?: keyof typeof Ionicons.glyphMap;
@@ -42,6 +43,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
         onDidPresent,
         onPrimaryButtonPress,
         onSecondaryButtonPress,
+        onWillPresent,
         primaryActionIcon,
         primaryActionLabel,
         primaryButtonEnabled,
@@ -76,6 +78,7 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
             name={sheetName}
             onDidDismiss={onDidDismiss}
             onDidPresent={onDidPresent}
+            onWillPresent={onWillPresent}
         >
             <View style={styles.trueSheetRoot}>
                 {title && (

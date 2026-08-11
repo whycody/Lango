@@ -32,6 +32,7 @@ import { useWordsBundle } from './WordsBundleContext';
 const EPOCH_ISO = '1970-01-01T00:00:00.000Z';
 
 interface WordsContextProps {
+    addFetchedWords: (fetchedWords: Word[]) => Promise<void>;
     addWord: (
         text: string,
         translation: string,
@@ -49,6 +50,7 @@ interface WordsContextProps {
 }
 
 const WordsContext = createContext<WordsContextProps>({
+    addFetchedWords: () => Promise.resolve(),
     addWord: () => null,
     addWords: () => [],
     editWord: () => [],
@@ -183,6 +185,16 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
 
     const getWord = (id: string): Word | undefined => words.find(word => word.id === id);
+
+    const addFetchedWords = async (fetchedWords: Word[]) => {
+        const mergedWords = mergeLocalAndServer<Word>(words, fetchedWords);
+        const changedWords = findChangedItems<Word>(words, mergedWords);
+
+        if (changedWords.length === 0) return;
+
+        setWords(mergedWords);
+        await saveWords(changedWords);
+    };
 
     const editWord = (updatedWord: Partial<Word> & { id: string }) => {
         const updatedAt = getCurrentISO();
@@ -369,6 +381,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return (
         <WordsContext.Provider
             value={{
+                addFetchedWords,
                 addWord,
                 addWords,
                 editWord,

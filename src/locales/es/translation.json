@@ -339,6 +339,7 @@
         "empty_search_desc": "No se encontraron conjuntos que coincidan con tu búsqueda."
     },
     "bundle_details": {
+        "add_to_my_bundles": "Añadir a mis conjuntos",
         "add_word": "Añadir nueva palabra +",
         "flashcards_count": "{{count}} tarjeta",
         "flashcards_count_plural": "{{count}} tarjetas",
@@ -359,6 +360,12 @@
             "desc": "Añade sus primeras fichas",
             "confirm": "Añadir nuevas palabras al conjunto",
             "add_later": "Añadir más tarde"
+        },
+        "bundle_added": {
+            "title": "Conjunto añadido a tu colección",
+            "desc": "Ya puedes estudiarlo cuando quieras",
+            "confirm": "Empezar a aprender",
+            "later": "Quizás más tarde"
         },
         "edit": {
             "title": "Editar conjunto",

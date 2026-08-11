@@ -14,7 +14,7 @@ export const LeaveBundleBottomSheet = ({ onCancel, onLeave, sheetName }: LeaveBu
     return (
         <GenericBottomSheet
             description={t('bundle_details.leaving.desc')}
-            primaryActionIcon="exit"
+            primaryActionIcon="exit-outline"
             primaryActionLabel={t('bundle_details.options.leave_bundle')}
             secondaryActionLabel={t('cancel')}
             sheetName={sheetName}

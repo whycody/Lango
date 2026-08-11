@@ -339,6 +339,7 @@
         "empty_search_desc": "Nessun set corrisponde alla tua ricerca."
     },
     "bundle_details": {
+        "add_to_my_bundles": "Aggiungi ai miei set",
         "add_word": "Aggiungi nuova parola +",
         "flashcards_count": "{{count}} flashcard",
         "flashcards_count_plural": "{{count}} flashcard",
@@ -359,6 +360,12 @@
             "desc": "Aggiungi le sue prime flashcard",
             "confirm": "Aggiungi nuove parole al set",
             "add_later": "Aggiungi più tardi"
+        },
+        "bundle_added": {
+            "title": "Set aggiunto alla tua collezione",
+            "desc": "Ora puoi studiarlo quando vuoi",
+            "confirm": "Inizia a studiare",
+            "later": "Forse più tardi"
         },
         "edit": {
             "title": "Modifica set",

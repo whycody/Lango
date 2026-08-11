@@ -53,6 +53,7 @@ import {
 import { BundleCreatorInfo, FlashcardClassBadges } from '../../components/home';
 import { LibraryItem } from '../../components/library';
 import { FlashcardsSelectionSkeleton } from '../../containers/onboarding/FlashcardsSelectionSkeleton';
+import { BundleAddedBottomSheet } from '../../sheets/BundleAddedBottomSheet';
 import { BundleOptionsBottomSheet } from '../../sheets/BundleOptionsBottomSheet';
 import {
     FLASHCARD_DETAIL_BOTTOM_SHEET,
@@ -74,6 +75,7 @@ const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flas
 const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
 const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
 const BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET = 'bundle-details-new-bundle-bottom-sheet';
+const BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET = 'bundle-details-bundle-added-bottom-sheet';
 const BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET = 'bundle-details-bundle-options-bottom-sheet';
 const SCROLL_TO_TOP_THRESHOLD = 300;
 const CONTENT_TITLE_SCROLL_START = 40;
@@ -97,12 +99,12 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const insets = useSafeAreaInsets();
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
 
-    const { bundles, editBundleMember, syncBundles } = useWordsBundle();
+    const { bundles, editBundleMember, joinPreviewBundle, syncBundles } = useWordsBundle();
     const { langWordsWithDetails } = useWordsWithDetails();
     const { langWordsMLStates } = useWordsMLStatesContext();
     const { flashcardsSortingMethod } = useUserPreferences();
 
-    const { removeWord, syncWords } = useWords();
+    const { addFetchedWords, removeWord, syncWords } = useWords();
     const { syncEvaluations } = useEvaluations();
 
     const TOP_BAR_HEIGHT = isIOS ? 44 + insets.top : insets.top + 56;
@@ -202,6 +204,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
     const [refreshing, setRefreshing] = useState(false);
     const [isBottomPanelVisible, setIsBottomPanelVisible] = useState(false);
+    const [isJoiningBundle, setIsJoiningBundle] = useState(false);
 
     const bottomPanelOpacity = useRef(new Animated.Value(0)).current;
 
@@ -228,7 +231,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         [langWordsWithDetails, bundleId],
     );
 
-    const bundleWords: BundleWord[] = isPreview ? previewBundleWords : localBundleWords;
+    const bundleWords: BundleWord[] =
+        isPreview || (isJoiningBundle && localBundleWords.length === 0)
+            ? previewBundleWords
+            : localBundleWords;
 
     const flashcardsCount = isPreview
         ? (previewOwnerInfo?.flashcardsCount ?? bundleWords.length)
@@ -329,7 +335,9 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     };
 
     const handleBundleLeft = () => {
-        navigation.goBack();
+        if (bundle?.visibility === 'private') {
+            navigation.goBack();
+        }
     };
 
     const handleSubscribedToggle = () => {
@@ -337,11 +345,46 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         editBundleMember({ id: membership.id, subscribed: !membership.subscribed });
     };
 
-    const handleSessionStart = (
+    const joinPreviewBundleWithWords = async () => {
+        if (!previewOwnerInfo) return;
+
+        const words = isBundleWordsFetching ? (await refetchBundleWords()).data : remoteBundleWords;
+
+        await joinPreviewBundle(previewOwnerInfo);
+        await addFetchedWords(words ?? []);
+    };
+
+    const handleAddToMyBundlesPress = async () => {
+        if (!previewOwnerInfo) return;
+
+        try {
+            setIsJoiningBundle(true);
+            await joinPreviewBundleWithWords();
+            TrueSheet.present(BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET);
+        } finally {
+            setIsJoiningBundle(false);
+        }
+    };
+
+    const handleBundleAddedStartSessionPress = () => {
+        TrueSheet.dismiss(BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET);
+        TrueSheet.present(BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET);
+    };
+
+    const handleSessionStart = async (
         length: SessionLength,
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ) => {
+        if (isPreview && previewOwnerInfo) {
+            try {
+                setIsJoiningBundle(true);
+                await joinPreviewBundleWithWords();
+            } finally {
+                setIsJoiningBundle(false);
+            }
+        }
+
         TrueSheet.dismissAll();
         navigation.navigate(ScreenName.Session, {
             bundleId,
@@ -470,6 +513,17 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleAddWordPress}
                         />
                     )}
+                    {isPreview && (
+                        <ActionButton
+                            active={!isJoiningBundle && bundleWords.length > 0}
+                            icon={'folder-multiple-plus-outline'}
+                            iconFamily={'material-community'}
+                            label={t('bundle_details.add_to_my_bundles')}
+                            loading={isJoiningBundle}
+                            style={styles.headerAddButton}
+                            onPress={handleAddToMyBundlesPress}
+                        />
+                    )}
                     <ActionButton
                         primary
                         active={bundleWords.length > 0}
@@ -562,6 +616,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                 onMoreOptionsPress={handleMoreOptionsPress}
             />
             <StartSessionBottomSheet
+                loading={isJoiningBundle}
                 sheetName={BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET}
                 onSessionStart={handleSessionStart}
             />
@@ -589,6 +644,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             <NewBundleBottomSheet
                 sheetName={BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET}
                 onAddWordsPress={handleNewBundleAddWordsPress}
+            />
+            <BundleAddedBottomSheet
+                sheetName={BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET}
+                onStartSessionPress={handleBundleAddedStartSessionPress}
             />
             <HandleFlashcardBottomSheet
                 bundleId={bundleId}
@@ -636,6 +695,17 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             label={t('bundle_details.add_word')}
                             style={styles.button}
                             onPress={handleAddWordPress}
+                        />
+                    )}
+                    {isPreview && (
+                        <ActionButton
+                            active={!isJoiningBundle && bundleWords.length > 0}
+                            icon={'folder-multiple-plus-outline'}
+                            iconFamily={'material-community'}
+                            label={t('bundle_details.add_to_my_bundles')}
+                            loading={isJoiningBundle}
+                            style={styles.button}
+                            onPress={handleAddToMyBundlesPress}
                         />
                     )}
                     <ActionButton

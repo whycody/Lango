@@ -14,11 +14,12 @@ import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
 type StartSessionBottomSheetProps = {
+    loading?: boolean;
     onSessionStart: (
         length: SessionLength,
         mode: SessionMode,
         flashcardSide: FlashcardSide,
-    ) => void;
+    ) => void | Promise<void>;
     sheetName?: string;
 };
 
@@ -64,14 +65,15 @@ export const StartSessionBottomSheet: FC<StartSessionBottomSheetProps> = props =
         userPreferences.setFlashcardSide(flashcardSide);
         userPreferences.setSessionMode(sessionMode);
         userPreferences.setSessionLength(sessionLength);
-        props.onSessionStart(sessionLength, sessionMode, flashcardSide);
+        await props.onSessionStart(sessionLength, sessionMode, flashcardSide);
     };
 
     return (
         <GenericBottomSheet
-            allowDismiss={!!user?.finishedOnboarding}
+            allowDismiss={!!user?.finishedOnboarding && !props.loading}
             primaryActionIcon={'play'}
             primaryActionLabel={t('startSession')}
+            primaryButtonLoading={props.loading}
             sheetName={props.sheetName || START_SESSION_BOTTOM_SHEET}
             title={t('startSession')}
             onPrimaryButtonPress={handleActionButtonPress}

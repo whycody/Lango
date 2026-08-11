@@ -113,7 +113,7 @@ export const BundleOptionsBottomSheet = ({
                 ) : (
                     <LibraryItem
                         color={palette.red}
-                        icon="exit"
+                        icon="exit-outline"
                         index={0}
                         label={t('bundle_details.options.leave_bundle')}
                         onPress={handleLeavePress}

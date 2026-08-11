@@ -19,6 +19,7 @@ import {
     BundleMemberRole,
     DeleteBundleResult,
     WordsBundle,
+    WordsBundleWithOwnerInfo,
 } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
 import {
@@ -52,6 +53,7 @@ interface WordsBundleContextProps {
         role: Extract<BundleMemberRole, 'editor' | 'viewer'>,
     ) => Promise<BundleJoinCode | null>;
     deleteBundlePhysically: (bundleId: string) => Promise<void>;
+    joinPreviewBundle: (bundle: WordsBundleWithOwnerInfo) => Promise<BundleMember>;
     joinWithCode: (code: string) => Promise<BundleMember | null>;
     langBundles: EnrichedWordsBundle[];
     loading: boolean;
@@ -70,6 +72,9 @@ const WordsBundleContext = createContext<WordsBundleContextProps>({
     editBundle: () => {},
     editBundleMember: () => {},
     generateInvitationCode: () => Promise.resolve(null),
+    joinPreviewBundle: () => {
+        throw new Error('WordsBundleProvider not mounted');
+    },
     joinWithCode: () => Promise.resolve(null),
     langBundles: [],
     loading: true,
@@ -243,6 +248,54 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         }
 
         return member;
+    };
+
+    const joinPreviewBundle = async (bundle: WordsBundleWithOwnerInfo): Promise<BundleMember> => {
+        const now = getCurrentISO();
+
+        const newBundle: WordsBundle = {
+            ...bundle,
+            bundleCreatedOnServer: true,
+            locallyUpdatedAt: bundle.updatedAt ?? now,
+            removed: false,
+            synced: true,
+            updatedAt: bundle.updatedAt ?? now,
+            wordsBackfilled: true,
+        };
+
+        const existingMember = members.find(
+            m => m.bundleId === bundle.id && m.userId === user!.userId,
+        );
+
+        const newMember: BundleMember = existingMember
+            ? {
+                  ...existingMember,
+                  locallyUpdatedAt: now,
+                  removed: false,
+                  synced: false,
+              }
+            : {
+                  bundleId: bundle.id,
+                  id: new ObjectId().toHexString(),
+                  locallyUpdatedAt: now,
+                  removed: false,
+                  role: 'viewer',
+                  subscribed: true,
+                  synced: false,
+                  updatedAt: undefined,
+                  userId: user!.userId,
+              };
+
+        const updatedBundles = [newBundle, ...bundles.filter(b => b.id !== newBundle.id)];
+        const updatedMembers = [newMember, ...members.filter(m => m.id !== newMember.id)];
+
+        setBundles(updatedBundles);
+        setMembers(updatedMembers);
+        await saveWordsBundles([newBundle]);
+        await saveBundleMembers([newMember]);
+        syncBundleMembers(updatedMembers);
+
+        return newMember;
     };
 
     const syncWordsBundles = async (inputBundles?: WordsBundle[]) => {
@@ -430,6 +483,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
                 editBundle,
                 editBundleMember,
                 generateInvitationCode,
+                joinPreviewBundle,
                 joinWithCode,
                 langBundles,
                 loading,

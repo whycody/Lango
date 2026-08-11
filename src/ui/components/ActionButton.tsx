@@ -8,7 +8,7 @@ import {
     StyleSheet,
     ViewStyle,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
 import { spacing } from '../../constants/margins';
@@ -16,9 +16,12 @@ import { useHaptics } from '../../hooks';
 import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 
+type IconFamily = 'ionicons' | 'material-community';
+
 interface ActionButtonProps {
     active?: boolean;
-    icon?: keyof typeof Ionicons.glyphMap;
+    icon?: keyof typeof Ionicons.glyphMap | keyof typeof MaterialCommunityIcons.glyphMap;
+    iconFamily?: IconFamily;
     label: string;
     loading?: boolean;
     onPress?: () => void;
@@ -29,6 +32,7 @@ interface ActionButtonProps {
 export const ActionButton: FC<ActionButtonProps> = ({
     active = true,
     icon,
+    iconFamily = 'ionicons',
     label,
     loading = false,
     onPress,
@@ -103,10 +107,18 @@ export const ActionButton: FC<ActionButtonProps> = ({
                 <CustomText style={[styles.label, loading && styles.hidden]} weight={'Bold'}>
                     {label}
                 </CustomText>
-                {icon && (
+                {icon && iconFamily === 'material-community' && (
+                    <MaterialCommunityIcons
+                        color={colors.white}
+                        name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
+                        size={14}
+                        style={[styles.icon, loading && styles.hidden]}
+                    />
+                )}
+                {icon && iconFamily === 'ionicons' && (
                     <Ionicons
                         color={colors.white}
-                        name={icon}
+                        name={icon as keyof typeof Ionicons.glyphMap}
                         size={14}
                         style={[styles.icon, loading && styles.hidden]}
                     />

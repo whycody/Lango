@@ -338,6 +338,7 @@
         "empty_search_desc": "Nie znaleziono zestawów pasujących do wyszukiwania."
     },
     "bundle_details": {
+        "add_to_my_bundles": "Dodaj do moich zestawów",
         "add_word": "Dodaj nowe słówko +",
         "flashcards_count": "{{count}} fiszka",
         "flashcards_count_few": "{{count}} fiszki",
@@ -359,6 +360,12 @@
             "desc": "Dodaj do niego pierwsze fiszki",
             "confirm": "Dodaj nowe słówka do zestawu",
             "add_later": "Dodaj później"
+        },
+        "bundle_added": {
+            "title": "Zestaw dodany do Twojej kolekcji",
+            "desc": "Możesz teraz uczyć się z niego w dowolnym momencie",
+            "confirm": "Rozpocznij naukę",
+            "later": "Może później"
         },
         "edit": {
             "title": "Edytuj zestaw",

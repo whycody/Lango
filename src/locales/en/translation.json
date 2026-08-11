@@ -339,6 +339,7 @@
         "empty_search_desc": "No bundles matched your search."
     },
     "bundle_details": {
+        "add_to_my_bundles": "Add to my bundles",
         "add_word": "Add new word +",
         "flashcards_count": "{{count}} flashcard",
         "flashcards_count_plural": "{{count}} flashcards",
@@ -359,6 +360,12 @@
             "desc": "Add its first flashcards",
             "confirm": "Add new words to the bundle",
             "add_later": "Add later"
+        },
+        "bundle_added": {
+            "title": "Bundle added to your collection",
+            "desc": "You can now study it whenever you want",
+            "confirm": "Start learning",
+            "later": "Maybe later"
         },
         "edit": {
             "title": "Edit bundle",

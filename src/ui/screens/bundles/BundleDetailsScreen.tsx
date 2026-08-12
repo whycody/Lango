@@ -6,6 +6,7 @@ import {
     NativeScrollEvent,
     NativeSyntheticEvent,
     RefreshControl,
+    Share,
     StyleSheet,
     View,
 } from 'react-native';
@@ -345,6 +346,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         editBundleMember({ id: membership.id, subscribed: !membership.subscribed });
     };
 
+    const handleShareBundlePress = () => {
+        Share.share({ message: `https://app.lango.ovh/bundle/${bundleId}` });
+    };
+
     const joinPreviewBundleWithWords = async () => {
         if (!previewOwnerInfo) return;
 
@@ -524,6 +529,14 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleAddToMyBundlesPress}
                         />
                     )}
+                    {!isPreview && !canAddWords && membership && (
+                        <ActionButton
+                            icon={'share-outline'}
+                            label={t('bundle_details.share_bundle')}
+                            style={styles.headerAddButton}
+                            onPress={handleShareBundlePress}
+                        />
+                    )}
                     <ActionButton
                         primary
                         active={bundleWords.length > 0}
@@ -549,6 +562,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             canAddWords,
             t,
             handleHeaderButtonsLayout,
+            handleShareBundlePress,
         ],
     );
 
@@ -706,6 +720,14 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             loading={isJoiningBundle}
                             style={styles.button}
                             onPress={handleAddToMyBundlesPress}
+                        />
+                    )}
+                    {!isPreview && !canAddWords && membership && (
+                        <ActionButton
+                            icon={'share-outline'}
+                            label={t('bundle_details.share_bundle')}
+                            style={styles.button}
+                            onPress={handleShareBundlePress}
                         />
                     )}
                     <ActionButton

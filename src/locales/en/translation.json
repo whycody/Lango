@@ -348,6 +348,7 @@
         "no_items_desc": "Try adding some words to this bundle.",
         "show_in_main_collection": "Show in main collection",
         "show_in_main_collection_desc": "Words will be part of your main collection",
+        "share_bundle": "Share bundle",
         "start_session": "Start learning",
         "options": {
             "edit_title_or_description": "Edit title or description",

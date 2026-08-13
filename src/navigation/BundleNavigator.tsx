@@ -8,13 +8,21 @@ const Stack = createNativeStackNavigator<BundleStackParamList>();
 type BundleNavigatorProps = NativeStackScreenProps<RootStackParamList, ScreenName.BundleNavigator>;
 
 const BundleNavigator = ({ route }: BundleNavigatorProps) => {
-    const { bundleId, isNewBundle, previewBundle } = route.params;
+    // When this screen is reached via a deep link, React Navigation passes
+    // the nested navigator's state through `route.state` (not
+    // `route.params`) so that the inner Stack.Navigator below hydrates its
+    // own initial state from it automatically. `route.params` is only used
+    // for direct in-app navigation (e.g. tapping a bundle in the list).
+    const { bundleId, code, isNewBundle, previewBundle } = route.params ?? {};
 
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+            initialRouteName={ScreenName.BundleFlashcards}
+            screenOptions={{ headerShown: false }}
+        >
             <Stack.Screen
                 component={BundleDetailsScreen}
-                initialParams={{ bundleId, isNewBundle, previewBundle }}
+                initialParams={{ bundleId, code, isNewBundle, previewBundle }}
                 name={ScreenName.BundleFlashcards}
             />
         </Stack.Navigator>

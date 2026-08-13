@@ -1,17 +1,18 @@
+import 'react-native-get-random-values';
+
 import React, { useEffect, useState } from 'react';
 import { AppState, StatusBar, View, StyleSheet } from 'react-native';
-import { LinkingOptions, NavigationContainer, PathConfig } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import * as Linking from 'expo-linking';
 import { createMMKV } from 'react-native-mmkv';
 import './i18n';
 import * as Font from 'expo-font';
 import { themes } from './src/ui/themes';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { linking } from './src/navigation/linking';
 import Root from './src/navigation/Root';
-import { RootStackParamList, ScreenName } from './src/navigation/navigationTypes';
 import {
     AppInitializerProvider,
     APPLICATION_LANG,
@@ -40,20 +41,6 @@ import { CustomTheme } from './src/ui/Theme';
 void SplashScreen.preventAutoHideAsync().catch(() => {
     // Ignore splash-screen startup errors to avoid unhandled promise rejections.
 });
-
-const linking: LinkingOptions<RootStackParamList> = {
-    config: {
-        screens: {
-            [ScreenName.BundleNavigator]: {
-                path: '',
-                screens: {
-                    [ScreenName.BundleFlashcards]: 'bundle/:bundleId',
-                },
-            } as PathConfig<RootStackParamList>,
-        },
-    },
-    prefixes: [Linking.createURL('/'), 'https://app.lango.ovh'],
-};
 
 const queryClient = new QueryClient();
 

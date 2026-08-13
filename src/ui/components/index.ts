@@ -7,6 +7,7 @@ export * from './ModalDragHandle';
 export * from './ProgressBar';
 export * from './ScreenHeader';
 export * from './SecondaryButton';
+export * from './SkeletonBlock';
 export * from './SquareFlag';
 export * from './StatRow';
 export * from './TopGradient';

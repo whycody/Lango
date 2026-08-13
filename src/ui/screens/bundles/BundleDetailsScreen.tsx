@@ -44,7 +44,12 @@ import { Word, WordWithDetails } from '../../../types';
 import { isIOS } from '../../../utils/deviceUtils';
 import { getSortingMethod } from '../../../utils/sortingUtil';
 import { ActionButton, BottomGradient, CustomText, DockedActionPanel } from '../../components';
-import { BundleFlashcardsTopBar } from '../../components/bundles';
+import {
+    BUNDLE_SUBTITLE_LINE_HEIGHT,
+    BUNDLE_TITLE_LINE_HEIGHT,
+    BundleFlashcardsTopBar,
+    BundleHeaderSkeleton,
+} from '../../components/bundles';
 import {
     EmptyList,
     FlashcardListItem,
@@ -163,11 +168,11 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const localBundle = bundles.find(b => b.id === bundleId);
     const isPreview = !localBundle;
 
-    const { data: previewOwnerInfo, refetch: refetchBundle } = useBundleQuery(
-        bundleId,
-        isPreview,
-        previewBundle,
-    );
+    const {
+        data: previewOwnerInfo,
+        isLoading: isBundleQueryLoading,
+        refetch: refetchBundle,
+    } = useBundleQuery(bundleId, isPreview, previewBundle);
 
     const bundle =
         localBundle ??
@@ -184,10 +189,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     } = useBundleWordsQuery(bundleId, isPreview || (!!localBundle && !localBundle.wordsBackfilled));
 
     useEffect(() => {
-        if (!bundle) {
+        if (!bundle && !isBundleQueryLoading) {
             navigation.goBack();
         }
-    }, [bundle, navigation]);
+    }, [bundle, isBundleQueryLoading, navigation]);
 
     useEffect(() => {
         if (!isNewBundle) return;
@@ -471,22 +476,28 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                     ],
                 }}
             >
-                <Animated.View style={{ opacity: contentTitleOpacity }}>
-                    <CustomText style={styles.title} weight="Bold">
-                        {bundle?.title ?? ''}
-                    </CustomText>
-                </Animated.View>
-                {bundle?.description && (
-                    <CustomText style={styles.subtitle}>{bundle.description}</CustomText>
-                )}
+                {bundle ? (
+                    <>
+                        <Animated.View style={{ opacity: contentTitleOpacity }}>
+                            <CustomText style={styles.title} weight="Bold">
+                                {bundle.title}
+                            </CustomText>
+                        </Animated.View>
+                        {bundle.description && (
+                            <CustomText style={styles.subtitle}>{bundle.description}</CustomText>
+                        )}
 
-                <BundleCreatorInfo
-                    creatorId={bundle?.ownerId ?? ''}
-                    flashcardsCount={flashcardsCount}
-                    name={isPreview ? previewOwnerInfo?.ownerName : undefined}
-                    picture={isPreview ? previewOwnerInfo?.ownerPicture : undefined}
-                    style={styles.creatorInfo}
-                />
+                        <BundleCreatorInfo
+                            creatorId={bundle.ownerId ?? ''}
+                            flashcardsCount={flashcardsCount}
+                            name={isPreview ? previewOwnerInfo?.ownerName : undefined}
+                            picture={isPreview ? previewOwnerInfo?.ownerPicture : undefined}
+                            style={styles.creatorInfo}
+                        />
+                    </>
+                ) : (
+                    <BundleHeaderSkeleton />
+                )}
 
                 {!isPreview && (
                     <View style={styles.classBadges}>
@@ -581,7 +592,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     );
 
     const renderEmptyList = useCallback(() => {
-        if (isBundleWordsFetching) {
+        if (isBundleWordsFetching || !bundle) {
             return <FlashcardsSelectionSkeleton count={flashcardsCount || undefined} />;
         }
 
@@ -595,7 +606,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                 )}
             />
         );
-    }, [isBundleWordsFetching, flashcardsCount, masteryFilter, t]);
+    }, [isBundleWordsFetching, bundle, flashcardsCount, masteryFilter, t]);
 
     const renderListItem = useCallback(
         ({ index, item }: { index: number; item: BundleListItem }) => {
@@ -611,9 +622,9 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         () => [
             { id: 'header' as const },
             { id: 'subheader' as const },
-            ...(words.length > 0 ? words : [{ id: 'empty' as const }]),
+            ...(bundle && words.length > 0 ? words : [{ id: 'empty' as const }]),
         ],
-        [words],
+        [bundle, words],
     );
 
     const availableSortingMethods = isPreview
@@ -794,12 +805,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         subtitle: {
             color: colors.white300,
             fontSize: 15,
+            lineHeight: BUNDLE_SUBTITLE_LINE_HEIGHT,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL / 3,
         },
         title: {
             color: colors.white,
             fontSize: 24,
+            lineHeight: BUNDLE_TITLE_LINE_HEIGHT,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
         },

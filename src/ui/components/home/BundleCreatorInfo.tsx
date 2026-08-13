@@ -18,6 +18,9 @@ type Props = {
     style?: StyleProp<ViewStyle>;
 };
 
+export const BUNDLE_CREATOR_INFO_AVATAR_SIZE = 22;
+export const BUNDLE_CREATOR_INFO_TEXT_LINE_HEIGHT = 16;
+
 export const BundleCreatorInfo: FC<Props> = ({
     compact = false,
     creatorId,
@@ -71,8 +74,8 @@ export const BundleCreatorInfo: FC<Props> = ({
 const styles = StyleSheet.create({
     avatar: {
         borderRadius: spacing.m,
-        height: 22,
-        width: 22,
+        height: BUNDLE_CREATOR_INFO_AVATAR_SIZE,
+        width: BUNDLE_CREATOR_INFO_AVATAR_SIZE,
     },
     avatarFallback: {
         alignItems: 'center',
@@ -86,6 +89,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 13,
+        lineHeight: BUNDLE_CREATOR_INFO_TEXT_LINE_HEIGHT,
     },
     textCompact: {
         fontSize: 11,

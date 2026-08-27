@@ -237,14 +237,32 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
     };
 
     const joinWithCode = async (code: string) => {
-        const result = await wordsBundlesApi.joinBundleWithCode(code);
-        const member = result.kind === 'ok' ? result.data : null;
+        const response = await wordsBundlesApi.joinBundleWithCode(code);
+        if (response.kind !== 'ok') return null;
 
-        if (member) {
-            const updatedMembers = [member, ...members.filter(m => m.id !== member.id)];
-            setMembers(updatedMembers);
-            saveBundleMembers([member]);
-            syncWordsBundles();
+        const { bundle, member } = response.data;
+        const now = getCurrentISO();
+
+        const staleMemberIds = members
+            .filter(m => m.bundleId === member.bundleId && m.id !== member.id)
+            .map(m => m.id);
+        const updatedMembers = [member, ...members.filter(m => m.bundleId !== member.bundleId)];
+
+        setMembers(updatedMembers);
+        if (staleMemberIds.length > 0) await deleteBundleMembersByIds(staleMemberIds);
+        await saveBundleMembers([member]);
+
+        if (!bundles.some(b => b.id === bundle.id)) {
+            const newBundle: WordsBundle = {
+                ...bundle,
+                bundleCreatedOnServer: true,
+                locallyUpdatedAt: bundle.updatedAt ?? now,
+                synced: true,
+                wordsBackfilled: false,
+            };
+
+            setBundles([newBundle, ...bundles]);
+            await saveWordsBundles([newBundle]);
         }
 
         return member;
@@ -272,6 +290,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
                   ...existingMember,
                   locallyUpdatedAt: now,
                   removed: false,
+                  role: 'viewer',
                   synced: false,
               }
             : {
@@ -403,7 +422,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
                     currentMembers
                         .filter(member => !member.removed)
                         .map(member => member.bundleId)
-                        .filter(bundleId => !bundleIds.has(bundleId)),
+                        .filter(bundleId => !!bundleId && !bundleIds.has(bundleId)),
                 ),
             ];
 

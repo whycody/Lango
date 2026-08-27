@@ -343,9 +343,15 @@
         "flashcards_count": "{{count}} fiszka",
         "flashcards_count_few": "{{count}} fiszki",
         "flashcards_count_many": "{{count}} fiszek",
+        "join_with_code": "Dołącz do zestawu za pomocą kodu",
         "members": "Członkowie",
+        "no_access": {
+            "title": "Brak dostępu",
+            "desc": "Ten zestaw jest prywatny. Dołącz do niego za pomocą kodu, aby zobaczyć słówka."
+        },
         "no_members": "Brak członków",
         "no_items_desc": "Spróbuj dodać kilka słówek do tego zestawu.",
+        "no_items_desc_readonly": "Ten zestaw nie ma jeszcze żadnych słówek.",
         "show_in_main_collection": "Wyświetlaj w głównej kolekcji",
         "show_in_main_collection_desc": "Słówka będą częścią głównej kolekcji",
         "share_bundle": "Udostępnij zestaw",
@@ -356,17 +362,23 @@
             "delete_bundle": "Usuń zestaw",
             "leave_bundle": "Opuść ten zestaw"
         },
-        "new_bundle_ready": {
-            "title": "Twój nowy zestaw jest już gotowy",
-            "desc": "Dodaj do niego pierwsze fiszki",
-            "confirm": "Dodaj nowe słówka do zestawu",
-            "add_later": "Dodaj później"
-        },
-        "bundle_added": {
-            "title": "Zestaw dodany do Twojej kolekcji",
-            "desc": "Możesz teraz uczyć się z niego w dowolnym momencie",
-            "confirm": "Rozpocznij naukę",
-            "later": "Może później"
+        "bundle_ready": {
+            "title_new_bundle": "Twój nowy zestaw jest już gotowy",
+            "title_joined_bundle": "Zestaw dodany do Twojej kolekcji",
+            "has_words": {
+                "desc": "Możesz teraz uczyć się z niego w dowolnym momencie",
+                "confirm": "Rozpocznij naukę",
+                "secondary": "Może później"
+            },
+            "no_words_editable": {
+                "desc": "Dodaj do niego pierwsze fiszki",
+                "confirm": "Dodaj nowe słówka do zestawu +",
+                "secondary": "Dodaj później"
+            },
+            "no_words_readonly": {
+                "desc": "Ten zestaw nie ma jeszcze żadnych fiszek",
+                "confirm": "Zamknij"
+            }
         },
         "edit": {
             "title": "Edytuj zestaw",
@@ -395,6 +407,14 @@
         "leaving": {
             "title": "Opuszczanie zestawu",
             "desc": "Czy na pewno chcesz opuścić ten zestaw? Utracisz do niego dostęp."
+        },
+        "join_with_code_sheet": {
+            "title": "Dołącz do zestawu za pomocą kodu",
+            "desc": "Wpisz kod zaproszenia, który otrzymałeś, aby dołączyć do tego zestawu.",
+            "desc_prefilled": "Zostałeś zaproszony do tego zestawu. Potwierdź, aby dołączyć.",
+            "placeholder": "Kod zaproszenia",
+            "confirm": "Dołącz",
+            "error_invalid": "Ten kod jest nieprawidłowy lub wygasł. Sprawdź go i spróbuj ponownie."
         }
     }
 }

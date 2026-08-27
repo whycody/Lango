@@ -1,5 +1,6 @@
 export * from './AddBundleBottomSheet';
 export * from './BundleOptionsBottomSheet';
+export * from './BundleReadyBottomSheet';
 export * from './DeleteAccountBottomSheet';
 export * from './EnableNotificationsBottomSheet';
 export * from './FinishSessionBottomSheet';
@@ -13,7 +14,6 @@ export * from './LeaveBundleBottomSheet';
 export * from './LeaveSessionBottomSheet';
 export * from './LogoutBottomSheet';
 export * from './MasteryFilterBottomSheet';
-export * from './NewBundleBottomSheet';
 export * from './PickLanguageLevelBottomSheet';
 export * from './RemoveBundleBottomSheet';
 export * from './RemoveFlashcardBottomSheet';

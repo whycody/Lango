@@ -331,7 +331,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         };
 
         deleteRemovedBundlesWords();
-    }, [members, user?.userId, words]);
+    }, [members, words]);
 
     useEffect(() => {
         const pendingBundles = bundles.filter(
@@ -362,8 +362,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 const mergedWords = mergeLocalAndServer<Word>(wordsList, serverWords);
                 const changedWords = findChangedItems<Word>(wordsList, mergedWords);
 
+                setWords(mergedWords);
                 if (changedWords.length > 0) {
-                    setWords(mergedWords);
                     await saveWords(changedWords);
                 }
 

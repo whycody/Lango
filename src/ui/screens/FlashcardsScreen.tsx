@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
-import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { MAIN_COLLECTION, useWordsForBundle } from '../../hooks';
@@ -26,7 +25,7 @@ import { useUserPreferences, useWords } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
-import { getSortingMethod } from '../../utils/sortingUtil';
+import { getSortingMethod, matchesMasteryFilter } from '../../utils/sortingUtil';
 import { ActionButton, BottomGradient, DockedActionPanel, ModalDragHandle } from '../components';
 import {
     EmptyList,
@@ -119,37 +118,20 @@ export const FlashcardsScreen = () => {
         [filter],
     );
 
-    const matchesMasteryFilter = useCallback(
-        (word: WordWithDetails) => {
-            if (masteryFilter === 'all') return true;
-            if (masteryFilter === 'learning')
-                return word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX;
-            if (masteryFilter === 'review')
-                return (
-                    word.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
-                    word.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN
-                );
-            if (masteryFilter === 'mastered')
-                return word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN;
-            return true;
-        },
-        [masteryFilter],
-    );
-
     const flashcards = useMemo(
         () =>
             mainCollectionWordsContext.wordsWithDetails
                 .filter((word: WordWithDetails) => {
                     if (word.removed) return false;
                     if (searchingMode) return matchesSearchQuery(word);
-                    return matchesMasteryFilter(word);
+                    return matchesMasteryFilter(word, masteryFilter);
                 })
                 .sort(getSortingMethod(flashcardsSortingMethod)),
         [
             searchingMode,
             flashcardsSortingMethod,
             matchesSearchQuery,
-            matchesMasteryFilter,
+            masteryFilter,
             mainCollectionWordsContext.wordsWithDetails,
         ],
     );

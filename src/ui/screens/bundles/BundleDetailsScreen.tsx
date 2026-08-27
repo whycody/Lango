@@ -17,7 +17,6 @@ import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GRADE_THREE_PROB_THRESHOLDS } from '../../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import {
@@ -42,7 +41,7 @@ import {
 } from '../../../store';
 import { Word, WordWithDetails } from '../../../types';
 import { isIOS } from '../../../utils/deviceUtils';
-import { getSortingMethod } from '../../../utils/sortingUtil';
+import { getSortingMethod, matchesMasteryFilter } from '../../../utils/sortingUtil';
 import { ActionButton, BottomGradient, CustomText, DockedActionPanel } from '../../components';
 import {
     BUNDLE_SUBTITLE_LINE_HEIGHT,
@@ -59,16 +58,16 @@ import {
 import { BundleCreatorInfo, FlashcardClassBadges } from '../../components/home';
 import { LibraryItem } from '../../components/library';
 import { FlashcardsSelectionSkeleton } from '../../containers/onboarding/FlashcardsSelectionSkeleton';
-import { BundleAddedBottomSheet } from '../../sheets/BundleAddedBottomSheet';
 import { BundleOptionsBottomSheet } from '../../sheets/BundleOptionsBottomSheet';
+import { BundleReadyBottomSheet } from '../../sheets/BundleReadyBottomSheet';
 import {
     FLASHCARD_DETAIL_BOTTOM_SHEET,
     FlashcardDetailsBottomSheet,
 } from '../../sheets/FlashcardDetailsBottomSheet';
 import { HandleFlashcardBottomSheet } from '../../sheets/HandleFlashcardBottomSheet';
+import { JoinBundleWithCodeBottomSheet } from '../../sheets/JoinBundleWithCodeBottomSheet';
 import { MasteryFilter, MasteryFilterBottomSheet } from '../../sheets/MasteryFilterBottomSheet';
 import { MicrophonePermissionBottomSheet } from '../../sheets/MicrophonePermissionBottomSheet';
-import { NewBundleBottomSheet } from '../../sheets/NewBundleBottomSheet';
 import { RemoveFlashcardBottomSheet } from '../../sheets/RemoveFlashcardBottomSheet';
 import { SortingMethodBottomSheet } from '../../sheets/SortingMethodBottomSheet';
 import { StartSessionBottomSheet } from '../../sheets/StartSessionBottomSheet';
@@ -80,9 +79,9 @@ const BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET = 'bundle-details-sorting-metho
 const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flashcard-bottom-sheet';
 const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
 const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
-const BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET = 'bundle-details-new-bundle-bottom-sheet';
-const BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET = 'bundle-details-bundle-added-bottom-sheet';
+const BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET = 'bundle-details-bundle-ready-bottom-sheet';
 const BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET = 'bundle-details-bundle-options-bottom-sheet';
+const BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET = 'bundle-details-join-with-code-bottom-sheet';
 const SCROLL_TO_TOP_THRESHOLD = 300;
 const CONTENT_TITLE_SCROLL_START = 40;
 const CONTENT_TITLE_SCROLL_END = 80;
@@ -98,7 +97,7 @@ type BundleWord = Word & { gradeThreeProb: number };
 type BundleListItem = BundleWord | { id: 'header' | 'subheader' | 'empty' };
 
 export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
-    const { bundleId, isNewBundle, previewBundle } = route.params;
+    const { bundleId, code: joinCode, isNewBundle, previewBundle } = route.params;
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { colors } = useTheme() as CustomTheme;
@@ -122,11 +121,68 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     const scrollToTopVisible = useRef(false);
     const headerButtonsBottomRef = useRef<number | undefined>(undefined);
 
+    const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all');
+    const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
+    const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
+    const [refreshing, setRefreshing] = useState(false);
+    const [isBottomPanelVisible, setIsBottomPanelVisible] = useState(false);
+    const [isJoiningBundle, setIsJoiningBundle] = useState(false);
+
+    const bottomPanelOpacity = useRef(new Animated.Value(0)).current;
+
     const contentTitleOpacity = scrollY.interpolate({
         extrapolate: 'clamp',
         inputRange: [CONTENT_TITLE_SCROLL_START, CONTENT_TITLE_SCROLL_END],
         outputRange: [1, 0],
     });
+
+    const localBundle = bundles.find(b => b.id === bundleId);
+    const isPreview = !localBundle || localBundle.membership?.removed === true;
+
+    const {
+        data: previewOwnerInfo,
+        isLoading: isBundleQueryLoading,
+        refetch: refetchBundle,
+    } = useBundleQuery(bundleId, isPreview, previewBundle);
+
+    const bundle = isPreview
+        ? previewOwnerInfo
+            ? { ...previewOwnerInfo, membership: undefined }
+            : undefined
+        : localBundle;
+
+    const membership = bundle?.membership;
+    const canAddWords =
+        !isPreview && (membership?.role === 'owner' || membership?.role === 'editor');
+    const isPrivatePreview = isPreview && bundle?.visibility === 'private';
+    const shouldFetchBundleWords = isPreview && !isPrivatePreview;
+
+    const {
+        data: remoteBundleWords,
+        isFetching: isBundleWordsFetching,
+        refetch: refetchBundleWords,
+    } = useBundleWordsQuery(bundleId, shouldFetchBundleWords);
+
+    const localBundleWords = useMemo(
+        () => langWordsWithDetails.filter(word => word.bundleId === bundleId),
+        [langWordsWithDetails, bundleId],
+    );
+
+    const previewBundleWords = useMemo<BundleWord[]>(
+        () => (remoteBundleWords ?? []).map(word => ({ ...word, gradeThreeProb: 0 })),
+        [remoteBundleWords],
+    );
+
+    // Joining a public bundle commits to WordsBundleContext (membership) and
+    // WordsContext (words) separately, so there's a render in between where
+    // isPreview has already flipped false but localBundleWords hasn't caught
+    // up yet - keep showing the already-fetched preview words through that
+    // gap instead of flashing to empty.
+    const stillWaitingForLocalWords =
+        localBundleWords.length === 0 && previewBundleWords.length > 0;
+
+    const bundleWords: BundleWord[] =
+        isPreview || stillWaitingForLocalWords ? previewBundleWords : localBundleWords;
 
     const handleScroll = useCallback(
         (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -165,29 +221,6 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         }).start();
     }, [contentAppear]);
 
-    const localBundle = bundles.find(b => b.id === bundleId);
-    const isPreview = !localBundle;
-
-    const {
-        data: previewOwnerInfo,
-        isLoading: isBundleQueryLoading,
-        refetch: refetchBundle,
-    } = useBundleQuery(bundleId, isPreview, previewBundle);
-
-    const bundle =
-        localBundle ??
-        (previewOwnerInfo ? { ...previewOwnerInfo, membership: undefined } : undefined);
-
-    const membership = bundle?.membership;
-    const canAddWords =
-        !isPreview && (membership?.role === 'owner' || membership?.role === 'editor');
-
-    const {
-        data: remoteBundleWords,
-        isFetching: isBundleWordsFetching,
-        refetch: refetchBundleWords,
-    } = useBundleWordsQuery(bundleId, isPreview || (!!localBundle && !localBundle.wordsBackfilled));
-
     useEffect(() => {
         if (!bundle && !isBundleQueryLoading) {
             navigation.goBack();
@@ -195,24 +228,23 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     }, [bundle, isBundleQueryLoading, navigation]);
 
     useEffect(() => {
-        if (!isNewBundle) return;
+        if (isNewBundle) {
+            const presentNewBundleSheet = () => {
+                TrueSheet.present(BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET);
+                navigation.setParams({ isNewBundle: false });
+            };
 
-        const presentNewBundleSheet = () => {
-            TrueSheet.present(BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET);
-            navigation.setParams({ isNewBundle: false });
-        };
+            return navigation.addListener('transitionEnd', presentNewBundleSheet);
+        }
 
-        return navigation.addListener('transitionEnd', presentNewBundleSheet);
+        if (!joinCode || membership) return;
+
+        const timeout = setTimeout(() => {
+            TrueSheet.present(BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET);
+        }, 500);
+
+        return () => clearTimeout(timeout);
     }, [isNewBundle, navigation]);
-
-    const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all');
-    const [editFlashcardId, setEditFlashcardId] = useState<string | undefined>(undefined);
-    const [detailWord, setDetailWord] = useState<WordWithDetails | undefined>(undefined);
-    const [refreshing, setRefreshing] = useState(false);
-    const [isBottomPanelVisible, setIsBottomPanelVisible] = useState(false);
-    const [isJoiningBundle, setIsJoiningBundle] = useState(false);
-
-    const bottomPanelOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         Animated.timing(bottomPanelOpacity, {
@@ -227,46 +259,30 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         headerButtonsBottomRef.current = y + height;
     }, []);
 
-    const previewBundleWords = useMemo<BundleWord[]>(
-        () => (remoteBundleWords ?? []).map(word => ({ ...word, gradeThreeProb: 0 })),
-        [remoteBundleWords],
-    );
+    useEffect(() => {
+        if (isJoiningBundle && localBundle?.wordsBackfilled) {
+            setIsJoiningBundle(false);
+            TrueSheet.present(BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET);
+        }
+    }, [isJoiningBundle, localBundle?.wordsBackfilled]);
 
-    const localBundleWords = useMemo(
-        () => langWordsWithDetails.filter(word => word.bundleId === bundleId),
-        [langWordsWithDetails, bundleId],
-    );
-
-    const bundleWords: BundleWord[] =
-        isPreview || (isJoiningBundle && localBundleWords.length === 0)
-            ? previewBundleWords
-            : localBundleWords;
+    const joiningFlashcardsCountRef = useRef<number | undefined>(undefined);
+    if (isPreview && previewOwnerInfo) {
+        joiningFlashcardsCountRef.current = previewOwnerInfo.flashcardsCount;
+    } else if (!isJoiningBundle) {
+        joiningFlashcardsCountRef.current = undefined;
+    }
 
     const flashcardsCount = isPreview
         ? (previewOwnerInfo?.flashcardsCount ?? bundleWords.length)
-        : bundleWords.length;
+        : isJoiningBundle
+          ? (joiningFlashcardsCountRef.current ?? bundleWords.length)
+          : bundleWords.length;
 
     const bundleWordsMLStates = useMemo(() => {
         const bundleWordIds = new Set(bundleWords.map(word => word.id));
         return langWordsMLStates?.filter(state => bundleWordIds.has(state.wordId)) ?? [];
     }, [langWordsMLStates, bundleWords]);
-
-    const matchesMasteryFilter = useCallback(
-        (word: BundleWord) => {
-            if (masteryFilter === 'all') return true;
-            if (masteryFilter === 'learning')
-                return word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX;
-            if (masteryFilter === 'review')
-                return (
-                    word.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
-                    word.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN
-                );
-            if (masteryFilter === 'mastered')
-                return word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN;
-            return true;
-        },
-        [masteryFilter],
-    );
 
     const previewSortingMethod =
         flashcardsSortingMethod === FlashcardSortingMethod.ADD_DATE_ASC
@@ -283,17 +299,18 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
 
     const words = useMemo(
         () =>
-            isPreview
+            isPreview || stillWaitingForLocalWords
                 ? previewBundleWords.slice().sort(sortByAddDate)
                 : localBundleWords
-                      .filter(matchesMasteryFilter)
+                      .filter(word => matchesMasteryFilter(word, masteryFilter))
                       .sort(getSortingMethod(flashcardsSortingMethod)),
         [
             isPreview,
+            stillWaitingForLocalWords,
             previewBundleWords,
             sortByAddDate,
             localBundleWords,
-            matchesMasteryFilter,
+            masteryFilter,
             flashcardsSortingMethod,
         ],
     );
@@ -308,8 +325,8 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         TrueSheet.present(BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     };
 
-    const handleNewBundleAddWordsPress = () => {
-        TrueSheet.dismiss(BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET);
+    const handleBundleReadyAddWordsPress = () => {
+        TrueSheet.dismiss(BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET);
         setEditFlashcardId(undefined);
         TrueSheet.present(BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET);
     };
@@ -340,11 +357,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         navigation.goBack();
     };
 
-    const handleBundleLeft = () => {
-        if (bundle?.visibility === 'private') {
-            navigation.goBack();
-        }
-    };
+    const handleBundleLeft = () => {};
 
     const handleSubscribedToggle = () => {
         if (!membership) return;
@@ -355,29 +368,40 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         Share.share({ message: `https://app.lango.ovh/bundle/${bundleId}` });
     };
 
+    const handleJoinWithCodePress = () => {
+        TrueSheet.present(BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET);
+    };
+
+    const handleJoiningWithCode = () => {
+        setIsJoiningBundle(true);
+    };
+
+    const handleJoinedWithCode = () => {};
+
     const joinPreviewBundleWithWords = async () => {
-        if (!previewOwnerInfo) return;
+        if (!previewOwnerInfo) return undefined;
 
         const words = isBundleWordsFetching ? (await refetchBundleWords()).data : remoteBundleWords;
 
-        await joinPreviewBundle(previewOwnerInfo);
+        const member = await joinPreviewBundle(previewOwnerInfo);
         await addFetchedWords(words ?? []);
+
+        return { member, wordsCount: words?.length ?? 0 };
     };
 
     const handleAddToMyBundlesPress = async () => {
         if (!previewOwnerInfo) return;
 
+        setIsJoiningBundle(true);
         try {
-            setIsJoiningBundle(true);
             await joinPreviewBundleWithWords();
-            TrueSheet.present(BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET);
         } finally {
             setIsJoiningBundle(false);
         }
     };
 
-    const handleBundleAddedStartSessionPress = () => {
-        TrueSheet.dismiss(BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET);
+    const handleBundleReadyStartSessionPress = () => {
+        TrueSheet.dismiss(BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET);
         TrueSheet.present(BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET);
     };
 
@@ -524,12 +548,13 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                 <View style={styles.headerButtons} onLayout={handleHeaderButtonsLayout}>
                     {canAddWords && (
                         <ActionButton
+                            active={!isBundleWordsFetching}
                             label={t('bundle_details.add_word')}
                             style={styles.headerAddButton}
                             onPress={handleAddWordPress}
                         />
                     )}
-                    {isPreview && (
+                    {isPreview && !isPrivatePreview && (
                         <ActionButton
                             active={!isJoiningBundle && bundleWords.length > 0}
                             icon={'folder-multiple-plus-outline'}
@@ -540,7 +565,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleAddToMyBundlesPress}
                         />
                     )}
-                    {!isPreview && !canAddWords && membership && (
+                    {((!isPreview && !canAddWords && membership) || isPrivatePreview) && (
                         <ActionButton
                             icon={'share-outline'}
                             label={t('bundle_details.share_bundle')}
@@ -548,14 +573,24 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleShareBundlePress}
                         />
                     )}
-                    <ActionButton
-                        primary
-                        active={bundleWords.length > 0}
-                        icon={'play'}
-                        label={t('bundle_details.start_session')}
-                        style={styles.headerStartButton}
-                        onPress={handleStartSessionPress}
-                    />
+                    {isPrivatePreview ? (
+                        <ActionButton
+                            primary
+                            icon={'key-outline'}
+                            label={t('bundle_details.join_with_code')}
+                            style={styles.headerStartButton}
+                            onPress={handleJoinWithCodePress}
+                        />
+                    ) : (
+                        <ActionButton
+                            primary
+                            active={bundleWords.length > 0}
+                            icon={'play'}
+                            label={t('bundle_details.start_session')}
+                            style={styles.headerStartButton}
+                            onPress={handleStartSessionPress}
+                        />
+                    )}
                 </View>
             </Animated.View>
         ),
@@ -565,7 +600,9 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             styles,
             bundle,
             isPreview,
+            isPrivatePreview,
             previewOwnerInfo,
+            isBundleWordsFetching,
             bundleWords.length,
             bundleWordsMLStates,
             flashcardsCount,
@@ -592,21 +629,38 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
     );
 
     const renderEmptyList = useCallback(() => {
-        if (isBundleWordsFetching || !bundle) {
+        if (isBundleWordsFetching || !bundle || isJoiningBundle) {
             return <FlashcardsSelectionSkeleton count={flashcardsCount || undefined} />;
         }
 
-        return (
-            <EmptyList
-                title={t('no_items')}
-                description={t(
-                    masteryFilter !== 'all'
-                        ? 'no_items_filter_desc'
-                        : 'bundle_details.no_items_desc',
-                )}
-            />
-        );
-    }, [isBundleWordsFetching, bundle, flashcardsCount, masteryFilter, t]);
+        if (isPrivatePreview) {
+            return (
+                <EmptyList
+                    description={t('bundle_details.no_access.desc')}
+                    icon="lock-closed"
+                    title={t('bundle_details.no_access.title')}
+                />
+            );
+        }
+
+        const noItemsDescKey =
+            masteryFilter !== 'all'
+                ? 'no_items_filter_desc'
+                : canAddWords
+                  ? 'bundle_details.no_items_desc'
+                  : 'bundle_details.no_items_desc_readonly';
+
+        return <EmptyList description={t(noItemsDescKey)} title={t('no_items')} />;
+    }, [
+        isBundleWordsFetching,
+        bundle,
+        isJoiningBundle,
+        canAddWords,
+        flashcardsCount,
+        isPrivatePreview,
+        masteryFilter,
+        t,
+    ]);
 
     const renderListItem = useCallback(
         ({ index, item }: { index: number; item: BundleListItem }) => {
@@ -622,9 +676,11 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         () => [
             { id: 'header' as const },
             { id: 'subheader' as const },
-            ...(bundle && words.length > 0 ? words : [{ id: 'empty' as const }]),
+            ...(bundle && words.length > 0 && !isPrivatePreview
+                ? words
+                : [{ id: 'empty' as const }]),
         ],
-        [bundle, words],
+        [bundle, words, isPrivatePreview],
     );
 
     const availableSortingMethods = isPreview
@@ -666,13 +722,19 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             <MicrophonePermissionBottomSheet
                 sheetName={BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET}
             />
-            <NewBundleBottomSheet
-                sheetName={BUNDLE_DETAILS_NEW_BUNDLE_BOTTOM_SHEET}
-                onAddWordsPress={handleNewBundleAddWordsPress}
+            <BundleReadyBottomSheet
+                isNewBundle={isNewBundle}
+                sheetName={BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET}
+                userHasEditPermission={canAddWords}
+                wordsAreAvailable={localBundleWords.length > 0}
+                onAddWordsPress={handleBundleReadyAddWordsPress}
+                onStartSessionPress={handleBundleReadyStartSessionPress}
             />
-            <BundleAddedBottomSheet
-                sheetName={BUNDLE_DETAILS_BUNDLE_ADDED_BOTTOM_SHEET}
-                onStartSessionPress={handleBundleAddedStartSessionPress}
+            <JoinBundleWithCodeBottomSheet
+                initialCode={joinCode}
+                sheetName={BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET}
+                onJoined={handleJoinedWithCode}
+                onJoining={handleJoiningWithCode}
             />
             <HandleFlashcardBottomSheet
                 bundleId={bundleId}
@@ -722,7 +784,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleAddWordPress}
                         />
                     )}
-                    {isPreview && (
+                    {isPreview && !isPrivatePreview && (
                         <ActionButton
                             active={!isJoiningBundle && bundleWords.length > 0}
                             icon={'folder-multiple-plus-outline'}
@@ -733,7 +795,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleAddToMyBundlesPress}
                         />
                     )}
-                    {!isPreview && !canAddWords && membership && (
+                    {((!isPreview && !canAddWords && membership) || isPrivatePreview) && (
                         <ActionButton
                             icon={'share-outline'}
                             label={t('bundle_details.share_bundle')}
@@ -741,14 +803,24 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleShareBundlePress}
                         />
                     )}
-                    <ActionButton
-                        primary
-                        active={bundleWords.length > 0}
-                        icon={'play'}
-                        label={t('bundle_details.start_session')}
-                        style={styles.button}
-                        onPress={handleStartSessionPress}
-                    />
+                    {isPrivatePreview ? (
+                        <ActionButton
+                            primary
+                            icon={'key-outline'}
+                            label={t('bundle_details.join_with_code')}
+                            style={styles.button}
+                            onPress={handleJoinWithCodePress}
+                        />
+                    ) : (
+                        <ActionButton
+                            primary
+                            active={bundleWords.length > 0}
+                            icon={'play'}
+                            label={t('bundle_details.start_session')}
+                            style={styles.button}
+                            onPress={handleStartSessionPress}
+                        />
+                    )}
                 </View>
             </DockedActionPanel>
             <ScrollToTopButton

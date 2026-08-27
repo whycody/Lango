@@ -343,9 +343,15 @@
         "add_word": "Aggiungi nuova parola +",
         "flashcards_count": "{{count}} flashcard",
         "flashcards_count_plural": "{{count}} flashcard",
+        "join_with_code": "Unisciti con un codice",
+        "no_access": {
+            "title": "Nessun accesso",
+            "desc": "Questo set è privato. Unisciti con un codice per vedere le sue parole."
+        },
         "members": "Membri",
         "no_members": "Ancora nessun membro",
         "no_items_desc": "Prova ad aggiungere alcune parole a questo set.",
+        "no_items_desc_readonly": "Questo set non ha ancora parole.",
         "show_in_main_collection": "Mostra nella collezione principale",
         "show_in_main_collection_desc": "Le parole faranno parte della tua collezione principale",
         "share_bundle": "Condividi set",
@@ -356,17 +362,23 @@
             "delete_bundle": "Elimina set",
             "leave_bundle": "Abbandona il set"
         },
-        "new_bundle_ready": {
-            "title": "Il tuo nuovo set è pronto",
-            "desc": "Aggiungi le sue prime flashcard",
-            "confirm": "Aggiungi nuove parole al set",
-            "add_later": "Aggiungi più tardi"
-        },
-        "bundle_added": {
-            "title": "Set aggiunto alla tua collezione",
-            "desc": "Ora puoi studiarlo quando vuoi",
-            "confirm": "Inizia a studiare",
-            "later": "Forse più tardi"
+        "bundle_ready": {
+            "title_new_bundle": "Il tuo nuovo set è pronto",
+            "title_joined_bundle": "Set aggiunto alla tua collezione",
+            "has_words": {
+                "desc": "Ora puoi studiarlo quando vuoi",
+                "confirm": "Inizia a studiare",
+                "secondary": "Forse più tardi"
+            },
+            "no_words_editable": {
+                "desc": "Aggiungi le sue prime flashcard",
+                "confirm": "Aggiungi nuove parole al set +",
+                "secondary": "Aggiungi più tardi"
+            },
+            "no_words_readonly": {
+                "desc": "Questo set non ha ancora flashcard",
+                "confirm": "Chiudi"
+            }
         },
         "edit": {
             "title": "Modifica set",
@@ -395,6 +407,14 @@
         "leaving": {
             "title": "Abbandono del set 👋",
             "desc": "Sei sicuro di voler abbandonare questo set? Perderai l'accesso ad esso."
+        },
+        "join_with_code_sheet": {
+            "title": "Unisciti con un codice",
+            "desc": "Inserisci il codice di invito che hai ricevuto per unirti a questo set.",
+            "desc_prefilled": "Sei stato invitato a questo set. Conferma per unirti.",
+            "placeholder": "Codice di invito",
+            "confirm": "Unisciti",
+            "error_invalid": "Questo codice non è valido o è scaduto. Controllalo e riprova."
         }
     }
 }

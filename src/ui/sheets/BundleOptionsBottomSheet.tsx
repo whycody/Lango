@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_VERTICAL } from '../../constants/margins';
 import { palette } from '../../constants/palette';
-import { useWordsBundle } from '../../store';
+import { useWords, useWordsBundle } from '../../store';
 import { LibraryItem } from '../components/library';
 import { GenericBottomSheet } from './GenericBottomSheet';
 import { HandleBundleBottomSheet } from './HandleBundleBottomSheet';
@@ -34,8 +35,11 @@ export const BundleOptionsBottomSheet = ({
 }: BundleOptionsBottomSheetProps) => {
     const { bundles, editBundleMember, removeBundle } = useWordsBundle();
     const { t } = useTranslation();
+    const queryClient = useQueryClient();
 
-    const membership = bundles.find(b => b.id === bundleId)?.membership;
+    const { langWords } = useWords();
+    const bundle = bundles.find(b => b.id === bundleId);
+    const membership = bundle?.membership;
 
     const handleEditPress = () => {
         TrueSheet.present(EDIT_BUNDLE_SHEET_NAME);
@@ -71,9 +75,24 @@ export const BundleOptionsBottomSheet = ({
         TrueSheet.dismiss(LEAVE_BUNDLE_SHEET_NAME);
     };
 
+    // Private bundles become inaccessible once we leave, so drop the cached
+    // preview words entirely; for public/friends bundles, seed the cache
+    // with the words we already had locally to avoid an extra fetch.
+    const syncBundleWordsQueryCacheAfterLeaving = () => {
+        if (bundle?.visibility === 'private') {
+            queryClient.removeQueries({ queryKey: ['bundleWords', bundleId] });
+        } else {
+            queryClient.setQueriesData({ queryKey: ['bundleWords', bundleId] }, () =>
+                langWords.filter(word => word.bundleId === bundleId),
+            );
+        }
+    };
+
     const handleLeaveConfirm = () => {
         TrueSheet.dismissAll();
         if (!membership) return;
+
+        syncBundleWordsQueryCacheAfterLeaving();
         editBundleMember({ id: membership.id, removed: true });
         onBundleLeft();
     };

@@ -6,6 +6,7 @@ export * from './core/BundleSearchResult';
 export * from './core/DeleteBundleResult';
 export * from './core/Evaluation';
 export * from './core/example-flashcard';
+export * from './core/JoinBundleWithCodeResult';
 export * from './core/Language';
 export * from './core/Session';
 export * from './core/Suggestion';

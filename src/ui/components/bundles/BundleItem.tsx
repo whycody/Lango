@@ -48,7 +48,10 @@ export const BundleItem = memo<BundleItemProps>(
             [bundleWords],
         );
 
+        const hasWords = bundleWords.length > 0;
+
         const handlePlayPress = () => {
+            if (!hasWords) return;
             onPlayPress?.(bundle);
             triggerHaptics('light');
         };
@@ -70,8 +73,17 @@ export const BundleItem = memo<BundleItemProps>(
                                 size={36}
                             />
                         </View>
-                        <Pressable hitSlop={8} style={styles.playButton} onPress={handlePlayPress}>
-                            <Ionicons color={colors.primary300} name="play" size={14} />
+                        <Pressable
+                            disabled={!hasWords}
+                            hitSlop={8}
+                            style={[styles.playButton, !hasWords && styles.playButtonDisabled]}
+                            onPress={handlePlayPress}
+                        >
+                            <Ionicons
+                                color={hasWords ? colors.primary300 : colors.white300}
+                                name="play"
+                                size={14}
+                            />
                         </Pressable>
                     </View>
                 }
@@ -96,6 +108,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             height: 28,
             justifyContent: 'center',
             width: 28,
+        },
+        playButtonDisabled: {
+            opacity: 0.4,
         },
         ring: {
             alignItems: 'center',

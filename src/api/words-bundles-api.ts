@@ -6,6 +6,7 @@ import {
     BundleMember,
     BundleMemberRole,
     BundleSearchResponse,
+    JoinBundleWithCodeResult,
     SyncResultWithRejections,
     WordsBundle,
     WordsBundleWithOwnerInfo,
@@ -87,7 +88,7 @@ class WordsBundlesApi {
     }
 
     async joinBundleWithCode(code: string): Promise<JoinBundleWithCodeApi> {
-        const response: ApiResponse<BundleMember> = await this.api.apisauce.post(
+        const response: ApiResponse<JoinBundleWithCodeResult> = await this.api.apisauce.post(
             WORDS_BUNDLES_API_ROUTES.join(code),
         );
         if (!response.ok || !response.data) {

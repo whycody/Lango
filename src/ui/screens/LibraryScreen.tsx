@@ -107,11 +107,11 @@ export const LibraryScreen = () => {
                 break;
             case LibraryItems.PRIVACY_POLICY:
                 trackEvent(AnalyticsEventName.OPEN_PRIVACY_POLICY);
-                Linking.openURL(`${process.env.SITE_URL}/privacy_policy`);
+                Linking.openURL(`${process.env.SITE_URL}/privacy`);
                 break;
             case LibraryItems.USE_CONDITIONS:
                 trackEvent(AnalyticsEventName.OPEN_USE_CONDITIONS);
-                Linking.openURL(`${process.env.SITE_URL}/terms_of_service`);
+                Linking.openURL(`${process.env.SITE_URL}/terms`);
                 break;
             case LibraryItems.SETTINGS:
                 trackEvent(AnalyticsEventName.NAVIGATE_SETTINGS);

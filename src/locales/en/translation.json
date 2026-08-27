@@ -343,9 +343,15 @@
         "add_word": "Add new word +",
         "flashcards_count": "{{count}} flashcard",
         "flashcards_count_plural": "{{count}} flashcards",
+        "join_with_code": "Join with a code",
         "members": "Members",
+        "no_access": {
+            "title": "No access",
+            "desc": "This bundle is private. Join it with a code to see its words."
+        },
         "no_members": "No members yet",
         "no_items_desc": "Try adding some words to this bundle.",
+        "no_items_desc_readonly": "This bundle doesn't have any words yet.",
         "show_in_main_collection": "Show in main collection",
         "show_in_main_collection_desc": "Words will be part of your main collection",
         "share_bundle": "Share bundle",
@@ -356,17 +362,23 @@
             "delete_bundle": "Delete bundle",
             "leave_bundle": "Leave bundle"
         },
-        "new_bundle_ready": {
-            "title": "Your new bundle is ready",
-            "desc": "Add its first flashcards",
-            "confirm": "Add new words to the bundle",
-            "add_later": "Add later"
-        },
-        "bundle_added": {
-            "title": "Bundle added to your collection",
-            "desc": "You can now study it whenever you want",
-            "confirm": "Start learning",
-            "later": "Maybe later"
+        "bundle_ready": {
+            "title_new_bundle": "Your new bundle is ready",
+            "title_joined_bundle": "Bundle added to your collection",
+            "has_words": {
+                "desc": "You can now study it whenever you want",
+                "confirm": "Start learning",
+                "secondary": "Maybe later"
+            },
+            "no_words_editable": {
+                "desc": "Add its first flashcards",
+                "confirm": "Add new words to the bundle +",
+                "secondary": "Add later"
+            },
+            "no_words_readonly": {
+                "desc": "This bundle doesn't have any flashcards yet",
+                "confirm": "Close"
+            }
         },
         "edit": {
             "title": "Edit bundle",
@@ -395,6 +407,14 @@
         "leaving": {
             "title": "Leaving bundle",
             "desc": "Are you sure you want to leave this bundle? You will lose access to it."
+        },
+        "join_with_code_sheet": {
+            "title": "Join with a code",
+            "desc": "Enter the invitation code you received to join this bundle.",
+            "desc_prefilled": "You've been invited to this bundle. Confirm to join.",
+            "placeholder": "Invitation code",
+            "confirm": "Join",
+            "error_invalid": "This code is invalid or has expired. Please check it and try again."
         }
     }
 }

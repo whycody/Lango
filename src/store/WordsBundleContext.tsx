@@ -18,6 +18,7 @@ import {
     BundleMember,
     BundleMemberRole,
     DeleteBundleResult,
+    JoinBundleWithCodeStoreResult,
     WordsBundle,
     WordsBundleWithOwnerInfo,
 } from '../types';
@@ -54,7 +55,7 @@ interface WordsBundleContextProps {
     ) => Promise<BundleJoinCode | null>;
     deleteBundlePhysically: (bundleId: string) => Promise<void>;
     joinPreviewBundle: (bundle: WordsBundleWithOwnerInfo) => Promise<BundleMember>;
-    joinWithCode: (code: string) => Promise<BundleMember | null>;
+    joinWithCode: (code: string, bundleId?: string) => Promise<JoinBundleWithCodeStoreResult>;
     langBundles: EnrichedWordsBundle[];
     loading: boolean;
     members: BundleMember[];
@@ -75,7 +76,7 @@ const WordsBundleContext = createContext<WordsBundleContextProps>({
     joinPreviewBundle: () => {
         throw new Error('WordsBundleProvider not mounted');
     },
-    joinWithCode: () => Promise.resolve(null),
+    joinWithCode: () => Promise.resolve({ errorCode: 'unknown', success: false }),
     langBundles: [],
     loading: true,
     members: [],
@@ -236,9 +237,12 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         return result.kind === 'ok' ? result.data : null;
     };
 
-    const joinWithCode = async (code: string) => {
-        const response = await wordsBundlesApi.joinBundleWithCode(code);
-        if (response.kind !== 'ok') return null;
+    const joinWithCode = async (
+        code: string,
+        bundleId?: string,
+    ): Promise<JoinBundleWithCodeStoreResult> => {
+        const response = await wordsBundlesApi.joinBundleWithCode(code, bundleId);
+        if (response.kind !== 'ok') return { errorCode: response.errorCode, success: false };
 
         const { bundle, member } = response.data;
         const now = getCurrentISO();
@@ -265,7 +269,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             await saveWordsBundles([newBundle]);
         }
 
-        return member;
+        return { member, success: true };
     };
 
     const joinPreviewBundle = async (bundle: WordsBundleWithOwnerInfo): Promise<BundleMember> => {

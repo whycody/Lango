@@ -8,6 +8,7 @@ export const BUNDLE_TITLE_MAX_LENGTH = 50;
 export const BUNDLE_DESCRIPTION_MAX_LENGTH = 200;
 
 export const BUNDLE_REMOVE_ERROR_MESSAGE_KEYS: Record<ApiErrorCode, string> = {
+    'already-member': 'bundle_details.removing.error_unknown',
     forbidden: 'bundle_details.removing.error_forbidden',
     network: 'bundle_details.removing.error_network',
     'not-found': 'bundle_details.removing.error_not_found',

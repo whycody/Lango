@@ -4,6 +4,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
+import { ApiErrorCode } from '../../api/api.types';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { useWordsBundle } from '../../store';
 import { CustomText } from '../components/CustomText';
@@ -11,14 +12,15 @@ import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
 type JoinBundleWithCodeBottomSheetProps = {
+    bundleId?: string;
     initialCode?: string;
     sheetName: string;
-    onJoined: () => void;
+    onJoined: (bundleId: string) => void;
     onJoining: () => void;
 };
 
 export const JoinBundleWithCodeBottomSheet = (props: JoinBundleWithCodeBottomSheetProps) => {
-    const { initialCode, onJoined, onJoining, sheetName } = props;
+    const { bundleId, initialCode, onJoined, onJoining, sheetName } = props;
     const { joinWithCode } = useWordsBundle();
     const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
@@ -26,8 +28,9 @@ export const JoinBundleWithCodeBottomSheet = (props: JoinBundleWithCodeBottomShe
 
     const [codeInput, setCodeInput] = useState(initialCode ?? '');
     const [isJoining, setIsJoining] = useState(false);
-    const [error, setError] = useState(false);
-    const joinedRef = useRef(false);
+    const [errorCode, setErrorCode] = useState<ApiErrorCode | undefined>(undefined);
+    const joinedBundleIdRef = useRef<string | undefined>(undefined);
+    const textInputRef = useRef<TextInput>(null);
 
     const isConfirmed = codeInput.trim().length > 0;
 
@@ -37,22 +40,24 @@ export const JoinBundleWithCodeBottomSheet = (props: JoinBundleWithCodeBottomShe
 
     const handleSheetWillPresent = () => {
         setCodeInput(initialCode ?? '');
-        setError(false);
+        setErrorCode(undefined);
+        textInputRef.current?.focus();
     };
 
     const handleSheetDismiss = () => {
         setCodeInput(initialCode ?? '');
-        setError(false);
+        setErrorCode(undefined);
 
-        if (joinedRef.current) {
-            joinedRef.current = false;
-            onJoined();
+        if (joinedBundleIdRef.current) {
+            const joinedBundleId = joinedBundleIdRef.current;
+            joinedBundleIdRef.current = undefined;
+            onJoined(joinedBundleId);
         }
     };
 
     const handleChangeText = (text: string) => {
         setCodeInput(text);
-        setError(false);
+        setErrorCode(undefined);
     };
 
     const handlePrimaryButtonPress = async () => {
@@ -62,15 +67,15 @@ export const JoinBundleWithCodeBottomSheet = (props: JoinBundleWithCodeBottomShe
         try {
             setIsJoining(true);
             onJoining();
-            const member = await joinWithCode(code);
+            const result = await joinWithCode(code, bundleId);
 
-            if (!member) {
-                setError(true);
+            if (!result.success) {
+                setErrorCode(result.errorCode);
                 return;
             }
 
-            joinedRef.current = true;
-            await TrueSheet.dismiss(sheetName);
+            joinedBundleIdRef.current = result.member.bundleId;
+            await TrueSheet.dismissAll();
         } finally {
             setIsJoining(false);
         }
@@ -108,6 +113,7 @@ export const JoinBundleWithCodeBottomSheet = (props: JoinBundleWithCodeBottomShe
                     autoCapitalize="characters"
                     autoCorrect={false}
                     cursorColor={colors.primary300}
+                    ref={textInputRef}
                     returnKeyType="done"
                     style={styles.textInput}
                     value={codeInput}
@@ -115,9 +121,13 @@ export const JoinBundleWithCodeBottomSheet = (props: JoinBundleWithCodeBottomShe
                     onSubmitEditing={handlePrimaryButtonPress}
                 />
             </View>
-            {error && (
+            {errorCode && (
                 <CustomText style={styles.errorText}>
-                    {t('bundle_details.join_with_code_sheet.error_invalid')}
+                    {t(
+                        errorCode === 'already-member'
+                            ? 'bundle_details.join_with_code_sheet.error_already_member'
+                            : 'bundle_details.join_with_code_sheet.error_invalid',
+                    )}
                 </CustomText>
             )}
         </GenericBottomSheet>

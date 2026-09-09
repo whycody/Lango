@@ -14,6 +14,8 @@ export const resolveApiErrorCode = (response: ApiResponse<unknown>): ApiErrorCod
             return 'forbidden';
         case 404:
             return 'not-found';
+        case 409:
+            return 'already-member';
         default:
             if (response.status === undefined) return 'unknown';
             if (response.status >= 400 && response.status < 500) return 'validation-error';

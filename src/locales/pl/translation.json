@@ -356,11 +356,22 @@
         "show_in_main_collection_desc": "Słówka będą częścią głównej kolekcji",
         "share_bundle": "Udostępnij zestaw",
         "start_session": "Rozpocznij naukę",
+        "share_sheet": {
+            "invite_viewer": "Zaproś do wyświetlania",
+            "invite_viewer_desc": "Może przeglądać i uczyć się z zestawu",
+            "invite_editor": "Zaproś do współtworzenia",
+            "invite_editor_desc": "Może dodawać i edytować słówka",
+            "share_bundle_link": "Udostępnij link do zestawu",
+            "share_bundle_link_message": "Sprawdź mój zestaw \"{{title}}\" w Lango 👇\n\n{{link}}",
+            "invite_message": "Dołącz do mojego zestawu \"{{title}}\" w Lango! Kliknij w link lub wpisz kod {{code}} bezpośrednio w aplikacji 👈\n\n{{link}}"
+        },
         "options": {
             "edit_title_or_description": "Edytuj tytuł lub opis",
             "change_visibility": "Zmień widoczność",
             "delete_bundle": "Usuń zestaw",
-            "leave_bundle": "Opuść ten zestaw"
+            "leave_bundle": "Opuść ten zestaw",
+            "share_bundle": "Udostępnij zestaw",
+            "share_bundle_link": "Udostępnij link do zestawu"
         },
         "bundle_ready": {
             "title_new_bundle": "Twój nowy zestaw jest już gotowy",
@@ -414,7 +425,8 @@
             "desc_prefilled": "Zostałeś zaproszony do tego zestawu. Potwierdź, aby dołączyć.",
             "placeholder": "Kod zaproszenia",
             "confirm": "Dołącz",
-            "error_invalid": "Ten kod jest nieprawidłowy lub wygasł. Sprawdź go i spróbuj ponownie."
+            "error_invalid": "Ten kod jest nieprawidłowy lub wygasł. Sprawdź go i spróbuj ponownie.",
+            "error_already_member": "Ten kod należy do zestawu, którego jesteś już członkiem."
         }
     }
 }

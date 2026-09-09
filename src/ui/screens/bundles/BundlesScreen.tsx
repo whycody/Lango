@@ -29,6 +29,7 @@ import { ActionButton, BottomGradient, CustomText, Header, ScreenHeader } from '
 import { BundleItem } from '../../components/bundles';
 import { EmptyList, ListFilter } from '../../components/flashcards';
 import { AddBundleBottomSheet, HandleBundleBottomSheet, LanguageBottomSheet } from '../../sheets';
+import { JoinBundleWithCodeBottomSheet } from '../../sheets/JoinBundleWithCodeBottomSheet';
 import { StartSessionBottomSheet } from '../../sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../Theme';
 
@@ -36,6 +37,7 @@ export const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
 const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';
 const BUNDLES_START_SESSION_SHEET_NAME = 'bundles-start-session-sheet';
 const HANDLE_BUNDLE_SHEET_NAME = 'handle-bundle-sheet';
+const JOIN_WITH_CODE_SHEET_NAME = 'bundles-join-with-code-sheet';
 
 export const BundlesScreen = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -100,9 +102,22 @@ export const BundlesScreen = () => {
         [navigation],
     );
 
-    const handleJoinBundleWithCode = useCallback(() => {
-        // TODO: navigate to join bundle flow
+    const handleJoinBundleWithCodePress = useCallback(() => {
+        TrueSheet.present(JOIN_WITH_CODE_SHEET_NAME);
     }, []);
+
+    const handleJoiningBundleWithCode = useCallback(() => {}, []);
+
+    const handleJoinedBundleWithCode = useCallback(
+        (bundleId: string) => {
+            navigation.navigate(ScreenName.BundleNavigator, {
+                bundleId,
+                isNewBundle: false,
+                justJoined: true,
+            });
+        },
+        [navigation],
+    );
 
     const handleBundlePress = useCallback(
         (bundle: EnrichedWordsBundle) => {
@@ -163,11 +178,16 @@ export const BundlesScreen = () => {
             <AddBundleBottomSheet
                 sheetName={ADD_BUNDLE_SHEET_NAME}
                 onCreateNew={handleCreateNewBundle}
-                onJoinWithCode={handleJoinBundleWithCode}
+                onJoinWithCode={handleJoinBundleWithCodePress}
             />
             <HandleBundleBottomSheet
                 sheetName={HANDLE_BUNDLE_SHEET_NAME}
                 onBundleCreated={handleBundleCreated}
+            />
+            <JoinBundleWithCodeBottomSheet
+                sheetName={JOIN_WITH_CODE_SHEET_NAME}
+                onJoined={handleJoinedBundleWithCode}
+                onJoining={handleJoiningBundleWithCode}
             />
             <View style={style} />
             <ScrollView

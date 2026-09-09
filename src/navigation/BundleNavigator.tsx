@@ -22,7 +22,8 @@ const BundleNavigator = ({ route }: BundleNavigatorProps) => {
         state?: { routes: Array<{ params?: BundleNavigatorParams }> };
     };
     const deepLinkedParams = routeWithState.state?.routes[0]?.params;
-    const { bundleId, code, isNewBundle, previewBundle } = route.params ?? deepLinkedParams ?? {};
+    const { bundleId, code, isNewBundle, justJoined, previewBundle } =
+        route.params ?? deepLinkedParams ?? {};
 
     return (
         <Stack.Navigator
@@ -31,7 +32,7 @@ const BundleNavigator = ({ route }: BundleNavigatorProps) => {
         >
             <Stack.Screen
                 component={BundleDetailsScreen}
-                initialParams={{ bundleId, code, isNewBundle, previewBundle }}
+                initialParams={{ bundleId, code, isNewBundle, justJoined, previewBundle }}
                 name={ScreenName.BundleFlashcards}
             />
         </Stack.Navigator>

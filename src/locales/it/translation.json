@@ -356,11 +356,22 @@
         "show_in_main_collection_desc": "Le parole faranno parte della tua collezione principale",
         "share_bundle": "Condividi set",
         "start_session": "Inizia a studiare",
+        "share_sheet": {
+            "invite_viewer": "Invita a visualizzare",
+            "invite_viewer_desc": "Può visualizzare e studiare il set",
+            "invite_editor": "Invita a collaborare",
+            "invite_editor_desc": "Può aggiungere e modificare parole",
+            "share_bundle_link": "Condividi link del set",
+            "share_bundle_link_message": "Guarda il mio set \"{{title}}\" su Lango 👇\n\n{{link}}",
+            "invite_message": "Unisciti al mio set \"{{title}}\" su Lango! Tocca il link o inserisci il codice {{code}} direttamente nell'app 👈\n\n{{link}}"
+        },
         "options": {
             "edit_title_or_description": "Modifica titolo o descrizione",
             "change_visibility": "Cambia visibilità",
             "delete_bundle": "Elimina set",
-            "leave_bundle": "Abbandona il set"
+            "leave_bundle": "Abbandona il set",
+            "share_bundle": "Condividi set",
+            "share_bundle_link": "Condividi link del set"
         },
         "bundle_ready": {
             "title_new_bundle": "Il tuo nuovo set è pronto",
@@ -414,7 +425,8 @@
             "desc_prefilled": "Sei stato invitato a questo set. Conferma per unirti.",
             "placeholder": "Codice di invito",
             "confirm": "Unisciti",
-            "error_invalid": "Questo codice non è valido o è scaduto. Controllalo e riprova."
+            "error_invalid": "Questo codice non è valido o è scaduto. Controllalo e riprova.",
+            "error_already_member": "Questo codice appartiene a un set di cui sei già membro."
         }
     }
 }

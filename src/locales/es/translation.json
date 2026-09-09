@@ -356,11 +356,22 @@
         "show_in_main_collection_desc": "Las palabras formarán parte de tu colección principal",
         "share_bundle": "Compartir conjunto",
         "start_session": "Comenzar a aprender",
+        "share_sheet": {
+            "invite_viewer": "Invitar a ver",
+            "invite_viewer_desc": "Puede ver y estudiar el conjunto",
+            "invite_editor": "Invitar a colaborar",
+            "invite_editor_desc": "Puede añadir y editar palabras",
+            "share_bundle_link": "Compartir enlace del conjunto",
+            "share_bundle_link_message": "Mira mi conjunto \"{{title}}\" en Lango 👇\n\n{{link}}",
+            "invite_message": "¡Únete a mi conjunto \"{{title}}\" en Lango! Toca el enlace o introduce el código {{code}} directamente en la app 👈\n\n{{link}}"
+        },
         "options": {
             "edit_title_or_description": "Editar título o descripción",
             "change_visibility": "Cambiar visibilidad",
             "delete_bundle": "Eliminar paquete",
-            "leave_bundle": "Abandonar paquete"
+            "leave_bundle": "Abandonar paquete",
+            "share_bundle": "Compartir conjunto",
+            "share_bundle_link": "Compartir enlace del conjunto"
         },
         "bundle_ready": {
             "title_new_bundle": "Tu nuevo conjunto ya está listo",
@@ -414,7 +425,8 @@
             "desc_prefilled": "Has sido invitado a este conjunto. Confirma para unirte.",
             "placeholder": "Código de invitación",
             "confirm": "Unirse",
-            "error_invalid": "Este código no es válido o ha caducado. Compruébalo e inténtalo de nuevo."
+            "error_invalid": "Este código no es válido o ha caducado. Compruébalo e inténtalo de nuevo.",
+            "error_already_member": "Este código pertenece a un conjunto del que ya eres miembro."
         }
     }
 }

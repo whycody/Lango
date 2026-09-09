@@ -97,8 +97,8 @@ type BundleWord = Word & { gradeThreeProb: number };
 type BundleListItem = BundleWord | { id: 'header' | 'subheader' | 'empty' };
 
 export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
-    const { bundleId, code: joinCode, isNewBundle, previewBundle } = route.params;
-    const { t } = useTranslation();
+    const { bundleId, code: joinCode, isNewBundle, justJoined, previewBundle } = route.params;
+    const { i18n, t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
@@ -213,12 +213,14 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         listRef.current?.scrollToOffset({ animated: true, offset: 0 });
     }, []);
 
+    const handleContentAppeared = useRef<() => void>(undefined);
+
     useEffect(() => {
         Animated.timing(contentAppear, {
             duration: 280,
             toValue: 1,
             useNativeDriver: true,
-        }).start();
+        }).start(() => handleContentAppeared.current?.());
     }, [contentAppear]);
 
     useEffect(() => {
@@ -235,6 +237,20 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             };
 
             return navigation.addListener('transitionEnd', presentNewBundleSheet);
+        }
+
+        if (justJoined) {
+            navigation.setParams({ justJoined: false });
+
+            handleContentAppeared.current = () => {
+                if (localBundle?.wordsBackfilled) {
+                    TrueSheet.present(BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET);
+                } else {
+                    setIsJoiningBundle(true);
+                }
+            };
+
+            return;
         }
 
         if (!joinCode || membership) return;
@@ -364,8 +380,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         editBundleMember({ id: membership.id, subscribed: !membership.subscribed });
     };
 
-    const handleShareBundlePress = () => {
-        Share.share({ message: `https://app.lango.ovh/bundle/${bundleId}` });
+    const handleShareBundleLinkPress = () => {
+        Share.share({
+            message: `${process.env.SITE_URL}/bundle/${bundleId}?lang=${i18n.language}`,
+        });
     };
 
     const handleJoinWithCodePress = () => {
@@ -565,12 +583,12 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleAddToMyBundlesPress}
                         />
                     )}
-                    {((!isPreview && !canAddWords && membership) || isPrivatePreview) && (
+                    {isPrivatePreview && (
                         <ActionButton
                             icon={'share-outline'}
                             label={t('bundle_details.share_bundle')}
                             style={styles.headerAddButton}
-                            onPress={handleShareBundlePress}
+                            onPress={handleShareBundleLinkPress}
                         />
                     )}
                     {isPrivatePreview ? (
@@ -610,7 +628,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
             canAddWords,
             t,
             handleHeaderButtonsLayout,
-            handleShareBundlePress,
+            handleShareBundleLinkPress,
         ],
     );
 
@@ -731,6 +749,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                 onStartSessionPress={handleBundleReadyStartSessionPress}
             />
             <JoinBundleWithCodeBottomSheet
+                bundleId={bundleId}
                 initialCode={joinCode}
                 sheetName={BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET}
                 onJoined={handleJoinedWithCode}
@@ -795,12 +814,12 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             onPress={handleAddToMyBundlesPress}
                         />
                     )}
-                    {((!isPreview && !canAddWords && membership) || isPrivatePreview) && (
+                    {isPrivatePreview && (
                         <ActionButton
                             icon={'share-outline'}
                             label={t('bundle_details.share_bundle')}
                             style={styles.button}
-                            onPress={handleShareBundlePress}
+                            onPress={handleShareBundleLinkPress}
                         />
                     )}
                     {isPrivatePreview ? (

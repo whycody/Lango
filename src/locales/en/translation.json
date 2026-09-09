@@ -356,11 +356,22 @@
         "show_in_main_collection_desc": "Words will be part of your main collection",
         "share_bundle": "Share bundle",
         "start_session": "Start learning",
+        "share_sheet": {
+            "invite_viewer": "Invite to view",
+            "invite_viewer_desc": "Can view and study the bundle",
+            "invite_editor": "Invite to collaborate",
+            "invite_editor_desc": "Can add and edit words",
+            "share_bundle_link": "Share bundle link",
+            "share_bundle_link_message": "Check out my bundle \"{{title}}\" on Lango 👇\n\n{{link}}",
+            "invite_message": "Join my bundle \"{{title}}\" on Lango! Tap the link or enter the code {{code}} directly in the app 👈\n\n{{link}}"
+        },
         "options": {
             "edit_title_or_description": "Edit title or description",
             "change_visibility": "Change visibility",
             "delete_bundle": "Delete bundle",
-            "leave_bundle": "Leave bundle"
+            "leave_bundle": "Leave bundle",
+            "share_bundle": "Share bundle",
+            "share_bundle_link": "Share bundle link"
         },
         "bundle_ready": {
             "title_new_bundle": "Your new bundle is ready",
@@ -414,7 +425,8 @@
             "desc_prefilled": "You've been invited to this bundle. Confirm to join.",
             "placeholder": "Invitation code",
             "confirm": "Join",
-            "error_invalid": "This code is invalid or has expired. Please check it and try again."
+            "error_invalid": "This code is invalid or has expired. Please check it and try again.",
+            "error_already_member": "This code belongs to a bundle you're already a member of."
         }
     }
 }

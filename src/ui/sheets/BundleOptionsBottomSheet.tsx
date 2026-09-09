@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Share, StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -11,12 +11,14 @@ import { GenericBottomSheet } from './GenericBottomSheet';
 import { HandleBundleBottomSheet } from './HandleBundleBottomSheet';
 import { LeaveBundleBottomSheet } from './LeaveBundleBottomSheet';
 import { RemoveBundleBottomSheet } from './RemoveBundleBottomSheet';
+import { ShareBundleBottomSheet } from './ShareBundleBottomSheet';
 import { VisibilityBottomSheet } from './VisibilityBottomSheet';
 
 const EDIT_BUNDLE_SHEET_NAME = 'bundle-options-edit-bundle-sheet';
 const VISIBILITY_SHEET_NAME = 'bundle-options-visibility-sheet';
 const REMOVE_BUNDLE_SHEET_NAME = 'bundle-options-remove-bundle-sheet';
 const LEAVE_BUNDLE_SHEET_NAME = 'bundle-options-leave-bundle-sheet';
+const SHARE_BUNDLE_SHEET_NAME = 'bundle-options-share-bundle-sheet';
 
 type BundleOptionsBottomSheetProps = {
     bundleId?: string;
@@ -34,7 +36,7 @@ export const BundleOptionsBottomSheet = ({
     sheetName,
 }: BundleOptionsBottomSheetProps) => {
     const { bundles, editBundleMember, removeBundle } = useWordsBundle();
-    const { t } = useTranslation();
+    const { i18n, t } = useTranslation();
     const queryClient = useQueryClient();
 
     const { langWords } = useWords();
@@ -55,6 +57,21 @@ export const BundleOptionsBottomSheet = ({
 
     const handleLeavePress = () => {
         TrueSheet.present(LEAVE_BUNDLE_SHEET_NAME);
+    };
+
+    const handleSharePress = () => {
+        TrueSheet.present(SHARE_BUNDLE_SHEET_NAME);
+    };
+
+    const handleShareBundleLinkPress = () => {
+        if (!bundleId || !bundle) return;
+
+        Share.share({
+            message: t('bundle_details.share_sheet.share_bundle_link_message', {
+                link: `${process.env.SITE_URL}/bundle/${bundleId}?lang=${i18n.language}`,
+                title: bundle.title,
+            }),
+        });
     };
 
     const handleRemoveCancel = () => {
@@ -122,21 +139,37 @@ export const BundleOptionsBottomSheet = ({
                             onPress={handleVisibilityPress}
                         />
                         <LibraryItem
+                            color={palette.green}
+                            icon="share-outline"
+                            index={2}
+                            label={t('bundle_details.options.share_bundle')}
+                            onPress={handleSharePress}
+                        />
+                        <LibraryItem
                             color={palette.red}
                             icon="trash"
-                            index={2}
+                            index={3}
                             label={t('bundle_details.options.delete_bundle')}
                             onPress={handleDeletePress}
                         />
                     </>
                 ) : (
-                    <LibraryItem
-                        color={palette.red}
-                        icon="exit-outline"
-                        index={0}
-                        label={t('bundle_details.options.leave_bundle')}
-                        onPress={handleLeavePress}
-                    />
+                    <>
+                        <LibraryItem
+                            color={palette.green}
+                            icon="share-outline"
+                            index={0}
+                            label={t('bundle_details.options.share_bundle_link')}
+                            onPress={handleShareBundleLinkPress}
+                        />
+                        <LibraryItem
+                            color={palette.red}
+                            icon="exit-outline"
+                            index={1}
+                            label={t('bundle_details.options.leave_bundle')}
+                            onPress={handleLeavePress}
+                        />
+                    </>
                 )}
             </GenericBottomSheet>
             <HandleBundleBottomSheet
@@ -154,6 +187,12 @@ export const BundleOptionsBottomSheet = ({
                 sheetName={LEAVE_BUNDLE_SHEET_NAME}
                 onCancel={handleLeaveCancel}
                 onLeave={handleLeaveConfirm}
+            />
+            <ShareBundleBottomSheet
+                bundleId={bundleId}
+                bundleTitle={bundle?.title}
+                isPublic={bundle?.visibility !== 'private'}
+                sheetName={SHARE_BUNDLE_SHEET_NAME}
             />
         </>
     );

@@ -87,9 +87,11 @@ class WordsBundlesApi {
         return { data: response.data, kind: 'ok' };
     }
 
-    async joinBundleWithCode(code: string): Promise<JoinBundleWithCodeApi> {
+    async joinBundleWithCode(code: string, bundleId?: string): Promise<JoinBundleWithCodeApi> {
         const response: ApiResponse<JoinBundleWithCodeResult> = await this.api.apisauce.post(
             WORDS_BUNDLES_API_ROUTES.join(code),
+            undefined,
+            bundleId ? { params: { bundleId } } : undefined,
         );
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };

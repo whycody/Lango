@@ -22,7 +22,6 @@ export const AddBundleBottomSheet = (props: AddBundleBottomSheetProps) => {
     };
 
     const handleJoinWithCodePress = () => {
-        TrueSheet.dismiss(sheetName);
         onJoinWithCode();
     };
 

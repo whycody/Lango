@@ -18,6 +18,7 @@ export type BundleNavigatorParams = {
     bundleId: string;
     code?: string;
     isNewBundle?: boolean;
+    justJoined?: boolean;
     previewBundle?: WordsBundleWithOwnerInfo;
 };
 

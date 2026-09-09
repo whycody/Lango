@@ -18,6 +18,7 @@ import {
 } from '../types';
 
 export type ApiErrorCode =
+    | 'already-member'
     | 'forbidden'
     | 'network'
     | 'not-found'

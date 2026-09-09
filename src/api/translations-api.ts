@@ -1,19 +1,16 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, TranslateRequest, TranslateResponse } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
+import { TranslateRequest, TranslateResponse, TranslateTextApi } from './api.types';
 
 const TRANSLATIONS_API_ROUTES = {
     translate: '/translations/translate',
 } as const;
 
-export type TranslationsApiResult<T> =
-    | { data: T; kind: 'ok' }
-    | { errorCode: ApiErrorCode; kind: 'error' };
-
 class TranslationsApi {
     api: Api;
+
     constructor(api: Api) {
         this.api = api;
     }
@@ -23,7 +20,7 @@ class TranslationsApi {
         from: string,
         to: string,
         signal?: AbortSignal,
-    ): Promise<TranslationsApiResult<TranslateResponse>> {
+    ): Promise<TranslateTextApi> {
         const body: TranslateRequest = { from, text, to };
         const response: ApiResponse<TranslateResponse> = await this.api.apisauce.post(
             TRANSLATIONS_API_ROUTES.translate,

@@ -1,7 +1,6 @@
 import { ApiResponse } from 'apisauce';
 
 import {
-    ApiErrorCode,
     ExampleFlashcard,
     LanguageLevelRange,
     Suggestion,
@@ -9,6 +8,11 @@ import {
 } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
+import {
+    FetchExampleFlashcardsApi,
+    FetchUpdatedSuggestionsApi,
+    SyncSuggestionsOnServerApi,
+} from './api.types';
 
 const SUGGESTIONS_API_ROUTES = {
     examples: '/suggestions/examples',
@@ -17,12 +21,9 @@ const SUGGESTIONS_API_ROUTES = {
     sync: '/suggestions/sync',
 } as const;
 
-export type SuggestionsApiResult<T> =
-    | { data: T; kind: 'ok' }
-    | { errorCode: ApiErrorCode; kind: 'error' };
-
 class SuggestionsApi {
     api: Api;
+
     constructor(api: Api) {
         this.api = api;
     }
@@ -31,7 +32,7 @@ class SuggestionsApi {
         mainLang: string,
         translationLang: string,
         since: string,
-    ): Promise<SuggestionsApiResult<Suggestion[]>> {
+    ): Promise<FetchUpdatedSuggestionsApi> {
         const response: ApiResponse<Suggestion[]> = await this.api.apisauce.get(
             SUGGESTIONS_API_ROUTES.suggestions(mainLang, translationLang, since),
             {},
@@ -43,9 +44,7 @@ class SuggestionsApi {
         return { data: response.data, kind: 'ok' };
     }
 
-    async syncSuggestionsOnServer(
-        suggestions: Suggestion[],
-    ): Promise<SuggestionsApiResult<SyncResultWithRejections<Suggestion>>> {
+    async syncSuggestionsOnServer(suggestions: Suggestion[]): Promise<SyncSuggestionsOnServerApi> {
         const response: ApiResponse<SyncResultWithRejections<Suggestion>> =
             await this.api.apisauce.post(SUGGESTIONS_API_ROUTES.sync, suggestions);
         if (!response.ok || !response.data) {
@@ -60,7 +59,7 @@ class SuggestionsApi {
         level: LanguageLevelRange,
         count: number = 15,
         signal?: AbortSignal,
-    ): Promise<SuggestionsApiResult<ExampleFlashcard[]>> {
+    ): Promise<FetchExampleFlashcardsApi> {
         const response: ApiResponse<ExampleFlashcard[]> = await this.api.apisauce.get(
             SUGGESTIONS_API_ROUTES.examples,
             { count, level, mainLang, translationLang },

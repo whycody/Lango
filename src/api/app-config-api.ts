@@ -1,24 +1,22 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, AppConfig } from '../types';
+import { AppConfig } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
+import { GetAppConfigApi } from './api.types';
 
 const APP_CONFIG_API_ROUTES = {
     appConfig: '/app-config',
 } as const;
 
-export type AppConfigApiResult<T> =
-    | { data: T; kind: 'ok' }
-    | { errorCode: ApiErrorCode; kind: 'error' };
-
 class AppConfigApi {
     api: Api;
+
     constructor(api: Api) {
         this.api = api;
     }
 
-    async getAppConfig(): Promise<AppConfigApiResult<AppConfig | null>> {
+    async getAppConfig(): Promise<GetAppConfigApi> {
         const response: ApiResponse<AppConfig> = await this.api.apisauce.get(
             APP_CONFIG_API_ROUTES.appConfig,
         );

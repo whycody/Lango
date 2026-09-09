@@ -1,9 +1,12 @@
 // core
+export * from './core/app-config';
 export * from './core/Evaluation';
+export * from './core/example-flashcard';
 export * from './core/Language';
 export * from './core/Session';
 export * from './core/Suggestion';
 export * from './core/User';
+export * from './core/user-summary';
 export * from './core/Word';
 export * from './core/WordSet';
 
@@ -27,12 +30,3 @@ export * from './utils/WordWithDetails';
 
 // api
 export * from './api/ApiErrorCode';
-export * from './api/AppConfig';
-export * from './api/OnboardingWord';
-export * from './api/Translate';
-
-// api contracts
-export * from './api/contracts/auth-contracts';
-export * from './api/contracts/suggestions-contracts';
-export * from './api/contracts/translations-contracts';
-export * from './api/contracts/users-contracts';

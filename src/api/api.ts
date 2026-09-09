@@ -1,23 +1,20 @@
 import { ApisauceInstance, create } from 'apisauce';
-import { AxiosRequestConfig } from 'axios';
 import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 import * as Updates from 'expo-updates';
 
 import { createAuthData } from '../utils/authUtils';
-
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        _retried?: boolean;
-        _skipAuthRefresh?: boolean;
-        _tokenVersion?: number;
-    }
-}
+import { decodeJwtExpiry } from '../utils/jwt-utils';
 
 const ACCESS_TOKEN = 'accessToken';
 const REFRESH_TOKEN = 'refreshToken';
 const REFRESH_TIMEOUT_MS = 10000;
+const EXPIRY_LEEWAY_MS = 5000;
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
+
+// Endpoints that must never trigger a pre-emptive refresh: the login endpoints run before any
+// session exists, and the refresh endpoint itself must not try to refresh in the middle of refreshing.
+const SKIP_REFRESH_PATHS = ['/auth/login/', '/auth/auth/refresh', '/auth/auth/logout'];
 
 const profile = Constants.expoConfig?.extra?.appVariant ?? Updates.channel;
 const apiUrl =
@@ -25,24 +22,15 @@ const apiUrl =
         ? process.env.API_DEV_URL
         : process.env.API_URL;
 
-export const SKIP_REFRESH: AxiosRequestConfig = { _skipAuthRefresh: true };
-
 class Api {
     apisauce: ApisauceInstance;
 
     private accessToken: string | null = null;
     private refreshToken: string | null = null;
-    private tokenVersion = 0;
 
-    private isRefreshing = false;
     private refreshPromise: Promise<void> | null = null;
     private unauthorizedPromise: Promise<void> | null = null;
     private onUnauthorized: (() => void) | null = null;
-
-    private readonly subscribers: {
-        reject: (err: any) => void;
-        resolve: () => void;
-    }[] = [];
 
     constructor() {
         this.apisauce = create({
@@ -50,78 +38,27 @@ class Api {
             headers: JSON_HEADERS,
         });
 
+        // Pre-emptive refresh: checked before every request, so a request never goes out with
+        // a stale token and we never need to retry-after-401. A 401 can still happen (token
+        // revoked server-side before its exp), handled below as a plain logout, not a retry.
         this.apisauce.addAsyncRequestTransform(async request => {
+            if (SKIP_REFRESH_PATHS.some(path => request.url?.includes(path))) return;
+
             if (!this.accessToken) await this.loadTokens();
+            if (this.accessToken && this.isTokenExpired(this.accessToken)) {
+                await this.refreshAccessToken().catch(() => undefined);
+            }
+
             if (this.accessToken) {
                 request.headers = request.headers ?? {};
                 request.headers.Authorization = `Bearer ${this.accessToken}`;
             }
-            request._tokenVersion = this.tokenVersion;
         });
 
         this.apisauce.addAsyncResponseTransform(async response => {
-            if (response.ok) return;
-
-            const originalRequest = response.config;
-
-            if (
-                response.status !== 401 ||
-                !originalRequest ||
-                originalRequest._skipAuthRefresh ||
-                originalRequest._retried
-            ) {
-                return;
-            }
-
-            originalRequest._retried = true;
-
-            if (originalRequest._tokenVersion !== this.tokenVersion) {
-                await this.retryOriginalRequest(response, originalRequest);
-                return;
-            }
-
-            try {
-                if (this.isRefreshing) await this.subscribeTokenRefresh();
-                else await this.refreshAccessToken();
-            } catch (refreshError) {
-                if (this.isNetworkError(refreshError)) return;
-
-                if (this.isAxiosLikeError(refreshError) && refreshError.response?.status === 401) {
-                    await this.handleUnauthorized();
-                }
-
-                return;
-            }
-
-            await this.retryOriginalRequest(response, originalRequest);
+            if (response.ok || response.status !== 401) return;
+            await this.handleUnauthorized();
         });
-    }
-
-    // apisauce's async response transform mutates the passed-in ApiResponse in place rather
-    // than letting us return a replacement, so a retried request is re-issued on the underlying
-    // axios instance and its result is copied onto the original response object.
-    private async retryOriginalRequest(
-        response: any,
-        originalRequest: AxiosRequestConfig,
-    ): Promise<void> {
-        try {
-            const retried = await this.apisauce.axiosInstance.request(originalRequest);
-            response.ok = true;
-            response.problem = null;
-            response.originalError = null;
-            response.data = retried.data;
-            response.status = retried.status;
-            response.headers = retried.headers;
-        } catch (error: any) {
-            if (error?.response) {
-                response.ok = false;
-                response.problem = 'CLIENT_ERROR';
-                response.originalError = error;
-                response.data = error.response.data;
-                response.status = error.response.status;
-                response.headers = error.response.headers;
-            }
-        }
     }
 
     setOnUnauthorized = (callback: (() => void) | null): void => {
@@ -140,7 +77,6 @@ class Api {
 
     setAccessToken = async (token: string): Promise<void> => {
         this.accessToken = token;
-        this.tokenVersion++;
         await SecureStore.setItemAsync(ACCESS_TOKEN, token);
     };
 
@@ -157,20 +93,9 @@ class Api {
         if (savedRefreshToken) this.refreshToken = savedRefreshToken;
     };
 
-    private subscribeTokenRefresh(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.subscribers.push({ reject, resolve });
-        });
-    }
-
-    private onRefreshed() {
-        this.subscribers.forEach(({ resolve }) => resolve());
-        this.subscribers.length = 0;
-    }
-
-    private onRefreshFailed(error: any) {
-        this.subscribers.forEach(({ reject }) => reject(error));
-        this.subscribers.length = 0;
+    private isTokenExpired(token: string): boolean {
+        const expiryMs = decodeJwtExpiry(token);
+        return expiryMs === null || expiryMs - EXPIRY_LEEWAY_MS <= Date.now();
     }
 
     private requestRefreshTokens = async (
@@ -178,7 +103,6 @@ class Api {
     ): Promise<{ accessToken: string; refreshToken: string }> => {
         const data = await createAuthData({ refreshToken: rt });
         const response = await this.apisauce.axiosInstance.request({
-            _skipAuthRefresh: true,
             data,
             headers: JSON_HEADERS,
             method: 'POST',
@@ -189,23 +113,19 @@ class Api {
     };
 
     private refreshAccessToken = async (): Promise<void> => {
-        if (this.isRefreshing && this.refreshPromise) return this.refreshPromise;
+        if (this.refreshPromise) return this.refreshPromise;
         if (!this.refreshToken) throw new Error('No refresh token provided.');
-
-        this.isRefreshing = true;
 
         this.refreshPromise = (async () => {
             try {
                 const response = await this.requestRefreshTokens(this.refreshToken!);
                 await this.setAccessToken(response.accessToken);
                 await this.setRefreshToken(response.refreshToken);
-                this.onRefreshed();
             } catch (error) {
                 console.error('Error with refreshing token:', error);
-                this.onRefreshFailed(error);
+                if (this.isUnauthorizedError(error)) await this.handleUnauthorized();
                 throw error;
             } finally {
-                this.isRefreshing = false;
                 this.refreshPromise = null;
             }
         })();
@@ -213,13 +133,13 @@ class Api {
         return this.refreshPromise;
     };
 
-    private isNetworkError(err: unknown): boolean {
-        if (!this.isAxiosLikeError(err)) return false;
-        return err.code === 'ERR_NETWORK' || err.code === 'ECONNABORTED' || !err.response;
-    }
-
-    private isAxiosLikeError(err: unknown): err is { code?: string; response?: { status: number } } {
-        return typeof err === 'object' && err !== null && 'isAxiosError' in err;
+    private isUnauthorizedError(err: unknown): boolean {
+        return (
+            typeof err === 'object' &&
+            err !== null &&
+            'isAxiosError' in err &&
+            (err as { response?: { status: number } }).response?.status === 401
+        );
     }
 
     private handleUnauthorized = (): Promise<void> => {
@@ -238,4 +158,5 @@ class Api {
 }
 
 export { Api };
+
 export const api = new Api();

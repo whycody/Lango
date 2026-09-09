@@ -1,27 +1,23 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, SyncResultWithRejections, Word } from '../types';
+import { SyncResultWithRejections, Word } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
+import { FetchUpdatedWordsApi, SyncWordsOnServerApi } from './api.types';
 
 const WORDS_API_ROUTES = {
     sync: '/api/words/sync',
     words: '/api/words',
 } as const;
 
-export type WordsApiResult<T> =
-    | { data: T; kind: 'ok' }
-    | { errorCode: ApiErrorCode; kind: 'error' };
-
 class WordsApi {
     api: Api;
+
     constructor(api: Api) {
         this.api = api;
     }
 
-    async syncWordsOnServer(
-        words: Word[],
-    ): Promise<WordsApiResult<SyncResultWithRejections<Word>>> {
+    async syncWordsOnServer(words: Word[]): Promise<SyncWordsOnServerApi> {
         const response: ApiResponse<SyncResultWithRejections<Word>> = await this.api.apisauce.post(
             WORDS_API_ROUTES.sync,
             words,
@@ -32,7 +28,7 @@ class WordsApi {
         return { data: response.data, kind: 'ok' };
     }
 
-    async fetchUpdatedWords(since?: string, bundleId?: string): Promise<WordsApiResult<Word[]>> {
+    async fetchUpdatedWords(since?: string, bundleId?: string): Promise<FetchUpdatedWordsApi> {
         const response: ApiResponse<Word[]> = await this.api.apisauce.get(WORDS_API_ROUTES.words, {
             bundleId,
             since,

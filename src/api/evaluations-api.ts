@@ -1,27 +1,23 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, Evaluation, SyncResultWithRejections } from '../types';
+import { Evaluation, SyncResultWithRejections } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
+import { FetchUpdatedEvaluationsApi, SyncEvaluationsOnServerApi } from './api.types';
 
 const EVALUATIONS_API_ROUTES = {
     evaluations: (since: string) => `/evaluations/evaluations/?since=${since}`,
     sync: '/evaluations/evaluations/sync',
 } as const;
 
-export type EvaluationsApiResult<T> =
-    | { data: T; kind: 'ok' }
-    | { errorCode: ApiErrorCode; kind: 'error' };
-
 class EvaluationsApi {
     api: Api;
+
     constructor(api: Api) {
         this.api = api;
     }
 
-    async syncEvaluationsOnServer(
-        evaluations: Evaluation[],
-    ): Promise<EvaluationsApiResult<SyncResultWithRejections<Evaluation>>> {
+    async syncEvaluationsOnServer(evaluations: Evaluation[]): Promise<SyncEvaluationsOnServerApi> {
         const response: ApiResponse<SyncResultWithRejections<Evaluation>> =
             await this.api.apisauce.post(EVALUATIONS_API_ROUTES.sync, evaluations);
         if (!response.ok || !response.data) {
@@ -30,7 +26,7 @@ class EvaluationsApi {
         return { data: response.data, kind: 'ok' };
     }
 
-    async fetchUpdatedEvaluations(since: string): Promise<EvaluationsApiResult<Evaluation[]>> {
+    async fetchUpdatedEvaluations(since: string): Promise<FetchUpdatedEvaluationsApi> {
         const response: ApiResponse<Evaluation[]> = await this.api.apisauce.get(
             EVALUATIONS_API_ROUTES.evaluations(since),
         );

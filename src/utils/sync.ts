@@ -1,8 +1,12 @@
 import { SyncMetadata, SyncResult } from '../types';
 
+type SyncFnResult =
+    | { data: SyncResult[]; kind: 'ok' }
+    | { errorCode: unknown; kind: 'error' };
+
 export async function syncInBatches<T>(
     items: T[],
-    syncFn: (chunk: T[]) => Promise<SyncResult[] | null>,
+    syncFn: (chunk: T[]) => Promise<SyncFnResult>,
     batchSize: number = 100,
 ): Promise<SyncResult[]> {
     if (items.length === 0) return [];
@@ -10,7 +14,7 @@ export async function syncInBatches<T>(
     for (let i = 0; i < items.length; i += batchSize) {
         const chunk = items.slice(i, i + batchSize);
         const res = await syncFn(chunk);
-        if (res) results.push(...res);
+        if (res.kind === 'ok') results.push(...res.data);
     }
     return results;
 }

@@ -1,30 +1,13 @@
 import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import axios from 'axios';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 import { useMMKV, useMMKVObject } from 'react-native-mmkv';
 
-import {
-    deleteAccount,
-    getUserInfo,
-    signInWithApple,
-    signInWithFacebook,
-    signInWithGoogle,
-    signOut,
-    updateFinishedOnboarding,
-    updateLanguageLevels,
-    updateNotificationsEnabled,
-    updateSuggestionsInSession,
-} from '../api/apiClient';
-import {
-    removeAccessToken,
-    removeRefreshToken,
-    setAccessToken,
-    setOnUnauthorized,
-    setRefreshToken,
-} from '../api/apiHandler';
+import { api } from '../api/api';
+import { authApi } from '../api/auth-api';
+import { usersApi } from '../api/users-api';
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { UserProvider } from '../constants/User';
 import { LanguageLevel, User, UserUpdatePayload } from '../types';
@@ -78,12 +61,12 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }, [user?.userId]);
 
     useEffect(() => {
-        setOnUnauthorized(() => {
+        api.setOnUnauthorized(() => {
             clearState();
             trackEvent(AnalyticsEventName.LOGOUT_FORCED);
         });
         getSession();
-        return () => setOnUnauthorized(null);
+        return () => api.setOnUnauthorized(null);
     }, []);
 
     const clearState = () => {
@@ -95,11 +78,37 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const getSession = async () => {
         try {
-            let loggedUser = await getUserInfo(user ? SESSION_TIMEOUT_MS : undefined);
+            const initialResult = await usersApi.getUserInfo(
+                user ? SESSION_TIMEOUT_MS : undefined,
+            );
+
+            if (initialResult.kind === 'error') {
+                if (initialResult.errorCode === 'unauthorized') {
+                    clearState();
+                    return;
+                }
+
+                if (user) {
+                    setUser(user);
+                    setIsAuthenticated(true);
+                    return;
+                }
+
+                setIsAuthenticated(false);
+                return;
+            }
+
+            let loggedUser = initialResult.data;
 
             if (loggedUser) {
                 const userUpdated = await sendUserUpdates(userUpdatePayload ?? null);
-                loggedUser = userUpdated ? ((await getUserInfo()) ?? loggedUser) : loggedUser;
+                if (userUpdated) {
+                    const refreshedResult = await usersApi.getUserInfo();
+                    loggedUser =
+                        refreshedResult.kind === 'ok' && refreshedResult.data
+                            ? refreshedResult.data
+                            : loggedUser;
+                }
                 setUser(loggedUser);
                 await setAnalyticsUserData(loggedUser, true);
                 setIsAuthenticated(true);
@@ -113,12 +122,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             }
 
             setIsAuthenticated(false);
-        } catch (error: any) {
-            if (axios.isAxiosError(error) && error.response?.status === 401) {
-                clearState();
-                return;
-            }
-
+        } catch {
             if (user) {
                 setUser(user);
                 setIsAuthenticated(true);
@@ -142,8 +146,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         let updated = false;
 
         if (payload.finishedOnboarding !== undefined) {
-            const res = await updateFinishedOnboarding(payload.finishedOnboarding);
-            if (res) {
+            const res = await usersApi.updateFinishedOnboarding(payload.finishedOnboarding);
+            if (res.kind === 'ok') {
                 setUserUpdatePayload(payload =>
                     payload ? { ...payload, finishedOnboarding: undefined } : null,
                 );
@@ -152,8 +156,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
 
         if (payload.suggestionsInSession !== undefined) {
-            const res = await updateSuggestionsInSession(payload.suggestionsInSession);
-            if (res) {
+            const res = await usersApi.updateSuggestionsInSession(payload.suggestionsInSession);
+            if (res.kind === 'ok') {
                 setUserUpdatePayload(payload =>
                     payload ? { ...payload, suggestionsInSession: undefined } : null,
                 );
@@ -162,8 +166,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
 
         if (payload?.notificationsEnabled !== undefined) {
-            const res = await updateNotificationsEnabled(payload.notificationsEnabled);
-            if (res) {
+            const res = await usersApi.updateNotificationsEnabled(payload.notificationsEnabled);
+            if (res.kind === 'ok') {
                 if (payload.notificationsEnabled) await registerNotificationsToken();
                 setUserUpdatePayload(payload =>
                     payload ? { ...payload, notificationsEnabled: undefined } : null,
@@ -173,8 +177,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
 
         if (payload?.languageLevels?.length) {
-            const res = await updateLanguageLevels(payload.languageLevels);
-            if (res) {
+            const res = await usersApi.updateLanguageLevels(payload.languageLevels);
+            if (res.kind === 'ok') {
                 setUserUpdatePayload(payload =>
                     payload ? { ...payload, languageLevels: undefined } : null,
                 );
@@ -187,8 +191,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const updateUserSuggestionsInSession = async (suggestionsInSession: boolean) => {
         setUser(user => (user ? { ...user, suggestionsInSession } : null));
-        const updated = await updateSuggestionsInSession(suggestionsInSession);
-        if (updated) {
+        const result = await usersApi.updateSuggestionsInSession(suggestionsInSession);
+        if (result.kind === 'ok') {
             await getSession();
         } else {
             setUserUpdatePayload(
@@ -204,8 +208,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const updateUserFinishedOnboarding = async (finished: boolean) => {
         setUser(user => (user ? { ...user, finishedOnboarding: finished } : null));
-        const updated = await updateFinishedOnboarding(finished);
-        if (updated) {
+        const result = await usersApi.updateFinishedOnboarding(finished);
+        if (result.kind === 'ok') {
             await getSession();
         } else {
             setUserUpdatePayload(
@@ -221,8 +225,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const updateUserNotificationsEnabled = async (notificationsEnabled: boolean) => {
         setUser(user => (user ? { ...user, notificationsEnabled } : null));
-        const updated = await updateNotificationsEnabled(notificationsEnabled);
-        if (updated) {
+        const result = await usersApi.updateNotificationsEnabled(notificationsEnabled);
+        if (result.kind === 'ok') {
             await registerNotificationsToken();
             await getSession();
         } else {
@@ -249,9 +253,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         // before updating language levels in the app. This is because updating language levels
         // triggers fetching new suggestions and we want to avoid doing it if the
         // update fails on the server for some reason.
-        const updated = await updateLanguageLevels([languageLevel]);
+        const result = await usersApi.updateLanguageLevels([languageLevel]);
 
-        if (updated) {
+        if (result.kind === 'ok') {
             await getSession();
             setUserUpdatePayload(payload => ({
                 ...(payload ?? {}),
@@ -297,11 +301,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             }
 
             const data = await AccessToken.getCurrentAccessToken();
-            const res = data && (await signInWithFacebook(data.accessToken));
+            const signInResult = data && (await authApi.signInWithFacebook(data.accessToken));
 
-            if (!res) return;
+            if (!signInResult || signInResult.kind === 'error') return;
 
-            await handleReceivedTokens(res);
+            await handleReceivedTokens(signInResult.data);
             await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, {
                 provider: UserProvider.FACEBOOK,
             });
@@ -359,11 +363,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
             if (!response.data?.idToken) return;
 
-            const res = await signInWithGoogle(response?.data?.idToken);
+            const result = await authApi.signInWithGoogle(response?.data?.idToken);
 
-            if (!res) return;
+            if (result.kind === 'error') return;
 
-            await handleReceivedTokens(res);
+            await handleReceivedTokens(result.data);
             await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, {
                 provider: UserProvider.GOOGLE,
             });
@@ -393,11 +397,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
             if (!credential.identityToken) return;
 
-            const res = await signInWithApple(credential.identityToken, fullName);
+            const result = await authApi.signInWithApple(credential.identityToken, fullName);
 
-            if (!res) return;
+            if (result.kind === 'error') return;
 
-            await handleReceivedTokens(res);
+            await handleReceivedTokens(result.data);
             await trackEvent(AnalyticsEventName.LOGIN_SUCCESS, {
                 provider: UserProvider.APPLE,
             });
@@ -418,19 +422,19 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
     };
 
-    const handleReceivedTokens = async (res: any) => {
-        await setAccessToken(res.accessToken);
-        await setRefreshToken(res.refreshToken);
+    const handleReceivedTokens = async (tokens: { accessToken: string; refreshToken: string }) => {
+        await api.setAccessToken(tokens.accessToken);
+        await api.setRefreshToken(tokens.refreshToken);
         await getSession();
     };
 
     const deleteUserAccount = async (): Promise<boolean> => {
         if (!user) return false;
-        const result = await deleteAccount();
-        if (result === null) return false;
+        const result = await authApi.deleteAccount();
+        if (result.kind === 'error') return false;
         if (user.provider === UserProvider.GOOGLE) await GoogleSignin.signOut();
-        await removeAccessToken();
-        await removeRefreshToken();
+        await api.removeAccessToken();
+        await api.removeRefreshToken();
         clearState();
         return true;
     };
@@ -438,9 +442,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     async function logout() {
         if (!user) return;
         const { provider } = user;
-        await signOut();
-        await removeAccessToken();
-        await removeRefreshToken();
+        await authApi.signOut();
+        await api.removeAccessToken();
+        await api.removeRefreshToken();
         clearState();
         await trackEvent(AnalyticsEventName.LOGOUT_SUCCESS, { provider });
         if (provider !== UserProvider.GOOGLE) return;

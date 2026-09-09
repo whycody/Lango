@@ -25,6 +25,13 @@ export * from './utils/WordUpdate';
 export * from './utils/WordWithDetails';
 
 // api
+export * from './api/ApiErrorCode';
 export * from './api/AppConfig';
 export * from './api/OnboardingWord';
 export * from './api/Translate';
+
+// api contracts
+export * from './api/contracts/auth-contracts';
+export * from './api/contracts/suggestions-contracts';
+export * from './api/contracts/translations-contracts';
+export * from './api/contracts/users-contracts';

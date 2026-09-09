@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import uuid from 'react-native-uuid';
 
-import { fetchUpdatedWords, syncWordsOnServer } from '../api/apiClient';
+import { wordsApi } from '../api/words-api';
 import { WordSource } from '../constants/Word';
 import { useWordsRepository } from '../hooks/repo';
 import { Word } from '../types';
@@ -199,7 +199,9 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             syncing.current = true;
             const wordsList = inputWords ?? (await getAllWords());
             const unsyncedWords = getUnsyncedItems<Word>(wordsList);
-            const serverUpdates = await syncInBatches<Word>(unsyncedWords, syncWordsOnServer);
+            const serverUpdates = await syncInBatches<Word>(unsyncedWords, words =>
+                wordsApi.syncWordsOnServer(words),
+            );
 
             const updatedWords = updateLocalItems<Word>(wordsList, serverUpdates);
             const serverWords = await fetchNewWords(updatedWords);
@@ -219,7 +221,8 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const fetchNewWords = async (updatedWords: Word[]): Promise<Word[]> => {
         const latestUpdatedAt = findLatestUpdatedAt<Word>(updatedWords);
-        return await fetchUpdatedWords(latestUpdatedAt);
+        const result = await wordsApi.fetchUpdatedWords(latestUpdatedAt);
+        return result.kind === 'ok' ? result.data : [];
     };
 
     const loadData = async () => {

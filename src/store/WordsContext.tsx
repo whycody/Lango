@@ -199,7 +199,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             syncing.current = true;
             const wordsList = inputWords ?? (await getAllWords());
             const unsyncedWords = getUnsyncedItems<Word>(wordsList);
-            const serverUpdates = await syncInBatches<Word>(unsyncedWords, words =>
+            const { synced: serverUpdates } = await syncInBatches<Word>(unsyncedWords, words =>
                 wordsApi.syncWordsOnServer(words),
             );
 

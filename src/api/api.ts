@@ -46,7 +46,11 @@ class Api {
 
             if (!this.accessToken) await this.loadTokens();
             if (this.accessToken && this.isTokenExpired(this.accessToken)) {
-                await this.refreshAccessToken().catch(() => undefined);
+                try {
+                    await this.refreshAccessToken();
+                } catch {
+                    throw new Error('Failed to refresh access token.');
+                }
             }
 
             if (this.accessToken) {

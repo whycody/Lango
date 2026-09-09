@@ -15,6 +15,9 @@ export const resolveApiErrorCode = (response: ApiResponse<unknown>): ApiErrorCod
         case 404:
             return 'not-found';
         default:
+            if (response.status === undefined) return 'unknown';
+            if (response.status >= 400 && response.status < 500) return 'validation-error';
+            if (response.status >= 500) return 'server-error';
             return 'unknown';
     }
 };

@@ -119,7 +119,7 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
                     suggestion.translationLang == translationLang,
             );
             const unsyncedSuggestions = getUnsyncedItems<Suggestion>(langSuggestionsList);
-            const serverUpdates = await syncInBatches<Suggestion>(
+            const { synced: serverUpdates } = await syncInBatches<Suggestion>(
                 unsyncedSuggestions,
                 suggestions => suggestionsApi.syncSuggestionsOnServer(suggestions),
             );

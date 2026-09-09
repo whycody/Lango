@@ -8,15 +8,19 @@ export async function syncInBatches<T>(
     items: T[],
     syncFn: (chunk: T[]) => Promise<SyncFnResult<T>>,
     batchSize: number = 100,
-): Promise<SyncResult[]> {
-    if (items.length === 0) return [];
-    const results: SyncResult[] = [];
+): Promise<SyncResultWithRejections<T>> {
+    const result: SyncResultWithRejections<T> = { rejectedIds: [], synced: [], unauthorized: [] };
+    if (items.length === 0) return result;
     for (let i = 0; i < items.length; i += batchSize) {
         const chunk = items.slice(i, i + batchSize);
         const res = await syncFn(chunk);
-        if (res.kind === 'ok') results.push(...res.data.synced);
+        if (res.kind === 'ok') {
+            result.synced.push(...res.data.synced);
+            result.rejectedIds.push(...res.data.rejectedIds);
+            result.unauthorized.push(...res.data.unauthorized);
+        }
     }
-    return results;
+    return result;
 }
 
 export function mergeLocalAndServer<T extends SyncMetadata & { id: string }>(

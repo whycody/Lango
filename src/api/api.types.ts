@@ -11,7 +11,14 @@ import {
     Word,
 } from '../types';
 
-export type ApiErrorCode = 'forbidden' | 'network' | 'not-found' | 'unauthorized' | 'unknown';
+export type ApiErrorCode =
+    | 'forbidden'
+    | 'network'
+    | 'not-found'
+    | 'server-error'
+    | 'unauthorized'
+    | 'unknown'
+    | 'validation-error';
 
 export type ApiProblem = { errorCode: ApiErrorCode; kind: 'error' };
 

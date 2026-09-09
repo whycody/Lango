@@ -89,7 +89,7 @@ export const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) =
             syncing.current = true;
             const evaluationsList = inputEvaluations ?? (await getAllEvaluations());
             const unsyncedEvaluations = getUnsyncedItems<Evaluation>(evaluationsList);
-            const serverUpdates = await syncInBatches<Evaluation>(
+            const { synced: serverUpdates } = await syncInBatches<Evaluation>(
                 unsyncedEvaluations,
                 evaluations => evaluationsApi.syncEvaluationsOnServer(evaluations),
             );

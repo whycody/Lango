@@ -133,7 +133,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             syncing.current = true;
             const sessionsList = inputSessions ?? (await getAllSessions());
             const unsyncedSessions = getUnsyncedItems<Session>(sessionsList);
-            const serverUpdates = await syncInBatches<Session>(unsyncedSessions, sessions =>
+            const { synced: serverUpdates } = await syncInBatches<Session>(unsyncedSessions, sessions =>
                 sessionsApi.syncSessionsOnServer(sessions),
             );
 

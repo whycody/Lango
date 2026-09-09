@@ -2,10 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
-import { translateText } from '../../api/apiClient';
+import { translationsApi } from '../../api/translations-api';
 import { LanguageCode } from '../../constants/Language';
 import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
@@ -203,35 +202,29 @@ export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProp
         abortControllerRef.current && abortControllerRef.current.abort();
         abortControllerRef.current = new AbortController();
 
-        try {
-            const translations = await translateText(
-                text,
+        const result = await translationsApi.translateText(
+            text,
+            from,
+            to,
+            abortControllerRef.current.signal,
+        );
+
+        if (result.kind === 'error') {
+            if (!abortControllerRef.current.signal.aborted) {
+                console.error('Błąd:', result.errorCode);
+            }
+            return;
+        }
+
+        setWordTranslations(prev => [
+            ...prev,
+            {
                 from,
                 to,
-                abortControllerRef.current.signal,
-            );
-            setWordTranslations(prev => [
-                ...prev,
-                {
-                    from,
-                    to,
-                    translations: [translations.toLowerCase()],
-                    word: text,
-                },
-            ]);
-        } catch (error: unknown) {
-            if (!axios.isCancel(error)) {
-                if (axios.isAxiosError(error)) {
-                    console.error(
-                        'Błąd:',
-                        error.response?.status,
-                        error.response?.data ?? error.message,
-                    );
-                } else {
-                    console.error('Błąd:', error);
-                }
-            }
-        }
+                translations: [result.data.translation.toLowerCase()],
+                word: text,
+            },
+        ]);
     };
 
     useEffect(() => {

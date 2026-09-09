@@ -1,6 +1,6 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode } from '../types';
+import { ApiErrorCode } from '../api/api.types';
 
 export const resolveApiErrorCode = (response: ApiResponse<unknown>): ApiErrorCode => {
     if (response.problem === 'NETWORK_ERROR' || response.problem === 'CONNECTION_ERROR') {

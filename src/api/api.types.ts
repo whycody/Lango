@@ -10,7 +10,8 @@ import {
     UserSummary,
     Word,
 } from '../types';
-import { ApiErrorCode } from '../types/api/ApiErrorCode';
+
+export type ApiErrorCode = 'forbidden' | 'network' | 'not-found' | 'unauthorized' | 'unknown';
 
 export type ApiProblem = { errorCode: ApiErrorCode; kind: 'error' };
 

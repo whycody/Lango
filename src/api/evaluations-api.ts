@@ -1,6 +1,6 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, Evaluation, SyncResult } from '../types';
+import { ApiErrorCode, Evaluation, SyncResultWithRejections } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 
@@ -21,11 +21,9 @@ class EvaluationsApi {
 
     async syncEvaluationsOnServer(
         evaluations: Evaluation[],
-    ): Promise<EvaluationsApiResult<SyncResult[]>> {
-        const response: ApiResponse<SyncResult[]> = await this.api.apisauce.post(
-            EVALUATIONS_API_ROUTES.sync,
-            evaluations,
-        );
+    ): Promise<EvaluationsApiResult<SyncResultWithRejections<Evaluation>>> {
+        const response: ApiResponse<SyncResultWithRejections<Evaluation>> =
+            await this.api.apisauce.post(EVALUATIONS_API_ROUTES.sync, evaluations);
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }

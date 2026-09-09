@@ -1,6 +1,6 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, Session, SyncResult } from '../types';
+import { ApiErrorCode, Session, SyncResultWithRejections } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 
@@ -19,11 +19,11 @@ class SessionsApi {
         this.api = api;
     }
 
-    async syncSessionsOnServer(sessions: Session[]): Promise<SessionsApiResult<SyncResult[]>> {
-        const response: ApiResponse<SyncResult[]> = await this.api.apisauce.post(
-            SESSIONS_API_ROUTES.sync,
-            sessions,
-        );
+    async syncSessionsOnServer(
+        sessions: Session[],
+    ): Promise<SessionsApiResult<SyncResultWithRejections<Session>>> {
+        const response: ApiResponse<SyncResultWithRejections<Session>> =
+            await this.api.apisauce.post(SESSIONS_API_ROUTES.sync, sessions);
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }

@@ -15,6 +15,7 @@ export * from './states/WordMLState';
 export * from './sync/InitialLoad';
 export * from './sync/SyncMetadata';
 export * from './sync/SyncResult';
+export * from './sync/SyncResultWithRejections';
 
 // utils
 export * from './utils/LibraryNavProp';
@@ -35,3 +36,4 @@ export * from './api/contracts/auth-contracts';
 export * from './api/contracts/suggestions-contracts';
 export * from './api/contracts/translations-contracts';
 export * from './api/contracts/users-contracts';
+export * from './api/contracts/words-contracts';

@@ -1,6 +1,12 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, ExampleFlashcard, LanguageLevelRange, Suggestion, SyncResult } from '../types';
+import {
+    ApiErrorCode,
+    ExampleFlashcard,
+    LanguageLevelRange,
+    Suggestion,
+    SyncResultWithRejections,
+} from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 
@@ -39,11 +45,9 @@ class SuggestionsApi {
 
     async syncSuggestionsOnServer(
         suggestions: Suggestion[],
-    ): Promise<SuggestionsApiResult<SyncResult[]>> {
-        const response: ApiResponse<SyncResult[]> = await this.api.apisauce.post(
-            SUGGESTIONS_API_ROUTES.sync,
-            suggestions,
-        );
+    ): Promise<SuggestionsApiResult<SyncResultWithRejections<Suggestion>>> {
+        const response: ApiResponse<SyncResultWithRejections<Suggestion>> =
+            await this.api.apisauce.post(SUGGESTIONS_API_ROUTES.sync, suggestions);
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }

@@ -1,12 +1,12 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, SyncResult, Word } from '../types';
+import { ApiErrorCode, SyncResultWithRejections, Word, WordSyncWireResponse } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 
 const WORDS_API_ROUTES = {
     sync: '/api/words/sync',
-    words: (since: string) => `/api/words?since=${since}`,
+    words: '/api/words',
 } as const;
 
 export type WordsApiResult<T> =
@@ -19,21 +19,31 @@ class WordsApi {
         this.api = api;
     }
 
-    async syncWordsOnServer(words: Word[]): Promise<WordsApiResult<SyncResult[]>> {
-        const response: ApiResponse<SyncResult[]> = await this.api.apisauce.post(
+    async syncWordsOnServer(
+        words: Word[],
+    ): Promise<WordsApiResult<SyncResultWithRejections<Word>>> {
+        const response: ApiResponse<WordSyncWireResponse> = await this.api.apisauce.post(
             WORDS_API_ROUTES.sync,
             words,
         );
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }
-        return { data: response.data, kind: 'ok' };
+        return {
+            data: {
+                rejectedIds: response.data.rejectedWordIds,
+                synced: response.data.syncedWords,
+                unauthorized: response.data.unauthorizedWords,
+            },
+            kind: 'ok',
+        };
     }
 
-    async fetchUpdatedWords(since: string): Promise<WordsApiResult<Word[]>> {
-        const response: ApiResponse<Word[]> = await this.api.apisauce.get(
-            WORDS_API_ROUTES.words(since),
-        );
+    async fetchUpdatedWords(since?: string, bundleId?: string): Promise<WordsApiResult<Word[]>> {
+        const response: ApiResponse<Word[]> = await this.api.apisauce.get(WORDS_API_ROUTES.words, {
+            bundleId,
+            since,
+        });
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }

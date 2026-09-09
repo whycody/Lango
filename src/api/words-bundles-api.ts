@@ -3,7 +3,6 @@ import { ApiResponse } from 'apisauce';
 import { LanguageCode } from '../constants/Language';
 import {
     BundleJoinCode,
-    BundleMember,
     BundleMemberRole,
     BundleSearchResponse,
     JoinBundleWithCodeResult,

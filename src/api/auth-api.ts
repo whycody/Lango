@@ -13,11 +13,11 @@ import {
 } from './api.types';
 
 const AUTH_API_ROUTES = {
-    account: '/auth/auth/account',
+    account: '/auth/account',
     loginApple: '/auth/login/apple',
     loginFacebook: '/auth/login/facebook',
     loginGoogle: '/auth/login/google',
-    logout: '/auth/auth/logout',
+    logout: '/auth/logout',
 } as const;
 
 class AuthApi {

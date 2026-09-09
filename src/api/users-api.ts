@@ -28,7 +28,7 @@ const USERS_API_ROUTES = {
     registerDeviceToken: '/notifications/devices',
     suggestionsInSession: '/users/suggestions-in-session',
     userData: '/users/data',
-    users: '/users/users',
+    users: '/users',
     userSummary: (id: string) => `/users/${id}/summary`,
 } as const;
 

@@ -6,8 +6,8 @@ import { Api, api } from './api';
 import { FetchUpdatedEvaluationsApi, SyncEvaluationsOnServerApi } from './api.types';
 
 const EVALUATIONS_API_ROUTES = {
-    evaluations: (since: string) => `/evaluations/evaluations/?since=${since}`,
-    sync: '/evaluations/evaluations/sync',
+    evaluations: (since: string) => `/evaluations?since=${since}`,
+    sync: '/evaluations/sync',
 } as const;
 
 class EvaluationsApi {

@@ -6,8 +6,8 @@ import { Api, api } from './api';
 import { FetchUpdatedSessionsApi, SyncSessionsOnServerApi } from './api.types';
 
 const SESSIONS_API_ROUTES = {
-    sessions: (since: string) => `/sessions/sessions?since=${since}`,
-    sync: '/sessions/sessions/sync',
+    sessions: (since: string) => `/sessions?since=${since}`,
+    sync: '/sessions/sync',
 } as const;
 
 class SessionsApi {

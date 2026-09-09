@@ -14,7 +14,7 @@ const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 // Endpoints that must never trigger a pre-emptive refresh: the login endpoints run before any
 // session exists, and the refresh endpoint itself must not try to refresh in the middle of refreshing.
-const SKIP_REFRESH_PATHS = ['/auth/login/', '/auth/auth/refresh', '/auth/auth/logout'];
+const SKIP_REFRESH_PATHS = ['/auth/login/', '/auth/refresh', '/auth/logout'];
 
 const profile = Constants.expoConfig?.extra?.appVariant ?? Updates.channel;
 const apiUrl =
@@ -107,7 +107,7 @@ class Api {
             headers: JSON_HEADERS,
             method: 'POST',
             timeout: REFRESH_TIMEOUT_MS,
-            url: `${apiUrl}/auth/auth/refresh`,
+            url: `${apiUrl}/auth/refresh`,
         });
         return response.data;
     };

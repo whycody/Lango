@@ -1,6 +1,6 @@
 import { ApiResponse } from 'apisauce';
 
-import { ApiErrorCode, SyncResultWithRejections, Word, WordSyncWireResponse } from '../types';
+import { ApiErrorCode, SyncResultWithRejections, Word } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 
@@ -22,21 +22,14 @@ class WordsApi {
     async syncWordsOnServer(
         words: Word[],
     ): Promise<WordsApiResult<SyncResultWithRejections<Word>>> {
-        const response: ApiResponse<WordSyncWireResponse> = await this.api.apisauce.post(
+        const response: ApiResponse<SyncResultWithRejections<Word>> = await this.api.apisauce.post(
             WORDS_API_ROUTES.sync,
             words,
         );
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }
-        return {
-            data: {
-                rejectedIds: response.data.rejectedWordIds,
-                synced: response.data.syncedWords,
-                unauthorized: response.data.unauthorizedWords,
-            },
-            kind: 'ok',
-        };
+        return { data: response.data, kind: 'ok' };
     }
 
     async fetchUpdatedWords(since?: string, bundleId?: string): Promise<WordsApiResult<Word[]>> {

@@ -36,4 +36,3 @@ export * from './api/contracts/auth-contracts';
 export * from './api/contracts/suggestions-contracts';
 export * from './api/contracts/translations-contracts';
 export * from './api/contracts/users-contracts';
-export * from './api/contracts/words-contracts';

@@ -169,7 +169,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         cardMetaPills: {
             flexDirection: 'row',
             flexWrap: 'wrap',
-            gap: spacing.s,
+            gap: spacing.xs,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: spacing.xl,
         },
@@ -177,11 +177,11 @@ const getStyles = (colors: CustomTheme['colors']) =>
             alignItems: 'center',
             alignSelf: 'flex-start',
             backgroundColor: colors.cardAccent600,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             flexDirection: 'row',
-            gap: spacing.s,
+            gap: spacing.xs,
             paddingHorizontal: spacing.m,
-            paddingVertical: spacing.s,
+            paddingVertical: spacing.xs,
         },
         cardMetaText: {
             color: colors.white300,

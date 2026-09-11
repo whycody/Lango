@@ -1,6 +1,6 @@
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { BundleDetailsScreen } from '../ui/screens/bundles/BundleDetailsScreen';
+import { BundleDetailsScreen } from '../screens/bundles/details/bundle-details-screen';
 import {
     BundleNavigatorParams,
     BundleStackParamList,

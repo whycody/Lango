@@ -14,7 +14,7 @@ import { WordsProvider } from '../store/WordsContext';
 import { WordsHeuristicProvider } from '../store/WordsHeuristicStatesContext';
 import { WordsMLStatesProvider } from '../store/WordsMLStatesContext';
 import { WordsWithDetailsProvider } from '../store/WordsWithDetailsContext';
-import { SearchBundlesScreen } from '../ui/screens/bundles/SearchBundlesScreen';
+import { SearchBundlesScreen } from '../screens/bundles/search/search-bundles-screen';
 import { FlashcardsScreen } from '../ui/screens/FlashcardsScreen';
 import { SessionScreen } from '../ui/screens/SessionScreen';
 import { SettingsScreen } from '../ui/screens/SettingsScreen';

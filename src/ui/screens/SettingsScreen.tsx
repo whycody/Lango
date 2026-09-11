@@ -15,7 +15,7 @@ import { SettingsItems, SettingsSections } from '../../constants/Settings';
 import { FlashcardSide } from '../../constants/UserPreferences';
 import { useDynamicStatusBar } from '../../hooks';
 import { useAuth, useLanguage, useUserPreferences } from '../../store';
-import { SettingItem } from '../../types';
+import { SettingItem, TranslationKey } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isAndroid, isIOS } from '../../utils/deviceUtils';
 import { ensureNotificationsPermission } from '../../utils/ensureNotificationPermission';
@@ -116,7 +116,11 @@ export const SettingsScreen = () => {
 
             {
                 color: colors.primary300,
-                description: t(`theme.${userPreferences.appTheme.toLowerCase()}`),
+                // appTheme is an AppTheme enum value lowercased at runtime (blue/green/pink/...);
+                // not expressible as a literal translation-key union here.
+                description: t(
+                    `theme.${userPreferences.appTheme.toLowerCase()}` as TranslationKey,
+                ),
                 icon: 'color-palette',
                 id: SettingsItems.APP_THEME,
                 label: t('theme.title'),

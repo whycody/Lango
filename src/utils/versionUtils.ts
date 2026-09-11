@@ -1,7 +1,5 @@
+import { ANDROID_STORE_URL, IOS_STORE_URL } from './constants';
 import { isIOS } from './deviceUtils';
-
-const ANDROID_STORE_URL = 'https://play.google.com/store/apps/details?id=com.whycody.lango&hl=pl';
-const IOS_STORE_URL = 'https://apps.apple.com/pl/app/lango-smart-ai-flashcards/id6763920383';
 
 export const getStoreUrl = (): string => (isIOS ? IOS_STORE_URL : ANDROID_STORE_URL);
 

@@ -1,20 +1,14 @@
 // core
 export * from './core/app-config';
-export * from './core/BundleJoinCode';
-export * from './core/BundleMember';
-export * from './core/BundleSearchResult';
-export * from './core/DeleteBundleResult';
 export * from './core/Evaluation';
 export * from './core/example-flashcard';
-export * from './core/JoinBundleWithCodeResult';
-export * from './core/JoinBundleWithCodeStoreResult';
 export * from './core/Language';
 export * from './core/Session';
 export * from './core/Suggestion';
 export * from './core/User';
 export * from './core/user-summary';
 export * from './core/Word';
-export * from './core/WordsBundle';
+export * from './core/words-bundle';
 export * from './core/WordSet';
 
 // states
@@ -31,6 +25,8 @@ export * from './sync/SyncResultWithRejections';
 export * from './utils/LibraryNavProp';
 export * from './utils/SettingItem';
 export * from './utils/Streak';
+export * from './utils/theme-colors';
+export * from './utils/translation-key';
 export * from './utils/WordSetStrategy';
 export * from './utils/WordUpdate';
 export * from './utils/WordWithDetails';

@@ -10,8 +10,10 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { spacing } from '../constants/margins';
 import { useHaptics } from '../hooks';
+import { BundlesDashboardScreen } from '../screens/bundles/dashboard/bundles-dashboard-screen';
+import { ADD_BUNDLE_SHEET_NAME } from '../screens/bundles/dashboard/constants';
+import { TranslationKey } from '../types';
 import { CustomText } from '../ui/components';
-import { ADD_BUNDLE_SHEET_NAME, BundlesScreen } from '../ui/screens';
 import { HomeScreen } from '../ui/screens/HomeScreen';
 import { LibraryScreen } from '../ui/screens/LibraryScreen';
 import { HandleFlashcardBottomSheet } from '../ui/sheets';
@@ -93,7 +95,11 @@ const TabsNavigator = () => {
             style={[styles.tabLabel, { color: colors.white }, !focused && styles.tabLabelInactive]}
             weight={focused ? 'Bold' : 'Regular'}
         >
-            {route.name === 'Bundles' ? t('bundles.title') : t(route.name.toLowerCase())}
+            {route.name === 'Bundles'
+                ? t('bundles.title')
+                : // Tab route names ('Home' | 'Library' | 'Add') map to lowercase translation
+                  // keys at runtime; not expressible as a literal union here.
+                  t(route.name.toLowerCase() as TranslationKey)}
         </CustomText>
     );
 
@@ -153,7 +159,7 @@ const TabsNavigator = () => {
                 />
 
                 <Tab.Screen
-                    component={BundlesScreen}
+                    component={BundlesDashboardScreen}
                     name="Bundles"
                     options={{ headerShown: false }}
                     listeners={{

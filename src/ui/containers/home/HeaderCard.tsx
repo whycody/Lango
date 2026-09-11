@@ -12,8 +12,8 @@ import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
 import { MAIN_COLLECTION, useWordsForBundle } from '../../../hooks';
 import { useLanguage, useStatistics, useSuggestions } from '../../../store';
-import { Streak } from '../../../types';
 import { trackEvent } from '../../../utils/analytics';
+import { STREAK_DEFAULT_VALUE } from '../../../utils/constants';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { ActionButton, CustomText, ScreenHeader } from '../../components';
 import { FlashcardClassBadges } from '../../components/home/FlashcardClassBadges';
@@ -48,10 +48,7 @@ export const HeaderCard: FC<HeaderCardProps> = ({
     } = useWordsForBundle(MAIN_COLLECTION);
     const { studyDaysList } = useStatistics();
 
-    const [streak, setStreak] = useState<Streak>({
-        active: false,
-        numberOfDays: 0,
-    });
+    const [streak, setStreak] = useState(STREAK_DEFAULT_VALUE);
 
     const styles = useMemo(() => getStyles(colors), [colors]);
 
@@ -189,7 +186,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         progressBar: {
             backgroundColor: colors.cardAccent300,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             height: 7,
             marginTop: 12,
         },

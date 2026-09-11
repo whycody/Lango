@@ -41,7 +41,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderWidth: 1,
             flex: 1,
             flexDirection: 'row',
-            gap: spacing.s,
+            gap: spacing.xs,
             justifyContent: 'center',
             paddingVertical: 11,
         },

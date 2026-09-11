@@ -88,7 +88,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         uncheckedBox: {
             borderColor: colors.cardAccent300,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             borderWidth: 2,
             height: 20,
             width: 20,

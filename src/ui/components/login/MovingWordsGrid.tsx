@@ -51,7 +51,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         wordBox: {
             backgroundColor: colors.primary,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             flex: 1,
             flexDirection: 'row',
             marginRight: 10,

@@ -5,19 +5,23 @@ import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '../../../constants/margins';
+import { TranslationKey } from '../../../types';
 import { CustomTheme } from '../../Theme';
 
 interface ListFilterProps extends Omit<TextInputProps, 'style'> {
     isSearching: boolean;
-    onClear: () => void;
+    onClear?: () => void;
+    placeholderTx?: TranslationKey;
     styleRoot?: StyleProp<ViewStyle>;
 }
 
 export const ListFilter = forwardRef<TextInput, ListFilterProps>(
-    ({ isSearching, onClear, styleRoot, ...props }, ref) => {
+    ({ isSearching, onClear, placeholderTx, styleRoot, ...props }, ref) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { t } = useTranslation();
+
+        const resolvedPlaceholder = placeholderTx ? t(placeholderTx) : t('searchFlashcard');
 
         return (
             <View style={[styles.root, styleRoot]}>
@@ -29,7 +33,7 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
                 />
                 <TextInput
                     cursorColor={colors.white300}
-                    placeholder={t('searchFlashcard')}
+                    placeholder={resolvedPlaceholder}
                     placeholderTextColor={colors.white600}
                     ref={ref}
                     style={styles.textInput}
@@ -41,7 +45,7 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
                         name="close"
                         size={22}
                         style={styles.clearIcon}
-                        onPress={onClear}
+                        onPress={() => onClear?.()}
                     />
                 )}
             </View>

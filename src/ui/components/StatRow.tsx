@@ -32,7 +32,7 @@ export const StatRow: FC<StatRowProps> = ({ color, icon, label, value }) => {
 const styles = StyleSheet.create({
     iconWrap: {
         alignItems: 'center',
-        borderRadius: spacing.s,
+        borderRadius: spacing.xs,
         height: 34,
         justifyContent: 'center',
         width: 34,
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         gap: spacing.m,
-        paddingVertical: spacing.s,
+        paddingVertical: spacing.xs,
     },
     value: {
         fontSize: 16,

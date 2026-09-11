@@ -77,14 +77,14 @@ const getStyles = (colors: CustomTheme['colors']) =>
     StyleSheet.create({
         checkbox: {
             backgroundColor: colors.cardAccent,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             height: 20,
             marginLeft: 10,
             width: 20,
         },
         icon: {
             backgroundColor: colors.cardAccent,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             height: 22,
             width: 22,
         },

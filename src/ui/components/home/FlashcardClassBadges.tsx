@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     row: {
         alignItems: 'center',
         flexDirection: 'row',
-        gap: spacing.s,
+        gap: spacing.xs,
         marginTop: MARGIN_VERTICAL / 2,
     },
 });

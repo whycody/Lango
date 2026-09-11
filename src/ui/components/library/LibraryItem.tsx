@@ -2,29 +2,37 @@ import { memo } from 'react';
 import { Pressable, StyleSheet, Switch, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
 import { useHaptics } from '../../../hooks';
+import { TranslationKey } from '../../../types';
 import { isIOS } from '../../../utils/deviceUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
 interface LibraryItemProps {
     description?: string;
+    descriptionTx?: TranslationKey;
     enabled?: boolean;
     icon?: keyof typeof Ionicons.glyphMap;
     index: number;
-    label: string;
+    label?: string;
+    labelTx?: TranslationKey;
     color?: string;
     onPress?: () => void;
     style?: ViewStyle;
 }
 
 export const LibraryItem = memo<LibraryItemProps>(
-    ({ color, description, enabled, icon, index, label, onPress, style }) => {
+    ({ color, description, descriptionTx, enabled, icon, index, label, labelTx, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors, index);
         const { triggerHaptics } = useHaptics();
+        const { t } = useTranslation();
+
+        const resolvedLabel = labelTx ? t(labelTx) : label;
+        const resolvedDescription = descriptionTx ? t(descriptionTx) : description;
 
         const handlePress = () => {
             onPress?.();
@@ -50,11 +58,11 @@ export const LibraryItem = memo<LibraryItemProps>(
                 )}
                 <View style={styles.textContainer}>
                     <CustomText style={styles.label} weight={'SemiBold'}>
-                        {label}
+                        {resolvedLabel}
                     </CustomText>
-                    {description && (
+                    {resolvedDescription && (
                         <CustomText style={styles.description} weight={'Regular'}>
-                            {description}
+                            {resolvedDescription}
                         </CustomText>
                     )}
                 </View>

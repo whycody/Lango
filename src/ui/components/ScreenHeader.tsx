@@ -2,13 +2,16 @@ import { FC } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
+import { TranslationKey } from '../../types';
 import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 import { SquareFlag } from './SquareFlag';
 
 type ScreenHeaderProps = {
-    title: string;
+    title?: string;
+    titleTx?: TranslationKey;
     streakActive: boolean;
     streakIsGoal: boolean;
     streakNumberOfDays: number;
@@ -23,14 +26,18 @@ export const ScreenHeader: FC<ScreenHeaderProps> = ({
     streakIsGoal,
     streakNumberOfDays,
     title,
+    titleTx,
 }) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
+    const { t } = useTranslation();
+
+    const resolvedTitle = titleTx ? t(titleTx) : title;
 
     return (
         <View style={styles.container}>
             <CustomText style={styles.mainText} weight={'Bold'}>
-                {title}
+                {resolvedTitle}
             </CustomText>
             <MaterialCommunityIcons
                 name={'fire'}

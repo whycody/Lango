@@ -10,9 +10,11 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 import { spacing } from '../../constants/margins';
 import { useHaptics } from '../../hooks';
+import { TranslationKey } from '../../types';
 import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 
@@ -22,7 +24,8 @@ interface ActionButtonProps {
     active?: boolean;
     icon?: keyof typeof Ionicons.glyphMap | keyof typeof MaterialCommunityIcons.glyphMap;
     iconFamily?: IconFamily;
-    label: string;
+    label?: string;
+    labelTx?: TranslationKey;
     loading?: boolean;
     onPress?: () => void;
     primary?: boolean;
@@ -34,6 +37,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
     icon,
     iconFamily = 'ionicons',
     label,
+    labelTx,
     loading = false,
     onPress,
     primary = false,
@@ -42,6 +46,9 @@ export const ActionButton: FC<ActionButtonProps> = ({
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, primary, active);
     const { triggerHaptics } = useHaptics();
+    const { t } = useTranslation();
+
+    const resolvedLabel = labelTx ? t(labelTx) : label;
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const opacityAnim = useRef(new Animated.Value(1)).current;
 
@@ -105,7 +112,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
                 onPressOut={active && !loading ? handlePressOut : undefined}
             >
                 <CustomText style={[styles.label, loading && styles.hidden]} weight={'Bold'}>
-                    {label}
+                    {resolvedLabel}
                 </CustomText>
                 {icon && iconFamily === 'material-community' && (
                     <MaterialCommunityIcons

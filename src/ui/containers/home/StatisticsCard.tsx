@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { WordSource } from '../../../constants/Word';
-import { useSessions, useStatistics, useWords } from '../../../store';
-import { Word } from '../../../types';
+import { MAIN_COLLECTION, useWordsForBundle } from '../../../hooks';
+import { useSessions, useStatistics } from '../../../store';
 import { Header } from '../../components';
 import { StatisticItem } from '../../components/home';
 
@@ -15,17 +15,16 @@ type StatisticsCardProps = {
 
 export const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
     const { t } = useTranslation();
-    const { langWords } = useWords();
+    const { words: mainCollectionWords } = useWordsForBundle(MAIN_COLLECTION);
     const statsContext = useStatistics();
     const { sessions } = useSessions();
 
     const [studyStats, setStudyStats] = useState({
-        numberOfLangoWords: langWords.filter(
-            word => word.source == WordSource.LANGO && !word.removed,
-        ).length,
+        numberOfLangoWords: mainCollectionWords.filter(word => word.source == WordSource.LANGO)
+            .length,
         numberOfSessions: statsContext.numberOfSessions,
         numberOfStudyDays: statsContext.studyDaysList.length,
-        numberOfWords: langWords.filter((word: Word) => !word.removed).length,
+        numberOfWords: mainCollectionWords.length,
     });
 
     const updateStat = (key: keyof typeof studyStats, value: number) => {
@@ -36,14 +35,14 @@ export const StatisticsCard: FC<StatisticsCardProps> = ({ style }) => {
     };
 
     useEffect(() => {
-        updateStat('numberOfWords', langWords.filter((word: Word) => !word.removed).length);
+        updateStat('numberOfWords', mainCollectionWords.length);
         updateStat(
             'numberOfLangoWords',
-            langWords.filter(word => word.source == WordSource.LANGO && !word.removed).length,
+            mainCollectionWords.filter(word => word.source == WordSource.LANGO).length,
         );
         updateStat('numberOfStudyDays', statsContext.studyDaysList.length);
         updateStat('numberOfSessions', statsContext.numberOfSessions);
-    }, [langWords, statsContext.studyDaysList, sessions]);
+    }, [mainCollectionWords, statsContext.studyDaysList, sessions]);
 
     return (
         <View style={[styles.root, style]}>

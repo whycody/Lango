@@ -54,6 +54,8 @@
     "lastRepetition": "Última rep",
     "masteryLevel": "Nivel de dominio",
     "addedOn": "Añadido el",
+    "bundle": "Paquete",
+    "mainCollection": "Colección principal",
     "editedOn": "Editado",
     "repetitions": "Repeticiones",
     "avg_grade": "Nota media",
@@ -83,8 +85,10 @@
     "addNewWord": "Se añadió una nueva palabra: *{{word}}*.",
     "editWord": "La tarjeta fue editada: *{{word}}*.",
     "invalidData": "Datos inválidos",
+    "error": "Error",
     "bothInputs": "Debes rellenar ambos campos.",
     "alreadyExists": "Esta tarjeta ya existe en tu diccionario.",
+    "alreadyExistsInBundle": "Esta tarjeta ya existe en este paquete.",
     "success": "Éxito",
     "failure": "Error",
     "soFar": "Hasta ahora, has añadido *{{wordsCount}}* palabras a tu vocabulario.",
@@ -308,5 +312,121 @@
         "goalReached5": "¡Lo lograste! Tu racha acaba de llegar a {{currentGoal}} 🚀",
         "goalReached6": "Ya son {{currentGoal}} días de aprendizaje regular. El próximo objetivo es {{nextGoal}} días 💡",
         "goalReached7": "Nuevo nivel desbloqueado - {{currentGoal}} días de aprendizaje seguidos 🔥 Próxima parada: {{nextGoal}} días"
+    },
+    "bundles": {
+        "title": "Conjuntos",
+        "desc": "Crea tus propios conjuntos de palabras adaptados a lo que estás aprendiendo ahora mismo y mantén tu aprendizaje organizado 📚",
+        "add_new": "Añadir nuevo conjunto +",
+        "add_new_title": "Añadir conjunto",
+        "add_new_desc": "Puedes crear un nuevo conjunto o unirte a uno existente introduciendo el código que te compartió su creador.",
+        "create_new": "Crear un nuevo conjunto +",
+        "join_with_code": "Unirse a un conjunto con un código",
+        "create_new_title": "Crear un nuevo conjunto",
+        "create_new_desc": "Ponle un nombre y una descripción a tu conjunto. Podrás cambiarlos más adelante.",
+        "create_new_placeholder": "Nombre del conjunto",
+        "create_new_description_placeholder": "Descripción del conjunto (opcional)",
+        "create_new_title_label": "Nombre",
+        "create_new_description_label": "Descripción (opcional)",
+        "create_new_confirm": "Crear conjunto",
+        "your_bundles": "Tus conjuntos",
+        "recommended_bundles": "Conjuntos recomendados",
+        "no_bundles": "Todavía no hay nada aquí",
+        "no_bundles_desc": "Crea tu primer conjunto para empezar a aprender.",
+        "no_recommended_bundles": "Por ahora no tenemos nada para tu nivel. ¡Vuelve más tarde!",
+        "start_search": "Buscar nuevos conjuntos",
+        "start_search_desc": "Escribe el nombre del conjunto que buscas.",
+        "empty_search": "Sin resultados",
+        "empty_search_desc": "No se encontraron conjuntos que coincidan con tu búsqueda."
+    },
+    "bundle_details": {
+        "add_to_my_bundles": "Añadir a mis conjuntos",
+        "add_word": "Añadir nueva palabra +",
+        "flashcards_count": "{{count}} tarjeta",
+        "flashcards_count_plural": "{{count}} tarjetas",
+        "join_with_code": "Unirse con un código",
+        "no_access": {
+            "title": "Sin acceso",
+            "desc": "Este conjunto es privado. Únete con un código para ver sus palabras."
+        },
+        "members": "Miembros",
+        "no_members": "Aún no hay miembros",
+        "no_items_desc": "Intenta añadir algunas palabras a este conjunto.",
+        "no_items_desc_readonly": "Este conjunto todavía no tiene palabras.",
+        "show_in_main_collection": "Mostrar en la colección principal",
+        "show_in_main_collection_desc": "Las palabras formarán parte de tu colección principal",
+        "share_bundle": "Compartir conjunto",
+        "start_session": "Comenzar a aprender",
+        "share_sheet": {
+            "invite_viewer": "Invitar a ver",
+            "invite_viewer_desc": "Puede ver y estudiar el conjunto",
+            "invite_editor": "Invitar a colaborar",
+            "invite_editor_desc": "Puede añadir y editar palabras",
+            "share_bundle_link": "Compartir enlace del conjunto",
+            "share_bundle_link_message": "Mira mi conjunto \"{{title}}\" en Lango 👇\n\n{{link}}",
+            "invite_message": "¡Únete a mi conjunto \"{{title}}\" en Lango! Toca el enlace o introduce el código {{code}} directamente en la app 👈\n\n{{link}}"
+        },
+        "options": {
+            "edit_title_or_description": "Editar título o descripción",
+            "change_visibility": "Cambiar visibilidad",
+            "delete_bundle": "Eliminar paquete",
+            "leave_bundle": "Abandonar paquete",
+            "share_bundle": "Compartir conjunto",
+            "share_bundle_link": "Compartir enlace del conjunto"
+        },
+        "bundle_ready": {
+            "title_new_bundle": "Tu nuevo conjunto ya está listo",
+            "title_joined_bundle": "Conjunto añadido a tu colección",
+            "has_words": {
+                "desc": "Ya puedes estudiarlo cuando quieras",
+                "confirm": "Empezar a aprender",
+                "secondary": "Quizás más tarde"
+            },
+            "no_words_editable": {
+                "desc": "Añade sus primeras fichas",
+                "confirm": "Añadir nuevas palabras al conjunto +",
+                "secondary": "Añadir más tarde"
+            },
+            "no_words_readonly": {
+                "desc": "Este conjunto aún no tiene fichas",
+                "confirm": "Cerrar"
+            }
+        },
+        "edit": {
+            "title": "Editar conjunto",
+            "desc": "Cambia el nombre y la descripción del conjunto.",
+            "confirm": "Guardar cambios"
+        },
+        "removing": {
+            "title": "Eliminando paquete",
+            "desc": "¿Seguro que quieres eliminar este paquete? Se eliminarán todas las tarjetas que contiene y las personas que tenían acceso a él lo perderán. Esta acción no se puede deshacer.",
+            "error_network": "No se ha podido eliminar el paquete. Comprueba tu conexión e inténtalo de nuevo.",
+            "error_forbidden": "Solo el propietario de este paquete puede eliminarlo.",
+            "error_not_found": "Este paquete ya no existe.",
+            "error_unauthorized": "Tu sesión ha caducado. Vuelve a iniciar sesión.",
+            "error_unknown": "Algo ha salido mal al eliminar el paquete. Inténtalo de nuevo."
+        },
+        "visibility": {
+            "title": "Visibilidad del paquete",
+            "desc": "Elige quién puede ver este paquete.",
+            "public": "Público",
+            "public_desc": "Cualquiera puede encontrar y ver este paquete.",
+            "friends": "Amigos",
+            "friends_desc": "Solo tus amigos pueden encontrar y ver este paquete.",
+            "private": "Privado",
+            "private_desc": "Solo tú puedes ver este paquete."
+        },
+        "leaving": {
+            "title": "Abandonando paquete",
+            "desc": "¿Seguro que quieres abandonar este paquete? Perderás el acceso a él."
+        },
+        "join_with_code_sheet": {
+            "title": "Unirse con un código",
+            "desc": "Introduce el código de invitación que recibiste para unirte a este conjunto.",
+            "desc_prefilled": "Has sido invitado a este conjunto. Confirma para unirte.",
+            "placeholder": "Código de invitación",
+            "confirm": "Unirse",
+            "error_invalid": "Este código no es válido o ha caducado. Compruébalo e inténtalo de nuevo.",
+            "error_already_member": "Este código pertenece a un conjunto del que ya eres miembro."
+        }
     }
 }

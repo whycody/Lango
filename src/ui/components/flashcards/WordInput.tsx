@@ -33,6 +33,7 @@ import { CustomText, SquareFlag } from '..';
 
 type WordInputProps = TextInputProps & {
     active: boolean;
+    autoFocus?: boolean;
     languageCode: LanguageCode;
     onWordChange?: (word: string) => void;
     style?: StyleProp<ViewStyle>;
@@ -49,6 +50,7 @@ type WordInputRef = {
 export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) => {
     const {
         active,
+        autoFocus,
         languageCode,
         onWordChange,
         style,
@@ -64,7 +66,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
 
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors), [colors]);
-    const [focused, setFocused] = useState(false);
+    const [focused, setFocused] = useState(!!autoFocus);
     const inputRef = useRef<TextInput>(null);
 
     const filteredSuggestions = useMemo(

@@ -1,9 +1,14 @@
 import React, { FC, ReactNode } from 'react';
 import { StyleSheet, Text, TextProps } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { TranslationKey } from '../../types';
 
 type FontWeight = 'Regular' | 'SemiBold' | 'Bold' | 'Black';
 
 interface CustomTextProps extends TextProps {
+    text?: string;
+    tx?: TranslationKey;
     weight?: FontWeight;
 }
 
@@ -17,9 +22,12 @@ const FONT_MAP: Record<FontWeight, string> = {
 export const CustomText: FC<CustomTextProps> = ({
     children,
     style,
+    text,
+    tx,
     weight = 'Regular',
     ...props
 }) => {
+    const { t } = useTranslation();
     const baseFont = FONT_MAP[weight];
 
     const renderContent = (content: ReactNode): ReactNode => {
@@ -46,7 +54,7 @@ export const CustomText: FC<CustomTextProps> = ({
 
     return (
         <Text style={[styles.text, { fontFamily: baseFont }, style]} {...props}>
-            {renderContent(children)}
+            {renderContent(tx ? t(tx) : (text ?? children))}
         </Text>
     );
 };

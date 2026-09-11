@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
@@ -41,8 +41,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderWidth: 1,
             flex: 1,
             flexDirection: 'row',
-            gap: spacing.s,
+            gap: spacing.xs,
             justifyContent: 'center',
-            paddingVertical: spacing.m,
+            paddingVertical: 11,
         },
     });

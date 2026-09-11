@@ -54,6 +54,8 @@
     "lastRepetition": "Ostatnio",
     "masteryLevel": "Stopień opanowania",
     "addedOn": "Dodano",
+    "bundle": "Zestaw",
+    "mainCollection": "Główna kolekcja",
     "editedOn": "Edytowano",
     "repetitions": "Powtórek",
     "avg_grade": "Śr. ocena",
@@ -83,8 +85,10 @@
     "addNewWord": "Dodano nowe słówko: *{{word}}*.",
     "editWord": "Edytowano fiszkę: *{{word}}*.",
     "invalidData": "Niewłaściwe dane",
+    "error": "Błąd",
     "bothInputs": "Musisz wypełnić oba pola.",
     "alreadyExists": "Ta fiszka już istnieje w Twoim słowniku.",
+    "alreadyExistsInBundle": "Ta fiszka już istnieje w tym zestawie.",
     "success": "Powodzenie",
     "failure": "Niepowodzenie",
     "soFar": "Do tej pory w sumie zgromadziłeś *{{wordsCount}}* słówek.",
@@ -307,5 +311,122 @@
         "goalReached5": "Udało się! Twoja liczba dni z rzędu poszybowała właśnie do {{currentGoal}} 🚀",
         "goalReached6": "To już {{currentGoal}} dni regularnej nauki. Następny cel to {{nextGoal}} dni 💡",
         "goalReached7": "Nowy poziom odblokowany - {{currentGoal}} dni nauki z rzędu 🔥 Następny przystanek: {{nextGoal}} dni"
+    },
+    "bundles": {
+        "title": "Zestawy",
+        "desc": "Twórz własne zestawy słówek dopasowane do tego, czego akurat się uczysz, i miej naukę pod pełną kontrolą 📚",
+        "add_new": "Dodaj nowy zestaw +",
+        "add_new_title": "Dodaj zestaw",
+        "add_new_desc": "Możesz stworzyć nowy zestaw słówek albo dołączyć do istniejącego, wpisując kod, który udostępnił Ci jego twórca.",
+        "create_new": "Stwórz nowy zestaw +",
+        "join_with_code": "Dołącz do zestawu za pomocą kodu",
+        "create_new_title": "Stwórz nowy zestaw",
+        "create_new_desc": "Podaj nazwę i opis zestawu. Będziesz mógł je potem zmienić.",
+        "create_new_placeholder": "Nazwa zestawu",
+        "create_new_description_placeholder": "Opis zestawu (opcjonalnie)",
+        "create_new_title_label": "Nazwa",
+        "create_new_description_label": "Opis (opcjonalnie)",
+        "create_new_confirm": "Stwórz zestaw",
+        "your_bundles": "Twoje zestawy",
+        "recommended_bundles": "Polecane zestawy",
+        "no_bundles": "Na razie tu nic nie ma",
+        "no_bundles_desc": "Stwórz swój pierwszy zestaw słówek, aby zacząć naukę.",
+        "no_recommended_bundles": "Na ten moment nie możemy Ci zaproponować niczego na Twoim poziomie. Wróć tutaj później!",
+        "start_search": "Wyszukaj nowy zestaw",
+        "start_search_desc": "Wpisz nazwę zestawu, którego szukasz.",
+        "empty_search": "Brak wyników",
+        "empty_search_desc": "Nie znaleziono zestawów pasujących do wyszukiwania."
+    },
+    "bundle_details": {
+        "add_to_my_bundles": "Dodaj do moich zestawów",
+        "add_word": "Dodaj nowe słówko +",
+        "flashcards_count": "{{count}} fiszka",
+        "flashcards_count_few": "{{count}} fiszki",
+        "flashcards_count_many": "{{count}} fiszek",
+        "join_with_code": "Dołącz do zestawu za pomocą kodu",
+        "members": "Członkowie",
+        "no_access": {
+            "title": "Brak dostępu",
+            "desc": "Ten zestaw jest prywatny. Dołącz do niego za pomocą kodu, aby zobaczyć słówka."
+        },
+        "no_members": "Brak członków",
+        "no_items_desc": "Spróbuj dodać kilka słówek do tego zestawu.",
+        "no_items_desc_readonly": "Ten zestaw nie ma jeszcze żadnych słówek.",
+        "show_in_main_collection": "Wyświetlaj w głównej kolekcji",
+        "show_in_main_collection_desc": "Słówka będą częścią głównej kolekcji",
+        "share_bundle": "Udostępnij zestaw",
+        "start_session": "Rozpocznij naukę",
+        "share_sheet": {
+            "invite_viewer": "Zaproś do wyświetlania",
+            "invite_viewer_desc": "Może przeglądać i uczyć się z zestawu",
+            "invite_editor": "Zaproś do współtworzenia",
+            "invite_editor_desc": "Może dodawać i edytować słówka",
+            "share_bundle_link": "Udostępnij link do zestawu",
+            "share_bundle_link_message": "Sprawdź mój zestaw \"{{title}}\" w Lango 👇\n\n{{link}}",
+            "invite_message": "Dołącz do mojego zestawu \"{{title}}\" w Lango! Kliknij w link lub wpisz kod {{code}} bezpośrednio w aplikacji 👈\n\n{{link}}"
+        },
+        "options": {
+            "edit_title_or_description": "Edytuj tytuł lub opis",
+            "change_visibility": "Zmień widoczność",
+            "delete_bundle": "Usuń zestaw",
+            "leave_bundle": "Opuść ten zestaw",
+            "share_bundle": "Udostępnij zestaw",
+            "share_bundle_link": "Udostępnij link do zestawu"
+        },
+        "bundle_ready": {
+            "title_new_bundle": "Twój nowy zestaw jest już gotowy",
+            "title_joined_bundle": "Zestaw dodany do Twojej kolekcji",
+            "has_words": {
+                "desc": "Możesz teraz uczyć się z niego w dowolnym momencie",
+                "confirm": "Rozpocznij naukę",
+                "secondary": "Może później"
+            },
+            "no_words_editable": {
+                "desc": "Dodaj do niego pierwsze fiszki",
+                "confirm": "Dodaj nowe słówka do zestawu +",
+                "secondary": "Dodaj później"
+            },
+            "no_words_readonly": {
+                "desc": "Ten zestaw nie ma jeszcze żadnych fiszek",
+                "confirm": "Zamknij"
+            }
+        },
+        "edit": {
+            "title": "Edytuj zestaw",
+            "desc": "Zmień nazwę i opis zestawu.",
+            "confirm": "Zapisz zmiany"
+        },
+        "removing": {
+            "title": "Usuwanie zestawu",
+            "desc": "Czy jesteś pewien, że chcesz usunąć ten zestaw? Wraz z nim usunięte zostaną wszystkie należące do niego fiszki, a osoby, które miały do niego dostęp, utracą go. Ta czynność jest nieodwracalna.",
+            "error_network": "Nie udało się usunąć zestawu. Sprawdź połączenie z internetem i spróbuj ponownie.",
+            "error_forbidden": "Tylko właściciel zestawu może go usunąć.",
+            "error_not_found": "Ten zestaw już nie istnieje.",
+            "error_unauthorized": "Twoja sesja wygasła. Zaloguj się ponownie.",
+            "error_unknown": "Coś poszło nie tak podczas usuwania zestawu. Spróbuj ponownie."
+        },
+        "visibility": {
+            "title": "Widoczność zestawu",
+            "desc": "Wybierz, kto może zobaczyć ten zestaw.",
+            "public": "Publiczny",
+            "public_desc": "Każdy może znaleźć i zobaczyć ten zestaw.",
+            "friends": "Przyjaciele",
+            "friends_desc": "Tylko twoi przyjaciele mogą znaleźć i zobaczyć ten zestaw.",
+            "private": "Prywatny",
+            "private_desc": "Tylko ty widzisz ten zestaw."
+        },
+        "leaving": {
+            "title": "Opuszczanie zestawu",
+            "desc": "Czy na pewno chcesz opuścić ten zestaw? Utracisz do niego dostęp."
+        },
+        "join_with_code_sheet": {
+            "title": "Dołącz do zestawu za pomocą kodu",
+            "desc": "Wpisz kod zaproszenia, który otrzymałeś, aby dołączyć do tego zestawu.",
+            "desc_prefilled": "Zostałeś zaproszony do tego zestawu. Potwierdź, aby dołączyć.",
+            "placeholder": "Kod zaproszenia",
+            "confirm": "Dołącz",
+            "error_invalid": "Ten kod jest nieprawidłowy lub wygasł. Sprawdź go i spróbuj ponownie.",
+            "error_already_member": "Ten kod należy do zestawu, którego jesteś już członkiem."
+        }
     }
 }

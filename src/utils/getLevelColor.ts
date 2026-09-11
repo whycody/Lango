@@ -1,3 +1,5 @@
+import { palette } from '../constants/palette';
+
 export const getLevelColor = (level: number): string => {
     const startColor = { b: 50, g: 50, r: 255 };
     const middleColor = { b: 100, g: 255, r: 255 };
@@ -7,7 +9,9 @@ export const getLevelColor = (level: number): string => {
 
     let r: number, g: number, b: number;
 
-    if (level < 0.5) {
+    if (!level) {
+        return palette.gray;
+    } else if (level < 0.5) {
         const t = level * 2;
         r = interpolate(startColor.r, middleColor.r, t);
         g = interpolate(startColor.g, middleColor.g, t);

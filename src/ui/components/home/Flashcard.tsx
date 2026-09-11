@@ -228,7 +228,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         plusContainer: {
             alignItems: 'center',
             backgroundColor: colors.card,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             height: 20,
             justifyContent: 'center',
             position: 'absolute',

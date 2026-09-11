@@ -4,6 +4,7 @@ import { SyncMetadata } from '../sync/SyncMetadata';
 
 export type Session = SyncMetadata & {
     averageScore: number;
+    bundleId?: string;
     date: string;
     finished: boolean;
     id: string;

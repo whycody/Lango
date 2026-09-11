@@ -54,6 +54,8 @@
     "lastRepetition": "Ultima rep",
     "masteryLevel": "Livello di padronanza",
     "addedOn": "Aggiunto il",
+    "bundle": "Set",
+    "mainCollection": "Collezione principale",
     "editedOn": "Modificato",
     "repetitions": "Ripetizioni",
     "avg_grade": "Voto medio",
@@ -83,8 +85,10 @@
     "addNewWord": "È stata aggiunta una nuova parola: *{{word}}*.",
     "editWord": "La scheda è stata modificata: *{{word}}*.",
     "invalidData": "Dati non validi",
+    "error": "Errore",
     "bothInputs": "Devi compilare entrambi i campi.",
     "alreadyExists": "Questa scheda esiste già nel tuo dizionario.",
+    "alreadyExistsInBundle": "Questa scheda esiste già in questo set.",
     "success": "Successo",
     "failure": "Errore",
     "soFar": "Finora hai aggiunto *{{wordsCount}}* parole al tuo vocabolario.",
@@ -308,5 +312,121 @@
         "goalReached5": "Ce l'hai fatta! La tua serie è appena arrivata a {{currentGoal}} 🚀",
         "goalReached6": "Sono già {{currentGoal}} giorni di studio regolare. Il prossimo obiettivo è {{nextGoal}} giorni 💡",
         "goalReached7": "Nuovo livello sbloccato - {{currentGoal}} giorni consecutivi di studio 🔥 Prossima fermata: {{nextGoal}} giorni"
+    },
+    "bundles": {
+        "title": "Set",
+        "desc": "Crea i tuoi set di parole personalizzati in base a ciò che stai imparando in questo momento e tieni il tuo apprendimento organizzato 📚",
+        "add_new": "Aggiungi nuovo set +",
+        "add_new_title": "Aggiungi set",
+        "add_new_desc": "Puoi creare un nuovo set oppure unirti a uno esistente inserendo il codice condiviso dal suo creatore.",
+        "create_new": "Crea un nuovo set +",
+        "join_with_code": "Unisciti a un set con un codice",
+        "create_new_title": "Crea un nuovo set",
+        "create_new_desc": "Dai un nome e una descrizione al tuo set. Potrai cambiarli in seguito.",
+        "create_new_placeholder": "Nome del set",
+        "create_new_description_placeholder": "Descrizione del set (opzionale)",
+        "create_new_title_label": "Nome",
+        "create_new_description_label": "Descrizione (opzionale)",
+        "create_new_confirm": "Crea set",
+        "your_bundles": "I tuoi set",
+        "recommended_bundles": "Set consigliati",
+        "no_bundles": "Non c'è ancora niente qui",
+        "no_bundles_desc": "Crea il tuo primo set per iniziare a imparare.",
+        "no_recommended_bundles": "Al momento non abbiamo nulla adatto al tuo livello. Torna più tardi!",
+        "start_search": "Cerca nuovi set",
+        "start_search_desc": "Digita il nome del set che stai cercando.",
+        "empty_search": "Nessun risultato",
+        "empty_search_desc": "Nessun set corrisponde alla tua ricerca."
+    },
+    "bundle_details": {
+        "add_to_my_bundles": "Aggiungi ai miei set",
+        "add_word": "Aggiungi nuova parola +",
+        "flashcards_count": "{{count}} flashcard",
+        "flashcards_count_plural": "{{count}} flashcard",
+        "join_with_code": "Unisciti con un codice",
+        "no_access": {
+            "title": "Nessun accesso",
+            "desc": "Questo set è privato. Unisciti con un codice per vedere le sue parole."
+        },
+        "members": "Membri",
+        "no_members": "Ancora nessun membro",
+        "no_items_desc": "Prova ad aggiungere alcune parole a questo set.",
+        "no_items_desc_readonly": "Questo set non ha ancora parole.",
+        "show_in_main_collection": "Mostra nella collezione principale",
+        "show_in_main_collection_desc": "Le parole faranno parte della tua collezione principale",
+        "share_bundle": "Condividi set",
+        "start_session": "Inizia a studiare",
+        "share_sheet": {
+            "invite_viewer": "Invita a visualizzare",
+            "invite_viewer_desc": "Può visualizzare e studiare il set",
+            "invite_editor": "Invita a collaborare",
+            "invite_editor_desc": "Può aggiungere e modificare parole",
+            "share_bundle_link": "Condividi link del set",
+            "share_bundle_link_message": "Guarda il mio set \"{{title}}\" su Lango 👇\n\n{{link}}",
+            "invite_message": "Unisciti al mio set \"{{title}}\" su Lango! Tocca il link o inserisci il codice {{code}} direttamente nell'app 👈\n\n{{link}}"
+        },
+        "options": {
+            "edit_title_or_description": "Modifica titolo o descrizione",
+            "change_visibility": "Cambia visibilità",
+            "delete_bundle": "Elimina set",
+            "leave_bundle": "Abbandona il set",
+            "share_bundle": "Condividi set",
+            "share_bundle_link": "Condividi link del set"
+        },
+        "bundle_ready": {
+            "title_new_bundle": "Il tuo nuovo set è pronto",
+            "title_joined_bundle": "Set aggiunto alla tua collezione",
+            "has_words": {
+                "desc": "Ora puoi studiarlo quando vuoi",
+                "confirm": "Inizia a studiare",
+                "secondary": "Forse più tardi"
+            },
+            "no_words_editable": {
+                "desc": "Aggiungi le sue prime flashcard",
+                "confirm": "Aggiungi nuove parole al set +",
+                "secondary": "Aggiungi più tardi"
+            },
+            "no_words_readonly": {
+                "desc": "Questo set non ha ancora flashcard",
+                "confirm": "Chiudi"
+            }
+        },
+        "edit": {
+            "title": "Modifica set",
+            "desc": "Cambia il nome e la descrizione del set.",
+            "confirm": "Salva modifiche"
+        },
+        "removing": {
+            "title": "Eliminazione set",
+            "desc": "Sei sicuro di voler eliminare questo set? Verranno eliminate tutte le flashcard che contiene e le persone che vi avevano accesso lo perderanno. Questa azione è irreversibile.",
+            "error_network": "Non è stato possibile eliminare il set. Controlla la connessione e riprova.",
+            "error_forbidden": "Solo il proprietario di questo set può eliminarlo.",
+            "error_not_found": "Questo set non esiste più.",
+            "error_unauthorized": "La tua sessione è scaduta. Accedi di nuovo.",
+            "error_unknown": "Si è verificato un errore durante l'eliminazione del set. Riprova."
+        },
+        "visibility": {
+            "title": "Visibilità del set",
+            "desc": "Scegli chi può vedere questo set.",
+            "public": "Pubblico",
+            "public_desc": "Chiunque può trovare e vedere questo set.",
+            "friends": "Amici",
+            "friends_desc": "Solo i tuoi amici possono trovare e vedere questo set.",
+            "private": "Privato",
+            "private_desc": "Solo tu puoi vedere questo set."
+        },
+        "leaving": {
+            "title": "Abbandono del set 👋",
+            "desc": "Sei sicuro di voler abbandonare questo set? Perderai l'accesso ad esso."
+        },
+        "join_with_code_sheet": {
+            "title": "Unisciti con un codice",
+            "desc": "Inserisci il codice di invito che hai ricevuto per unirti a questo set.",
+            "desc_prefilled": "Sei stato invitato a questo set. Conferma per unirti.",
+            "placeholder": "Codice di invito",
+            "confirm": "Unisciti",
+            "error_invalid": "Questo codice non è valido o è scaduto. Controllalo e riprova.",
+            "error_already_member": "Questo codice appartiene a un set di cui sei già membro."
+        }
     }
 }

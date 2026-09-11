@@ -54,6 +54,8 @@
     "lastRepetition": "Last rep",
     "masteryLevel": "Mastery level",
     "addedOn": "Added on",
+    "bundle": "Bundle",
+    "mainCollection": "Main collection",
     "editedOn": "Edited",
     "repetitions": "Repetitions",
     "avg_grade": "Avg grade",
@@ -83,8 +85,10 @@
     "addNewWord": "New word has been added: *{{word}}*.",
     "editWord": "The flashcard has been edited: *{{word}}*.",
     "invalidData": "Invalid data",
+    "error": "Error",
     "bothInputs": "You have to fill both inputs.",
     "alreadyExists": "This flashcard already exists in your dictionary.",
+    "alreadyExistsInBundle": "This flashcard already exists in this bundle.",
     "success": "Success",
     "failure": "Failure",
     "soFar": "So far, you have added *{{wordsCount}}* words to your vocabulary.",
@@ -308,5 +312,121 @@
         "goalReached5": "You did it! Your streak has just climbed to {{currentGoal}} 🚀",
         "goalReached6": "That's already {{currentGoal}} days of regular learning. The next goal is {{nextGoal}} days 💡",
         "goalReached7": "New level unlocked - {{currentGoal}} days of learning in a row 🔥 Next stop: {{nextGoal}} days"
+    },
+    "bundles": {
+        "title": "Bundles",
+        "desc": "Create your own word bundles tailored to whatever you're learning right now, and keep your learning organized 📚",
+        "add_new": "Add new bundle +",
+        "add_new_title": "Add bundle",
+        "add_new_desc": "You can create a new bundle or join an existing one by entering the code its creator shared with you.",
+        "create_new": "Create a new bundle +",
+        "join_with_code": "Join a bundle with a code",
+        "create_new_title": "Create a new bundle",
+        "create_new_desc": "Give your bundle a name and description. You can always change them later.",
+        "create_new_placeholder": "Bundle name",
+        "create_new_description_placeholder": "Bundle description (optional)",
+        "create_new_title_label": "Name",
+        "create_new_description_label": "Description (optional)",
+        "create_new_confirm": "Create bundle",
+        "your_bundles": "Your bundles",
+        "recommended_bundles": "Recommended bundles",
+        "no_bundles": "Nothing here yet",
+        "no_bundles_desc": "Create your first bundle to start learning.",
+        "no_recommended_bundles": "We don't have anything at your level to suggest right now. Check back later!",
+        "start_search": "Search new bundles",
+        "start_search_desc": "Type the name of the bundle you're looking for.",
+        "empty_search": "No results",
+        "empty_search_desc": "No bundles matched your search."
+    },
+    "bundle_details": {
+        "add_to_my_bundles": "Add to my bundles",
+        "add_word": "Add new word +",
+        "flashcards_count": "{{count}} flashcard",
+        "flashcards_count_plural": "{{count}} flashcards",
+        "join_with_code": "Join with a code",
+        "members": "Members",
+        "no_access": {
+            "title": "No access",
+            "desc": "This bundle is private. Join it with a code to see its words."
+        },
+        "no_members": "No members yet",
+        "no_items_desc": "Try adding some words to this bundle.",
+        "no_items_desc_readonly": "This bundle doesn't have any words yet.",
+        "show_in_main_collection": "Show in main collection",
+        "show_in_main_collection_desc": "Words will be part of your main collection",
+        "share_bundle": "Share bundle",
+        "start_session": "Start learning",
+        "share_sheet": {
+            "invite_viewer": "Invite to view",
+            "invite_viewer_desc": "Can view and study the bundle",
+            "invite_editor": "Invite to collaborate",
+            "invite_editor_desc": "Can add and edit words",
+            "share_bundle_link": "Share bundle link",
+            "share_bundle_link_message": "Check out my bundle \"{{title}}\" on Lango 👇\n\n{{link}}",
+            "invite_message": "Join my bundle \"{{title}}\" on Lango! Tap the link or enter the code {{code}} directly in the app 👈\n\n{{link}}"
+        },
+        "options": {
+            "edit_title_or_description": "Edit title or description",
+            "change_visibility": "Change visibility",
+            "delete_bundle": "Delete bundle",
+            "leave_bundle": "Leave bundle",
+            "share_bundle": "Share bundle",
+            "share_bundle_link": "Share bundle link"
+        },
+        "bundle_ready": {
+            "title_new_bundle": "Your new bundle is ready",
+            "title_joined_bundle": "Bundle added to your collection",
+            "has_words": {
+                "desc": "You can now study it whenever you want",
+                "confirm": "Start learning",
+                "secondary": "Maybe later"
+            },
+            "no_words_editable": {
+                "desc": "Add its first flashcards",
+                "confirm": "Add new words to the bundle +",
+                "secondary": "Add later"
+            },
+            "no_words_readonly": {
+                "desc": "This bundle doesn't have any flashcards yet",
+                "confirm": "Close"
+            }
+        },
+        "edit": {
+            "title": "Edit bundle",
+            "desc": "Change the bundle's name and description.",
+            "confirm": "Save changes"
+        },
+        "removing": {
+            "title": "Removing bundle",
+            "desc": "Are you sure you want to delete this bundle? All flashcards it contains will be deleted, and anyone else with access to it will lose access. This action cannot be undone.",
+            "error_network": "Could not delete the bundle. Please check your connection and try again.",
+            "error_forbidden": "Only the owner of this bundle can delete it.",
+            "error_not_found": "This bundle no longer exists.",
+            "error_unauthorized": "Your session has expired. Please sign in again.",
+            "error_unknown": "Something went wrong while deleting the bundle. Please try again."
+        },
+        "visibility": {
+            "title": "Bundle visibility",
+            "desc": "Choose who can see this bundle.",
+            "public": "Public",
+            "public_desc": "Anyone can find and view this bundle.",
+            "friends": "Friends",
+            "friends_desc": "Only your friends can find and view this bundle.",
+            "private": "Private",
+            "private_desc": "Only you can see this bundle."
+        },
+        "leaving": {
+            "title": "Leaving bundle",
+            "desc": "Are you sure you want to leave this bundle? You will lose access to it."
+        },
+        "join_with_code_sheet": {
+            "title": "Join with a code",
+            "desc": "Enter the invitation code you received to join this bundle.",
+            "desc_prefilled": "You've been invited to this bundle. Confirm to join.",
+            "placeholder": "Invitation code",
+            "confirm": "Join",
+            "error_invalid": "This code is invalid or has expired. Please check it and try again.",
+            "error_already_member": "This code belongs to a bundle you're already a member of."
+        }
     }
 }

@@ -5,6 +5,7 @@ import { t } from 'i18next';
 import LottieView from 'lottie-react-native';
 
 import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { TranslationKey } from '../../../types';
 import { getNextMilestone, getPrevMilestone } from '../../../utils/streakUtils';
 import { CustomTheme } from '../../Theme';
 import { CustomText, ProgressBar } from '..';
@@ -117,7 +118,9 @@ export const StreakBadge = ({ animate = false, streak }: StreakBadgeProps) => {
                 progress={progressAnim}
             />
             <CustomText style={styles.goal}>
-                {t(message, {
+                {/* message is built from a randomly chosen index (streak.message1..7 /
+                    streak.goalReached1..7); not expressible as a literal key union here. */}
+                {t(message as TranslationKey, {
                     currentGoal: prev,
                     daysLeft: isGoal ? 0 : next - streak,
                     nextGoal: next,

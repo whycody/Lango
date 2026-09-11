@@ -17,16 +17,16 @@ import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
-import { GRADE_THREE_PROB_THRESHOLDS } from '../../constants/Evaluation';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
+import { MAIN_COLLECTION, useWordsForBundle } from '../../hooks';
 import { RootStackParamList } from '../../navigation/navigationTypes';
-import { useUserPreferences, useWords, useWordsWithDetails } from '../../store';
+import { useUserPreferences, useWords } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
-import { getSortingMethod } from '../../utils/sortingUtil';
-import { ActionButton, BottomGradient, ModalDragHandle } from '../components';
+import { getSortingMethod, matchesMasteryFilter } from '../../utils/sortingUtil';
+import { ActionButton, BottomGradient, DockedActionPanel, ModalDragHandle } from '../components';
 import {
     EmptyList,
     FlashcardListItem,
@@ -60,9 +60,9 @@ export const FlashcardsScreen = () => {
     const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
     const wordsContext = useWords();
-    const wordWithDetailsContext = useWordsWithDetails();
-    const numberOfWords = wordsContext.langWords.filter(word => !word.removed).length;
-    const langoWords = wordsContext.langWords.filter(
+    const mainCollectionWordsContext = useWordsForBundle(MAIN_COLLECTION);
+    const numberOfWords = mainCollectionWordsContext.words.filter(word => !word.removed).length;
+    const langoWords = mainCollectionWordsContext.words.filter(
         word => word.source == WordSource.LANGO && !word.removed,
     ).length;
     const { flashcardsSortingMethod } = useUserPreferences();
@@ -75,6 +75,7 @@ export const FlashcardsScreen = () => {
         route.params?.masteryFilter ?? 'all',
     );
     const [searchingMode, setSearchingMode] = useState(false);
+    const [isAddButtonVisible, setIsAddButtonVisible] = useState(true);
     const inputRef = useRef<TextInput>(null);
     const listRef = useRef<FlashListRef<{ id: string }>>(null);
     const lastScrollY = useRef(0);
@@ -99,10 +100,10 @@ export const FlashcardsScreen = () => {
 
     const allFlashcards = useMemo(
         () =>
-            wordWithDetailsContext.langWordsWithDetails.filter(
+            mainCollectionWordsContext.wordsWithDetails.filter(
                 (word: WordWithDetails) => !word.removed,
             ),
-        [wordWithDetailsContext.langWordsWithDetails],
+        [mainCollectionWordsContext.wordsWithDetails],
     );
 
     const matchesSearchQuery = useCallback(
@@ -117,38 +118,21 @@ export const FlashcardsScreen = () => {
         [filter],
     );
 
-    const matchesMasteryFilter = useCallback(
-        (word: WordWithDetails) => {
-            if (masteryFilter === 'all') return true;
-            if (masteryFilter === 'learning')
-                return word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX;
-            if (masteryFilter === 'review')
-                return (
-                    word.gradeThreeProb > GRADE_THREE_PROB_THRESHOLDS.BAD_MAX &&
-                    word.gradeThreeProb < GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN
-                );
-            if (masteryFilter === 'mastered')
-                return word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN;
-            return true;
-        },
-        [masteryFilter],
-    );
-
     const flashcards = useMemo(
         () =>
-            wordWithDetailsContext.langWordsWithDetails
+            mainCollectionWordsContext.wordsWithDetails
                 .filter((word: WordWithDetails) => {
                     if (word.removed) return false;
                     if (searchingMode) return matchesSearchQuery(word);
-                    return matchesMasteryFilter(word);
+                    return matchesMasteryFilter(word, masteryFilter);
                 })
                 .sort(getSortingMethod(flashcardsSortingMethod)),
         [
             searchingMode,
             flashcardsSortingMethod,
             matchesSearchQuery,
-            matchesMasteryFilter,
-            wordWithDetailsContext.langWordsWithDetails,
+            masteryFilter,
+            mainCollectionWordsContext.wordsWithDetails,
         ],
     );
 
@@ -169,6 +153,7 @@ export const FlashcardsScreen = () => {
     const showAddButton = () => {
         animateTo(addButtonAnim, 1);
         addButtonVisible.current = true;
+        setIsAddButtonVisible(true);
     };
 
     const turnOffSearchingMode = () => {
@@ -210,9 +195,11 @@ export const FlashcardsScreen = () => {
             if (scrollingDown && addButtonVisible.current) {
                 addButtonVisible.current = false;
                 animateTo(addButtonAnim, 0);
+                setIsAddButtonVisible(false);
             } else if (scrollingUp && !addButtonVisible.current) {
                 addButtonVisible.current = true;
                 animateTo(addButtonAnim, 1);
+                setIsAddButtonVisible(true);
             }
 
             const shouldShowScrollToTop = offsetY > SCROLL_TO_TOP_THRESHOLD;
@@ -354,6 +341,7 @@ export const FlashcardsScreen = () => {
                 <ListFilter
                     isSearching={searchingMode}
                     ref={inputRef}
+                    styleRoot={styles.listFilter}
                     value={filter}
                     onChangeText={setFilter}
                     onClear={() => setFilter('')}
@@ -361,7 +349,7 @@ export const FlashcardsScreen = () => {
                 />
             </View>
         ),
-        [filter],
+        [filter, styles.listFilter],
     );
 
     const renderListItem = ({ item }: { item: { id: string } }) => {
@@ -412,7 +400,7 @@ export const FlashcardsScreen = () => {
             {searchingMode && renderSearchHeader}
             <FlashList
                 key={searchingMode ? 'search' : 'normal'}
-                ListFooterComponent={<View style={{ height: 16 }} />}
+                ListFooterComponent={<View style={styles.listFooter} />}
                 data={data}
                 keyExtractor={item => item.id}
                 keyboardDismissMode={'on-drag'}
@@ -428,32 +416,18 @@ export const FlashcardsScreen = () => {
             />
             <BottomGradient />
             {!searchingMode && (
-                <Animated.View
-                    style={[
-                        styles.buttonContainer,
-                        {
-                            opacity: addButtonAnim,
-                            transform: [
-                                {
-                                    translateY: addButtonAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [80, 0],
-                                    }),
-                                },
-                            ],
-                        },
-                    ]}
-                >
+                <DockedActionPanel insets={insets} visible={isAddButtonVisible}>
                     <ActionButton
                         label={t('addWord')}
                         primary={true}
                         onPress={handleActionButtonPress}
                     />
-                </Animated.View>
+                </DockedActionPanel>
             )}
             <ScrollToTopButton
                 addButtonAnim={addButtonAnim}
                 animatedValue={scrollToTopAnim}
+                liftOffset={insets.bottom + 56}
                 onPress={handleScrollToTop}
             />
         </View>
@@ -465,17 +439,11 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         backIcon: {
             marginRight: 10,
         },
-        buttonContainer: {
-            backgroundColor: colors.card,
-            borderRadius: spacing.l,
-            bottom: 0,
-            left: 0,
-            paddingBottom: insets.bottom,
-            paddingHorizontal: MARGIN_HORIZONTAL,
-            paddingTop: MARGIN_VERTICAL / 2,
-            position: 'absolute',
-            right: 0,
-            zIndex: 100,
+        listFilter: {
+            marginVertical: spacing.l,
+        },
+        listFooter: {
+            height: insets.bottom + MARGIN_VERTICAL / 2 + 56 + MARGIN_VERTICAL,
         },
         root: {
             backgroundColor: colors.background,

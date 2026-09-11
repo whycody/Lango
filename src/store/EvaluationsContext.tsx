@@ -7,9 +7,9 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import uuid from 'react-native-uuid';
+import { ObjectId } from 'bson';
 
-import { fetchUpdatedEvaluations, syncEvaluationsOnServer } from '../api/apiClient';
+import { evaluationsApi } from '../api/evaluations-api';
 import { EvaluationGrade } from '../constants/Evaluation';
 import { useEvaluationsRepository } from '../hooks/repo';
 import { Evaluation } from '../types';
@@ -56,7 +56,7 @@ export const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) =
         return {
             date: now,
             grade,
-            id: uuid.v4(),
+            id: new ObjectId().toHexString(),
             locallyUpdatedAt: now,
             sessionId,
             synced: false,
@@ -89,9 +89,9 @@ export const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) =
             syncing.current = true;
             const evaluationsList = inputEvaluations ?? (await getAllEvaluations());
             const unsyncedEvaluations = getUnsyncedItems<Evaluation>(evaluationsList);
-            const serverUpdates = await syncInBatches<Evaluation>(
+            const { synced: serverUpdates } = await syncInBatches<Evaluation>(
                 unsyncedEvaluations,
-                syncEvaluationsOnServer,
+                evaluations => evaluationsApi.syncEvaluationsOnServer(evaluations),
             );
 
             const updatedEvaluations = updateLocalItems<Evaluation>(evaluationsList, serverUpdates);
@@ -118,7 +118,8 @@ export const EvaluationsProvider: FC<{ children: ReactNode }> = ({ children }) =
 
     const fetchNewEvaluations = async (updatedEvaluations: Evaluation[]): Promise<Evaluation[]> => {
         const latestUpdatedAt = findLatestUpdatedAt<Evaluation>(updatedEvaluations);
-        return await fetchUpdatedEvaluations(latestUpdatedAt);
+        const result = await evaluationsApi.fetchUpdatedEvaluations(latestUpdatedAt);
+        return result.kind === 'ok' ? result.data : [];
     };
 
     const loadData = async () => {

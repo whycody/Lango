@@ -18,9 +18,16 @@ import { CustomText } from '../CustomText';
 type Props = {
     mlStates: WordMLState[];
     onBadgePress?: (masteryFilter: MasteryFilter) => void;
+    onClassPress: (masteryFilter: MasteryFilter) => void;
+    onReviewWordsPress: () => void;
 };
 
-export const FlashcardClassBadges: FC<Props> = ({ mlStates, onBadgePress }) => {
+export const FlashcardClassBadges: FC<Props> = ({
+    mlStates,
+    onBadgePress,
+    onClassPress,
+    onReviewWordsPress,
+}) => {
     const { colors } = useTheme() as CustomTheme;
 
     const badges: { color: string; filter: MasteryFilter; count: number }[] = [
@@ -49,7 +56,10 @@ export const FlashcardClassBadges: FC<Props> = ({ mlStates, onBadgePress }) => {
 
     return (
         <>
-            <FlashcardClassesInfoBottomSheet />
+            <FlashcardClassesInfoBottomSheet
+                onClassPress={onClassPress}
+                onReviewWordsPress={onReviewWordsPress}
+            />
             <View style={styles.row}>
                 {badges.map(({ color, count, filter }) => (
                     <Pressable
@@ -101,7 +111,7 @@ const styles = StyleSheet.create({
     row: {
         alignItems: 'center',
         flexDirection: 'row',
-        gap: spacing.s,
+        gap: spacing.xs,
         marginTop: MARGIN_VERTICAL / 2,
     },
 });

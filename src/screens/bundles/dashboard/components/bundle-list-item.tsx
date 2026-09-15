@@ -2,13 +2,13 @@ import { memo, useMemo } from 'react';
 import { ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
-import { GRADE_THREE_PROB_THRESHOLDS } from '../../../../constants/Evaluation';
 import { useHaptics } from '../../../../hooks';
 import { useWordsWithDetails } from '../../../../store';
 import { EnrichedWordsBundle } from '../../../../store/WordsBundleContext';
 import { CustomTheme } from '../../../../ui/Theme';
 import { BundleActionSlot, BundleCardItem } from '../../common/components';
 import { ACTION_SLOT_SIZE } from '../../common/constants';
+import { countWordsByMastery } from '../utils';
 import { MasteryRing } from './mastery-ring';
 
 interface BundleListItemProps {
@@ -30,21 +30,7 @@ export const BundleListItem = memo<BundleListItemProps>(
             [langWordsWithDetails, bundle.id],
         );
 
-        const wordCounts = useMemo(() => {
-            const counts = { learning: 0, mastered: 0, review: 0 };
-
-            bundleWords.forEach(word => {
-                if (word.gradeThreeProb <= GRADE_THREE_PROB_THRESHOLDS.BAD_MAX) {
-                    counts.learning++;
-                } else if (word.gradeThreeProb >= GRADE_THREE_PROB_THRESHOLDS.GOOD_MIN) {
-                    counts.mastered++;
-                } else {
-                    counts.review++;
-                }
-            });
-
-            return counts;
-        }, [bundleWords]);
+        const wordCounts = useMemo(() => countWordsByMastery(bundleWords), [bundleWords]);
 
         const hasWords = bundleWords.length > 0;
 
@@ -52,6 +38,10 @@ export const BundleListItem = memo<BundleListItemProps>(
             if (!hasWords) return;
             onPlayPress?.(bundle);
             triggerHaptics('light');
+        };
+
+        const handlePress = () => {
+            onPress?.(bundle);
         };
 
         return (
@@ -77,7 +67,7 @@ export const BundleListItem = memo<BundleListItemProps>(
                         onButtonPress={handlePlayPress}
                     />
                 }
-                onPress={() => onPress?.(bundle)}
+                onPress={handlePress}
             />
         );
     },

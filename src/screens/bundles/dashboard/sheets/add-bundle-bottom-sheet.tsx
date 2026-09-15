@@ -1,8 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL } from '../../../../constants/margins';
+import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
 import { ActionButton } from '../../../../ui/components/ActionButton';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 
@@ -14,7 +13,6 @@ type AddBundleBottomSheetProps = {
 
 export const AddBundleBottomSheet = (props: AddBundleBottomSheetProps) => {
     const { onCreateNew, onJoinWithCode, sheetName } = props;
-    const { t } = useTranslation();
 
     const handleCreateNewPress = () => {
         onCreateNew();
@@ -24,19 +22,23 @@ export const AddBundleBottomSheet = (props: AddBundleBottomSheetProps) => {
         onJoinWithCode();
     };
 
+    const handleOnSecondaryButtonPress = () => {
+        TrueSheet.dismiss(sheetName);
+    };
+
     return (
         <GenericBottomSheet
-            description={t('bundles.add_new_desc')}
-            secondaryActionLabel={t('cancel')}
+            descriptionTx="bundles.add_new_desc"
+            secondaryActionLabelTx="cancel"
             sheetName={sheetName}
             style={styles.sheet}
-            title={t('bundles.add_new_title')}
-            onSecondaryButtonPress={() => TrueSheet.dismiss(sheetName)}
+            titleTx="bundles.add_new_title"
+            onSecondaryButtonPress={handleOnSecondaryButtonPress}
         >
-            <ActionButton primary label={t('bundles.create_new')} onPress={handleCreateNewPress} />
+            <ActionButton primary labelTx="bundles.create_new" onPress={handleCreateNewPress} />
             <ActionButton
                 icon={'key'}
-                label={t('bundles.join_with_code')}
+                labelTx="bundles.join_with_code"
                 style={styles.secondaryButton}
                 onPress={handleJoinWithCodePress}
             />
@@ -46,10 +48,10 @@ export const AddBundleBottomSheet = (props: AddBundleBottomSheetProps) => {
 
 const styles = StyleSheet.create({
     secondaryButton: {
-        marginTop: 12,
+        marginTop: spacing.l,
     },
     sheet: {
         marginHorizontal: MARGIN_HORIZONTAL,
-        marginTop: 15,
+        marginTop: spacing.xl,
     },
 });

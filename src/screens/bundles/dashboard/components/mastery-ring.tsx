@@ -4,7 +4,9 @@ import { useTheme } from '@react-navigation/native';
 import { Circle, Svg } from 'react-native-svg';
 
 import { CustomTheme } from '../../../../ui/Theme';
-import { ROTATION_DURATION_MS } from '../constants';
+import { MASTERY_RING_DEFAULT_STROKE_WIDTH, ROTATION_DURATION_MS } from '../constants';
+import { RingSegmentCount } from '../types';
+import { computeMasteryRingSegments } from '../utils';
 
 type MasteryRingProps = {
     learningCount: number;
@@ -19,27 +21,28 @@ export const MasteryRing: FC<MasteryRingProps> = ({
     masteredCount,
     reviewCount,
     size,
-    strokeWidth = 2.5,
+    strokeWidth = MASTERY_RING_DEFAULT_STROKE_WIDTH,
 }) => {
     const { colors } = useTheme() as CustomTheme;
 
-    const total = learningCount + reviewCount + masteredCount;
+    const totalWordCount = learningCount + reviewCount + masteredCount;
+    const center = size / 2;
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
-    const gap = total > 0 ? circumference * 0.04 : 0;
 
-    const segments = [
-        { color: colors.red, count: learningCount },
-        { color: colors.yellow, count: reviewCount },
-        { color: colors.green, count: masteredCount },
-    ].filter(segment => segment.count > 0);
+    const counts: RingSegmentCount[] = [
+        { color: colors.red, count: learningCount, label: 'learning' },
+        { color: colors.yellow, count: reviewCount, label: 'review' },
+        { color: colors.green, count: masteredCount, label: 'mastered' },
+    ];
 
-    let offset = 0;
-
+    const segments = computeMasteryRingSegments(counts, circumference);
     const rotation = useRef(new Animated.Value(0)).current;
 
+    const hasWords = totalWordCount > 0;
+
     useEffect(() => {
-        if (total === 0) return;
+        if (!hasWords) return;
 
         rotation.setValue(0);
         const animation = Animated.loop(
@@ -53,49 +56,43 @@ export const MasteryRing: FC<MasteryRingProps> = ({
         animation.start();
 
         return () => animation.stop();
-    }, [rotation, total]);
+    }, [rotation, hasWords]);
 
     const rotate = rotation.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '360deg'],
     });
 
-    return (
-        <Animated.View style={{ height: size, transform: [{ rotate }], width: size }}>
-            <Svg height={size} width={size}>
-                {total === 0 ? (
-                    <Circle
-                        cx={size / 2}
-                        cy={size / 2}
-                        fill="none"
-                        r={radius}
-                        stroke={colors.cardAccent300}
-                        strokeWidth={strokeWidth}
-                    />
-                ) : (
-                    segments.map((segment, index) => {
-                        const length = (segment.count / total) * circumference - gap;
-                        const dashArray = `${Math.max(length, 0)} ${circumference}`;
-                        const dashOffset = -offset;
-                        offset += (segment.count / total) * circumference;
+    const containerStyle = {
+        height: size,
+        transform: [{ rotate }],
+        width: size,
+    };
 
-                        return (
-                            <Circle
-                                key={index}
-                                cx={size / 2}
-                                cy={size / 2}
-                                fill="none"
-                                origin={`${size / 2}, ${size / 2}`}
-                                r={radius}
-                                rotation={-90}
-                                stroke={segment.color}
-                                strokeDasharray={dashArray}
-                                strokeDashoffset={dashOffset}
-                                strokeLinecap="round"
-                                strokeWidth={strokeWidth}
-                            />
-                        );
-                    })
+    const commonCircleProps = {
+        cx: center,
+        cy: center,
+        fill: 'none',
+        r: radius,
+        strokeWidth,
+    };
+
+    return (
+        <Animated.View style={containerStyle}>
+            <Svg height={size} width={size}>
+                {!hasWords ? (
+                    <Circle {...commonCircleProps} stroke={colors.cardAccent300} />
+                ) : (
+                    segments.map((segment, index) => (
+                        <Circle
+                            {...commonCircleProps}
+                            key={index}
+                            stroke={segment.color}
+                            strokeDasharray={segment.dashArray}
+                            strokeDashoffset={segment.dashOffset}
+                            strokeLinecap="round"
+                        />
+                    ))
                 )}
             </Svg>
         </Animated.View>

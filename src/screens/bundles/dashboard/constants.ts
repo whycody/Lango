@@ -1,4 +1,6 @@
 export const ROTATION_DURATION_MS = 60000;
+export const MASTERY_RING_GAP_RATIO = 0.04;
+export const MASTERY_RING_DEFAULT_STROKE_WIDTH = 2.5;
 export const REFRESH_PROGRESS_VIEW_OFFSET = 50;
 
 export const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';

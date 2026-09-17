@@ -1,5 +1,4 @@
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useTranslation } from 'react-i18next';
 
 import { useWordsBundle } from '../../../../store';
 import { WordsBundleVisibility } from '../../../../types';
@@ -13,7 +12,6 @@ type VisibilityBottomSheetProps = {
 
 export const VisibilityBottomSheet = ({ bundleId, sheetName }: VisibilityBottomSheetProps) => {
     const { bundles, editBundle } = useWordsBundle();
-    const { t } = useTranslation();
 
     const bundle = bundleId ? bundles.find(b => b.id === bundleId) : undefined;
 
@@ -25,7 +23,7 @@ export const VisibilityBottomSheet = ({ bundleId, sheetName }: VisibilityBottomS
 
     return (
         <GenericBottomSheet
-            primaryActionLabel={t('cancel')}
+            primaryActionLabelTx="cancel"
             sheetName={sheetName}
             onPrimaryButtonPress={() => TrueSheet.dismiss(sheetName)}
         >

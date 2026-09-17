@@ -65,7 +65,7 @@ export const SearchBundlesScreen = () => {
                 <ListFilter
                     autoFocus
                     isSearching
-                    placeholder={t('bundles.start_search')}
+                    placeholderTx="bundles.start_search"
                     ref={inputRef}
                     value={query}
                     onChangeText={setQuery}

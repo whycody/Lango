@@ -561,10 +561,10 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
 
                 {membership && (
                     <LibraryItem
-                        description={t('bundle_details.show_in_main_collection_desc')}
+                        descriptionTx="bundle_details.show_in_main_collection_desc"
                         enabled={membership.subscribed}
                         index={0}
-                        label={t('bundle_details.show_in_main_collection')}
+                        labelTx="bundle_details.show_in_main_collection"
                         style={styles.subscribedToggle}
                         onPress={handleSubscribedToggle}
                     />
@@ -574,7 +574,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                     {canAddWords && (
                         <ActionButton
                             active={!isBundleWordsFetching}
-                            label={t('bundle_details.add_word')}
+                            labelTx="bundle_details.add_word"
                             style={styles.headerAddButton}
                             onPress={handleAddWordPress}
                         />
@@ -584,7 +584,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             active={!isJoiningBundle && bundleWords.length > 0}
                             icon={'folder-multiple-plus-outline'}
                             iconFamily={'material-community'}
-                            label={t('bundle_details.add_to_my_bundles')}
+                            labelTx="bundle_details.add_to_my_bundles"
                             loading={isJoiningBundle}
                             style={styles.headerAddButton}
                             onPress={handleAddToMyBundlesPress}
@@ -593,7 +593,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                     {isPrivatePreview && (
                         <ActionButton
                             icon={'share-outline'}
-                            label={t('bundle_details.share_bundle')}
+                            labelTx="bundle_details.share_bundle"
                             style={styles.headerAddButton}
                             onPress={handleShareBundleLinkPress}
                         />
@@ -602,7 +602,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                         <ActionButton
                             primary
                             icon={'key-outline'}
-                            label={t('bundle_details.join_with_code')}
+                            labelTx="bundle_details.join_with_code"
                             style={styles.headerStartButton}
                             onPress={handleJoinWithCodePress}
                         />
@@ -611,7 +611,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             primary
                             active={bundleWords.length > 0}
                             icon={'play'}
-                            label={t('bundle_details.start_session')}
+                            labelTx="bundle_details.start_session"
                             style={styles.headerStartButton}
                             onPress={handleStartSessionPress}
                         />
@@ -661,9 +661,9 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
         if (isPrivatePreview) {
             return (
                 <EmptyList
-                    description={t('bundle_details.no_access.desc')}
+                    descriptionTx="bundle_details.no_access.desc"
                     icon="lock-closed"
-                    title={t('bundle_details.no_access.title')}
+                    titleTx="bundle_details.no_access.title"
                 />
             );
         }
@@ -675,7 +675,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                   ? 'bundle_details.no_items_desc'
                   : 'bundle_details.no_items_desc_readonly';
 
-        return <EmptyList description={t(noItemsDescKey)} title={t('no_items')} />;
+        return <EmptyList description={t(noItemsDescKey)} titleTx="no_items" />;
     }, [
         isBundleWordsFetching,
         bundle,
@@ -805,7 +805,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                     {canAddWords && (
                         <ActionButton
                             active={bundleWords.length > 0}
-                            label={t('bundle_details.add_word')}
+                            labelTx="bundle_details.add_word"
                             style={styles.button}
                             onPress={handleAddWordPress}
                         />
@@ -815,7 +815,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             active={!isJoiningBundle && bundleWords.length > 0}
                             icon={'folder-multiple-plus-outline'}
                             iconFamily={'material-community'}
-                            label={t('bundle_details.add_to_my_bundles')}
+                            labelTx="bundle_details.add_to_my_bundles"
                             loading={isJoiningBundle}
                             style={styles.button}
                             onPress={handleAddToMyBundlesPress}
@@ -824,7 +824,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                     {isPrivatePreview && (
                         <ActionButton
                             icon={'share-outline'}
-                            label={t('bundle_details.share_bundle')}
+                            labelTx="bundle_details.share_bundle"
                             style={styles.button}
                             onPress={handleShareBundleLinkPress}
                         />
@@ -833,7 +833,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                         <ActionButton
                             primary
                             icon={'key-outline'}
-                            label={t('bundle_details.join_with_code')}
+                            labelTx="bundle_details.join_with_code"
                             style={styles.button}
                             onPress={handleJoinWithCodePress}
                         />
@@ -842,7 +842,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
                             primary
                             active={bundleWords.length > 0}
                             icon={'play'}
-                            label={t('bundle_details.start_session')}
+                            labelTx="bundle_details.start_session"
                             style={styles.button}
                             onPress={handleStartSessionPress}
                         />

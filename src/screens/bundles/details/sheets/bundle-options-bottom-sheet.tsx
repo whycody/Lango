@@ -118,7 +118,7 @@ export const BundleOptionsBottomSheet = ({
     return (
         <>
             <GenericBottomSheet
-                secondaryActionLabel={t('cancel')}
+                secondaryActionLabelTx="cancel"
                 sheetName={sheetName}
                 style={styles.content}
                 onSecondaryButtonPress={() => TrueSheet.dismiss(sheetName)}
@@ -129,28 +129,28 @@ export const BundleOptionsBottomSheet = ({
                             color={palette.blue}
                             icon="pencil"
                             index={0}
-                            label={t('bundle_details.options.edit_title_or_description')}
+                            labelTx="bundle_details.options.edit_title_or_description"
                             onPress={handleEditPress}
                         />
                         <LibraryItem
                             color={palette.purple}
                             icon="eye"
                             index={1}
-                            label={t('bundle_details.options.change_visibility')}
+                            labelTx="bundle_details.options.change_visibility"
                             onPress={handleVisibilityPress}
                         />
                         <LibraryItem
                             color={palette.green}
                             icon="share-outline"
                             index={2}
-                            label={t('bundle_details.options.share_bundle')}
+                            labelTx="bundle_details.options.share_bundle"
                             onPress={handleSharePress}
                         />
                         <LibraryItem
                             color={palette.red}
                             icon="trash"
                             index={3}
-                            label={t('bundle_details.options.delete_bundle')}
+                            labelTx="bundle_details.options.delete_bundle"
                             onPress={handleDeletePress}
                         />
                     </>
@@ -160,14 +160,14 @@ export const BundleOptionsBottomSheet = ({
                             color={palette.green}
                             icon="share-outline"
                             index={0}
-                            label={t('bundle_details.options.share_bundle_link')}
+                            labelTx="bundle_details.options.share_bundle_link"
                             onPress={handleShareBundleLinkPress}
                         />
                         <LibraryItem
                             color={palette.red}
                             icon="exit-outline"
                             index={1}
-                            label={t('bundle_details.options.leave_bundle')}
+                            labelTx="bundle_details.options.leave_bundle"
                             onPress={handleLeavePress}
                         />
                     </>

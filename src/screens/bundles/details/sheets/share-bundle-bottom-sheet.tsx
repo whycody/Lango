@@ -63,7 +63,7 @@ export const ShareBundleBottomSheet = ({
 
     return (
         <GenericBottomSheet
-            secondaryActionLabel={t('cancel')}
+            secondaryActionLabelTx="cancel"
             sheetName={sheetName}
             style={styles.content}
             onSecondaryButtonPress={() => TrueSheet.dismiss(sheetName)}

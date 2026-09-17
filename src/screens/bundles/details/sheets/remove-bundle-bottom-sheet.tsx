@@ -40,15 +40,15 @@ export const RemoveBundleBottomSheet = ({
 
     return (
         <GenericBottomSheet
-            description={t('bundle_details.removing.desc')}
+            descriptionTx="bundle_details.removing.desc"
             primaryActionIcon="trash"
-            primaryActionLabel={t('delete')}
+            primaryActionLabelTx="delete"
             primaryButtonLoading={removing}
-            secondaryActionLabel={t('cancel')}
+            secondaryActionLabelTx="cancel"
             secondaryButtonEnabled={!removing}
             sheetName={sheetName}
             style={styles.content}
-            title={t('bundle_details.removing.title')}
+            titleTx="bundle_details.removing.title"
             onDidDismiss={handleDidDismiss}
             onPrimaryButtonPress={handleRemovePress}
             onSecondaryButtonPress={onCancel}

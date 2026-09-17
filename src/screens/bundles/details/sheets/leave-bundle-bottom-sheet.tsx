@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next';
-
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 
 type LeaveBundleBottomSheetProps = {
@@ -12,19 +10,15 @@ export const LeaveBundleBottomSheet = ({
     onCancel,
     onLeave,
     sheetName,
-}: LeaveBundleBottomSheetProps) => {
-    const { t } = useTranslation();
-
-    return (
-        <GenericBottomSheet
-            description={t('bundle_details.leaving.desc')}
-            primaryActionIcon="exit-outline"
-            primaryActionLabel={t('bundle_details.options.leave_bundle')}
-            secondaryActionLabel={t('cancel')}
-            sheetName={sheetName}
-            title={t('bundle_details.leaving.title')}
-            onPrimaryButtonPress={onLeave}
-            onSecondaryButtonPress={onCancel}
-        />
-    );
-};
+}: LeaveBundleBottomSheetProps) => (
+    <GenericBottomSheet
+        descriptionTx="bundle_details.leaving.desc"
+        primaryActionIcon="exit-outline"
+        primaryActionLabelTx="bundle_details.options.leave_bundle"
+        secondaryActionLabelTx="cancel"
+        sheetName={sheetName}
+        titleTx="bundle_details.leaving.title"
+        onPrimaryButtonPress={onLeave}
+        onSecondaryButtonPress={onCancel}
+    />
+);

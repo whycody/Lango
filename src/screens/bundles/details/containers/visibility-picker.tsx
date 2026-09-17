@@ -1,7 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
 import { WordsBundleVisibility } from '../../../../types';
@@ -21,8 +20,7 @@ interface VisibilityPickerProps {
 
 export const VisibilityPicker = ({ onSelect, style, value }: VisibilityPickerProps) => {
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
-    const { t } = useTranslation();
+    const styles = useMemo(() => getStyles(colors), [colors]);
 
     const renderItem = useCallback(
         ({ item }: { item: BundleVisibilityOption }) => (
@@ -39,8 +37,8 @@ export const VisibilityPicker = ({ onSelect, style, value }: VisibilityPickerPro
         <View style={style}>
             <Header
                 style={styles.header}
-                subtitle={t('bundle_details.visibility.desc')}
-                title={t('bundle_details.visibility.title')}
+                subtitleTx="bundle_details.visibility.desc"
+                titleTx="bundle_details.visibility.title"
             />
             <FlatList
                 data={BUNDLE_VISIBILITY_OPTIONS}

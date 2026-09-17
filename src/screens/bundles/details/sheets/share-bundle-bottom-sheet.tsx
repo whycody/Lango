@@ -1,29 +1,29 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { Share, StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_VERTICAL } from '../../../../constants/margins';
+import { spacing } from '../../../../constants/margins';
 import { palette } from '../../../../constants/palette';
 import { useWordsBundle } from '../../../../store';
 import { LibraryItem } from '../../../../ui/components/library';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
+import { buildBundleLink } from '../../../../utils/helpers';
 import { InviteRole } from '../types';
-import { buildBundleLink } from '../utils';
 
-type ShareBundleBottomSheetProps = {
+interface ShareBundleBottomSheetProps {
     bundleId?: string;
     bundleTitle?: string;
     isPublic: boolean;
     sheetName: string;
-};
+}
 
-export const ShareBundleBottomSheet = ({
+export const ShareBundleBottomSheet: FC<ShareBundleBottomSheetProps> = ({
     bundleId,
     bundleTitle,
     isPublic,
     sheetName,
-}: ShareBundleBottomSheetProps) => {
+}) => {
     const { i18n, t } = useTranslation();
     const { generateInvitationCode } = useWordsBundle();
     const [generatingRole, setGeneratingRole] = useState<InviteRole | null>(null);
@@ -61,12 +61,16 @@ export const ShareBundleBottomSheet = ({
         }
     };
 
+    const handleSecondaryButtonPress = () => {
+        TrueSheet.dismiss(sheetName);
+    };
+
     return (
         <GenericBottomSheet
             secondaryActionLabelTx="cancel"
             sheetName={sheetName}
             style={styles.content}
-            onSecondaryButtonPress={() => TrueSheet.dismiss(sheetName)}
+            onSecondaryButtonPress={handleSecondaryButtonPress}
         >
             {!isPublic && (
                 <LibraryItem
@@ -99,6 +103,6 @@ export const ShareBundleBottomSheet = ({
 
 const styles = StyleSheet.create({
     content: {
-        marginTop: MARGIN_VERTICAL / 2,
+        marginTop: spacing.l,
     },
 });

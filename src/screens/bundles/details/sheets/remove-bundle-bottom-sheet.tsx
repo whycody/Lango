@@ -1,25 +1,23 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FC, useState } from 'react';
 
 import { ApiErrorCode } from '../../../../api/api.types';
-import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../../constants/margins';
+import { Alert } from '../../../../components';
+import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
 import { DeleteBundleResult } from '../../../../types';
-import { Alert } from '../../../../ui/components/flashcards';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 import { BUNDLE_REMOVE_ERROR_MESSAGE_KEYS } from '../constants';
 
-type RemoveBundleBottomSheetProps = {
+interface RemoveBundleBottomSheetProps {
     sheetName: string;
     onCancel: () => void;
     onRemove: () => Promise<DeleteBundleResult>;
-};
+}
 
-export const RemoveBundleBottomSheet = ({
+export const RemoveBundleBottomSheet: FC<RemoveBundleBottomSheetProps> = ({
     onCancel,
     onRemove,
     sheetName,
-}: RemoveBundleBottomSheetProps) => {
-    const { t } = useTranslation();
+}) => {
     const [removing, setRemoving] = useState(false);
     const [errorCode, setErrorCode] = useState<ApiErrorCode | null>(null);
 
@@ -55,9 +53,9 @@ export const RemoveBundleBottomSheet = ({
         >
             {errorCode && (
                 <Alert
-                    message={t(BUNDLE_REMOVE_ERROR_MESSAGE_KEYS[errorCode])}
+                    messageTx={BUNDLE_REMOVE_ERROR_MESSAGE_KEYS[errorCode]}
                     style={styles.alert}
-                    title={t('error')}
+                    titleTx="error"
                     type="error"
                 />
             )}
@@ -67,7 +65,7 @@ export const RemoveBundleBottomSheet = ({
 
 const styles = {
     alert: {
-        marginTop: MARGIN_VERTICAL / 2,
+        marginTop: spacing.l,
     },
     content: {
         paddingHorizontal: MARGIN_HORIZONTAL,

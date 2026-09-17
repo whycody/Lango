@@ -1,37 +1,37 @@
+import { FC } from 'react';
 import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
-import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL } from '../../../../constants/margins';
+import { TranslationKey } from '../../../../types';
 import { Header } from '../../../../ui/components';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 import { CustomTheme } from '../../../../ui/Theme';
-import { replaceLottieColor } from '../../../../utils/lottieUtils';
+import { useThemedLottieSource } from '../../../../utils/lottieUtils';
+import { BUNDLE_READY_LOTTIE_HEIGHT, BUNDLE_READY_LOTTIE_MARGIN_BOTTOM } from '../constants';
 
-type BundleReadyBottomSheetProps = {
+interface BundleReadyBottomSheetProps {
     isNewBundle?: boolean;
     sheetName: string;
     userHasEditPermission: boolean;
     wordsAreAvailable: boolean;
     onAddWordsPress: () => void;
     onStartSessionPress: () => void;
-};
+}
 
-export const BundleReadyBottomSheet = (props: BundleReadyBottomSheetProps) => {
-    const {
-        isNewBundle = false,
-        onAddWordsPress,
-        onStartSessionPress,
-        sheetName,
-        userHasEditPermission,
-        wordsAreAvailable,
-    } = props;
-    const { t } = useTranslation();
+export const BundleReadyBottomSheet: FC<BundleReadyBottomSheetProps> = ({
+    isNewBundle = false,
+    onAddWordsPress,
+    onStartSessionPress,
+    sheetName,
+    userHasEditPermission,
+    wordsAreAvailable,
+}) => {
     const { colors } = useTheme() as CustomTheme;
 
-    const doneSource = replaceLottieColor(require('../../../../../assets/done.json'), [
+    const doneSource = useThemedLottieSource(require('../../../../../assets/done.json'), [
         { from: '#5a67f6', to: colors.primary },
         { from: '#7a85ff', to: colors.primary300 },
         { from: '#6672ff', to: colors.primary600 },
@@ -42,11 +42,9 @@ export const BundleReadyBottomSheet = (props: BundleReadyBottomSheetProps) => {
         TrueSheet.dismiss(sheetName);
     };
 
-    const title = t(
-        isNewBundle
-            ? 'bundle_details.bundle_ready.title_new_bundle'
-            : 'bundle_details.bundle_ready.title_joined_bundle',
-    );
+    const titleTx = isNewBundle
+        ? 'bundle_details.bundle_ready.title_new_bundle'
+        : 'bundle_details.bundle_ready.title_joined_bundle';
 
     const variant = wordsAreAvailable
         ? 'has_words'
@@ -54,12 +52,12 @@ export const BundleReadyBottomSheet = (props: BundleReadyBottomSheetProps) => {
           ? 'no_words_editable'
           : 'no_words_readonly';
 
-    const description = t(`bundle_details.bundle_ready.${variant}.desc`);
-    const primaryActionLabel = t(`bundle_details.bundle_ready.${variant}.confirm`);
-    const secondaryActionLabel =
+    const descriptionTx: TranslationKey = `bundle_details.bundle_ready.${variant}.desc`;
+    const primaryActionLabelTx: TranslationKey = `bundle_details.bundle_ready.${variant}.confirm`;
+    const secondaryActionLabelTx: TranslationKey | undefined =
         variant === 'no_words_readonly'
             ? undefined
-            : t(`bundle_details.bundle_ready.${variant}.secondary`);
+            : `bundle_details.bundle_ready.${variant}.secondary`;
     const primaryActionIcon = variant === 'has_words' ? 'play' : undefined;
 
     const handlePrimaryButtonPress =
@@ -72,14 +70,14 @@ export const BundleReadyBottomSheet = (props: BundleReadyBottomSheetProps) => {
     return (
         <GenericBottomSheet
             primaryActionIcon={primaryActionIcon}
-            primaryActionLabel={primaryActionLabel}
-            secondaryActionLabel={secondaryActionLabel}
+            primaryActionLabelTx={primaryActionLabelTx}
+            secondaryActionLabelTx={secondaryActionLabelTx}
             sheetName={sheetName}
             onPrimaryButtonPress={handlePrimaryButtonPress}
             onSecondaryButtonPress={handleClose}
         >
             <LottieView autoPlay={true} loop={false} source={doneSource} style={styles.lottie} />
-            <Header centered style={styles.header} subtitle={description} title={title} />
+            <Header centered style={styles.header} subtitleTx={descriptionTx} titleTx={titleTx} />
         </GenericBottomSheet>
     );
 };
@@ -89,8 +87,8 @@ const styles = StyleSheet.create({
         marginHorizontal: MARGIN_HORIZONTAL,
     },
     lottie: {
-        height: 200,
-        marginBottom: -10,
+        height: BUNDLE_READY_LOTTIE_HEIGHT,
+        marginBottom: BUNDLE_READY_LOTTIE_MARGIN_BOTTOM,
         pointerEvents: 'none',
     },
 });

@@ -1,4 +1,4 @@
-import { memo, ReactNode, useMemo } from 'react';
+import { FC, memo, ReactNode, useMemo } from 'react';
 import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -22,7 +22,7 @@ interface BundleCardItemProps {
     title: string;
 }
 
-export const BundleCardItem = memo<BundleCardItemProps>(
+export const BundleCardItem: FC<BundleCardItemProps> = memo(
     ({ actionSlot, creatorName, flashcardsCount, index, onPress, ownerId, style, title }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = useMemo(() => getStyles(colors), [colors]);

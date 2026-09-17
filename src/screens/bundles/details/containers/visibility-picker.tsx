@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -18,7 +18,7 @@ interface VisibilityPickerProps {
     onSelect: (visibility: WordsBundleVisibility) => void;
 }
 
-export const VisibilityPicker = ({ onSelect, style, value }: VisibilityPickerProps) => {
+export const VisibilityPicker: FC<VisibilityPickerProps> = ({ onSelect, style, value }) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors), [colors]);
 

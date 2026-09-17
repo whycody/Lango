@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
@@ -5,15 +6,17 @@ import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
 import { ActionButton } from '../../../../ui/components/ActionButton';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 
-type AddBundleBottomSheetProps = {
+interface AddBundleBottomSheetProps {
     sheetName: string;
     onCreateNew: () => void;
     onJoinWithCode: () => void;
-};
+}
 
-export const AddBundleBottomSheet = (props: AddBundleBottomSheetProps) => {
-    const { onCreateNew, onJoinWithCode, sheetName } = props;
-
+export const AddBundleBottomSheet: FC<AddBundleBottomSheetProps> = ({
+    onCreateNew,
+    onJoinWithCode,
+    sheetName,
+}) => {
     const handleCreateNewPress = () => {
         onCreateNew();
     };

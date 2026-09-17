@@ -1,8 +1,9 @@
-import { Ref, useMemo } from 'react';
+import { FC, Ref, useMemo } from 'react';
 import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../constants/margins';
+import { fontFamily, fontSize } from '../../constants/typography';
 import { ThemeColors, TranslationKey } from '../../types';
 import { CustomText } from '../../ui/components/CustomText';
 import { CustomTheme } from '../../ui/Theme';
@@ -12,13 +13,15 @@ interface LabeledTextInputProps extends TextInputProps {
     inputRef?: Ref<TextInput>;
 }
 
-export const LabeledTextInput = ({
+const MULTILINE_MIN_HEIGHT = 70;
+
+export const LabeledTextInput: FC<LabeledTextInputProps> = ({
     inputRef,
     labelTx,
     multiline,
     style,
     ...textInputProps
-}: LabeledTextInputProps) => {
+}) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors), [colors]);
 
@@ -51,18 +54,18 @@ const getStyles = (colors: ThemeColors) =>
         },
         inputLabel: {
             color: colors.white300,
-            fontSize: 13,
+            fontSize: fontSize.m,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: spacing.l,
         },
         multilineTextInput: {
-            minHeight: 70,
+            minHeight: MULTILINE_MIN_HEIGHT,
             textAlignVertical: 'top',
         },
         textInput: {
             color: colors.white,
-            fontFamily: 'Montserrat-Regular',
-            fontSize: 15,
+            fontFamily: fontFamily.Regular,
+            fontSize: fontSize.xl,
             marginHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: 14,
         },

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
     AppState,
     FlatList,
@@ -56,11 +56,11 @@ type BundlesDashboardScreenNavProp = CompositeNavigationProp<
     NavigationProp<RootStackParamList>
 >;
 
-export const BundlesDashboardScreen = ({
-    navigation,
-}: {
+interface BundlesDashboardScreenProps {
     navigation: BundlesDashboardScreenNavProp;
-}) => {
+}
+
+export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ navigation }) => {
     const insets = useSafeAreaInsets();
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();

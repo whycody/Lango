@@ -1,10 +1,11 @@
-import React, { FC, ReactNode } from 'react';
+﻿import React, { FC, ReactNode } from 'react';
 import { StyleSheet, Text, TextProps } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { fontFamily } from '../../constants/typography';
 import { TranslationKey } from '../../types';
 
-type FontWeight = 'Regular' | 'SemiBold' | 'Bold' | 'Black';
+type FontWeight = keyof typeof fontFamily;
 
 interface CustomTextProps extends TextProps {
     text?: string;
@@ -12,13 +13,6 @@ interface CustomTextProps extends TextProps {
     txOptions?: Record<string, unknown>;
     weight?: FontWeight;
 }
-
-const FONT_MAP: Record<FontWeight, string> = {
-    Black: 'Montserrat-Black',
-    Bold: 'Montserrat-Bold',
-    Regular: 'Montserrat-Regular',
-    SemiBold: 'Montserrat-SemiBold',
-};
 
 export const CustomText: FC<CustomTextProps> = ({
     children,
@@ -30,7 +24,7 @@ export const CustomText: FC<CustomTextProps> = ({
     ...props
 }) => {
     const { t } = useTranslation();
-    const baseFont = FONT_MAP[weight];
+    const baseFont = fontFamily[weight];
 
     const renderContent = (content: ReactNode): ReactNode => {
         if (typeof content !== 'string') return content;
@@ -63,12 +57,13 @@ export const CustomText: FC<CustomTextProps> = ({
 
 const styles = StyleSheet.create({
     bold: {
-        fontFamily: FONT_MAP.Bold,
+        fontFamily: fontFamily.Bold,
     },
     extraBold: {
-        fontFamily: FONT_MAP.Black,
+        fontFamily: fontFamily.Black,
     },
     text: {
         fontSize: 16,
     },
 });
+

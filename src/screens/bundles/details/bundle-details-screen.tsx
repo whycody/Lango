@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Animated,
     Keyboard,
@@ -69,6 +69,7 @@ import { SortingMethodBottomSheet } from '../../../ui/sheets/SortingMethodBottom
 import { StartSessionBottomSheet } from '../../../ui/sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../../ui/Theme';
 import { isIOS } from '../../../utils/deviceUtils';
+import { buildBundleLink } from '../../../utils/helpers';
 import { getSortingMethod, matchesMasteryFilter } from '../../../utils/sortingUtil';
 import { BundleCreatorInfo } from '../common/components';
 import { JoinBundleWithCodeBottomSheet } from '../common/sheets/join-bundle-with-code-bottom-sheet';
@@ -76,6 +77,15 @@ import { BundleFlashcardsTopBar } from './components/bundle-flashcards-top-bar';
 import { BundleHeaderSkeleton } from './components/bundle-header-skeleton';
 import {
     BOTTOM_PANEL_SHOW_OFFSET,
+    BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET,
+    BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET,
+    BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET,
+    BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET,
+    BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET,
+    BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET,
+    BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET,
+    BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET,
+    BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET,
     BUNDLE_SUBTITLE_LINE_HEIGHT,
     BUNDLE_TITLE_LINE_HEIGHT,
     CONTENT_TITLE_SCROLL_END,
@@ -88,22 +98,12 @@ import { BundleOptionsBottomSheet } from './sheets/bundle-options-bottom-sheet';
 import { BundleReadyBottomSheet } from './sheets/bundle-ready-bottom-sheet';
 import { BundleListItem, BundleWord } from './types';
 
-const BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET = 'bundle-details-start-session-bottom-sheet';
-const BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET = 'bundle-details-mastery-filter-bottom-sheet';
-const BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET = 'bundle-details-sorting-method-bottom-sheet';
-const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-handle-flashcard-bottom-sheet';
-const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
-const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET = 'bundle-details-remove-flashcard-bottom-sheet';
-const BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET = 'bundle-details-bundle-ready-bottom-sheet';
-const BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET = 'bundle-details-bundle-options-bottom-sheet';
-const BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET = 'bundle-details-join-with-code-bottom-sheet';
-
 type BundleDetailsScreenProps = NativeStackScreenProps<
     BundleStackParamList,
     ScreenName.BundleFlashcards
 >;
 
-export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
+export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ route }) => {
     const { bundleId, code: joinCode, isNewBundle, justJoined, previewBundle } = route.params;
     const { i18n, t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -389,7 +389,7 @@ export const BundleDetailsScreen = ({ route }: BundleDetailsScreenProps) => {
 
     const handleShareBundleLinkPress = () => {
         Share.share({
-            message: `${process.env.SITE_URL}/bundle/${bundleId}?lang=${i18n.language}`,
+            message: buildBundleLink(bundleId, i18n.language),
         });
     };
 

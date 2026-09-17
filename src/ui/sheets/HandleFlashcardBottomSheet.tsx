@@ -1,19 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { translationsApi } from '../../api/translations-api';
+import { Alert } from '../../components';
 import { LanguageCode } from '../../constants/Language';
 import { MARGIN_HORIZONTAL } from '../../constants/margins';
 import { WordSource } from '../../constants/Word';
 import { useVoiceInput } from '../../hooks';
 import { useLanguage, useWords } from '../../store';
 import { Word } from '../../types';
-import { Alert, WordInput } from '../components/flashcards';
+import { WordInput } from '../components/flashcards';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
+
 type WordTranslations = {
     from: LanguageCode;
     to: LanguageCode;
@@ -32,7 +34,7 @@ type HandleFlashcardBottomSheetProps = {
 export const HandleFlashcardBottomSheet = (props: HandleFlashcardBottomSheetProps) => {
     const { bundleId, flashcardId, microphonePermissionSheetName, onWordEdit, sheetName } = props;
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
+    const styles = useMemo(() => getStyles(colors), [colors]);
     const { t } = useTranslation();
     const { addWord, editWord, getWord } = useWords();
 

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { FC, useMemo, useRef } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
@@ -29,13 +29,13 @@ interface BundleFlashcardsTopBarProps {
     onMoreOptionsPress: () => void;
 }
 
-export const BundleFlashcardsTopBar = ({
+export const BundleFlashcardsTopBar: FC<BundleFlashcardsTopBarProps> = ({
     insets,
     onBackPress,
     onMoreOptionsPress,
     scrollY,
     title,
-}: BundleFlashcardsTopBarProps) => {
+}) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
 

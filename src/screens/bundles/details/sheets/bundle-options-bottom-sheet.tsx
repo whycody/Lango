@@ -1,19 +1,22 @@
+﻿import { FC } from 'react';
 import { Share, StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_VERTICAL } from '../../../../constants/margins';
+import { spacing } from '../../../../constants/margins';
 import { palette } from '../../../../constants/palette';
 import { useWords, useWordsBundle } from '../../../../store';
 import { LibraryItem } from '../../../../ui/components/library';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
-import { HandleBundleBottomSheet } from '../../common/sheets/handle-bundle-bottom-sheet';
+import { buildBundleLink } from '../../../../utils/helpers';
+import { HandleBundleBottomSheet } from '../../common/sheets';
 import {
     EDIT_BUNDLE_SHEET_NAME,
     LEAVE_BUNDLE_SHEET_NAME,
     REMOVE_BUNDLE_SHEET_NAME,
     SHARE_BUNDLE_SHEET_NAME,
+    UNKNOWN_DELETE_BUNDLE_ERROR_RESULT,
     VISIBILITY_SHEET_NAME,
 } from '../constants';
 import { LeaveBundleBottomSheet } from './leave-bundle-bottom-sheet';
@@ -21,21 +24,21 @@ import { RemoveBundleBottomSheet } from './remove-bundle-bottom-sheet';
 import { ShareBundleBottomSheet } from './share-bundle-bottom-sheet';
 import { VisibilityBottomSheet } from './visibility-bottom-sheet';
 
-type BundleOptionsBottomSheetProps = {
+interface BundleOptionsBottomSheetProps {
     bundleId?: string;
     isOwner: boolean;
     sheetName: string;
     onBundleRemoved: () => void;
     onBundleLeft: () => void;
-};
+}
 
-export const BundleOptionsBottomSheet = ({
+export const BundleOptionsBottomSheet: FC<BundleOptionsBottomSheetProps> = ({
     bundleId,
     isOwner,
     onBundleLeft,
     onBundleRemoved,
     sheetName,
-}: BundleOptionsBottomSheetProps) => {
+}) => {
     const { bundles, editBundleMember, removeBundle } = useWordsBundle();
     const { i18n, t } = useTranslation();
     const queryClient = useQueryClient();
@@ -44,24 +47,8 @@ export const BundleOptionsBottomSheet = ({
     const bundle = bundles.find(b => b.id === bundleId);
     const membership = bundle?.membership;
 
-    const handleEditPress = () => {
-        TrueSheet.present(EDIT_BUNDLE_SHEET_NAME);
-    };
-
-    const handleVisibilityPress = () => {
-        TrueSheet.present(VISIBILITY_SHEET_NAME);
-    };
-
-    const handleDeletePress = () => {
-        TrueSheet.present(REMOVE_BUNDLE_SHEET_NAME);
-    };
-
-    const handleLeavePress = () => {
-        TrueSheet.present(LEAVE_BUNDLE_SHEET_NAME);
-    };
-
-    const handleSharePress = () => {
-        TrueSheet.present(SHARE_BUNDLE_SHEET_NAME);
+    const makePresentSheetHandler = (name: string) => () => {
+        TrueSheet.present(name);
     };
 
     const handleShareBundleLinkPress = () => {
@@ -69,7 +56,7 @@ export const BundleOptionsBottomSheet = ({
 
         Share.share({
             message: t('bundle_details.share_sheet.share_bundle_link_message', {
-                link: `${process.env.SITE_URL}/bundle/${bundleId}?lang=${i18n.language}`,
+                link: buildBundleLink(bundleId, i18n.language),
                 title: bundle.title,
             }),
         });
@@ -80,7 +67,7 @@ export const BundleOptionsBottomSheet = ({
     };
 
     const handleRemoveConfirm = async () => {
-        if (!bundleId) return { errorCode: 'unknown' as const, success: false as const };
+        if (!bundleId) return UNKNOWN_DELETE_BUNDLE_ERROR_RESULT;
         const result = await removeBundle(bundleId);
         if (!result.success) return result;
 
@@ -115,13 +102,19 @@ export const BundleOptionsBottomSheet = ({
         onBundleLeft();
     };
 
+    const handleSecondaryButtonPress = () => {
+        TrueSheet.dismiss(sheetName);
+    };
+
+    const isPublic = bundle?.visibility !== 'private';
+
     return (
         <>
             <GenericBottomSheet
                 secondaryActionLabelTx="cancel"
                 sheetName={sheetName}
                 style={styles.content}
-                onSecondaryButtonPress={() => TrueSheet.dismiss(sheetName)}
+                onSecondaryButtonPress={handleSecondaryButtonPress}
             >
                 {isOwner ? (
                     <>
@@ -130,28 +123,28 @@ export const BundleOptionsBottomSheet = ({
                             icon="pencil"
                             index={0}
                             labelTx="bundle_details.options.edit_title_or_description"
-                            onPress={handleEditPress}
+                            onPress={makePresentSheetHandler(EDIT_BUNDLE_SHEET_NAME)}
                         />
                         <LibraryItem
                             color={palette.purple}
                             icon="eye"
                             index={1}
                             labelTx="bundle_details.options.change_visibility"
-                            onPress={handleVisibilityPress}
+                            onPress={makePresentSheetHandler(VISIBILITY_SHEET_NAME)}
                         />
                         <LibraryItem
                             color={palette.green}
                             icon="share-outline"
                             index={2}
                             labelTx="bundle_details.options.share_bundle"
-                            onPress={handleSharePress}
+                            onPress={makePresentSheetHandler(SHARE_BUNDLE_SHEET_NAME)}
                         />
                         <LibraryItem
                             color={palette.red}
                             icon="trash"
                             index={3}
                             labelTx="bundle_details.options.delete_bundle"
-                            onPress={handleDeletePress}
+                            onPress={makePresentSheetHandler(REMOVE_BUNDLE_SHEET_NAME)}
                         />
                     </>
                 ) : (
@@ -168,16 +161,12 @@ export const BundleOptionsBottomSheet = ({
                             icon="exit-outline"
                             index={1}
                             labelTx="bundle_details.options.leave_bundle"
-                            onPress={handleLeavePress}
+                            onPress={makePresentSheetHandler(LEAVE_BUNDLE_SHEET_NAME)}
                         />
                     </>
                 )}
             </GenericBottomSheet>
-            <HandleBundleBottomSheet
-                bundleId={bundleId}
-                sheetName={EDIT_BUNDLE_SHEET_NAME}
-                onBundleCreated={() => {}}
-            />
+            <HandleBundleBottomSheet bundleId={bundleId} sheetName={EDIT_BUNDLE_SHEET_NAME} />
             <VisibilityBottomSheet bundleId={bundleId} sheetName={VISIBILITY_SHEET_NAME} />
             <RemoveBundleBottomSheet
                 sheetName={REMOVE_BUNDLE_SHEET_NAME}
@@ -192,7 +181,7 @@ export const BundleOptionsBottomSheet = ({
             <ShareBundleBottomSheet
                 bundleId={bundleId}
                 bundleTitle={bundle?.title}
-                isPublic={bundle?.visibility !== 'private'}
+                isPublic={isPublic}
                 sheetName={SHARE_BUNDLE_SHEET_NAME}
             />
         </>
@@ -201,6 +190,6 @@ export const BundleOptionsBottomSheet = ({
 
 const styles = StyleSheet.create({
     content: {
-        marginTop: MARGIN_VERTICAL / 2,
+        marginTop: spacing.l,
     },
 });

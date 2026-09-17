@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
@@ -8,14 +8,17 @@ import { WordsBundle } from '../../../../types';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 import { BUNDLE_DESCRIPTION_MAX_LENGTH, BUNDLE_TITLE_MAX_LENGTH } from '../constants';
 
-type HandleBundleBottomSheetProps = {
+interface HandleBundleBottomSheetProps {
     bundleId?: string;
     sheetName: string;
-    onBundleCreated: (bundle: WordsBundle) => void;
-};
+    onBundleCreated?: (bundle: WordsBundle) => void;
+}
 
-export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => {
-    const { bundleId, onBundleCreated, sheetName } = props;
+export const HandleBundleBottomSheet: FC<HandleBundleBottomSheetProps> = ({
+    bundleId,
+    onBundleCreated,
+    sheetName,
+}) => {
     const { bundles, createBundle, editBundle } = useWordsBundle();
 
     const bundle = bundleId ? bundles.find(b => b.id === bundleId) : undefined;
@@ -44,7 +47,7 @@ export const HandleBundleBottomSheet = (props: HandleBundleBottomSheetProps) => 
 
         const newBundle = createBundle(title, description || undefined, 'public');
         TrueSheet.dismissAll();
-        onBundleCreated(newBundle);
+        onBundleCreated?.(newBundle);
     };
 
     const handleTitleSubmitEditing = () => {

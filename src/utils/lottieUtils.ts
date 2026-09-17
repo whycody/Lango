@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { AnimationObject } from 'lottie-react-native';
 
 type ColorFilter = { color: string; keypath: string };
@@ -77,6 +78,14 @@ export const buildLottieColorFilters = (
     return layers
         .filter(l => l.nm && colorMap[l.nm])
         .map(l => ({ color: colorMap[l.nm!], keypath: l.nm! }));
+};
+
+export const useThemedLottieSource = (
+    source: AnimationObject | Record<string, unknown>,
+    replacements: Array<{ from: string; to: string }>,
+): AnimationObject => {
+    const replacementsKey = replacements.map(r => `${r.from}:${r.to}`).join(',');
+    return useMemo(() => replaceLottieColor(source, replacements), [replacementsKey]);
 };
 
 export { lottieColorToHex };

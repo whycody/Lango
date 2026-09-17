@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
@@ -15,14 +15,14 @@ interface BundleActionSlotProps {
     ring: ReactNode;
 }
 
-export const BundleActionSlot = ({
+export const BundleActionSlot: FC<BundleActionSlotProps> = ({
     buttonDisabled = false,
     buttonIcon,
     buttonIconColor,
     buttonIconSize = 14,
     onButtonPress,
     ring,
-}: BundleActionSlotProps) => {
+}) => {
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors);
 

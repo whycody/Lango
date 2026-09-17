@@ -1,7 +1,12 @@
 import { ApiErrorCode } from '../../../api/api.types';
 import { palette } from '../../../constants/palette';
-import { TranslationKey } from '../../../types';
+import { DeleteBundleResult, TranslationKey } from '../../../types';
 import { BundleVisibilityOption } from './types';
+
+export const UNKNOWN_DELETE_BUNDLE_ERROR_RESULT: DeleteBundleResult = {
+    errorCode: 'unknown',
+    success: false,
+};
 
 export const BUNDLE_REMOVE_ERROR_MESSAGE_KEYS: Record<ApiErrorCode, TranslationKey> = {
     'already-member': 'bundle_details.removing.error_unknown',
@@ -65,3 +70,23 @@ export const VISIBILITY_SHEET_NAME = 'bundle-options-visibility-sheet';
 export const REMOVE_BUNDLE_SHEET_NAME = 'bundle-options-remove-bundle-sheet';
 export const LEAVE_BUNDLE_SHEET_NAME = 'bundle-options-leave-bundle-sheet';
 export const SHARE_BUNDLE_SHEET_NAME = 'bundle-options-share-bundle-sheet';
+
+export const BUNDLE_DETAILS_START_SESSION_BOTTOM_SHEET =
+    'bundle-details-start-session-bottom-sheet';
+export const BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET =
+    'bundle-details-mastery-filter-bottom-sheet';
+export const BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET =
+    'bundle-details-sorting-method-bottom-sheet';
+export const BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET =
+    'bundle-details-handle-flashcard-bottom-sheet';
+export const BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET = 'bundle-details-microphone-permission';
+export const BUNDLE_DETAILS_REMOVE_FLASHCARD_BOTTOM_SHEET =
+    'bundle-details-remove-flashcard-bottom-sheet';
+export const BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET = 'bundle-details-bundle-ready-bottom-sheet';
+export const BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET =
+    'bundle-details-bundle-options-bottom-sheet';
+export const BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET =
+    'bundle-details-join-with-code-bottom-sheet';
+
+export const BUNDLE_READY_LOTTIE_HEIGHT = 200;
+export const BUNDLE_READY_LOTTIE_MARGIN_BOTTOM = -10;

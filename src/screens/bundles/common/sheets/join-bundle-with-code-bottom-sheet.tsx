@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -13,16 +13,21 @@ import { CustomText } from '../../../../ui/components/CustomText';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 import { CustomTheme } from '../../../../ui/Theme';
 
-type JoinBundleWithCodeBottomSheetProps = {
+interface JoinBundleWithCodeBottomSheetProps {
     bundleId?: string;
     initialCode?: string;
     sheetName: string;
     onJoined: (bundleId: string) => void;
     onJoining?: () => void;
-};
+}
 
-export const JoinBundleWithCodeBottomSheet = (props: JoinBundleWithCodeBottomSheetProps) => {
-    const { bundleId, initialCode, onJoined, onJoining, sheetName } = props;
+export const JoinBundleWithCodeBottomSheet: FC<JoinBundleWithCodeBottomSheetProps> = ({
+    bundleId,
+    initialCode,
+    onJoined,
+    onJoining,
+    sheetName,
+}) => {
     const { joinWithCode } = useWordsBundle();
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors), [colors]);

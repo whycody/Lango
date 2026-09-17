@@ -8,13 +8,13 @@ import { MASTERY_RING_DEFAULT_STROKE_WIDTH, ROTATION_DURATION_MS } from '../cons
 import { RingSegmentCount } from '../types';
 import { computeMasteryRingSegments } from '../utils';
 
-type MasteryRingProps = {
+interface MasteryRingProps {
     learningCount: number;
     masteredCount: number;
     reviewCount: number;
     size: number;
     strokeWidth?: number;
-};
+}
 
 export const MasteryRing: FC<MasteryRingProps> = ({
     learningCount,

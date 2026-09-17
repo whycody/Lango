@@ -25,6 +25,7 @@ import { useTheme } from '@react-navigation/native';
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { LanguageCode } from '../../../constants/Language';
 import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
+import { fontFamily } from '../../../constants/typography';
 import { useVoiceInput } from '../../../hooks';
 import { trackEvent } from '../../../utils/analytics';
 import { isIOS } from '../../../utils/deviceUtils';
@@ -222,7 +223,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         input: {
             color: colors.white,
             flex: 1,
-            fontFamily: `Montserrat-Regular`,
+            fontFamily: fontFamily.Regular,
             fontSize: 16,
             lineHeight: 21,
             minHeight: 42,

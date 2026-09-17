@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { FC, memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -16,7 +16,7 @@ interface SearchBundleListItemProps {
     style?: ViewStyle;
 }
 
-export const SearchBundleListItem = memo<SearchBundleListItemProps>(
+export const SearchBundleListItem: FC<SearchBundleListItemProps> = memo(
     ({ bundle, index, onInfoPress, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);

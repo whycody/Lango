@@ -1,16 +1,18 @@
+import { FC } from 'react';
+
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
 
-type LeaveBundleBottomSheetProps = {
+interface LeaveBundleBottomSheetProps {
     sheetName: string;
     onCancel: () => void;
     onLeave: () => void;
-};
+}
 
-export const LeaveBundleBottomSheet = ({
+export const LeaveBundleBottomSheet: FC<LeaveBundleBottomSheetProps> = ({
     onCancel,
     onLeave,
     sheetName,
-}: LeaveBundleBottomSheetProps) => (
+}) => (
     <GenericBottomSheet
         descriptionTx="bundle_details.leaving.desc"
         primaryActionIcon="exit-outline"

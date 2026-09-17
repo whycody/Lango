@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -19,7 +19,7 @@ interface BundleListItemProps {
     style?: ViewStyle;
 }
 
-export const BundleListItem = memo<BundleListItemProps>(
+export const BundleListItem: FC<BundleListItemProps> = memo(
     ({ bundle, index, onPlayPress, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
         const { triggerHaptics } = useHaptics();

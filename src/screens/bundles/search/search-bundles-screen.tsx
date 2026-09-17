@@ -10,7 +10,6 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../../constants/margins';
 import { RootStackParamList, ScreenName } from '../../../navigation/navigationTypes';
 import { useLanguage } from '../../../store';
 import { WordsBundleWithOwnerInfo } from '../../../types';
-import { ModalDragHandle } from '../../../ui/components';
 import { EmptyList, ListFilter } from '../../../ui/components/flashcards';
 import { CustomTheme } from '../../../ui/Theme';
 import { SearchBundleListItem } from './components/search-bundle-list-item';
@@ -54,9 +53,7 @@ export const SearchBundlesScreen = () => {
 
     return (
         <View style={styles.root}>
-            <View style={styles.topSpacer}>
-                <ModalDragHandle />
-            </View>
+            <View style={styles.topSpacer} />
             <View style={styles.searchHeaderContainer}>
                 <Ionicons
                     color={colors.white300}

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
@@ -36,7 +36,7 @@ export const BundleFlashcardsTopBar = ({
     title,
 }: BundleFlashcardsTopBarProps) => {
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors, insets);
+    const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
 
     const backScale = useRef(new Animated.Value(1)).current;
     const moreScale = useRef(new Animated.Value(1)).current;
@@ -136,7 +136,7 @@ const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
             alignItems: 'center',
             backgroundColor: colors.background,
             flexDirection: 'row',
-            height: isIOS ? TOP_BAR_IOS_HEIGHT + insets.top : insets.top + TOP_BAR_ANDROID_HEIGHT,
+            height: insets.top + (isIOS ? TOP_BAR_IOS_HEIGHT : TOP_BAR_ANDROID_HEIGHT),
             justifyContent: 'space-between',
             left: 0,
             paddingTop: insets.top,

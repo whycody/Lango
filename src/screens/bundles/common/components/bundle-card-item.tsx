@@ -6,9 +6,9 @@ import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
 import { useHaptics } from '../../../../hooks';
 import { ThemeColors } from '../../../../types';
 import { CustomText } from '../../../../ui/components';
-import { BundleCreatorInfo } from '../../../../ui/components/home';
 import { CustomTheme } from '../../../../ui/Theme';
 import { isIOS } from '../../../../utils/deviceUtils';
+import { BundleCreatorInfo } from './bundle-creator-info';
 
 interface BundleCardItemProps {
     actionSlot?: ReactNode;

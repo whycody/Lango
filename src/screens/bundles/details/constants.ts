@@ -56,6 +56,10 @@ export const TOP_BAR_ANDROID_HEIGHT = 56;
 export const BUNDLE_TITLE_LINE_HEIGHT = 31;
 export const BUNDLE_SUBTITLE_LINE_HEIGHT = 16;
 
+export const BUNDLE_HEADER_SKELETON_TITLE_WIDTH = '65%';
+export const BUNDLE_HEADER_SKELETON_SUBTITLE_WIDTH = '55%';
+export const BUNDLE_HEADER_SKELETON_CREATOR_NAME_WIDTH = '30%';
+
 export const EDIT_BUNDLE_SHEET_NAME = 'bundle-options-edit-bundle-sheet';
 export const VISIBILITY_SHEET_NAME = 'bundle-options-visibility-sheet';
 export const REMOVE_BUNDLE_SHEET_NAME = 'bundle-options-remove-bundle-sheet';

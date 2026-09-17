@@ -3,6 +3,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { SearchBundlesScreen } from '../screens/bundles/search/search-bundles-screen';
 import { EvaluationsProvider } from '../store/EvaluationsContext';
 import { LanguageProvider } from '../store/LanguageContext';
 import { SessionsProvider } from '../store/SessionsContext';
@@ -14,7 +15,6 @@ import { WordsProvider } from '../store/WordsContext';
 import { WordsHeuristicProvider } from '../store/WordsHeuristicStatesContext';
 import { WordsMLStatesProvider } from '../store/WordsMLStatesContext';
 import { WordsWithDetailsProvider } from '../store/WordsWithDetailsContext';
-import { SearchBundlesScreen } from '../screens/bundles/search/search-bundles-screen';
 import { FlashcardsScreen } from '../ui/screens/FlashcardsScreen';
 import { SessionScreen } from '../ui/screens/SessionScreen';
 import { SettingsScreen } from '../ui/screens/SettingsScreen';
@@ -88,14 +88,10 @@ const AppStackInner = () => {
                                                             component={BundleNavigator}
                                                             name={ScreenName.BundleNavigator}
                                                         />
-                                                        <Stack.Group
-                                                            screenOptions={modalScreenOptions}
-                                                        >
-                                                            <Stack.Screen
-                                                                component={SearchBundlesScreen}
-                                                                name={ScreenName.SearchBundles}
-                                                            />
-                                                        </Stack.Group>
+                                                        <Stack.Screen
+                                                            component={SearchBundlesScreen}
+                                                            name={ScreenName.SearchBundles}
+                                                        />
                                                     </Stack.Navigator>
                                                 </BottomSheetModalProvider>
                                             </WordsWithDetailsProvider>

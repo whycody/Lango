@@ -9,6 +9,7 @@ type FontWeight = 'Regular' | 'SemiBold' | 'Bold' | 'Black';
 interface CustomTextProps extends TextProps {
     text?: string;
     tx?: TranslationKey;
+    txOptions?: Record<string, unknown>;
     weight?: FontWeight;
 }
 
@@ -24,6 +25,7 @@ export const CustomText: FC<CustomTextProps> = ({
     style,
     text,
     tx,
+    txOptions,
     weight = 'Regular',
     ...props
 }) => {
@@ -54,7 +56,7 @@ export const CustomText: FC<CustomTextProps> = ({
 
     return (
         <Text style={[styles.text, { fontFamily: baseFont }, style]} {...props}>
-            {renderContent(tx ? t(tx) : (text ?? children))}
+            {renderContent(tx ? t(tx, txOptions) : (text ?? children))}
         </Text>
     );
 };

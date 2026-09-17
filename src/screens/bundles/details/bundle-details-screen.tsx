@@ -50,7 +50,7 @@ import {
     FlashcardsSubheader,
     ScrollToTopButton,
 } from '../../../ui/components/flashcards';
-import { BundleCreatorInfo, FlashcardClassBadges } from '../../../ui/components/home';
+import { FlashcardClassBadges } from '../../../ui/components/home';
 import { LibraryItem } from '../../../ui/components/library';
 import { FlashcardsSelectionSkeleton } from '../../../ui/containers/onboarding/FlashcardsSelectionSkeleton';
 import {
@@ -69,6 +69,7 @@ import { StartSessionBottomSheet } from '../../../ui/sheets/StartSessionBottomSh
 import { CustomTheme } from '../../../ui/Theme';
 import { isIOS } from '../../../utils/deviceUtils';
 import { getSortingMethod, matchesMasteryFilter } from '../../../utils/sortingUtil';
+import { BundleCreatorInfo } from '../common/components';
 import { JoinBundleWithCodeBottomSheet } from '../common/sheets/join-bundle-with-code-bottom-sheet';
 import { BundleFlashcardsTopBar } from './components/bundle-flashcards-top-bar';
 import { BundleHeaderSkeleton } from './components/bundle-header-skeleton';

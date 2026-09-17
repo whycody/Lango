@@ -340,6 +340,9 @@
     "bundle_details": {
         "add_to_my_bundles": "Dodaj do moich zestawów",
         "add_word": "Dodaj nowe słówko +",
+        "creator_info": "{{name}} • {{count}} fiszka",
+        "creator_info_few": "{{name}} • {{count}} fiszki",
+        "creator_info_many": "{{name}} • {{count}} fiszek",
         "flashcards_count": "{{count}} fiszka",
         "flashcards_count_few": "{{count}} fiszki",
         "flashcards_count_many": "{{count}} fiszek",

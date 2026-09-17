@@ -6,6 +6,7 @@ import { useTheme } from '@react-navigation/native';
 import { ApiErrorCode } from '../../../../api/api.types';
 import { LabeledTextInput } from '../../../../components';
 import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
+import { fontSize } from '../../../../constants/typography';
 import { useWordsBundle } from '../../../../store';
 import { ThemeColors } from '../../../../types';
 import { CustomText } from '../../../../ui/components/CustomText';
@@ -129,7 +130,7 @@ const getStyles = (colors: ThemeColors) =>
     StyleSheet.create({
         errorText: {
             color: colors.red,
-            fontSize: 13,
+            fontSize: fontSize.m,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: spacing.xs,
         },

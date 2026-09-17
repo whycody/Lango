@@ -19,6 +19,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
+import { fontSize } from '../../../constants/typography';
 import {
     FlashcardSide,
     FlashcardSortingMethod,
@@ -901,14 +902,14 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         subtitle: {
             color: colors.white300,
-            fontSize: 15,
+            fontSize: fontSize.xl,
             lineHeight: BUNDLE_SUBTITLE_LINE_HEIGHT,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL / 3,
         },
         title: {
             color: colors.white,
-            fontSize: 24,
+            fontSize: fontSize.display,
             lineHeight: BUNDLE_TITLE_LINE_HEIGHT,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,

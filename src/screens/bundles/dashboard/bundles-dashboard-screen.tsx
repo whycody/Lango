@@ -16,6 +16,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
+import { fontSize } from '../../../constants/typography';
 import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
 import { useDynamicStatusBar } from '../../../hooks';
 import { RootStackParamList, ScreenName } from '../../../navigation/navigationTypes';
@@ -274,7 +275,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         descText: {
             color: colors.white,
-            fontSize: 14,
+            fontSize: fontSize.l,
             lineHeight: 22,
             marginTop: 12,
             opacity: 0.8,
@@ -284,7 +285,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         recommendedText: {
             color: colors.white300,
-            fontSize: 13,
+            fontSize: fontSize.m,
             lineHeight: 22,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: spacing.xxl,
@@ -295,7 +296,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
         },
         sectionTitle: {
             color: colors.white,
-            fontSize: 16,
+            fontSize: fontSize.xxl,
             marginBottom: MARGIN_VERTICAL / 2,
             marginTop: MARGIN_VERTICAL,
         },

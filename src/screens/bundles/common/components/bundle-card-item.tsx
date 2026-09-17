@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
+import { fontSize } from '../../../../constants/typography';
 import { useHaptics } from '../../../../hooks';
 import { ThemeColors } from '../../../../types';
 import { CustomText } from '../../../../ui/components';
@@ -94,7 +95,7 @@ const getStyles = (colors: ThemeColors) =>
         },
         label: {
             color: colors.white,
-            fontSize: 14,
+            fontSize: fontSize.l,
         },
         pressed: {
             opacity: 0.8,

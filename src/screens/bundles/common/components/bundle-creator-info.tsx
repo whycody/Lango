@@ -3,6 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import { spacing } from '../../../../constants/margins';
+import { fontSize } from '../../../../constants/typography';
 import { useUserSummaryQuery } from '../../../../hooks';
 import { ThemeColors } from '../../../../types';
 import { CustomText } from '../../../../ui/components/CustomText';
@@ -60,10 +61,10 @@ const getStyles = (colors: ThemeColors) =>
         },
         text: {
             color: colors.white300,
-            fontSize: 13,
+            fontSize: fontSize.m,
             lineHeight: BUNDLE_CREATOR_INFO_TEXT_LINE_HEIGHT,
         },
         textCompact: {
-            fontSize: 11,
+            fontSize: fontSize.xs,
         },
     });

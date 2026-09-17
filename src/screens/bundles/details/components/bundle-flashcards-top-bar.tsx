@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import { EdgeInsets } from 'react-native-safe-area-context';
 
 import { MARGIN_HORIZONTAL } from '../../../../constants/margins';
+import { fontSize } from '../../../../constants/typography';
 import { ThemeColors } from '../../../../types';
 import { CustomText } from '../../../../ui/components/CustomText';
 import { CustomTheme } from '../../../../ui/Theme';
@@ -121,7 +122,7 @@ const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
         },
         title: {
             color: colors.white,
-            fontSize: 17,
+            fontSize: fontSize.xxxl,
         },
         titleContainer: {
             alignItems: 'center',

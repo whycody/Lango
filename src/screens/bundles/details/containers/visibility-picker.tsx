@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { FlatList, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -22,15 +22,12 @@ export const VisibilityPicker: FC<VisibilityPickerProps> = ({ onSelect, style, v
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors), [colors]);
 
-    const renderItem = useCallback(
-        ({ item }: { item: BundleVisibilityOption }) => (
-            <VisibilityPickerListItem
-                isSelected={value === item.visibility}
-                item={item}
-                onSelect={onSelect}
-            />
-        ),
-        [onSelect, value],
+    const renderItem = ({ item }: { item: BundleVisibilityOption }) => (
+        <VisibilityPickerListItem
+            isSelected={value === item.visibility}
+            item={item}
+            onSelect={onSelect}
+        />
     );
 
     return (

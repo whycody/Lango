@@ -4,8 +4,6 @@ export type RingSegment = {
     dashOffset: number;
 };
 
-export type MasteryRingLabel = 'learning' | 'mastered' | 'review';
-
 export type WordMasteryCounts = {
     learning: number;
     mastered: number;
@@ -15,5 +13,4 @@ export type WordMasteryCounts = {
 export type RingSegmentCount = {
     color: string;
     count: number;
-    label?: MasteryRingLabel;
 };

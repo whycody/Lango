@@ -31,9 +31,9 @@ export const MasteryRing: FC<MasteryRingProps> = ({
     const circumference = 2 * Math.PI * radius;
 
     const counts: RingSegmentCount[] = [
-        { color: colors.red, count: learningCount, label: 'learning' },
-        { color: colors.yellow, count: reviewCount, label: 'review' },
-        { color: colors.green, count: masteredCount, label: 'mastered' },
+        { color: colors.red, count: learningCount },
+        { color: colors.yellow, count: reviewCount },
+        { color: colors.green, count: masteredCount },
     ];
 
     const segments = computeMasteryRingSegments(counts, circumference);

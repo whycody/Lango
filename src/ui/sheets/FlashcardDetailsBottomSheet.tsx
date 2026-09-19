@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
 import { useWordsBundle } from '../../store/WordsBundleContext';
 import { WordWithDetails } from '../../types/utils/WordWithDetails';
+import { hasBundleEditPermission } from '../../utils/bundle-helpers';
 import { formatDisplayDate, formatHoursSince } from '../../utils/dateUtil';
 import { getLevelColor } from '../../utils/getLevelColor';
 import { ActionButton, Header, SecondaryButton, StatRow } from '../components';
@@ -37,10 +38,7 @@ export const FlashcardDetailsBottomSheet: FC<FlashcardDetailsBottomSheetProps> =
     };
 
     const bundle = word?.bundleId ? bundles.find(b => b.id === word.bundleId) : undefined;
-    const canEditOrRemove =
-        !word?.bundleId ||
-        bundle?.membership?.role === 'owner' ||
-        bundle?.membership?.role === 'editor';
+    const canEditOrRemove = !word?.bundleId || hasBundleEditPermission(bundle?.membership?.role);
 
     const levelColor = word ? getLevelColor(word.gradeThreeProb) : colors.white300;
     const levelPercent = word ? Math.round(word.gradeThreeProb * 100) : 0;

@@ -40,7 +40,7 @@ export const AddBundleBottomSheet: FC<AddBundleBottomSheetProps> = ({
         >
             <ActionButton primary labelTx="bundles.create_new" onPress={handleCreateNewPress} />
             <ActionButton
-                icon={'key'}
+                icon="key"
                 labelTx="bundles.join_with_code"
                 style={styles.secondaryButton}
                 onPress={handleJoinWithCodePress}

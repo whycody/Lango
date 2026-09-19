@@ -1,21 +1,23 @@
 import { ReactNode, useEffect, useRef } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { EdgeInsets } from 'react-native-safe-area-context';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
+import { ThemeColors } from '../../types';
 import { CustomTheme } from '../Theme';
 
 const HIDDEN_TRANSLATE_Y = 100;
 
 interface DockedActionPanelProps {
     children: ReactNode;
-    insets: EdgeInsets;
+    style?: StyleProp<ViewStyle>;
     visible: boolean;
 }
 
-export const DockedActionPanel = ({ children, insets, visible }: DockedActionPanelProps) => {
+export const DockedActionPanel = ({ children, style, visible }: DockedActionPanelProps) => {
     const { colors } = useTheme() as CustomTheme;
+    const insets = useSafeAreaInsets();
     const styles = getStyles(colors, insets);
 
     const translateY = useRef(new Animated.Value(HIDDEN_TRANSLATE_Y)).current;
@@ -41,14 +43,14 @@ export const DockedActionPanel = ({ children, insets, visible }: DockedActionPan
     return (
         <Animated.View
             pointerEvents={visible ? 'box-none' : 'none'}
-            style={[styles.panel, { opacity, transform: [{ translateY }] }]}
+            style={[styles.panel, style, { opacity, transform: [{ translateY }] }]}
         >
             {children}
         </Animated.View>
     );
 };
 
-const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
+const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
     StyleSheet.create({
         panel: {
             backgroundColor: colors.card,

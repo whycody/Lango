@@ -6,7 +6,7 @@ import { UserSummary } from './user-summary';
 export type WordsBundleVisibility = 'friends' | 'private' | 'public';
 
 export type WordsBundleBase = {
-    description?: string | null;
+    description: string | null;
     id: string;
     mainLang: LanguageCode;
     ownerId: string;

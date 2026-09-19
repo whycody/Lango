@@ -416,7 +416,7 @@ export const FlashcardsScreen = () => {
             />
             <BottomGradient />
             {!searchingMode && (
-                <DockedActionPanel insets={insets} visible={isAddButtonVisible}>
+                <DockedActionPanel visible={isAddButtonVisible}>
                     <ActionButton
                         label={t('addWord')}
                         primary={true}

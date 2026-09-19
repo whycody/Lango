@@ -44,7 +44,7 @@ interface WordsBundleContextProps {
     bundles: EnrichedWordsBundle[];
     createBundle: (
         title: string,
-        description: string | undefined,
+        description: string | null,
         visibility: WordsBundle['visibility'],
     ) => WordsBundle;
     editBundle: (updatedBundle: Partial<WordsBundle> & { id: string }) => void;
@@ -124,7 +124,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
 
     const createBundle = (
         title: string,
-        description: string | undefined,
+        description: string | null,
         visibility: WordsBundle['visibility'],
     ): WordsBundle => {
         const now = getCurrentISO();

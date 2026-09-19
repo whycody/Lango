@@ -22,14 +22,17 @@ export const getSortingMethodLabel = (method: FlashcardSortingMethod) => {
     }
 };
 
+export const compareByAddDate =
+    (direction: 1 | -1) =>
+    <T extends { addDate: string }>(a: T, b: T) =>
+        direction * (new Date(a.addDate).getTime() - new Date(b.addDate).getTime());
+
 export const getSortingMethod = (sortingMethod: FlashcardSortingMethod) => {
     switch (sortingMethod) {
         case FlashcardSortingMethod.ADD_DATE_DESC:
-            return (a: WordWithDetails, b: WordWithDetails) =>
-                new Date(b.addDate).getTime() - new Date(a.addDate).getTime();
+            return compareByAddDate(-1);
         case FlashcardSortingMethod.ADD_DATE_ASC:
-            return (a: WordWithDetails, b: WordWithDetails) =>
-                new Date(a.addDate).getTime() - new Date(b.addDate).getTime();
+            return compareByAddDate(1);
         case FlashcardSortingMethod.GRADE_THREE_PROB_DESC:
             return (a: WordWithDetails, b: WordWithDetails) =>
                 (b.gradeThreeProb ?? 0) - (a.gradeThreeProb ?? 0);

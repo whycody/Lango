@@ -18,7 +18,10 @@ import {
     TOP_BAR_IOS_HEIGHT,
     TOP_BAR_MORE_ICON_SIZE,
     TOP_BAR_PRESS_SCALE,
+    TOP_BAR_PRESS_SCALE_DEFAULT,
     TOP_BAR_TITLE_HORIZONTAL_INSET,
+    TOP_BAR_TITLE_OPACITY_RANGE,
+    TOP_BAR_TITLE_TRANSLATE_Y_RANGE,
 } from '../constants';
 
 interface BundleFlashcardsTopBarProps {
@@ -39,15 +42,21 @@ export const BundleFlashcardsTopBar: FC<BundleFlashcardsTopBarProps> = ({
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
 
-    const backScale = useRef(new Animated.Value(1)).current;
-    const moreScale = useRef(new Animated.Value(1)).current;
+    const backScale = useRef(new Animated.Value(TOP_BAR_PRESS_SCALE_DEFAULT)).current;
+    const moreScale = useRef(new Animated.Value(TOP_BAR_PRESS_SCALE_DEFAULT)).current;
 
     const animatePressIn = (scale: Animated.Value) => {
-        Animated.spring(scale, { toValue: TOP_BAR_PRESS_SCALE, useNativeDriver: true }).start();
+        Animated.spring(scale, {
+            toValue: TOP_BAR_PRESS_SCALE,
+            useNativeDriver: true,
+        }).start();
     };
 
     const animatePressOut = (scale: Animated.Value) => {
-        Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
+        Animated.spring(scale, {
+            toValue: TOP_BAR_PRESS_SCALE_DEFAULT,
+            useNativeDriver: true,
+        }).start();
     };
 
     const handleBackPressIn = () => animatePressIn(backScale);
@@ -59,13 +68,13 @@ export const BundleFlashcardsTopBar: FC<BundleFlashcardsTopBarProps> = ({
     const titleOpacity = scrollY.interpolate({
         extrapolate: 'clamp',
         inputRange: [TITLE_SCROLL_START, TITLE_SCROLL_END],
-        outputRange: [0, 1],
+        outputRange: TOP_BAR_TITLE_OPACITY_RANGE,
     });
 
     const titleTranslateY = scrollY.interpolate({
         extrapolate: 'clamp',
         inputRange: [TITLE_SCROLL_START, TITLE_SCROLL_END],
-        outputRange: [8, 0],
+        outputRange: TOP_BAR_TITLE_TRANSLATE_Y_RANGE,
     });
 
     const titleAnimatedStyle = {

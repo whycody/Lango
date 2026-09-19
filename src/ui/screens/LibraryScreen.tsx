@@ -1,6 +1,5 @@
 import { FlatList, Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,10 +19,9 @@ import { LanguageBottomSheet } from '../sheets';
 
 const LIBRARY_LANGUAGE_SHEET_NAME = 'library-language-sheet';
 
-export const LibraryScreen = () => {
+export const LibraryScreen = ({ navigation }: { navigation: LibraryNavProp }) => {
     const { t } = useTranslation();
     const { words: mainCollectionWords } = useWordsForBundle(MAIN_COLLECTION);
-    const navigation = useNavigation<LibraryNavProp>();
     const langContext = useLanguage();
 
     const { onScroll, style } = useDynamicStatusBar(100, 0.3);

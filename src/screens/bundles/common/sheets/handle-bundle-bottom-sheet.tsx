@@ -40,12 +40,12 @@ export const HandleBundleBottomSheet: FC<HandleBundleBottomSheetProps> = ({
         const description = descriptionInput.trim();
 
         if (isEditing && bundle) {
-            editBundle({ description: description || null, id: bundle.id, title });
+            editBundle({ description, id: bundle.id, title });
             TrueSheet.dismissAll();
             return;
         }
 
-        const newBundle = createBundle(title, description || undefined, 'public');
+        const newBundle = createBundle(title, description, 'public');
         TrueSheet.dismissAll();
         onBundleCreated?.(newBundle);
     };

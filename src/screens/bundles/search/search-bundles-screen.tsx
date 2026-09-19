@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { t } from 'i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,8 +16,13 @@ import { SearchBundleListItem } from './components/search-bundle-list-item';
 import { SEARCH_DEBOUNCE_MS } from './constants';
 import { useSearchBundlesQuery } from './hooks/use-search-bundles-query';
 
-export const SearchBundlesScreen = () => {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+type SearchBundlesScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
+
+export const SearchBundlesScreen = ({
+    navigation,
+}: {
+    navigation: SearchBundlesScreenNavProp;
+}) => {
     const insets = useSafeAreaInsets();
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
@@ -57,7 +62,7 @@ export const SearchBundlesScreen = () => {
             <View style={styles.searchHeaderContainer}>
                 <Ionicons
                     color={colors.white300}
-                    name={'arrow-back-sharp'}
+                    name="arrow-back-sharp"
                     size={24}
                     style={styles.backIcon}
                     onPress={navigation.goBack}

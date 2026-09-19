@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -20,6 +20,7 @@ type Props = {
     onBadgePress?: (masteryFilter: MasteryFilter) => void;
     onClassPress: (masteryFilter: MasteryFilter) => void;
     onReviewWordsPress: () => void;
+    style?: StyleProp<ViewStyle>;
 };
 
 export const FlashcardClassBadges: FC<Props> = ({
@@ -27,6 +28,7 @@ export const FlashcardClassBadges: FC<Props> = ({
     onBadgePress,
     onClassPress,
     onReviewWordsPress,
+    style,
 }) => {
     const { colors } = useTheme() as CustomTheme;
 
@@ -60,7 +62,7 @@ export const FlashcardClassBadges: FC<Props> = ({
                 onClassPress={onClassPress}
                 onReviewWordsPress={onReviewWordsPress}
             />
-            <View style={styles.row}>
+            <View style={[styles.row, style]}>
                 {badges.map(({ color, count, filter }) => (
                     <Pressable
                         key={filter}

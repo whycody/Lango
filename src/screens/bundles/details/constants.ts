@@ -52,6 +52,9 @@ export const CONTENT_TITLE_SCROLL_END = 80;
 export const BOTTOM_PANEL_SHOW_OFFSET = -20;
 
 export const TOP_BAR_PRESS_SCALE = 0.85;
+export const TOP_BAR_PRESS_SCALE_DEFAULT = 1;
+export const TOP_BAR_TITLE_OPACITY_RANGE: [number, number] = [0, 1];
+export const TOP_BAR_TITLE_TRANSLATE_Y_RANGE: [number, number] = [8, 0];
 export const TOP_BAR_BACK_ICON_SIZE = 26;
 export const TOP_BAR_MORE_ICON_SIZE = 22;
 export const TOP_BAR_TITLE_HORIZONTAL_INSET = 56;
@@ -90,3 +93,11 @@ export const BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET =
 
 export const BUNDLE_READY_LOTTIE_HEIGHT = 200;
 export const BUNDLE_READY_LOTTIE_MARGIN_BOTTOM = -10;
+
+export const DOCKED_ACTION_PANEL_HEIGHT = 56;
+
+export const CONTENT_APPEAR_DURATION = 280;
+export const CONTENT_APPEAR_TRANSLATE_Y = 12;
+
+export const BOTTOM_PANEL_OPACITY_DURATION = 220;
+export const SCROLL_TO_TOP_ANIM_DURATION = 200;

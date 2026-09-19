@@ -1,9 +1,9 @@
-import { FC, memo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import { useHaptics } from '../../../../hooks';
-import { WordsBundleWithOwnerInfo } from '../../../../types';
+import { ThemeColors, WordsBundleWithOwnerInfo } from '../../../../types';
 import { CustomTheme } from '../../../../ui/Theme';
 import { BundleActionSlot, BundleCardItem } from '../../common/components';
 import { ACTION_SLOT_SIZE } from '../../common/constants';
@@ -19,12 +19,16 @@ interface SearchBundleListItemProps {
 export const SearchBundleListItem: FC<SearchBundleListItemProps> = memo(
     ({ bundle, index, onInfoPress, onPress, style }) => {
         const { colors } = useTheme() as CustomTheme;
-        const styles = getStyles(colors);
+        const styles = useMemo(() => getStyles(colors), [colors]);
         const { triggerHaptics } = useHaptics();
 
         const handleInfoPress = () => {
             onInfoPress?.(bundle);
             triggerHaptics('light');
+        };
+
+        const handlePress = () => {
+            onPress?.(bundle);
         };
 
         return (
@@ -44,13 +48,13 @@ export const SearchBundleListItem: FC<SearchBundleListItemProps> = memo(
                         onButtonPress={handleInfoPress}
                     />
                 }
-                onPress={() => onPress?.(bundle)}
+                onPress={handlePress}
             />
         );
     },
 );
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (colors: ThemeColors) =>
     StyleSheet.create({
         ring: {
             borderColor: colors.cardAccent300,

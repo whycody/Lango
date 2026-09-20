@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -12,6 +12,11 @@ import {
 
 type PendingContentAppearedAction = 'presentBundleReady' | 'startJoining' | null;
 
+interface UseBundleLifecycleSheetsResult {
+    isJoiningBundle: boolean;
+    setIsJoiningBundle: Dispatch<SetStateAction<boolean>>;
+}
+
 export const useBundleLifecycleSheets = (
     navigation: NativeStackNavigationProp<BundleStackParamList, ScreenName.BundleFlashcards>,
     hasContentAppeared: boolean,
@@ -20,7 +25,7 @@ export const useBundleLifecycleSheets = (
     joinCode?: string,
     membership?: BundleMember,
     localBundle?: EnrichedWordsBundle,
-) => {
+): UseBundleLifecycleSheetsResult => {
     const [isJoiningBundle, setIsJoiningBundle] = useState(false);
     const [pendingContentAppearedAction, setPendingContentAppearedAction] =
         useState<PendingContentAppearedAction>(null);

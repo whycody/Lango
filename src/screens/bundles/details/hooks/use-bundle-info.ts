@@ -1,12 +1,27 @@
+import { UseQueryResult } from '@tanstack/react-query';
+
 import { useWordsBundle } from '../../../../store';
-import { WordsBundleWithOwnerInfo } from '../../../../types';
+import { EnrichedWordsBundle } from '../../../../store/WordsBundleContext';
+import { BundleMember, WordsBundleWithOwnerInfo } from '../../../../types';
 import { hasBundleEditPermission } from '../../../../utils/bundle-helpers';
 import { useBundleQuery } from './use-bundle-query';
+
+interface UseBundleInfoResult {
+    bundle: EnrichedWordsBundle | WordsBundleWithOwnerInfo | undefined;
+    canAddWords: boolean;
+    isBundleQueryLoading: boolean;
+    isPreview: boolean;
+    isPrivatePreview: boolean;
+    localBundle: EnrichedWordsBundle | undefined;
+    membership: BundleMember | undefined;
+    previewOwnerInfo: WordsBundleWithOwnerInfo | null;
+    refetchBundle: UseQueryResult<WordsBundleWithOwnerInfo | null>['refetch'];
+}
 
 export const useBundleInfo = (
     bundleId: string,
     previewBundle: WordsBundleWithOwnerInfo | undefined,
-) => {
+): UseBundleInfoResult => {
     const { bundles } = useWordsBundle();
 
     const localBundle = bundles.find(b => b.id === bundleId);
@@ -23,12 +38,10 @@ export const useBundleInfo = (
     // only need to handle a single "no data yet" case.
     const previewOwnerInfo = rawPreviewOwnerInfo ?? null;
 
-    const previewBundleData = previewOwnerInfo
-        ? { ...previewOwnerInfo, membership: undefined }
-        : undefined;
-    const bundle = isPreview ? previewBundleData : localBundle;
+    const bundle = isPreview ? (previewOwnerInfo ?? undefined) : localBundle;
 
-    const membership = bundle?.membership;
+    // A bundle being previewed has no membership yet by definition.
+    const membership = isPreview ? undefined : localBundle?.membership;
     const canAddWords = !isPreview && hasBundleEditPermission(membership?.role);
     const isPrivatePreview = isPreview && bundle?.visibility === 'private';
 

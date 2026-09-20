@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import { UseQueryResult } from '@tanstack/react-query';
 
 import { FlashcardSortingMethod } from '../../../../constants/UserPreferences';
 import {
@@ -6,7 +7,7 @@ import {
     useWordsMLStatesContext,
     useWordsWithDetails,
 } from '../../../../store';
-import { WordsBundleWithOwnerInfo } from '../../../../types';
+import { Word, WordMLState, WordsBundleWithOwnerInfo, WordWithDetails } from '../../../../types';
 import { MasteryFilter } from '../../../../ui/sheets/MasteryFilterBottomSheet';
 import {
     compareByAddDate,
@@ -16,6 +17,18 @@ import {
 import { BundleWord } from '../types';
 import { useBundleWordsQuery } from './use-bundle-words-query';
 
+interface UseBundleWordsDataResult {
+    bundleWords: BundleWord[];
+    bundleWordsMLStates: WordMLState[];
+    flashcardsCount: number;
+    isBundleWordsFetching: boolean;
+    localBundleWords: WordWithDetails[];
+    previewSortingMethod: FlashcardSortingMethod;
+    refetchBundleWords: UseQueryResult<Word[]>['refetch'];
+    remoteBundleWords: Word[] | undefined;
+    words: BundleWord[] | WordWithDetails[];
+}
+
 export const useBundleWordsData = (
     bundleId: string,
     isPreview: boolean,
@@ -23,7 +36,7 @@ export const useBundleWordsData = (
     previewOwnerInfo: WordsBundleWithOwnerInfo | null,
     masteryFilter: MasteryFilter,
     isJoiningBundle: boolean,
-) => {
+): UseBundleWordsDataResult => {
     const { langWordsWithDetails } = useWordsWithDetails();
     const { langWordsMLStates } = useWordsMLStatesContext();
     const { flashcardsSortingMethod } = useUserPreferences();

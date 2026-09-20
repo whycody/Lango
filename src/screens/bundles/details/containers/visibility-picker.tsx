@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../../../constants/margins';
-import { WordsBundleVisibility } from '../../../../types';
+import { ThemeColors, WordsBundleVisibility } from '../../../../types';
 import { Header } from '../../../../ui/components';
 import { CustomTheme } from '../../../../ui/Theme';
 import { VisibilityPickerListItem } from '../components';
@@ -48,7 +48,7 @@ export const VisibilityPicker: FC<VisibilityPickerProps> = ({ onSelect, style, v
     );
 };
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (colors: ThemeColors) =>
     StyleSheet.create({
         header: {
             paddingBottom: spacing.xl,

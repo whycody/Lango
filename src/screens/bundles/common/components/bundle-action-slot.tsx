@@ -1,10 +1,17 @@
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
+import { ThemeColors } from '../../../../types';
 import { CustomTheme } from '../../../../ui/Theme';
-import { ACTION_SLOT_SIZE } from '../constants';
+import {
+    ACTION_SLOT_BUTTON_BORDER_RADIUS,
+    ACTION_SLOT_BUTTON_ICON_SIZE,
+    ACTION_SLOT_BUTTON_SIZE,
+    ACTION_SLOT_DISABLED_OPACITY,
+    ACTION_SLOT_SIZE,
+} from '../constants';
 
 interface BundleActionSlotProps {
     buttonDisabled?: boolean;
@@ -19,12 +26,12 @@ export const BundleActionSlot: FC<BundleActionSlotProps> = ({
     buttonDisabled = false,
     buttonIcon,
     buttonIconColor,
-    buttonIconSize = 14,
+    buttonIconSize = ACTION_SLOT_BUTTON_ICON_SIZE,
     onButtonPress,
     ring,
 }) => {
     const { colors } = useTheme() as CustomTheme;
-    const styles = getStyles(colors);
+    const styles = useMemo(() => getStyles(colors), [colors]);
 
     return (
         <View style={styles.actionSlot}>
@@ -43,7 +50,7 @@ export const BundleActionSlot: FC<BundleActionSlotProps> = ({
     );
 };
 
-const getStyles = (colors: CustomTheme['colors']) =>
+const getStyles = (colors: ThemeColors) =>
     StyleSheet.create({
         actionSlot: {
             alignItems: 'center',
@@ -54,13 +61,13 @@ const getStyles = (colors: CustomTheme['colors']) =>
         button: {
             alignItems: 'center',
             backgroundColor: colors.cardAccent600,
-            borderRadius: 100,
-            height: 28,
+            borderRadius: ACTION_SLOT_BUTTON_BORDER_RADIUS,
+            height: ACTION_SLOT_BUTTON_SIZE,
             justifyContent: 'center',
-            width: 28,
+            width: ACTION_SLOT_BUTTON_SIZE,
         },
         buttonDisabled: {
-            opacity: 0.4,
+            opacity: ACTION_SLOT_DISABLED_OPACITY,
         },
         ring: {
             alignItems: 'center',

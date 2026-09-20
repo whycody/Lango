@@ -129,29 +129,37 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
     } = useBundleScrollAnimations();
 
     const topBarHeight = insets.top + (isIOS ? TOP_BAR_IOS_HEIGHT : TOP_BAR_ANDROID_HEIGHT);
-    const listContentContainerStyle = { paddingTop: topBarHeight };
-    const subheaderOverlayStyle = [
-        styles.subheaderOverlay,
-        { opacity: isSubheaderStuck ? 1 : 0, top: topBarHeight },
-    ];
 
-    const contentTitleOpacity = scrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [CONTENT_TITLE_SCROLL_START, CONTENT_TITLE_SCROLL_END],
-        outputRange: [1, 0],
-    });
+    const listContentContainerStyle = useMemo(() => ({ paddingTop: topBarHeight }), [topBarHeight]);
+    const subheaderOverlayStyle = useMemo(
+        () => [styles.subheaderOverlay, { opacity: isSubheaderStuck ? 1 : 0, top: topBarHeight }],
+        [styles.subheaderOverlay, isSubheaderStuck, topBarHeight],
+    );
 
-    const headerAppearStyle = {
-        opacity: contentAppear,
-        transform: [
-            {
-                translateY: contentAppear.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [CONTENT_APPEAR_TRANSLATE_Y, 0],
-                }),
-            },
-        ],
-    };
+    const contentTitleOpacity = useMemo(
+        () =>
+            scrollY.interpolate({
+                extrapolate: 'clamp',
+                inputRange: [CONTENT_TITLE_SCROLL_START, CONTENT_TITLE_SCROLL_END],
+                outputRange: [1, 0],
+            }),
+        [scrollY],
+    );
+
+    const headerAppearStyle = useMemo(
+        () => ({
+            opacity: contentAppear,
+            transform: [
+                {
+                    translateY: contentAppear.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [CONTENT_APPEAR_TRANSLATE_Y, 0],
+                    }),
+                },
+            ],
+        }),
+        [contentAppear],
+    );
 
     const {
         bundle,

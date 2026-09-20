@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
@@ -42,12 +42,15 @@ export const SearchBundlesScreen = ({ navigation }: { navigation: SearchBundlesS
 
     const remoteBundles = isSearchPending ? [] : (data?.pages.flatMap(page => page.data) ?? []);
 
-    const handleBundlePress = (bundle: WordsBundleWithOwnerInfo) => {
-        navigation.navigate(ScreenName.BundleNavigator, {
-            bundleId: bundle.id,
-            previewBundle: bundle,
-        });
-    };
+    const handleBundlePress = useCallback(
+        (bundle: WordsBundleWithOwnerInfo) => {
+            navigation.navigate(ScreenName.BundleNavigator, {
+                bundleId: bundle.id,
+                previewBundle: bundle,
+            });
+        },
+        [navigation],
+    );
 
     const renderItem = ({ index, item }: { index: number; item: WordsBundleWithOwnerInfo }) => (
         <SearchBundleListItem bundle={item} index={index} onPress={handleBundlePress} />

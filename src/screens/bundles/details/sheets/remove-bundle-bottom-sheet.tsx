@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { ApiErrorCode } from '../../../../api/api.types';
 import { Alert } from '../../../../components';
@@ -63,11 +64,11 @@ export const RemoveBundleBottomSheet: FC<RemoveBundleBottomSheetProps> = ({
     );
 };
 
-const styles = {
+const styles = StyleSheet.create({
     alert: {
         marginTop: spacing.l,
     },
     content: {
         paddingHorizontal: MARGIN_HORIZONTAL,
     },
-};
+});

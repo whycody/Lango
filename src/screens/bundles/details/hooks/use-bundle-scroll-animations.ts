@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { FlashListRef } from '@shopify/flash-list';
 
@@ -11,7 +11,21 @@ import {
 } from '../constants';
 import { BundleListItem } from '../types';
 
-export const useBundleScrollAnimations = () => {
+interface UseBundleScrollAnimationsResult {
+    bottomPanelOpacity: Animated.Value;
+    contentAppear: Animated.Value;
+    handleHeaderButtonsLayout: (event: LayoutChangeEvent) => void;
+    handleHeaderLayout: (event: LayoutChangeEvent) => void;
+    handleScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+    handleScrollToTop: () => void;
+    isBottomPanelVisible: boolean;
+    isSubheaderStuck: boolean;
+    listRef: RefObject<FlashListRef<BundleListItem> | null>;
+    scrollToTopAnim: Animated.Value;
+    scrollY: Animated.Value;
+}
+
+export const useBundleScrollAnimations = (): UseBundleScrollAnimationsResult => {
     const contentAppear = useRef(new Animated.Value(0)).current;
     const scrollY = useRef(new Animated.Value(0)).current;
     const scrollToTopAnim = useRef(new Animated.Value(0)).current;

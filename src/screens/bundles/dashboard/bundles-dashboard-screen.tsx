@@ -23,7 +23,7 @@ import { RootStackParamList, ScreenName } from '../../../navigation/navigationTy
 import { TabsParamList } from '../../../navigation/TabsNavigator';
 import { useLanguage, useStatistics, useWordsBundle } from '../../../store';
 import { EnrichedWordsBundle } from '../../../store/WordsBundleContext';
-import { WordsBundle } from '../../../types';
+import { ThemeColors, WordsBundle } from '../../../types';
 import {
     ActionButton,
     BottomGradient,
@@ -45,9 +45,12 @@ import {
     ADD_BUNDLE_SHEET_NAME,
     BUNDLES_LANGUAGE_SHEET_NAME,
     BUNDLES_START_SESSION_SHEET_NAME,
+    DASHBOARD_FOOTER_HEIGHT,
     HANDLE_BUNDLE_SHEET_NAME,
     JOIN_WITH_CODE_SHEET_NAME,
     REFRESH_PROGRESS_VIEW_OFFSET,
+    STATUS_BAR_APPEAR_OPACITY_THRESHOLD,
+    STATUS_BAR_APPEAR_SCROLL_DISTANCE,
 } from './constants';
 import { AddBundleBottomSheet } from './sheets/add-bundle-bottom-sheet';
 
@@ -60,6 +63,10 @@ interface BundlesDashboardScreenProps {
     navigation: BundlesDashboardScreenNavProp;
 }
 
+const EmptyBundlesList = (
+    <EmptyList descriptionTx="bundles.no_bundles_desc" titleTx="bundles.no_bundles" />
+);
+
 export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ navigation }) => {
     const insets = useSafeAreaInsets();
     const { colors } = useTheme() as CustomTheme;
@@ -68,7 +75,10 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
     const { langBundles, syncBundles } = useWordsBundle();
 
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
-    const { onScroll, style } = useDynamicStatusBar(100, 0.5);
+    const { onScroll, style } = useDynamicStatusBar(
+        STATUS_BAR_APPEAR_SCROLL_DISTANCE,
+        STATUS_BAR_APPEAR_OPACITY_THRESHOLD,
+    );
 
     const [refreshing, setRefreshing] = useState(false);
     const [sessionBundleId, setSessionBundleId] = useState<string>();
@@ -90,51 +100,47 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
 
     const isGoal = streak.active && streak.numberOfDays === getPrevMilestone(streak.numberOfDays);
 
-    const handleLanguageSheetOpen = useCallback(() => {
+    const handleLanguageSheetOpen = () => {
         trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
             source: 'bundles_screen',
             type: 'main',
         });
         TrueSheet.present(BUNDLES_LANGUAGE_SHEET_NAME);
-    }, []);
+    };
 
-    const handleAddNewPress = useCallback(() => {
+    const handleAddNewPress = () => {
         TrueSheet.present(ADD_BUNDLE_SHEET_NAME);
-    }, []);
+    };
 
-    const handleSearchPress = useCallback(() => {
+    const handleSearchPress = () => {
         navigation.navigate(ScreenName.SearchBundles);
-    }, [navigation]);
+    };
 
-    const handleCreateNewBundle = useCallback(() => {
+    const handleCreateNewBundle = () => {
         TrueSheet.present(HANDLE_BUNDLE_SHEET_NAME);
-    }, []);
+    };
 
-    const handleBundleCreated = useCallback(
-        (bundle: WordsBundle) => {
-            navigation.navigate(ScreenName.BundleNavigator, {
-                bundleId: bundle.id,
-                isNewBundle: true,
-            });
-        },
-        [navigation],
-    );
+    const handleBundleCreated = (bundle: WordsBundle) => {
+        navigation.navigate(ScreenName.BundleNavigator, {
+            bundleId: bundle.id,
+            isNewBundle: true,
+        });
+    };
 
-    const handleJoinBundleWithCodePress = useCallback(() => {
+    const handleJoinBundleWithCodePress = () => {
         TrueSheet.present(JOIN_WITH_CODE_SHEET_NAME);
-    }, []);
+    };
 
-    const handleJoinedBundleWithCode = useCallback(
-        (bundleId: string) => {
-            navigation.navigate(ScreenName.BundleNavigator, {
-                bundleId,
-                isNewBundle: false,
-                justJoined: true,
-            });
-        },
-        [navigation],
-    );
+    const handleJoinedBundleWithCode = (bundleId: string) => {
+        navigation.navigate(ScreenName.BundleNavigator, {
+            bundleId,
+            isNewBundle: false,
+            justJoined: true,
+        });
+    };
 
+    // Passed to a React.memo'd BundleListItem rendered in a FlatList — memoized to avoid
+    // re-rendering every row when this screen re-renders.
     const handleBundlePress = useCallback(
         (bundle: EnrichedWordsBundle) => {
             navigation.navigate(ScreenName.BundleNavigator, {
@@ -150,19 +156,20 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
         TrueSheet.present(BUNDLES_START_SESSION_SHEET_NAME);
     }, []);
 
-    const handleSessionStart = useCallback(
-        (length: SessionLength, mode: SessionMode, flashcardSide: FlashcardSide) => {
-            if (!sessionBundleId) return;
-            TrueSheet.dismissAll();
-            navigation.navigate(ScreenName.Session, {
-                bundleId: sessionBundleId,
-                flashcardSide,
-                length,
-                mode,
-            });
-        },
-        [navigation, sessionBundleId],
-    );
+    const handleSessionStart = (
+        length: SessionLength,
+        mode: SessionMode,
+        flashcardSide: FlashcardSide,
+    ) => {
+        if (!sessionBundleId) return;
+        TrueSheet.dismissAll();
+        navigation.navigate(ScreenName.Session, {
+            bundleId: sessionBundleId,
+            flashcardSide,
+            length,
+            mode,
+        });
+    };
 
     const renderBundleItem = ({ index, item }: { index: number; item: EnrichedWordsBundle }) => (
         <BundleListItem
@@ -174,14 +181,14 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
         />
     );
 
-    const onRefresh = useCallback(async () => {
+    const onRefresh = async () => {
         try {
             setRefreshing(true);
             await syncBundles();
         } finally {
             setRefreshing(false);
         }
-    }, []);
+    };
 
     return (
         <>
@@ -241,20 +248,14 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
                         placeholderTx="bundles.start_search"
                         pointerEvents="none"
                         styleRoot={styles.searchFilter}
-                        onClear={() => {}}
                     />
                 </Pressable>
                 <Header style={styles.sectionTitle} titleTx="bundles.your_bundles" />
                 <FlatList
+                    ListEmptyComponent={EmptyBundlesList}
                     data={langBundles}
                     renderItem={renderBundleItem}
                     scrollEnabled={false}
-                    ListEmptyComponent={
-                        <EmptyList
-                            descriptionTx="bundles.no_bundles_desc"
-                            titleTx="bundles.no_bundles"
-                        />
-                    }
                 />
                 <Header style={styles.sectionTitle} titleTx="bundles.recommended_bundles" />
                 <CustomText style={styles.recommendedText} tx="bundles.no_recommended_bundles" />
@@ -264,7 +265,7 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
     );
 };
 
-const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
+const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
     StyleSheet.create({
         actionButton: {
             marginTop: MARGIN_VERTICAL,
@@ -277,11 +278,11 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             color: colors.white,
             fontSize: fontSize.l,
             lineHeight: 22,
-            marginTop: 12,
+            marginTop: spacing.l,
             opacity: 0.8,
         },
         footer: {
-            height: 50,
+            height: DASHBOARD_FOOTER_HEIGHT,
         },
         recommendedText: {
             color: colors.white300,
@@ -292,12 +293,12 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
             textAlign: 'center',
         },
         searchFilter: {
-            marginTop: 15,
+            marginTop: spacing.xl,
         },
         sectionTitle: {
             color: colors.white,
             fontSize: fontSize.xxl,
-            marginBottom: MARGIN_VERTICAL / 2,
+            marginBottom: spacing.l,
             marginTop: MARGIN_VERTICAL,
         },
         spacer: {

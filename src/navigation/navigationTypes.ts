@@ -31,12 +31,19 @@ export type RootStackParamList = {
     Tabs: undefined;
 };
 
+export type BundleMembersScreenParams = {
+    bundleId: string;
+    previewTitle?: string;
+};
+
 export type BundleStackParamList = {
     BundleFlashcards: BundleNavigatorParams;
+    BundleMembers: BundleMembersScreenParams;
 };
 
 export enum ScreenName {
     BundleFlashcards = 'BundleFlashcards',
+    BundleMembers = 'BundleMembers',
     BundleNavigator = 'BundleNavigator',
     Flashcards = 'Flashcards',
     SearchBundles = 'SearchBundles',

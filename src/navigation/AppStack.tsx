@@ -1,7 +1,10 @@
 import { StyleSheet, View } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+    createNativeStackNavigator,
+    NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
 
 import { SearchBundlesScreen } from '../screens/bundles/search/search-bundles-screen';
 import { EvaluationsProvider } from '../store/EvaluationsContext';
@@ -34,10 +37,10 @@ const AppStackInner = () => {
         statusBarTranslucent: true,
     };
 
-    const modalScreenOptions = {
+    const modalScreenOptions: NativeStackNavigationOptions = {
         animationDuration: 100,
         contentStyle: { backgroundColor: colors.card },
-        presentation: 'modal' as const,
+        presentation: 'modal',
     };
 
     return (

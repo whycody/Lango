@@ -73,7 +73,6 @@ export const JoinBundleWithCodeBottomSheet: FC<JoinBundleWithCodeBottomSheetProp
 
         try {
             setIsJoining(true);
-            onJoining?.();
             const result = await joinWithCode(code, bundleId);
 
             if (!result.success) {
@@ -81,6 +80,7 @@ export const JoinBundleWithCodeBottomSheet: FC<JoinBundleWithCodeBottomSheetProp
                 return;
             }
 
+            onJoining?.();
             joinedBundleIdRef.current = result.member.bundleId;
             await TrueSheet.dismissAll();
         } finally {

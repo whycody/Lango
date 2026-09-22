@@ -56,12 +56,8 @@
     "addedOn": "Added on",
     "bundle": "Bundle",
     "mainCollection": "Main collection",
-    "editedOn": "Edited",
     "repetitions": "Repetitions",
-    "avg_grade": "Avg grade",
     "correct_streak": "Correct streak",
-    "days_known": "Days known",
-    "study_duration": "Study time",
     "howWell": "How well do you know this word?",
     "poorly": "Poorly",
     "moderately": "Moderately",
@@ -126,10 +122,8 @@
     "study": "Study",
     "random": "Random",
     "oldest": "Oldest",
-    "export": "Export data",
     "settings_desc": "Adjust application to your needs",
     "settings_long_desc": "Customize the appearance, behavior, and preferences of the app so that it perfectly matches your workflow.",
-    "export_desc": "Export your {{records_number}} records",
     "words_desc": "Take a look on your {{words_number}} added words",
     "words_desc_s": "Take a look on your added word",
     "words_desc_empty": "You haven't added any words yet",
@@ -177,9 +171,6 @@
     "update_app_action": "Update",
     "back": "Go back",
     "welcome": "{{name}},\n welcome to Lango! ",
-    "welcome_onboarding": "{{name}},\n welcome to Lango!",
-    "welcome_onboarding_no_name": "Welcome to Lango!",
-    "welcome_onboarding_desc": "We are very pleased that you have joined our community! Answer a few questions so we can better tailor the app to your needs.",
     "general": {
         "open_settings": "Open settings",
         "cancel": "Cancel"
@@ -231,9 +222,7 @@
     "word_suggestion_bottom_sheet": {
         "title": "New word suggestion ✨",
         "desc": "You see a flashcard suggestion that is not yet in your dictionary.",
-        "desc2": "If you want to add it, rate how well you know it. If not, skip it using the arrow in the bottom right corner.",
-        "word": "Word",
-        "translation": "Translation"
+        "desc2": "If you want to add it, rate how well you know it. If not, skip it using the arrow in the bottom right corner."
     },
     "microphone": {
         "no_permission": "No permission to use the microphone 🎤",
@@ -323,8 +312,6 @@
         "join_with_code": "Join a bundle with a code",
         "create_new_title": "Create a new bundle",
         "create_new_desc": "Give your bundle a name and description. You can always change them later.",
-        "create_new_placeholder": "Bundle name",
-        "create_new_description_placeholder": "Bundle description (optional)",
         "create_new_title_label": "Name",
         "create_new_description_label": "Description (optional)",
         "create_new_confirm": "Create bundle",
@@ -339,14 +326,11 @@
         "empty_search_desc": "No bundles matched your search."
     },
     "bundle_details": {
-        "add_to_my_bundles": "Add to my bundles",
+        "add_to_my_bundles": "Join bundle",
         "add_word": "Add new word +",
         "creator_info": "{{name}} • {{count}} flashcard",
         "creator_info_plural": "{{name}} • {{count}} flashcards",
-        "flashcards_count": "{{count}} flashcard",
-        "flashcards_count_plural": "{{count}} flashcards",
         "join_with_code": "Join with a code",
-        "members": "Members",
         "no_access": {
             "title": "No access",
             "desc": "This bundle is private. Join it with a code to see its words."
@@ -364,7 +348,7 @@
             "invite_editor": "Invite to collaborate",
             "invite_editor_desc": "Can add and edit words",
             "share_bundle_link": "Share bundle link",
-            "share_bundle_link_message": "Check out my bundle \"{{title}}\" on Lango 👇\n\n{{link}}",
+            "share_bundle_link_message": "Hey, check out this bundle \"{{title}}\" on Lango 👇\n\n{{link}}",
             "invite_message": "Join my bundle \"{{title}}\" on Lango! Tap the link or enter the code {{code}} directly in the app 👈\n\n{{link}}"
         },
         "options": {
@@ -372,6 +356,7 @@
             "change_visibility": "Change visibility",
             "delete_bundle": "Delete bundle",
             "leave_bundle": "Leave bundle",
+            "members": "Members",
             "share_bundle": "Share bundle",
             "share_bundle_link": "Share bundle link"
         },
@@ -421,6 +406,41 @@
             "title": "Leaving bundle",
             "desc": "Are you sure you want to leave this bundle? You will lose access to it."
         },
+        "members": {
+            "title": "Members",
+            "desc": "Manage who can access this bundle, grant or revoke edit access, and transfer ownership.",
+            "desc_readonly": "See who has access to this bundle.",
+            "search_placeholder": "Search members",
+            "no_results": "No members match your search",
+            "you": "{{name}} (you)",
+            "roles": {
+                "owner": "Owner",
+                "editor": "Editor",
+                "viewer": "Viewer"
+            },
+            "actions": {
+                "grant_edit": "Grant edit access",
+                "revoke_edit": "Revoke edit access",
+                "transfer_ownership": "Transfer ownership",
+                "remove_member": "Remove from bundle"
+            },
+            "transfer_ownership": {
+                "title": "Transfer ownership",
+                "desc": "The new owner will be able to manage members, change visibility, and delete the bundle. You will become an editor.",
+                "confirm": "Transfer ownership"
+            },
+            "remove_member": {
+                "title": "Remove member",
+                "desc_public": "This member will lose access to the bundle. Since it's public, they'll be able to join again on their own.",
+                "desc_private": "This member will lose access to the bundle and won't be able to join again unless invited.",
+                "confirm": "Remove from bundle"
+            },
+            "error_network": "Could not update this member. Please check your connection and try again.",
+            "error_forbidden": "Only the owner of this bundle can do that.",
+            "error_not_found": "This member no longer exists.",
+            "error_unauthorized": "Your session has expired. Please sign in again.",
+            "error_unknown": "Something went wrong. Please try again."
+        },
         "join_with_code_sheet": {
             "title": "Join with a code",
             "desc": "Enter the invitation code you received to join this bundle.",
@@ -429,6 +449,12 @@
             "confirm": "Join",
             "error_invalid": "This code is invalid or has expired. Please check it and try again.",
             "error_already_member": "This code belongs to a bundle you're already a member of."
+        },
+        "join_public_bundle_sheet": {
+            "title": "Join bundle",
+            "desc": "You can join this bundle right away, or enter an invitation code if you were invited as a collaborator.",
+            "join_without_code": "Join bundle",
+            "join_with_code": "Join with a code"
         }
     }
 }

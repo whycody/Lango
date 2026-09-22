@@ -4,7 +4,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useWordsBundle } from '../../../../store';
 import { WordsBundleVisibility } from '../../../../types';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
-import { VisibilityPicker } from '../containers/visibility-picker';
+import { VisibilityPicker } from '../containers';
 
 interface VisibilityBottomSheetProps {
     bundleId?: string;

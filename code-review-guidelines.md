@@ -23,7 +23,21 @@ already enforce (import sorting, prop/key sorting, formatting) — see `eslint.c
   something to fix ad hoc in every PR.
 - Flag in review: a new file added with PascalCase/camelCase instead of kebab-case.
 
-## 2. Props and component types
+## 2. Barrel exports (`index.ts`)
+
+- Every feature subfolder (`components/`, `hooks/`, `sheets/`) gets an `index.ts` that
+  re-exports each file: `export * from './some-file';`. Add the new file's export to the
+  barrel in the same PR that adds the file — see `src/screens/bundles/details/{components,hooks,sheets}/index.ts`
+  and `src/screens/bundles/members/{components,hooks,sheets}/index.ts`.
+- Import from the barrel (`from './hooks'`, `from './components'`), not from the
+  individual file (`from './hooks/use-bundle-info'`), when writing or touching a screen
+  file — consolidate multiple same-folder imports into one barrel import instead of
+  leaving them as separate deep-path imports.
+- Flag in review: a new file added to `components/`, `hooks/`, or `sheets/` without a
+  matching barrel export; a screen importing directly from a file inside one of these
+  folders instead of the barrel.
+
+## 3. Props and component types
 
 - New components: **`interface XProps`**, not `type XProps = {...}`. This is the
   direction set by the "refactor components to use TypeScript interfaces and functional
@@ -35,7 +49,7 @@ already enforce (import sorting, prop/key sorting, formatting) — see `eslint.c
   `React.memo`, especially when they receive stable props from the parent — the pattern
   established in `SearchBundleListItem`.
 
-## 3. App state
+## 4. App state
 
 The split is intentional and should be maintained:
 
@@ -46,7 +60,7 @@ The split is intentional and should be maintained:
 - Flag in review: a new API fetch done manually in `useEffect`/`useState` instead of via
   `useQuery`/`useMutation`; local/offline state kept outside Context without a reason.
 
-## 4. API layer
+## 5. API layer
 
 A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strictly:
 
@@ -65,7 +79,7 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
   further without reason — if you're adding >2 new methods in one file, consider a shared
   helper.
 
-## 5. Localization (i18n)
+## 6. Localization (i18n)
 
 - New components (especially shared/leaf ones) should accept `xxxTx?: TranslationKey`
   props and resolve them **inside** the component via `t()` — don't call `useTranslation()`
@@ -76,7 +90,7 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
 - Flag in review: a new, reusable component accepting an already-resolved `string` to
   display instead of a translation key.
 
-## 6. Theme colors type
+## 7. Theme colors type
 
 - Type a `colors` param/prop as **`ThemeColors`** (`src/types/utils/theme-colors.ts`),
   not the indexed-access form `CustomTheme['colors']` inline. `ThemeColors` is just an
@@ -87,18 +101,18 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
 - Flag in review: a new `getStyles`/component prop typed as `CustomTheme['colors']`
   instead of importing `ThemeColors`.
 
-## 7. Typing
+## 8. Typing
 
 - The project is **not** in TS `strict` mode, and ESLint has `no-explicit-any`,
   `explicit-function-return-type`, and `explicit-module-boundary-types` all turned off —
   meaning nothing automatically catches `any` or missing return types. This has to be
   enforced manually in review:
-  - explicit return type on exported functions/hooks (see `useBundleQuery(...): UseQueryResult<...>`),
-  - avoid `any`; if a type is genuinely unknown, use `unknown` + narrowing.
+    - explicit return type on exported functions/hooks (see `useBundleQuery(...): UseQueryResult<...>`),
+    - avoid `any`; if a type is genuinely unknown, use `unknown` + narrowing.
 - Prefer discriminated unions to model results (`{data, kind:'ok'} | {errorCode, kind:'error'}`)
   over `null`/`undefined` plus a separate flag.
 
-## 8. Constants / magic numbers
+## 9. Constants / magic numbers
 
 - No "bare" numbers/strings in JSX or logic (timing, heights, animation thresholds) —
   hoist them into the feature's `constants.ts`, as in `src/screens/bundles/details/constants.ts`.
@@ -117,7 +131,7 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
   opaque out of context or reused across call sites (timing, thresholds, dimensions
   referenced from multiple places) — not every literal a component happens to contain.
 
-## 9. Styles
+## 10. Styles
 
 - Standard: `StyleSheet.create` via a `getStyles(colors, ...)` function, memoized with
   `useMemo(() => getStyles(colors), [colors])`.
@@ -127,14 +141,14 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
 - Flag in review: an ad hoc style object built inline on every render without
   `useMemo`/`StyleSheet`.
 
-## 10. Handler memoization (`useCallback`)
+## 11. Handler memoization (`useCallback`)
 
 - **Don't reach for `useCallback` by default.** Only use it when there's a concrete reason:
-  - the function is passed to a child wrapped in `React.memo` (e.g. list-row components
-    like `BundleListItem`/`SearchBundleListItem` rendered via `FlatList`) — this actually
-    prevents child re-renders;
-  - the function is a dependency of another hook (`useEffect`, `useMemo`, another
-    `useCallback`) and omitting the wrap would cause that hook to re-run unnecessarily.
+    - the function is passed to a child wrapped in `React.memo` (e.g. list-row components
+      like `BundleListItem`/`SearchBundleListItem` rendered via `FlatList`) — this actually
+      prevents child re-renders;
+    - the function is a dependency of another hook (`useEffect`, `useMemo`, another
+      `useCallback`) and omitting the wrap would cause that hook to re-run unnecessarily.
 - If neither applies, a plain arrow function/inline handler is preferable — it's simpler
   to read and has less overhead than an unnecessary `useCallback`.
 - Reference example: `bundles-dashboard-screen.tsx` only wraps `handleBundlePress` and
@@ -145,7 +159,7 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
   passed to a plain (non-memoized) component or used only inline in the same component's
   JSX.
 
-## 11. Component/screen size
+## 12. Component/screen size
 
 - Large "god screens" (e.g. `bundle-details-screen.tsx`, ~620 lines, ~20 inline handlers)
   are a signal to refactor, not an accepted pattern going forward.
@@ -158,7 +172,7 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
   is acceptable for a narrow scope, but don't grow it further — if the shared prop list
   keeps expanding, consider Context or composition instead of a spread.
 
-## 12. Tests
+## 13. Tests
 
 - The repo currently has **no automated tests** (no `*.test.ts(x)` files, no
   `jest.config.js`). Don't assume an existing testing convention in review — there isn't
@@ -167,12 +181,31 @@ A very consistent, mandatory pattern in `src/api/*-api.ts` — enforce it strict
   If you're adding non-trivial pure logic (e.g. in `utils/`), unit tests are welcome but
   not required today.
 
-## 13. Commits
+## 14. Navigation in non-screen components
+
+- Sheets/components that aren't the direct target of a `Stack.Screen` (bottom sheets,
+  list items, etc.) should **not** call `useNavigation()` themselves. Instead, accept an
+  `onNavigateToX: () => void` callback prop and let the parent screen (which already has
+  `navigation` typed via `NativeStackScreenProps`) perform the actual `navigation.navigate(...)`.
+- Prefer a **parameterless** callback (`onNavigateToBundleMembers: () => void`) over one
+  that takes the route params (`(bundleId, previewTitle) => void`) — let the parent resolve
+  those params itself from values already in its own scope (`route.params`, local state),
+  rather than threading them back out of the child. See
+  `bundle-options-bottom-sheet.tsx`'s `onNavigateToBundleMembers` prop and its
+  implementation in `bundle-details-screen.tsx`.
+- Reason: keeps the sheet/component decoupled from a specific `ParamList`/`ScreenName`,
+  and avoids every leaf component needing its own `useNavigation<...>()` generic typed to
+  the right stack.
+- Flag in review: a new bottom sheet, list item, or other non-screen component importing
+  `useNavigation` or `NativeStackNavigationProp` to navigate directly, instead of taking an
+  `onNavigateToX` callback prop.
+
+## 15. Commits
 
 - Never add `Co-Authored-By: Claude`/AI attribution to commits in this repo.
 
 ---
 
-*This file is meant to reflect the actual state of the code, not aspirations. When a
+_This file is meant to reflect the actual state of the code, not aspirations. When a
 convention changes (e.g. `useCallback` gets unified, the kebab-case migration finishes),
-update the relevant section instead of leaving a stale entry.*
+update the relevant section instead of leaving a stale entry._

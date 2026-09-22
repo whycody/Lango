@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -15,6 +15,7 @@ type PendingContentAppearedAction = 'presentBundleReady' | 'startJoining' | null
 interface UseBundleLifecycleSheetsResult {
     isJoiningBundle: boolean;
     setIsJoiningBundle: Dispatch<SetStateAction<boolean>>;
+    startJoiningSilently: () => void;
 }
 
 export const useBundleLifecycleSheets = (
@@ -29,6 +30,15 @@ export const useBundleLifecycleSheets = (
     const [isJoiningBundle, setIsJoiningBundle] = useState(false);
     const [pendingContentAppearedAction, setPendingContentAppearedAction] =
         useState<PendingContentAppearedAction>(null);
+    const skipBundleReadySheet = useRef(false);
+
+    // Used when joining happens as a side effect of starting a session (the user
+    // is about to be navigated into the session screen anyway), so the "you've
+    // joined" sheet would just flash and get dismissed - skip presenting it once.
+    const startJoiningSilently = () => {
+        skipBundleReadySheet.current = true;
+        setIsJoiningBundle(true);
+    };
 
     // A bundle the user just created: present the "bundle ready" sheet once the
     // screen transition finishes, then clear the nav param so it only fires once.
@@ -70,11 +80,16 @@ export const useBundleLifecycleSheets = (
     }, [isNewBundle, navigation]);
 
     // Words are still syncing while joining: once the backfill finishes, stop the
-    // joining flow and present the "bundle ready" sheet.
+    // joining flow and present the "bundle ready" sheet - unless joining was
+    // started silently (e.g. from starting a session), in which case skip it once.
     useEffect(() => {
         if (isJoiningBundle && localBundle?.wordsBackfilled) {
             setIsJoiningBundle(false);
-            TrueSheet.present(BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET);
+            if (skipBundleReadySheet.current) {
+                skipBundleReadySheet.current = false;
+            } else {
+                TrueSheet.present(BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET);
+            }
         }
     }, [isJoiningBundle, localBundle?.wordsBackfilled]);
 
@@ -95,5 +110,5 @@ export const useBundleLifecycleSheets = (
         }
     }, [hasContentAppeared, pendingContentAppearedAction]);
 
-    return { isJoiningBundle, setIsJoiningBundle };
+    return { isJoiningBundle, setIsJoiningBundle, startJoiningSilently };
 };

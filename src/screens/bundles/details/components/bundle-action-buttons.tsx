@@ -12,8 +12,8 @@ interface BundleActionButtonsProps {
     isJoiningBundle: boolean;
     isPreview: boolean;
     isPrivatePreview: boolean;
-    onAddToMyBundlesPress: () => void;
     onAddWordPress: () => void;
+    onJoinPress: () => void;
     onJoinWithCodePress: () => void;
     onShareBundleLinkPress: () => void;
     onStartSessionPress: () => void;
@@ -27,8 +27,8 @@ export const BundleActionButtons: FC<BundleActionButtonsProps> = ({
     isJoiningBundle,
     isPreview,
     isPrivatePreview,
-    onAddToMyBundlesPress,
     onAddWordPress,
+    onJoinPress,
     onJoinWithCodePress,
     onShareBundleLinkPress,
     onStartSessionPress,
@@ -45,13 +45,13 @@ export const BundleActionButtons: FC<BundleActionButtonsProps> = ({
         )}
         {isPreview && !isPrivatePreview && (
             <ActionButton
-                active={!isJoiningBundle && hasWords}
+                active={!isJoiningBundle}
                 icon="folder-multiple-plus-outline"
                 iconFamily="material-community"
                 labelTx="bundle_details.add_to_my_bundles"
                 loading={isJoiningBundle}
                 style={buttonStyle}
-                onPress={onAddToMyBundlesPress}
+                onPress={onJoinPress}
             />
         )}
         {isPrivatePreview && (

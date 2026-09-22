@@ -1,16 +1,15 @@
 ﻿import { FC } from 'react';
-import { Share, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import { spacing } from '../../../../constants/margins';
 import { palette } from '../../../../constants/palette';
 import { useWords, useWordsBundle } from '../../../../store';
 import { LibraryItem } from '../../../../ui/components/library';
 import { GenericBottomSheet } from '../../../../ui/sheets/GenericBottomSheet';
-import { buildBundleLink } from '../../../../utils/helpers';
-import { HandleBundleBottomSheet } from '../../common/sheets';
+import { useShareBundleLink } from '../../common/hooks';
+import { HandleBundleBottomSheet, ShareBundleBottomSheet } from '../../common/sheets';
 import {
     EDIT_BUNDLE_SHEET_NAME,
     LEAVE_BUNDLE_SHEET_NAME,
@@ -21,45 +20,45 @@ import {
 } from '../constants';
 import { LeaveBundleBottomSheet } from './leave-bundle-bottom-sheet';
 import { RemoveBundleBottomSheet } from './remove-bundle-bottom-sheet';
-import { ShareBundleBottomSheet } from './share-bundle-bottom-sheet';
 import { VisibilityBottomSheet } from './visibility-bottom-sheet';
 
 interface BundleOptionsBottomSheetProps {
     bundleId?: string;
     isOwner: boolean;
+    isPreview: boolean;
+    previewTitle?: string;
     sheetName: string;
     onBundleRemoved: () => void;
     onBundleLeft: () => void;
+    onNavigateToBundleMembers: () => void;
 }
 
 export const BundleOptionsBottomSheet: FC<BundleOptionsBottomSheetProps> = ({
     bundleId,
     isOwner,
+    isPreview,
     onBundleLeft,
     onBundleRemoved,
+    onNavigateToBundleMembers,
+    previewTitle,
     sheetName,
 }) => {
     const { bundles, editBundleMember, removeBundle } = useWordsBundle();
-    const { i18n, t } = useTranslation();
     const queryClient = useQueryClient();
+    const { shareBundleLink } = useShareBundleLink();
 
     const { langWords } = useWords();
     const bundle = bundles.find(b => b.id === bundleId);
     const membership = bundle?.membership;
+    const bundleTitle = isPreview ? previewTitle : bundle?.title;
 
     const makePresentSheetHandler = (name: string) => () => {
         TrueSheet.present(name);
     };
 
     const handleShareBundleLinkPress = () => {
-        if (!bundleId || !bundle) return;
-
-        Share.share({
-            message: t('bundle_details.share_sheet.share_bundle_link_message', {
-                link: buildBundleLink(bundleId, i18n.language),
-                title: bundle.title,
-            }),
-        });
+        if (!bundleId || !bundleTitle) return;
+        shareBundleLink(bundleId, bundleTitle);
     };
 
     const handleRemoveCancel = () => {
@@ -106,6 +105,12 @@ export const BundleOptionsBottomSheet: FC<BundleOptionsBottomSheetProps> = ({
         TrueSheet.dismiss(sheetName);
     };
 
+    const handleMembersPress = () => {
+        if (!bundleId) return;
+        TrueSheet.dismiss(sheetName);
+        onNavigateToBundleMembers();
+    };
+
     const isPublic = bundle?.visibility !== 'private';
 
     return (
@@ -116,7 +121,24 @@ export const BundleOptionsBottomSheet: FC<BundleOptionsBottomSheetProps> = ({
                 style={styles.content}
                 onSecondaryButtonPress={handleSecondaryButtonPress}
             >
-                {isOwner ? (
+                {isPreview ? (
+                    <>
+                        <LibraryItem
+                            color={palette.green}
+                            icon="share-outline"
+                            index={0}
+                            labelTx="bundle_details.options.share_bundle_link"
+                            onPress={handleShareBundleLinkPress}
+                        />
+                        <LibraryItem
+                            color={palette.cyan}
+                            icon="people"
+                            index={1}
+                            labelTx="bundle_details.options.members"
+                            onPress={handleMembersPress}
+                        />
+                    </>
+                ) : isOwner ? (
                     <>
                         <LibraryItem
                             color={palette.blue}
@@ -140,9 +162,16 @@ export const BundleOptionsBottomSheet: FC<BundleOptionsBottomSheetProps> = ({
                             onPress={makePresentSheetHandler(SHARE_BUNDLE_SHEET_NAME)}
                         />
                         <LibraryItem
+                            color={palette.cyan}
+                            icon="people"
+                            index={3}
+                            labelTx="bundle_details.options.members"
+                            onPress={handleMembersPress}
+                        />
+                        <LibraryItem
                             color={palette.red}
                             icon="trash"
-                            index={3}
+                            index={4}
                             labelTx="bundle_details.options.delete_bundle"
                             onPress={makePresentSheetHandler(REMOVE_BUNDLE_SHEET_NAME)}
                         />
@@ -157,9 +186,16 @@ export const BundleOptionsBottomSheet: FC<BundleOptionsBottomSheetProps> = ({
                             onPress={handleShareBundleLinkPress}
                         />
                         <LibraryItem
+                            color={palette.cyan}
+                            icon="people"
+                            index={1}
+                            labelTx="bundle_details.options.members"
+                            onPress={handleMembersPress}
+                        />
+                        <LibraryItem
                             color={palette.red}
                             icon="exit-outline"
-                            index={1}
+                            index={2}
                             labelTx="bundle_details.options.leave_bundle"
                             onPress={makePresentSheetHandler(LEAVE_BUNDLE_SHEET_NAME)}
                         />

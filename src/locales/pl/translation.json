@@ -56,12 +56,8 @@
     "addedOn": "Dodano",
     "bundle": "Zestaw",
     "mainCollection": "Główna kolekcja",
-    "editedOn": "Edytowano",
     "repetitions": "Powtórek",
-    "avg_grade": "Śr. ocena",
     "correct_streak": "Seria",
-    "days_known": "Dni w słowniku",
-    "study_duration": "Czas nauki",
     "howWell": "Jak dobrze znasz to słówko?",
     "poorly": "Słabo",
     "moderately": "Średnio",
@@ -126,10 +122,8 @@
     "study": "Nauka",
     "random": "Losowe",
     "oldest": "Najstarsze",
-    "export": "Wyeksportuj dane",
     "settings_desc": "Dopasuj aplikację do swoich potrzeb",
     "settings_long_desc": "Dostosuj wygląd, działanie i preferencje aplikacji tak, aby idealnie odpowiadały Twojemu stylowi nauki.",
-    "export_desc": "Wyeksportuj {{records_number}} rekordów",
     "words_desc": "Rzuć okiem na {{words_number}} dodanych słówek",
     "words_desc_s": "Rzuć okiem na dodane słówko",
     "words_desc_empty": "Nie dodałeś jeszcze żadnych słówek",
@@ -176,9 +170,6 @@
     "update_app_desc": "Zaktualizuj aplikację aby być na bieżąco ze wszystkimi nowościami.",
     "update_app_action": "Zaktualizuj",
     "back": "Wróć",
-    "welcome_onboarding": " {{name}}, \n witaj w Lango!",
-    "welcome_onboarding_no_name": "Witaj w Lango!",
-    "welcome_onboarding_desc": "Bardzo się cieszymy, że do dołączyłeś do naszej społeczności! Odpowiedz na kilka pytań, abyśmy mogli lepiej dostosować aplikację do Twoich potrzeb.",
     "general": {
         "open_settings": "Otwórz ustawienia",
         "cancel": "Anuluj"
@@ -230,9 +221,7 @@
     "word_suggestion_bottom_sheet": {
         "title": "Propozycja nowego słówka ✨",
         "desc": "Wyświetliła Ci się propozycja fiszki, która nie jest jeszcze w Twoim słowniku.",
-        "desc2": "Jeżeli chcesz ją do niego dodać, oceń jak dobrze ją znasz. Jeżeli nie, pomiń ją za pomocą strzałki w prawym dolnym rogu.",
-        "word": "Słówko",
-        "translation": "Tłumaczenie"
+        "desc2": "Jeżeli chcesz ją do niego dodać, oceń jak dobrze ją znasz. Jeżeli nie, pomiń ją za pomocą strzałki w prawym dolnym rogu."
     },
     "microphone": {
         "no_permission": "Brak uprawnień do mikrofonu \uD83C\uDFA4",
@@ -322,8 +311,6 @@
         "join_with_code": "Dołącz do zestawu za pomocą kodu",
         "create_new_title": "Stwórz nowy zestaw",
         "create_new_desc": "Podaj nazwę i opis zestawu. Będziesz mógł je potem zmienić.",
-        "create_new_placeholder": "Nazwa zestawu",
-        "create_new_description_placeholder": "Opis zestawu (opcjonalnie)",
         "create_new_title_label": "Nazwa",
         "create_new_description_label": "Opis (opcjonalnie)",
         "create_new_confirm": "Stwórz zestaw",
@@ -338,16 +325,12 @@
         "empty_search_desc": "Nie znaleziono zestawów pasujących do wyszukiwania."
     },
     "bundle_details": {
-        "add_to_my_bundles": "Dodaj do moich zestawów",
+        "add_to_my_bundles": "Dołącz do zestawu",
         "add_word": "Dodaj nowe słówko +",
         "creator_info": "{{name}} • {{count}} fiszka",
         "creator_info_few": "{{name}} • {{count}} fiszki",
         "creator_info_many": "{{name}} • {{count}} fiszek",
-        "flashcards_count": "{{count}} fiszka",
-        "flashcards_count_few": "{{count}} fiszki",
-        "flashcards_count_many": "{{count}} fiszek",
         "join_with_code": "Dołącz do zestawu za pomocą kodu",
-        "members": "Członkowie",
         "no_access": {
             "title": "Brak dostępu",
             "desc": "Ten zestaw jest prywatny. Dołącz do niego za pomocą kodu, aby zobaczyć słówka."
@@ -365,7 +348,7 @@
             "invite_editor": "Zaproś do współtworzenia",
             "invite_editor_desc": "Może dodawać i edytować słówka",
             "share_bundle_link": "Udostępnij link do zestawu",
-            "share_bundle_link_message": "Sprawdź mój zestaw \"{{title}}\" w Lango 👇\n\n{{link}}",
+            "share_bundle_link_message": "Hej, sprawdź zestaw \"{{title}}\" w Lango 👇\n\n{{link}}",
             "invite_message": "Dołącz do mojego zestawu \"{{title}}\" w Lango! Kliknij w link lub wpisz kod {{code}} bezpośrednio w aplikacji 👈\n\n{{link}}"
         },
         "options": {
@@ -373,6 +356,7 @@
             "change_visibility": "Zmień widoczność",
             "delete_bundle": "Usuń zestaw",
             "leave_bundle": "Opuść ten zestaw",
+            "members": "Członkowie",
             "share_bundle": "Udostępnij zestaw",
             "share_bundle_link": "Udostępnij link do zestawu"
         },
@@ -422,6 +406,41 @@
             "title": "Opuszczanie zestawu",
             "desc": "Czy na pewno chcesz opuścić ten zestaw? Utracisz do niego dostęp."
         },
+        "members": {
+            "title": "Członkowie",
+            "desc": "Zarządzaj dostępem do tego zestawu, nadawaj lub odbieraj prawa do edycji oraz zmieniaj właściciela.",
+            "desc_readonly": "Zobacz, kto ma dostęp do tego zestawu.",
+            "search_placeholder": "Szukaj członków",
+            "no_results": "Brak członków pasujących do wyszukiwania",
+            "you": "{{name}} (ty)",
+            "roles": {
+                "owner": "Właściciel",
+                "editor": "Edytor",
+                "viewer": "Przeglądający"
+            },
+            "actions": {
+                "grant_edit": "Nadaj prawa do edycji",
+                "revoke_edit": "Odbierz prawa do edycji",
+                "transfer_ownership": "Przekaż własność zestawu",
+                "remove_member": "Usuń z zestawu"
+            },
+            "transfer_ownership": {
+                "title": "Zmiana właściciela",
+                "desc": "Nowy właściciel będzie mógł zarządzać członkami, zmieniać widoczność i usunąć zestaw. Ty staniesz się edytorem.",
+                "confirm": "Zmień właściciela"
+            },
+            "remove_member": {
+                "title": "Usuń członka",
+                "desc_public": "Ten członek straci dostęp do zestawu. Ponieważ zestaw jest publiczny, będzie mógł dołączyć do niego ponownie samodzielnie.",
+                "desc_private": "Ten członek straci dostęp do zestawu i nie będzie mógł dołączyć ponownie, chyba że zostanie zaproszony.",
+                "confirm": "Usuń z zestawu"
+            },
+            "error_network": "Nie udało się zaktualizować tego członka. Sprawdź połączenie z internetem i spróbuj ponownie.",
+            "error_forbidden": "Tylko właściciel zestawu może to zrobić.",
+            "error_not_found": "Ten członek już nie istnieje.",
+            "error_unauthorized": "Twoja sesja wygasła. Zaloguj się ponownie.",
+            "error_unknown": "Coś poszło nie tak. Spróbuj ponownie."
+        },
         "join_with_code_sheet": {
             "title": "Dołącz do zestawu za pomocą kodu",
             "desc": "Wpisz kod zaproszenia, który otrzymałeś, aby dołączyć do tego zestawu.",
@@ -430,6 +449,12 @@
             "confirm": "Dołącz",
             "error_invalid": "Ten kod jest nieprawidłowy lub wygasł. Sprawdź go i spróbuj ponownie.",
             "error_already_member": "Ten kod należy do zestawu, którego jesteś już członkiem."
+        },
+        "join_public_bundle_sheet": {
+            "title": "Dołącz do zestawu",
+            "desc": "Możesz dołączyć do tego zestawu od razu albo wpisać kod zaproszenia, jeśli zostałeś zaproszony jako współtwórca.",
+            "join_without_code": "Dołącz do zestawu",
+            "join_with_code": "Dołącz za pomocą kodu"
         }
     }
 }

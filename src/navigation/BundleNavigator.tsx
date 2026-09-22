@@ -1,6 +1,7 @@
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { BundleDetailsScreen } from '../screens/bundles/details/bundle-details-screen';
+import { BundleMembersScreen } from '../screens/bundles/members/bundle-members-screen';
 import {
     BundleNavigatorParams,
     BundleStackParamList,
@@ -35,6 +36,7 @@ const BundleNavigator = ({ route }: BundleNavigatorProps) => {
                 initialParams={{ bundleId, code, isNewBundle, justJoined, previewBundle }}
                 name={ScreenName.BundleFlashcards}
             />
+            <Stack.Screen component={BundleMembersScreen} name={ScreenName.BundleMembers} />
         </Stack.Navigator>
     );
 };

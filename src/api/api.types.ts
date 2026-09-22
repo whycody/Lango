@@ -2,6 +2,8 @@ import {
     AppConfig,
     BundleJoinCode,
     BundleMember,
+    BundleMemberRole,
+    BundleMemberWithUser,
     BundleSearchResponse,
     Evaluation,
     ExampleFlashcard,
@@ -123,6 +125,11 @@ export type SyncBundleMembersOnServerApi =
     | { data: SyncResultWithRejections<BundleMember>; kind: 'ok' }
     | ApiProblem;
 export type FetchUpdatedBundleMembersApi = { data: BundleMember[]; kind: 'ok' } | ApiProblem;
+export type FetchBundleMembersApi = { data: BundleMemberWithUser[]; kind: 'ok' } | ApiProblem;
+export type UpdateBundleMemberRoleApi = { data: BundleMember; kind: 'ok' } | ApiProblem;
+export type RemoveBundleMemberApi = { data: BundleMember; kind: 'ok' } | ApiProblem;
+
+export type UpdateBundleMemberRoleRequest = { role: BundleMemberRole };
 
 // -----WORDS BUNDLES-----
 

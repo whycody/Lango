@@ -56,12 +56,8 @@
     "addedOn": "Añadido el",
     "bundle": "Paquete",
     "mainCollection": "Colección principal",
-    "editedOn": "Editado",
     "repetitions": "Repeticiones",
-    "avg_grade": "Nota media",
     "correct_streak": "Racha correcta",
-    "days_known": "Días conocido",
-    "study_duration": "Tiempo estudio",
     "howWell": "¿Qué tan bien conoces esta palabra?",
     "poorly": "Mal",
     "moderately": "Regular",
@@ -126,10 +122,8 @@
     "study": "Estudiar",
     "random": "Aleatorio",
     "oldest": "Más antiguo",
-    "export": "Exportar datos",
     "settings_desc": "Adapta la aplicación a tus necesidades",
     "settings_long_desc": "Personaliza la apariencia, el comportamiento y las preferencias de la app para que se adapte perfectamente a tu flujo de trabajo.",
-    "export_desc": "Exportar tus {{records_number}} registros",
     "words_desc": "Echa un vistazo a tus {{words_number}} palabras añadidas",
     "words_desc_s": "Echa un vistazo a tu palabra añadida",
     "words_desc_empty": "Todavía no has añadido ninguna palabra",
@@ -177,9 +171,6 @@
     "update_app_action": "Actualizar",
     "back": "Volver",
     "welcome": "{{name}},\n ¡bienvenido a Lango! ",
-    "welcome_onboarding": "{{name}},\n ¡bienvenido a Lango!",
-    "welcome_onboarding_no_name": "¡Bienvenido a Lango!",
-    "welcome_onboarding_desc": "¡Nos alegra mucho que te hayas unido a nuestra comunidad! Responde algunas preguntas para que podamos adaptar mejor la app a tus necesidades.",
     "general": {
         "open_settings": "Abrir ajustes",
         "cancel": "Cancelar"
@@ -231,9 +222,7 @@
     "word_suggestion_bottom_sheet": {
         "title": "Sugerencia de nueva palabra ✨",
         "desc": "Ves una sugerencia de tarjeta que aún no está en tu diccionario.",
-        "desc2": "Si quieres añadirla, valora qué tan bien la conoces. Si no, sáltala usando la flecha en la esquina inferior derecha.",
-        "word": "Palabra",
-        "translation": "Traducción"
+        "desc2": "Si quieres añadirla, valora qué tan bien la conoces. Si no, sáltala usando la flecha en la esquina inferior derecha."
     },
     "microphone": {
         "no_permission": "Sin permiso para usar el micrófono 🎤",
@@ -323,8 +312,6 @@
         "join_with_code": "Unirse a un conjunto con un código",
         "create_new_title": "Crear un nuevo conjunto",
         "create_new_desc": "Ponle un nombre y una descripción a tu conjunto. Podrás cambiarlos más adelante.",
-        "create_new_placeholder": "Nombre del conjunto",
-        "create_new_description_placeholder": "Descripción del conjunto (opcional)",
         "create_new_title_label": "Nombre",
         "create_new_description_label": "Descripción (opcional)",
         "create_new_confirm": "Crear conjunto",
@@ -339,18 +326,15 @@
         "empty_search_desc": "No se encontraron conjuntos que coincidan con tu búsqueda."
     },
     "bundle_details": {
-        "add_to_my_bundles": "Añadir a mis conjuntos",
+        "add_to_my_bundles": "Unirse al conjunto",
         "add_word": "Añadir nueva palabra +",
         "creator_info": "{{name}} • {{count}} tarjeta",
         "creator_info_plural": "{{name}} • {{count}} tarjetas",
-        "flashcards_count": "{{count}} tarjeta",
-        "flashcards_count_plural": "{{count}} tarjetas",
         "join_with_code": "Unirse con un código",
         "no_access": {
             "title": "Sin acceso",
             "desc": "Este conjunto es privado. Únete con un código para ver sus palabras."
         },
-        "members": "Miembros",
         "no_members": "Aún no hay miembros",
         "no_items_desc": "Intenta añadir algunas palabras a este conjunto.",
         "no_items_desc_readonly": "Este conjunto todavía no tiene palabras.",
@@ -364,7 +348,7 @@
             "invite_editor": "Invitar a colaborar",
             "invite_editor_desc": "Puede añadir y editar palabras",
             "share_bundle_link": "Compartir enlace del conjunto",
-            "share_bundle_link_message": "Mira mi conjunto \"{{title}}\" en Lango 👇\n\n{{link}}",
+            "share_bundle_link_message": "Oye, mira este conjunto \"{{title}}\" en Lango 👇\n\n{{link}}",
             "invite_message": "¡Únete a mi conjunto \"{{title}}\" en Lango! Toca el enlace o introduce el código {{code}} directamente en la app 👈\n\n{{link}}"
         },
         "options": {
@@ -372,6 +356,7 @@
             "change_visibility": "Cambiar visibilidad",
             "delete_bundle": "Eliminar paquete",
             "leave_bundle": "Abandonar paquete",
+            "members": "Miembros",
             "share_bundle": "Compartir conjunto",
             "share_bundle_link": "Compartir enlace del conjunto"
         },
@@ -421,6 +406,41 @@
             "title": "Abandonando paquete",
             "desc": "¿Seguro que quieres abandonar este paquete? Perderás el acceso a él."
         },
+        "members": {
+            "title": "Miembros",
+            "desc": "Gestiona quién puede acceder a este conjunto, concede o revoca el acceso de edición y transfiere la propiedad.",
+            "desc_readonly": "Consulta quién tiene acceso a este conjunto.",
+            "search_placeholder": "Buscar miembros",
+            "no_results": "Ningún miembro coincide con tu búsqueda",
+            "you": "{{name}} (tú)",
+            "roles": {
+                "owner": "Propietario",
+                "editor": "Editor",
+                "viewer": "Espectador"
+            },
+            "actions": {
+                "grant_edit": "Conceder acceso de edición",
+                "revoke_edit": "Revocar acceso de edición",
+                "transfer_ownership": "Transferir propiedad",
+                "remove_member": "Eliminar del conjunto"
+            },
+            "transfer_ownership": {
+                "title": "Transferir propiedad",
+                "desc": "El nuevo propietario podrá gestionar los miembros, cambiar la visibilidad y eliminar el conjunto. Tú pasarás a ser editor.",
+                "confirm": "Transferir propiedad"
+            },
+            "remove_member": {
+                "title": "Eliminar miembro",
+                "desc_public": "Este miembro perderá el acceso al conjunto. Como es público, podrá volver a unirse por su cuenta.",
+                "desc_private": "Este miembro perderá el acceso al conjunto y no podrá volver a unirse a menos que se le invite.",
+                "confirm": "Eliminar del conjunto"
+            },
+            "error_network": "No se ha podido actualizar este miembro. Comprueba tu conexión e inténtalo de nuevo.",
+            "error_forbidden": "Solo el propietario de este conjunto puede hacer eso.",
+            "error_not_found": "Este miembro ya no existe.",
+            "error_unauthorized": "Tu sesión ha caducado. Vuelve a iniciar sesión.",
+            "error_unknown": "Algo ha salido mal. Inténtalo de nuevo."
+        },
         "join_with_code_sheet": {
             "title": "Unirse con un código",
             "desc": "Introduce el código de invitación que recibiste para unirte a este conjunto.",
@@ -429,6 +449,12 @@
             "confirm": "Unirse",
             "error_invalid": "Este código no es válido o ha caducado. Compruébalo e inténtalo de nuevo.",
             "error_already_member": "Este código pertenece a un conjunto del que ya eres miembro."
+        },
+        "join_public_bundle_sheet": {
+            "title": "Unirse al conjunto",
+            "desc": "Puedes unirte a este conjunto directamente, o introducir un código de invitación si te invitaron como colaborador.",
+            "join_without_code": "Unirse al conjunto",
+            "join_with_code": "Unirse con un código"
         }
     }
 }

@@ -1,8 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 
-import { BundleMemberRole, TranslationKey, Word, WordsBundleVisibility } from '../../../types';
-
-export type InviteRole = Extract<BundleMemberRole, 'editor' | 'viewer'>;
+import { TranslationKey, Word, WordsBundleVisibility } from '../../../types';
 
 export type BundleVisibilityOption = {
     visibility: WordsBundleVisibility;

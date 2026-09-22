@@ -1,10 +1,9 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Animated, Keyboard, RefreshControl, Share, StyleSheet, View } from 'react-native';
+import { Animated, Keyboard, RefreshControl, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { CompositeNavigationProp, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlashList } from '@shopify/flash-list';
-import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
@@ -48,18 +47,22 @@ import { SortingMethodBottomSheet } from '../../../ui/sheets/SortingMethodBottom
 import { StartSessionBottomSheet } from '../../../ui/sheets/StartSessionBottomSheet';
 import { CustomTheme } from '../../../ui/Theme';
 import { isIOS } from '../../../utils/deviceUtils';
-import { buildBundleLink } from '../../../utils/helpers';
+import { ScrollableTopBar } from '../common/components';
+import { ANDROID_HEIGHT, IOS_HEIGHT } from '../common/constants';
+import { useShareBundleLink } from '../common/hooks';
 import { JoinBundleWithCodeBottomSheet } from '../common/sheets/join-bundle-with-code-bottom-sheet';
-import { BundleActionButtons } from './components/bundle-action-buttons';
-import { BundleClassBadgesSection } from './components/bundle-class-badges-section';
-import { BundleEmptyState } from './components/bundle-empty-state';
-import { BundleFlashcardsTopBar } from './components/bundle-flashcards-top-bar';
-import { BundleSubscribeToggle } from './components/bundle-subscribe-toggle';
-import { BundleTitleSection } from './components/bundle-title-section';
+import {
+    BundleActionButtons,
+    BundleClassBadgesSection,
+    BundleEmptyState,
+    BundleSubscribeToggle,
+    BundleTitleSection,
+} from './components';
 import {
     BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET,
     BUNDLE_DETAILS_BUNDLE_READY_BOTTOM_SHEET,
     BUNDLE_DETAILS_HANDLE_FLASHCARD_BOTTOM_SHEET,
+    BUNDLE_DETAILS_JOIN_PUBLIC_BUNDLE_BOTTOM_SHEET,
     BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET,
     BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET,
     BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET,
@@ -71,15 +74,20 @@ import {
     CONTENT_TITLE_SCROLL_END,
     CONTENT_TITLE_SCROLL_START,
     DOCKED_ACTION_PANEL_HEIGHT,
-    TOP_BAR_ANDROID_HEIGHT,
-    TOP_BAR_IOS_HEIGHT,
+    EMPTY_LIST_ITEMS,
+    HEADER_LIST_ITEMS,
 } from './constants';
-import { useBundleInfo } from './hooks/use-bundle-info';
-import { useBundleLifecycleSheets } from './hooks/use-bundle-lifecycle-sheets';
-import { useBundleScrollAnimations } from './hooks/use-bundle-scroll-animations';
-import { useBundleWordsData } from './hooks/use-bundle-words-data';
-import { BundleOptionsBottomSheet } from './sheets/bundle-options-bottom-sheet';
-import { BundleReadyBottomSheet } from './sheets/bundle-ready-bottom-sheet';
+import {
+    useBundleInfo,
+    useBundleLifecycleSheets,
+    useBundleScrollAnimations,
+    useBundleWordsData,
+} from './hooks';
+import {
+    BundleOptionsBottomSheet,
+    BundleReadyBottomSheet,
+    JoinPublicBundleBottomSheet,
+} from './sheets';
 import { BundleListItem, BundleWord } from './types';
 
 type BundleDetailsScreenNavProp = CompositeNavigationProp<
@@ -98,10 +106,10 @@ const keyExtractor = (item: BundleListItem) => item.id;
 
 export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, route }) => {
     const { bundleId, code: joinCode, isNewBundle, justJoined, previewBundle } = route.params;
-    const { i18n } = useTranslation();
     const { colors } = useTheme() as CustomTheme;
     const insets = useSafeAreaInsets();
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
+    const { shareBundleLink } = useShareBundleLink();
 
     const { editBundleMember, joinPreviewBundle, syncBundles } = useWordsBundle();
     const { addFetchedWords, removeWord, syncWords } = useWords();
@@ -128,7 +136,7 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         scrollY,
     } = useBundleScrollAnimations();
 
-    const topBarHeight = insets.top + (isIOS ? TOP_BAR_IOS_HEIGHT : TOP_BAR_ANDROID_HEIGHT);
+    const topBarHeight = insets.top + (isIOS ? IOS_HEIGHT : ANDROID_HEIGHT);
 
     const listContentContainerStyle = useMemo(() => ({ paddingTop: topBarHeight }), [topBarHeight]);
     const subheaderOverlayStyle = useMemo(
@@ -177,7 +185,7 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
 
     const [hasContentAppeared, setHasContentAppeared] = useState(false);
 
-    const { isJoiningBundle, setIsJoiningBundle } = useBundleLifecycleSheets(
+    const { isJoiningBundle, setIsJoiningBundle, startJoiningSilently } = useBundleLifecycleSheets(
         navigation,
         hasContentAppeared,
         isNewBundle,
@@ -254,8 +262,15 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
     };
 
     const handleMoreOptionsPress = () => {
-        if (isPreview) return;
         TrueSheet.present(BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET);
+    };
+
+    const handleNavigateToBundleMembers = () => {
+        if (!bundleId) return;
+        navigation.navigate(ScreenName.BundleMembers, {
+            bundleId,
+            previewTitle: previewOwnerInfo?.title,
+        });
     };
 
     const handleBundleRemoved = () => {
@@ -270,12 +285,18 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
     };
 
     const handleShareBundleLinkPress = () => {
-        Share.share({
-            message: buildBundleLink(bundleId, i18n.language),
-        });
+        shareBundleLink(bundleId, previewOwnerInfo?.title);
     };
 
     const handleJoinWithCodePress = () => {
+        TrueSheet.present(BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET);
+    };
+
+    const handleJoinPress = () => {
+        TrueSheet.present(BUNDLE_DETAILS_JOIN_PUBLIC_BUNDLE_BOTTOM_SHEET);
+    };
+
+    const handleJoinPublicBundleWithCodePress = () => {
         TrueSheet.present(BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET);
     };
 
@@ -298,8 +319,12 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         return { member, wordsCount: fetchedWords?.length ?? 0 };
     };
 
-    const tryJoinPreviewBundleWithWords = async () => {
-        setIsJoiningBundle(true);
+    const tryJoinPreviewBundleWithWords = async (silent: boolean) => {
+        if (silent) {
+            startJoiningSilently();
+        } else {
+            setIsJoiningBundle(true);
+        }
         try {
             await joinPreviewBundleWithWords();
         } finally {
@@ -307,9 +332,10 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         }
     };
 
-    const handleAddToMyBundlesPress = async () => {
+    const handleJoinWithoutCodePress = async () => {
         if (!previewOwnerInfo) return;
-        await tryJoinPreviewBundleWithWords();
+        TrueSheet.dismiss(BUNDLE_DETAILS_JOIN_PUBLIC_BUNDLE_BOTTOM_SHEET);
+        await tryJoinPreviewBundleWithWords(false);
     };
 
     const handleBundleReadyStartSessionPress = () => {
@@ -324,8 +350,8 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         isJoiningBundle,
         isPreview,
         isPrivatePreview,
-        onAddToMyBundlesPress: handleAddToMyBundlesPress,
         onAddWordPress: handleAddWordPress,
+        onJoinPress: handleJoinPress,
         onJoinWithCodePress: handleJoinWithCodePress,
         onShareBundleLinkPress: handleShareBundleLinkPress,
         onStartSessionPress: handleStartSessionPress,
@@ -337,7 +363,7 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         flashcardSide: FlashcardSide,
     ) => {
         if (isPreview && previewOwnerInfo) {
-            await tryJoinPreviewBundleWithWords();
+            await tryJoinPreviewBundleWithWords(true);
         }
 
         TrueSheet.dismissAll();
@@ -477,11 +503,8 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
 
     const listData = useMemo<BundleListItem[]>(
         () => [
-            { id: 'header' as const },
-            { id: 'subheader' as const },
-            ...(bundle && words.length > 0 && !isPrivatePreview
-                ? words
-                : [{ id: 'empty' as const }]),
+            ...HEADER_LIST_ITEMS,
+            ...(bundle && words.length > 0 && !isPrivatePreview ? words : EMPTY_LIST_ITEMS),
         ],
         [bundle, words, isPrivatePreview],
     );
@@ -492,7 +515,7 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
 
     return (
         <View style={styles.root}>
-            <BundleFlashcardsTopBar
+            <ScrollableTopBar
                 insets={insets}
                 scrollY={scrollY}
                 title={bundle?.title ?? ''}
@@ -518,9 +541,12 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
             <BundleOptionsBottomSheet
                 bundleId={bundleId}
                 isOwner={isBundleOwner}
+                isPreview={isPreview}
+                previewTitle={previewOwnerInfo?.title}
                 sheetName={BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET}
                 onBundleLeft={handleBundleLeft}
                 onBundleRemoved={handleBundleRemoved}
+                onNavigateToBundleMembers={handleNavigateToBundleMembers}
             />
             <MicrophonePermissionBottomSheet
                 sheetName={BUNDLE_DETAILS_MICROPHONE_PERMISSION_SHEET}
@@ -539,6 +565,12 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
                 sheetName={BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET}
                 onJoined={handleJoinedWithCode}
                 onJoining={handleJoiningWithCode}
+            />
+            <JoinPublicBundleBottomSheet
+                isJoining={isJoiningBundle}
+                sheetName={BUNDLE_DETAILS_JOIN_PUBLIC_BUNDLE_BOTTOM_SHEET}
+                onJoinWithCode={handleJoinPublicBundleWithCodePress}
+                onJoinWithoutCode={handleJoinWithoutCodePress}
             />
             <HandleFlashcardBottomSheet
                 bundleId={bundleId}

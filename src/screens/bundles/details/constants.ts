@@ -1,12 +1,15 @@
 import { ApiErrorCode } from '../../../api/api.types';
 import { palette } from '../../../constants/palette';
 import { DeleteBundleResult, TranslationKey } from '../../../types';
-import { BundleVisibilityOption } from './types';
+import { BundleListItem, BundleVisibilityOption } from './types';
 
 export const UNKNOWN_DELETE_BUNDLE_ERROR_RESULT: DeleteBundleResult = {
     errorCode: 'unknown',
     success: false,
 };
+
+export const HEADER_LIST_ITEMS: BundleListItem[] = [{ id: 'header' }, { id: 'subheader' }];
+export const EMPTY_LIST_ITEMS: BundleListItem[] = [{ id: 'empty' }];
 
 export const BUNDLE_REMOVE_ERROR_MESSAGE_KEYS: Record<ApiErrorCode, TranslationKey> = {
     'already-member': 'bundle_details.removing.error_unknown',
@@ -43,23 +46,10 @@ export const BUNDLE_VISIBILITY_OPTIONS: BundleVisibilityOption[] = [
     },
 ];
 
-export const TITLE_SCROLL_START = 40;
-export const TITLE_SCROLL_END = 80;
-
 export const SCROLL_TO_TOP_THRESHOLD = 300;
 export const CONTENT_TITLE_SCROLL_START = 40;
 export const CONTENT_TITLE_SCROLL_END = 80;
 export const BOTTOM_PANEL_SHOW_OFFSET = -20;
-
-export const TOP_BAR_PRESS_SCALE = 0.85;
-export const TOP_BAR_PRESS_SCALE_DEFAULT = 1;
-export const TOP_BAR_TITLE_OPACITY_RANGE: [number, number] = [0, 1];
-export const TOP_BAR_TITLE_TRANSLATE_Y_RANGE: [number, number] = [8, 0];
-export const TOP_BAR_BACK_ICON_SIZE = 26;
-export const TOP_BAR_MORE_ICON_SIZE = 22;
-export const TOP_BAR_TITLE_HORIZONTAL_INSET = 56;
-export const TOP_BAR_IOS_HEIGHT = 44;
-export const TOP_BAR_ANDROID_HEIGHT = 56;
 
 export const BUNDLE_TITLE_LINE_HEIGHT = 31;
 export const BUNDLE_SUBTITLE_LINE_HEIGHT = 16;
@@ -90,6 +80,8 @@ export const BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET =
     'bundle-details-bundle-options-bottom-sheet';
 export const BUNDLE_DETAILS_JOIN_WITH_CODE_BOTTOM_SHEET =
     'bundle-details-join-with-code-bottom-sheet';
+export const BUNDLE_DETAILS_JOIN_PUBLIC_BUNDLE_BOTTOM_SHEET =
+    'bundle-details-join-public-bundle-bottom-sheet';
 
 export const BUNDLE_READY_LOTTIE_HEIGHT = 200;
 export const BUNDLE_READY_LOTTIE_MARGIN_BOTTOM = -10;

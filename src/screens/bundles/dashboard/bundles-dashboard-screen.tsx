@@ -38,9 +38,8 @@ import { CustomTheme } from '../../../ui/Theme';
 import { trackEvent } from '../../../utils/analytics';
 import { STREAK_DEFAULT_VALUE } from '../../../utils/constants';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
-import { HandleBundleBottomSheet } from '../common/sheets/handle-bundle-bottom-sheet';
-import { JoinBundleWithCodeBottomSheet } from '../common/sheets/join-bundle-with-code-bottom-sheet';
-import { BundleListItem } from './components/bundle-list-item';
+import { HandleBundleBottomSheet, JoinBundleWithCodeBottomSheet } from '../common/sheets';
+import { BundleListItem } from './components';
 import {
     ADD_BUNDLE_SHEET_NAME,
     BUNDLES_LANGUAGE_SHEET_NAME,
@@ -52,7 +51,7 @@ import {
     STATUS_BAR_APPEAR_OPACITY_THRESHOLD,
     STATUS_BAR_APPEAR_SCROLL_DISTANCE,
 } from './constants';
-import { AddBundleBottomSheet } from './sheets/add-bundle-bottom-sheet';
+import { AddBundleBottomSheet } from './sheets';
 
 type BundlesDashboardScreenNavProp = CompositeNavigationProp<
     BottomTabNavigationProp<TabsParamList, 'Bundles'>,

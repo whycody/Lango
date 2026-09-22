@@ -56,12 +56,8 @@
     "addedOn": "Aggiunto il",
     "bundle": "Set",
     "mainCollection": "Collezione principale",
-    "editedOn": "Modificato",
     "repetitions": "Ripetizioni",
-    "avg_grade": "Voto medio",
     "correct_streak": "Serie corrette",
-    "days_known": "Giorni nel vocab",
-    "study_duration": "Tempo studio",
     "howWell": "Quanto bene conosci questa parola?",
     "poorly": "Poco",
     "moderately": "Abbastanza",
@@ -126,10 +122,8 @@
     "study": "Studio",
     "random": "Casuale",
     "oldest": "Più vecchio",
-    "export": "Esporta dati",
     "settings_desc": "Adatta l'applicazione alle tue esigenze",
     "settings_long_desc": "Personalizza l'aspetto, il comportamento e le preferenze dell'app in modo che si adatti perfettamente al tuo flusso di lavoro.",
-    "export_desc": "Esporta i tuoi {{records_number}} record",
     "words_desc": "Dai un'occhiata alle tue {{words_number}} parole aggiunte",
     "words_desc_s": "Dai un'occhiata alla tua parola aggiunta",
     "words_desc_empty": "Non hai ancora aggiunto nessuna parola",
@@ -177,9 +171,6 @@
     "update_app_action": "Aggiorna",
     "back": "Torna indietro",
     "welcome": "{{name}},\n benvenuto in Lango! ",
-    "welcome_onboarding": "{{name}},\n benvenuto in Lango!",
-    "welcome_onboarding_no_name": "Benvenuto in Lango!",
-    "welcome_onboarding_desc": "Siamo molto felici che tu ti sia unito alla nostra comunità! Rispondi ad alcune domande in modo da poter adattare meglio l'app alle tue esigenze.",
     "general": {
         "open_settings": "Apri impostazioni",
         "cancel": "Annulla"
@@ -231,9 +222,7 @@
     "word_suggestion_bottom_sheet": {
         "title": "Suggerimento nuova parola ✨",
         "desc": "Visualizzi una scheda suggerita che non è ancora nel tuo dizionario.",
-        "desc2": "Se vuoi aggiungerla, valuta quanto bene la conosci. Altrimenti, saltala usando la freccia in basso a destra.",
-        "word": "Parola",
-        "translation": "Traduzione"
+        "desc2": "Se vuoi aggiungerla, valuta quanto bene la conosci. Altrimenti, saltala usando la freccia in basso a destra."
     },
     "microphone": {
         "no_permission": "Nessun permesso per usare il microfono 🎤",
@@ -323,8 +312,6 @@
         "join_with_code": "Unisciti a un set con un codice",
         "create_new_title": "Crea un nuovo set",
         "create_new_desc": "Dai un nome e una descrizione al tuo set. Potrai cambiarli in seguito.",
-        "create_new_placeholder": "Nome del set",
-        "create_new_description_placeholder": "Descrizione del set (opzionale)",
         "create_new_title_label": "Nome",
         "create_new_description_label": "Descrizione (opzionale)",
         "create_new_confirm": "Crea set",
@@ -339,18 +326,15 @@
         "empty_search_desc": "Nessun set corrisponde alla tua ricerca."
     },
     "bundle_details": {
-        "add_to_my_bundles": "Aggiungi ai miei set",
+        "add_to_my_bundles": "Unisciti al set",
         "add_word": "Aggiungi nuova parola +",
         "creator_info": "{{name}} • {{count}} flashcard",
         "creator_info_plural": "{{name}} • {{count}} flashcard",
-        "flashcards_count": "{{count}} flashcard",
-        "flashcards_count_plural": "{{count}} flashcard",
         "join_with_code": "Unisciti con un codice",
         "no_access": {
             "title": "Nessun accesso",
             "desc": "Questo set è privato. Unisciti con un codice per vedere le sue parole."
         },
-        "members": "Membri",
         "no_members": "Ancora nessun membro",
         "no_items_desc": "Prova ad aggiungere alcune parole a questo set.",
         "no_items_desc_readonly": "Questo set non ha ancora parole.",
@@ -364,7 +348,7 @@
             "invite_editor": "Invita a collaborare",
             "invite_editor_desc": "Può aggiungere e modificare parole",
             "share_bundle_link": "Condividi link del set",
-            "share_bundle_link_message": "Guarda il mio set \"{{title}}\" su Lango 👇\n\n{{link}}",
+            "share_bundle_link_message": "Ehi, guarda questo set \"{{title}}\" su Lango 👇\n\n{{link}}",
             "invite_message": "Unisciti al mio set \"{{title}}\" su Lango! Tocca il link o inserisci il codice {{code}} direttamente nell'app 👈\n\n{{link}}"
         },
         "options": {
@@ -372,6 +356,7 @@
             "change_visibility": "Cambia visibilità",
             "delete_bundle": "Elimina set",
             "leave_bundle": "Abbandona il set",
+            "members": "Membri",
             "share_bundle": "Condividi set",
             "share_bundle_link": "Condividi link del set"
         },
@@ -421,6 +406,41 @@
             "title": "Abbandono del set 👋",
             "desc": "Sei sicuro di voler abbandonare questo set? Perderai l'accesso ad esso."
         },
+        "members": {
+            "title": "Membri",
+            "desc": "Gestisci chi può accedere a questo set, concedi o revoca l'accesso in modifica e trasferisci la proprietà.",
+            "desc_readonly": "Scopri chi ha accesso a questo set.",
+            "search_placeholder": "Cerca membri",
+            "no_results": "Nessun membro corrisponde alla tua ricerca",
+            "you": "{{name}} (tu)",
+            "roles": {
+                "owner": "Proprietario",
+                "editor": "Editor",
+                "viewer": "Visualizzatore"
+            },
+            "actions": {
+                "grant_edit": "Concedi accesso in modifica",
+                "revoke_edit": "Revoca accesso in modifica",
+                "transfer_ownership": "Trasferisci proprietà",
+                "remove_member": "Rimuovi dal set"
+            },
+            "transfer_ownership": {
+                "title": "Trasferisci proprietà",
+                "desc": "Il nuovo proprietario potrà gestire i membri, cambiare la visibilità ed eliminare il set. Tu diventerai un editor.",
+                "confirm": "Trasferisci proprietà"
+            },
+            "remove_member": {
+                "title": "Rimuovi membro",
+                "desc_public": "Questo membro perderà l'accesso al set. Essendo pubblico, potrà unirsi di nuovo autonomamente.",
+                "desc_private": "Questo membro perderà l'accesso al set e non potrà unirsi di nuovo a meno che non venga invitato.",
+                "confirm": "Rimuovi dal set"
+            },
+            "error_network": "Non è stato possibile aggiornare questo membro. Controlla la connessione e riprova.",
+            "error_forbidden": "Solo il proprietario di questo set può farlo.",
+            "error_not_found": "Questo membro non esiste più.",
+            "error_unauthorized": "La tua sessione è scaduta. Accedi di nuovo.",
+            "error_unknown": "Si è verificato un errore. Riprova."
+        },
         "join_with_code_sheet": {
             "title": "Unisciti con un codice",
             "desc": "Inserisci il codice di invito che hai ricevuto per unirti a questo set.",
@@ -429,6 +449,12 @@
             "confirm": "Unisciti",
             "error_invalid": "Questo codice non è valido o è scaduto. Controllalo e riprova.",
             "error_already_member": "Questo codice appartiene a un set di cui sei già membro."
+        },
+        "join_public_bundle_sheet": {
+            "title": "Unisciti al set",
+            "desc": "Puoi unirti subito a questo set, oppure inserire un codice di invito se sei stato invitato come collaboratore.",
+            "join_without_code": "Unisciti al set",
+            "join_with_code": "Unisciti con un codice"
         }
     }
 }

@@ -11,9 +11,9 @@ import { useLanguage } from '../../../store';
 import { ThemeColors, WordsBundleWithOwnerInfo } from '../../../types';
 import { EmptyList, ListFilter } from '../../../ui/components/flashcards';
 import { CustomTheme } from '../../../ui/Theme';
-import { SearchBundleListItem } from './components/search-bundle-list-item';
+import { SearchBundleListItem } from './components';
 import { SEARCH_DEBOUNCE_MS, SEARCH_LIST_END_REACHED_THRESHOLD } from './constants';
-import { useSearchBundlesQuery } from './hooks/use-search-bundles-query';
+import { useSearchBundlesQuery } from './hooks';
 
 type SearchBundlesScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
 

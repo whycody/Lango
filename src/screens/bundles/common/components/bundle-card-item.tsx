@@ -84,6 +84,7 @@ const getStyles = (colors: ThemeColors) =>
             borderWidth: 1,
             flexDirection: 'row',
             marginTop: spacing.l,
+            overflow: 'hidden',
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: spacing.l,
         },

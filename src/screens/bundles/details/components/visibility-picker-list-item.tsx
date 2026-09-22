@@ -31,7 +31,7 @@ export const VisibilityPickerListItem: FC<VisibilityPickerListItemProps> = memo(
         };
 
         return (
-            <Pressable android_ripple={ripple} onPress={handleSelect}>
+            <Pressable android_ripple={ripple} style={styles.root} onPress={handleSelect}>
                 <View style={[styles.item, isSelected && styles.itemSelected]}>
                     <Ionicons color={item.color} name={item.icon} size={20} />
                     <View style={styles.labelContainer}>
@@ -54,12 +54,8 @@ const getStyles = (colors: ThemeColors) =>
         item: {
             alignItems: 'center',
             backgroundColor: colors.cardAccent,
-            borderColor: colors.cardAccent300,
-            borderRadius: spacing.m,
-            borderWidth: 1,
+
             flexDirection: 'row',
-            marginHorizontal: MARGIN_HORIZONTAL,
-            marginTop: spacing.l,
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingVertical: spacing.l,
         },
@@ -72,5 +68,13 @@ const getStyles = (colors: ThemeColors) =>
         },
         labelContainer: {
             marginLeft: spacing.l,
+        },
+        root: {
+            borderColor: colors.cardAccent300,
+            borderRadius: spacing.m,
+            borderWidth: 1,
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: spacing.l,
+            overflow: 'hidden',
         },
     });

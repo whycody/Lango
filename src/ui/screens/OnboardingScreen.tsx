@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { getLocales } from 'react-native-localize';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { fetchExampleFlashcards, updateUserData } from '../../api/apiClient';
+import { suggestionsApi } from '../../api/suggestions-api';
+import { usersApi } from '../../api/users-api';
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LanguageCode, LanguageTypes } from '../../constants/Language';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../constants/margins';
@@ -80,19 +81,22 @@ export const OnboardingScreen = () => {
         setFlashcardsError(false);
         setFlashcardsErrorMessage(null);
 
-        fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1, 15, controller.signal)
-            .then(flashcards => {
-                if (flashcards.length > 0) {
-                    setExampleFlashcards(flashcards);
+        suggestionsApi
+            .fetchExampleFlashcards(mainLang, translationLang, pickedLevel ?? 1, 15, controller.signal)
+            .then(result => {
+                if (result.kind === 'error') {
+                    if (controller.signal.aborted) return;
+                    setFlashcardsError(true);
+                    setFlashcardsErrorMessage(null);
+                    setFlashcardsLoading(false);
+                    return;
+                }
+
+                if (result.data.length > 0) {
+                    setExampleFlashcards(result.data);
                 } else {
                     setFlashcardsError(true);
                 }
-                setFlashcardsLoading(false);
-            })
-            .catch(err => {
-                if (err?.code === 'ERR_CANCELED') return;
-                setFlashcardsError(true);
-                setFlashcardsErrorMessage(err?.response?.data?.error ?? null);
                 setFlashcardsLoading(false);
             });
 
@@ -139,14 +143,14 @@ export const OnboardingScreen = () => {
         const skippedFlashcardsIds = displayedFlashcardsIds.filter(
             id => !selectedFlashcardsIds.includes(id),
         );
-        const res = await updateUserData(
+        const res = await usersApi.updateUserData(
             mainLang,
             translationLang,
             pickedLevel ?? 1,
             selectedFlashcardsIds,
             skippedFlashcardsIds,
         );
-        if (res) {
+        if (res.kind === 'ok') {
             trackEvent(AnalyticsEventName.ONBOARDING_FINISHED);
             await getSession();
         }

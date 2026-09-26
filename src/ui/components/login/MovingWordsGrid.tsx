@@ -50,8 +50,8 @@ const getStyles = (colors: CustomTheme['colors']) =>
             flexDirection: 'row',
         },
         wordBox: {
-            backgroundColor: colors.primary800,
-            borderRadius: spacing.s,
+            backgroundColor: colors.primary,
+            borderRadius: spacing.xs,
             flex: 1,
             flexDirection: 'row',
             marginRight: 10,

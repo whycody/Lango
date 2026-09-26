@@ -9,12 +9,14 @@ import { CustomTheme } from '../../Theme';
 type ScrollToTopButtonProps = {
     animatedValue: Animated.Value;
     addButtonAnim: Animated.Value;
+    liftOffset?: number;
     onPress: () => void;
 };
 
 export const ScrollToTopButton = ({
     addButtonAnim,
     animatedValue,
+    liftOffset = 56,
     onPress,
 }: ScrollToTopButtonProps) => {
     const { colors } = useTheme() as CustomTheme;
@@ -27,7 +29,7 @@ export const ScrollToTopButton = ({
 
     const translateY = Animated.add(
         animatedValue.interpolate({ inputRange: [0, 1], outputRange: [80, 0] }),
-        addButtonAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -56] }),
+        addButtonAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -liftOffset] }),
     );
 
     return (

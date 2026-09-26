@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import debounce from 'lodash.debounce';
 
-import { fetchUpdatedSuggestions, syncSuggestionsOnServer } from '../api/apiClient';
+import { suggestionsApi } from '../api/suggestions-api';
 import { useSuggestionsRepository } from '../hooks/repo/';
 import { Suggestion } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
@@ -119,9 +119,9 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
                     suggestion.translationLang == translationLang,
             );
             const unsyncedSuggestions = getUnsyncedItems<Suggestion>(langSuggestionsList);
-            const serverUpdates = await syncInBatches<Suggestion>(
+            const { synced: serverUpdates } = await syncInBatches<Suggestion>(
                 unsyncedSuggestions,
-                syncSuggestionsOnServer,
+                suggestions => suggestionsApi.syncSuggestionsOnServer(suggestions),
             );
 
             const updatedSuggestions = updateLocalItems<Suggestion>(
@@ -160,7 +160,12 @@ export const SuggestionsProvider: FC<{ children: ReactNode }> = ({ children }) =
 
     const fetchNewSuggestions = async (updatedSuggestions: Suggestion[]): Promise<Suggestion[]> => {
         const latestUpdatedAt = findLatestUpdatedAt<Suggestion>(updatedSuggestions);
-        return await fetchUpdatedSuggestions(mainLang, translationLang, latestUpdatedAt);
+        const result = await suggestionsApi.fetchUpdatedSuggestions(
+            mainLang,
+            translationLang,
+            latestUpdatedAt,
+        );
+        return result.kind === 'ok' ? result.data : [];
     };
 
     const loadData = async () => {

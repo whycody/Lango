@@ -5,7 +5,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { MARGIN_HORIZONTAL } from '../../../constants/margins';
+import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { FlashcardSortingMethod } from '../../../constants/UserPreferences';
 import { getSortingMethodLabel } from '../../../utils/sortingUtil';
 import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
@@ -16,10 +16,12 @@ import { ListFilter } from './ListFilter';
 type FlashcardsSubheaderProps = {
     filterSheetName: string;
     masteryFilter: MasteryFilter;
+    showFilter?: boolean;
+    showSearch?: boolean;
     sortingMethod: FlashcardSortingMethod;
     sortingSheetName: string;
-    onSearchPress: () => void;
-    onClearSearch: () => void;
+    onClearSearch?: () => void;
+    onSearchPress?: () => void;
 };
 
 export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
@@ -28,6 +30,8 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
         masteryFilter,
         onClearSearch,
         onSearchPress,
+        showFilter = true,
+        showSearch = true,
         sortingMethod,
         sortingSheetName,
     }) => {
@@ -36,15 +40,18 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
         const styles = getStyles(colors);
 
         return (
-            <View style={styles.container}>
-                <Pressable onPress={onSearchPress}>
-                    <ListFilter
-                        editable={false}
-                        isSearching={false}
-                        pointerEvents="none"
-                        onClear={onClearSearch}
-                    />
-                </Pressable>
+            <View style={[styles.container, !showSearch && styles.containerWithoutSearch]}>
+                {showSearch && (
+                    <Pressable onPress={onSearchPress}>
+                        <ListFilter
+                            editable={false}
+                            isSearching={false}
+                            pointerEvents="none"
+                            styleRoot={styles.listFilter}
+                            onClear={onClearSearch ?? (() => {})}
+                        />
+                    </Pressable>
+                )}
                 <View style={styles.row}>
                     <Pressable
                         style={styles.sortingButton}
@@ -59,21 +66,23 @@ export const FlashcardsSubheader = memo<FlashcardsSubheaderProps>(
                             {getSortingMethodLabel(sortingMethod)}
                         </CustomText>
                     </Pressable>
-                    <Pressable
-                        style={styles.filterButton}
-                        onPress={() => TrueSheet.present(filterSheetName)}
-                    >
-                        {masteryFilter !== 'all' && (
-                            <CustomText style={styles.filterLabel} weight={'SemiBold'}>
-                                {t(`mastery_filter.${masteryFilter}`)}
-                            </CustomText>
-                        )}
-                        <MaterialCommunityIcons
-                            color={masteryFilter !== 'all' ? colors.primary300 : colors.white}
-                            name={'filter-variant'}
-                            size={20}
-                        />
-                    </Pressable>
+                    {showFilter && (
+                        <Pressable
+                            style={styles.filterButton}
+                            onPress={() => TrueSheet.present(filterSheetName)}
+                        >
+                            {masteryFilter !== 'all' && (
+                                <CustomText style={styles.filterLabel} weight={'SemiBold'}>
+                                    {t(`mastery_filter.${masteryFilter}`)}
+                                </CustomText>
+                            )}
+                            <MaterialCommunityIcons
+                                color={masteryFilter !== 'all' ? colors.primary300 : colors.white}
+                                name={'filter-variant'}
+                                size={20}
+                            />
+                        </Pressable>
+                    )}
                 </View>
             </View>
         );
@@ -86,6 +95,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
             backgroundColor: colors.background,
             paddingHorizontal: MARGIN_HORIZONTAL,
         },
+        containerWithoutSearch: {
+            paddingTop: MARGIN_VERTICAL / 2,
+        },
         filterButton: {
             alignItems: 'center',
             flexDirection: 'row',
@@ -96,6 +108,9 @@ const getStyles = (colors: CustomTheme['colors']) =>
         filterLabel: {
             color: colors.white,
             fontSize: 13,
+        },
+        listFilter: {
+            marginVertical: spacing.l,
         },
         row: {
             alignItems: 'center',

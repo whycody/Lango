@@ -7,9 +7,9 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import uuid from 'react-native-uuid';
+import { ObjectId } from 'bson';
 
-import { fetchUpdatedSessions, syncSessionsOnServer } from '../api/apiClient';
+import { sessionsApi } from '../api/sessions-api';
 import { LanguageCode } from '../constants/Language';
 import { SessionMode, SessionModel, SessionModelVersion } from '../constants/Session';
 import { useSessionsRepository } from '../hooks/repo';
@@ -86,7 +86,7 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             averageScore,
             date: now,
             finished,
-            id: uuid.v4(),
+            id: new ObjectId().toHexString(),
             localDay: getTodayDate(),
             locallyUpdatedAt: now,
             mainLang,
@@ -133,9 +133,8 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             syncing.current = true;
             const sessionsList = inputSessions ?? (await getAllSessions());
             const unsyncedSessions = getUnsyncedItems<Session>(sessionsList);
-            const serverUpdates = await syncInBatches<Session>(
-                unsyncedSessions,
-                syncSessionsOnServer,
+            const { synced: serverUpdates } = await syncInBatches<Session>(unsyncedSessions, sessions =>
+                sessionsApi.syncSessionsOnServer(sessions),
             );
 
             const updatedSessions = updateLocalItems<Session>(sessionsList, serverUpdates);
@@ -157,7 +156,8 @@ export const SessionsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const fetchNewSessions = async (updatedSessions: Session[]): Promise<Session[]> => {
         const latestUpdatedAt = findLatestUpdatedAt<Session>(updatedSessions);
-        return await fetchUpdatedSessions(latestUpdatedAt);
+        const result = await sessionsApi.fetchUpdatedSessions(latestUpdatedAt);
+        return result.kind === 'ok' ? result.data : [];
     };
 
     const loadData = async () => {

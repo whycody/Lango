@@ -143,7 +143,7 @@ const getStyles = (colors: CustomTheme['colors'], goalAchieved?: boolean) =>
         },
         tile: {
             backgroundColor: goalAchieved ? colors.orange600 : colors.red300,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             height: TILE_HEIGHT,
             overflow: 'hidden',
             width: TILE_WIDTH,

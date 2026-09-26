@@ -14,6 +14,7 @@ const columns: Array<keyof Session> = [
     'averageScore',
     'wordsCount',
     'finished',
+    'bundleId',
     'synced',
     'updatedAt',
     'locallyUpdatedAt',
@@ -75,6 +76,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
                         const row = rows.item(i);
                         sessions.push({
                             averageScore: row.averageScore,
+                            bundleId: row.bundleId ?? undefined,
                             date: row.date,
                             finished: row.finished === 1,
                             id: row.id,

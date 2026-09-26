@@ -12,6 +12,7 @@ export const WORDS_COLUMNS: Array<keyof Word> = [
     'addDate',
     'active',
     'removed',
+    'bundleId',
     'synced',
     'locallyUpdatedAt',
     'updatedAt',
@@ -105,4 +106,20 @@ export const getAllWords = async (userId: string): Promise<Word[]> => {
 
 export const updateWord = async (userId: string, word: Word) => {
     await saveWords(userId, [word]);
+};
+
+export const deleteWordsByBundleId = async (userId: string, bundleId: string) => {
+    const db = await getDb(userId);
+    await db.transaction(tx => {
+        tx.executeSql(`DELETE FROM ${WORDS} WHERE bundleId = ?`, [bundleId]);
+    });
+};
+
+export const deleteWordsByIds = async (userId: string, ids: string[]) => {
+    if (ids.length === 0) return;
+    const db = await getDb(userId);
+    const placeholders = ids.map(() => '?').join(', ');
+    await db.transaction(tx => {
+        tx.executeSql(`DELETE FROM ${WORDS} WHERE id IN (${placeholders})`, ids);
+    });
 };

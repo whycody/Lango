@@ -8,18 +8,24 @@ import {
     StyleSheet,
     ViewStyle,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 import { spacing } from '../../constants/margins';
 import { useHaptics } from '../../hooks';
+import { TranslationKey } from '../../types';
 import { CustomTheme } from '../Theme';
 import { CustomText } from './CustomText';
 
+type IconFamily = 'ionicons' | 'material-community';
+
 interface ActionButtonProps {
     active?: boolean;
-    icon?: keyof typeof Ionicons.glyphMap;
-    label: string;
+    icon?: keyof typeof Ionicons.glyphMap | keyof typeof MaterialCommunityIcons.glyphMap;
+    iconFamily?: IconFamily;
+    label?: string;
+    labelTx?: TranslationKey;
     loading?: boolean;
     onPress?: () => void;
     primary?: boolean;
@@ -29,7 +35,9 @@ interface ActionButtonProps {
 export const ActionButton: FC<ActionButtonProps> = ({
     active = true,
     icon,
+    iconFamily = 'ionicons',
     label,
+    labelTx,
     loading = false,
     onPress,
     primary = false,
@@ -38,6 +46,9 @@ export const ActionButton: FC<ActionButtonProps> = ({
     const { colors } = useTheme() as CustomTheme;
     const styles = getStyles(colors, primary, active);
     const { triggerHaptics } = useHaptics();
+    const { t } = useTranslation();
+
+    const resolvedLabel = labelTx ? t(labelTx) : label;
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const opacityAnim = useRef(new Animated.Value(1)).current;
 
@@ -85,25 +96,36 @@ export const ActionButton: FC<ActionButtonProps> = ({
 
     return (
         <Animated.View
-            style={{
-                opacity: opacityAnim,
-                transform: [{ scale: scaleAnim }],
-            }}
+            style={[
+                {
+                    opacity: opacityAnim,
+                    transform: [{ scale: scaleAnim }],
+                },
+                style,
+            ]}
         >
             <Pressable
                 android_ripple={{ color: primary ? 'white' : colors.card, foreground: true }}
-                style={[styles.root, style]}
+                style={styles.root}
                 onPress={active && !loading ? handlePress : undefined}
                 onPressIn={active && !loading ? handlePressIn : undefined}
                 onPressOut={active && !loading ? handlePressOut : undefined}
             >
                 <CustomText style={[styles.label, loading && styles.hidden]} weight={'Bold'}>
-                    {label}
+                    {resolvedLabel}
                 </CustomText>
-                {icon && (
+                {icon && iconFamily === 'material-community' && (
+                    <MaterialCommunityIcons
+                        color={colors.white}
+                        name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
+                        size={14}
+                        style={[styles.icon, loading && styles.hidden]}
+                    />
+                )}
+                {icon && iconFamily === 'ionicons' && (
                     <Ionicons
                         color={colors.white}
-                        name={icon}
+                        name={icon as keyof typeof Ionicons.glyphMap}
                         size={14}
                         style={[styles.icon, loading && styles.hidden]}
                     />
@@ -143,7 +165,6 @@ const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: bool
             justifyContent: 'center',
             opacity: active ? 1 : 0.5,
             overflow: 'hidden',
-            paddingHorizontal: 24,
-            paddingVertical: primary ? 14 : 12,
+            paddingVertical: 13,
         },
     });

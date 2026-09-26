@@ -14,7 +14,7 @@ import {
     ensureNotificationsPermission,
     isNotificationPermissionGranted,
 } from '../../utils/ensureNotificationPermission';
-import { replaceLottieColor } from '../../utils/lottieUtils';
+import { useThemedLottieSource } from '../../utils/lottieUtils';
 import { registerNotificationsToken } from '../../utils/registerNotificationsToken';
 import { Header } from '../components';
 import { CustomTheme } from '../Theme';
@@ -29,7 +29,7 @@ export const EnableNotificationsBottomSheet = (props: EnableNotificationsBottomS
     const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
     const { askLaterNotifications, setAskLaterNotifications } = useUserPreferences();
-    const planeSource = replaceLottieColor(require('../../../assets/plane.json'), [
+    const planeSource = useThemedLottieSource(require('../../../assets/plane.json'), [
         { from: '#2191fa', to: colors.primary },
         { from: '#2f2f47', to: colors.cardAccent },
     ]);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import appBuildNumbers from '../../app.json';
-import { getAppConfig } from '../api/apiClient';
+import { appConfigApi } from '../api/app-config-api';
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { trackEvent } from '../utils/analytics';
 import { isVersionLower } from '../utils/versionUtils';
@@ -22,8 +22,9 @@ export const useAppUpdateCheck = () => {
     useEffect(() => {
         const checkAppVersion = async () => {
             try {
-                const appConfig = await getAppConfig();
-                if (!appConfig) return;
+                const result = await appConfigApi.getAppConfig();
+                if (result.kind === 'error' || !result.data) return;
+                const appConfig = result.data;
 
                 const currentVersion = appBuildNumbers.expo.runtimeVersion;
                 const required = isVersionLower(

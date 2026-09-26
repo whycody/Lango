@@ -1,25 +1,30 @@
 import { forwardRef } from 'react';
-import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import { StyleProp, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '../../../constants/margins';
+import { TranslationKey } from '../../../types';
 import { CustomTheme } from '../../Theme';
 
 interface ListFilterProps extends Omit<TextInputProps, 'style'> {
     isSearching: boolean;
-    onClear: () => void;
+    onClear?: () => void;
+    placeholderTx?: TranslationKey;
+    styleRoot?: StyleProp<ViewStyle>;
 }
 
 export const ListFilter = forwardRef<TextInput, ListFilterProps>(
-    ({ isSearching, onClear, ...props }, ref) => {
+    ({ isSearching, onClear, placeholderTx, styleRoot, ...props }, ref) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors);
         const { t } = useTranslation();
 
+        const resolvedPlaceholder = placeholderTx ? t(placeholderTx) : t('searchFlashcard');
+
         return (
-            <View style={styles.root}>
+            <View style={[styles.root, styleRoot]}>
                 <Ionicons
                     color={isSearching ? colors.white300 : colors.white300}
                     name="search-sharp"
@@ -28,7 +33,7 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
                 />
                 <TextInput
                     cursorColor={colors.white300}
-                    placeholder={t('searchFlashcard')}
+                    placeholder={resolvedPlaceholder}
                     placeholderTextColor={colors.white600}
                     ref={ref}
                     style={styles.textInput}
@@ -40,7 +45,7 @@ export const ListFilter = forwardRef<TextInput, ListFilterProps>(
                         name="close"
                         size={22}
                         style={styles.clearIcon}
-                        onPress={onClear}
+                        onPress={() => onClear?.()}
                     />
                 )}
             </View>
@@ -66,7 +71,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             borderRadius: spacing.m,
             flex: 1,
             flexDirection: 'row',
-            marginVertical: 15,
+            height: 45,
         },
         textInput: {
             backgroundColor: colors.card,
@@ -74,6 +79,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
             color: colors.white,
             flex: 1,
             fontSize: 18,
-            height: 50,
+            height: 44,
         },
     });

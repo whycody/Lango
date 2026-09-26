@@ -1,5 +1,5 @@
-import { memo, useCallback } from 'react';
-import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { memo, useCallback, useEffect, useRef } from 'react';
+import { Animated, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 
@@ -9,8 +9,12 @@ import { getLevelColor } from '../../../utils/getLevelColor';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
+const STAGGER_MS = 40;
+const MAX_STAGGER_MS = 320;
+
 type FlashcardListItemProps = {
     id: string;
+    index?: number;
     level: number;
     onPress?: (id: string) => void;
     style?: StyleProp<ViewStyle>;
@@ -20,9 +24,23 @@ type FlashcardListItemProps = {
 };
 
 export const FlashcardListItem = memo<FlashcardListItemProps>(
-    ({ id, level, onPress, style, text, translation, withContrast = false }) => {
+    ({ id, index = 0, level, onPress, style, text, translation, withContrast = false }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = getStyles(colors, withContrast);
+
+        const appear = useRef(new Animated.Value(0)).current;
+
+        useEffect(() => {
+            const delay = Math.min(index * STAGGER_MS, MAX_STAGGER_MS);
+            const animation = Animated.timing(appear, {
+                delay,
+                duration: 220,
+                toValue: 1,
+                useNativeDriver: true,
+            });
+            animation.start();
+            return () => animation.stop();
+        }, [appear, index]);
 
         const getColor = useCallback((level: number) => {
             return getLevelColor(level);
@@ -36,27 +54,43 @@ export const FlashcardListItem = memo<FlashcardListItemProps>(
                   : colors.red;
 
         return (
-            <Pressable
-                android_ripple={{ color: colors.cardAccent, foreground: true }}
-                style={[styles.root, style]}
-                onPress={() => onPress?.(id)}
+            <Animated.View
+                style={{
+                    opacity: appear,
+                    transform: [
+                        {
+                            translateY: appear.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [8, 0],
+                            }),
+                        },
+                    ],
+                }}
             >
-                <View style={[styles.container, { borderLeftColor: flashcardColor }]}>
-                    <Ionicons color={getColor(level)} name={'reader'} size={22} />
-                    <View style={styles.textContainer}>
-                        <CustomText style={styles.text} weight={'SemiBold'}>
-                            {text}
-                        </CustomText>
-                        <CustomText style={styles.translation}>{translation}</CustomText>
+                <Pressable
+                    android_ripple={{ color: colors.cardAccent, foreground: true }}
+                    style={[styles.root, style]}
+                    onPress={() => onPress?.(id)}
+                >
+                    <View style={[styles.container, { borderLeftColor: flashcardColor }]}>
+                        <Ionicons color={getColor(level)} name={'reader'} size={22} />
+                        <View style={styles.textContainer}>
+                            <CustomText style={styles.text} weight={'SemiBold'}>
+                                {text}
+                            </CustomText>
+                            <CustomText style={styles.translation}>{translation}</CustomText>
+                        </View>
+                        {onPress && (
+                            <Ionicons
+                                color={colors.white}
+                                name={'information-circle-outline'}
+                                size={22}
+                                style={styles.icon}
+                            />
+                        )}
                     </View>
-                    <Ionicons
-                        color={colors.white}
-                        name={'information-circle-outline'}
-                        size={22}
-                        style={styles.icon}
-                    />
-                </View>
-            </Pressable>
+                </Pressable>
+            </Animated.View>
         );
     },
 );

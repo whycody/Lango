@@ -6,6 +6,7 @@ import { SuggestionExample } from './Suggestion';
 export type Word = SyncMetadata & {
     active: boolean;
     addDate: string;
+    bundleId?: string;
     id: string;
     mainLang: LanguageCode;
     removed: boolean;

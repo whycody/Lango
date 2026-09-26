@@ -1,6 +1,7 @@
+import { TranslationKey } from '../types';
 import { AppTheme } from './UserPreferences';
 
-export const THEME_OPTIONS: { descKey: string; labelKey: string; theme: AppTheme }[] = [
+export const THEME_OPTIONS: { descKey: TranslationKey; labelKey: TranslationKey; theme: AppTheme }[] = [
     { descKey: 'theme.blue_desc', labelKey: 'theme.blue', theme: AppTheme.BLUE },
     { descKey: 'theme.green_desc', labelKey: 'theme.green', theme: AppTheme.GREEN },
     { descKey: 'theme.pink_desc', labelKey: 'theme.pink', theme: AppTheme.PINK },

@@ -25,7 +25,15 @@ export const FinishSessionBottomSheet = (props: FinishSessionBottomSheetProps) =
     const grade2Count = props.flashcardUpdates.filter(update => update.grade === 2).length;
     const grade3Count = props.flashcardUpdates.filter(update => update.grade === 3).length;
 
-    let messageKey = 'balancedEffort';
+    type SessionSummaryMessageKey =
+        | 'balancedEffort'
+        | 'no_updates'
+        | 'perfect'
+        | 'steadyImprovement'
+        | 'needsImprovement'
+        | 'goodProgress';
+
+    let messageKey: SessionSummaryMessageKey = 'balancedEffort';
 
     if (props.flashcardUpdates.length == 0) {
         messageKey = 'no_updates';
@@ -107,7 +115,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: 12,
         },
         statusBar: {
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             flexDirection: 'row',
             marginVertical: 16,
             overflow: 'hidden',

@@ -1,5 +1,6 @@
 import {
     AppConfig,
+    BundleInteraction,
     BundleJoinCode,
     BundleMember,
     BundleMemberRole,
@@ -130,6 +131,15 @@ export type UpdateBundleMemberRoleApi = { data: BundleMember; kind: 'ok' } | Api
 export type RemoveBundleMemberApi = { data: BundleMember; kind: 'ok' } | ApiProblem;
 
 export type UpdateBundleMemberRoleRequest = { role: BundleMemberRole };
+
+// -----BUNDLE INTERACTIONS-----
+
+export type SyncBundleInteractionsOnServerApi =
+    | { data: SyncResultWithRejections<BundleInteraction>; kind: 'ok' }
+    | ApiProblem;
+export type FetchUpdatedBundleInteractionsApi =
+    | { data: BundleInteraction[]; kind: 'ok' }
+    | ApiProblem;
 
 // -----WORDS BUNDLES-----
 

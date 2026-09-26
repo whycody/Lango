@@ -71,7 +71,7 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
     const { studyDaysList } = useStatistics();
-    const { langBundles, syncBundles } = useWordsBundle();
+    const { langBundles, syncBundles, touchBundleInteraction } = useWordsBundle();
 
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
     const { onScroll, style } = useDynamicStatusBar(
@@ -142,12 +142,13 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
     // re-rendering every row when this screen re-renders.
     const handleBundlePress = useCallback(
         (bundle: EnrichedWordsBundle) => {
+            touchBundleInteraction(bundle.id);
             navigation.navigate(ScreenName.BundleNavigator, {
                 bundleId: bundle.id,
                 isNewBundle: false,
             });
         },
-        [navigation],
+        [navigation, touchBundleInteraction],
     );
 
     const handleBundlePlayPress = useCallback((bundle: EnrichedWordsBundle) => {
@@ -161,6 +162,7 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
         flashcardSide: FlashcardSide,
     ) => {
         if (!sessionBundleId) return;
+        touchBundleInteraction(sessionBundleId);
         TrueSheet.dismissAll();
         navigation.navigate(ScreenName.Session, {
             bundleId: sessionBundleId,

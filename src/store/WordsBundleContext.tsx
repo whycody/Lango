@@ -10,10 +10,16 @@ import React, {
 } from 'react';
 import { ObjectId } from 'bson';
 
+import { bundleInteractionsApi } from '../api/bundle-interactions-api';
 import { bundleMembersApi } from '../api/bundle-members-api';
 import { wordsBundlesApi } from '../api/words-bundles-api';
-import { useBundleMemberRepository, useWordsBundleRepository } from '../hooks/repo';
 import {
+    useBundleInteractionRepository,
+    useBundleMemberRepository,
+    useWordsBundleRepository,
+} from '../hooks/repo';
+import {
+    BundleInteraction,
     BundleJoinCode,
     BundleMember,
     BundleMemberRole,
@@ -38,6 +44,7 @@ import { useLanguage } from './LanguageContext';
 
 export type EnrichedWordsBundle = WordsBundle & {
     membership: BundleMember | undefined;
+    lastInteractedAt: string;
 };
 
 interface WordsBundleContextProps {
@@ -62,6 +69,7 @@ interface WordsBundleContextProps {
     removeBundle: (id: string) => Promise<DeleteBundleResult>;
     setWordsBackfilled: (bundleId: string, backfilled: boolean) => void;
     syncBundles: () => Promise<void>;
+    touchBundleInteraction: (bundleId: string) => void;
 }
 
 const WordsBundleContext = createContext<WordsBundleContextProps>({
@@ -83,6 +91,7 @@ const WordsBundleContext = createContext<WordsBundleContextProps>({
     removeBundle: () => Promise.resolve({ success: true }),
     setWordsBackfilled: () => {},
     syncBundles: () => Promise.resolve(),
+    touchBundleInteraction: () => {},
 });
 
 export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) => {
@@ -92,24 +101,45 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
     const [loading, setLoading] = useState(false);
     const [bundles, setBundles] = useState<WordsBundle[]>(initialLoad!.wordsBundles);
     const [members, setMembers] = useState<BundleMember[]>(initialLoad!.bundleMembers);
+    const [interactions, setInteractions] = useState<BundleInteraction[]>(
+        initialLoad!.bundleInteractions,
+    );
 
     const { deleteWordsBundle, getAllWordsBundles, saveWordsBundles, updateWordsBundle } =
         useWordsBundleRepository();
     const { deleteBundleMembersByIds, getAllBundleMembers, saveBundleMembers, updateBundleMember } =
         useBundleMemberRepository();
+    const {
+        deleteBundleInteractionsByIds,
+        getAllBundleInteractions,
+        saveBundleInteractions,
+        updateBundleInteraction,
+    } = useBundleInteractionRepository();
 
     const syncingBundles = useRef(false);
     const syncingMembers = useRef(false);
+    const syncingInteractions = useRef(false);
     const removingBundles = useRef(new Set<string>());
 
-    const enrichedBundles = useMemo<EnrichedWordsBundle[]>(
-        () =>
-            bundles.map(bundle => ({
-                ...bundle,
-                membership: members.find(member => member.bundleId === bundle.id),
-            })),
-        [bundles, members, user?.userId],
-    );
+    const enrichedBundles = useMemo<EnrichedWordsBundle[]>(() => {
+        const membershipByBundleId = new Map(members.map(member => [member.bundleId, member]));
+        const interactionsByBundleId = new Map(
+            interactions
+                .filter(interaction => interaction.userId === user?.userId)
+                .map(interaction => [interaction.bundleId, interaction]),
+        );
+        return bundles
+            .map(bundle => {
+                const membership = membershipByBundleId.get(bundle.id);
+                const interaction = interactionsByBundleId.get(bundle.id);
+                return {
+                    ...bundle,
+                    lastInteractedAt: interaction?.interactedAt ?? bundle.locallyUpdatedAt,
+                    membership,
+                };
+            })
+            .sort((a, b) => b.lastInteractedAt.localeCompare(a.lastInteractedAt));
+    }, [bundles, members, interactions, user?.userId]);
 
     const langBundles = useMemo(
         () =>
@@ -156,14 +186,29 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             userId: user!.userId,
         };
 
+        const ownerInteraction: BundleInteraction = {
+            bundleId: newBundle.id,
+            id: new ObjectId().toHexString(),
+            interactedAt: now,
+            locallyUpdatedAt: now,
+            synced: false,
+            updatedAt: undefined,
+            userId: user!.userId,
+        };
+
         const updatedBundles = [newBundle, ...bundles];
         const updatedMembers = [ownerMember, ...members];
+        const updatedInteractions = [ownerInteraction, ...interactions];
 
         setBundles(updatedBundles);
         setMembers(updatedMembers);
+        setInteractions(updatedInteractions);
         saveWordsBundles([newBundle]);
         saveBundleMembers([ownerMember]);
-        syncWordsBundles(updatedBundles).then(() => syncBundleMembers(updatedMembers));
+        saveBundleInteractions([ownerInteraction]);
+        syncWordsBundles(updatedBundles)
+            .then(() => syncBundleMembers(updatedMembers))
+            .then(() => syncBundleInteractions(updatedInteractions));
 
         return newBundle;
     };
@@ -416,6 +461,85 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         }
     };
 
+    const syncBundleInteractions = async (inputInteractions?: BundleInteraction[]) => {
+        try {
+            if (syncingInteractions.current) return;
+            syncingInteractions.current = true;
+            const interactionsList = inputInteractions ?? (await getAllBundleInteractions());
+            const unsyncedInteractions = getUnsyncedItems<BundleInteraction>(interactionsList);
+            const { rejectedIds, synced } = await syncInBatches<BundleInteraction>(
+                unsyncedInteractions,
+                interactionsChunk =>
+                    bundleInteractionsApi.syncBundleInteractionsOnServer(interactionsChunk),
+            );
+
+            const rejectedIdsSet = new Set(rejectedIds);
+            const remainingInteractions = interactionsList.filter(
+                interaction => !rejectedIdsSet.has(interaction.id),
+            );
+
+            const updatedInteractions = updateLocalItems<BundleInteraction>(
+                remainingInteractions,
+                synced,
+            );
+            const latestUpdatedAt = findLatestUpdatedAt<BundleInteraction>(updatedInteractions);
+            const result =
+                await bundleInteractionsApi.fetchUpdatedBundleInteractions(latestUpdatedAt);
+            const serverInteractions = result.kind === 'ok' ? result.data : [];
+            const mergedInteractions = mergeLocalAndServer<BundleInteraction>(
+                updatedInteractions,
+                serverInteractions,
+            );
+            const changedInteractions = findChangedItems<BundleInteraction>(
+                interactionsList,
+                mergedInteractions,
+            );
+
+            if (rejectedIds.length > 0) {
+                await deleteBundleInteractionsByIds(rejectedIds);
+            }
+
+            if (changedInteractions.length > 0 || rejectedIds.length > 0) {
+                setInteractions(mergedInteractions);
+            }
+
+            if (changedInteractions.length > 0) {
+                await saveBundleInteractions(changedInteractions);
+            }
+        } catch (error) {
+            console.log('Error syncing bundle interactions:', error);
+        } finally {
+            syncingInteractions.current = false;
+        }
+    };
+
+    const touchBundleInteraction = (bundleId: string) => {
+        if (!user?.userId) return;
+
+        const locallyUpdatedAt = getCurrentISO();
+        const existing = interactions.find(
+            interaction => interaction.bundleId === bundleId && interaction.userId === user.userId,
+        );
+        const updatedInteraction: BundleInteraction = {
+            bundleId,
+            id: existing?.id ?? new ObjectId().toHexString(),
+            interactedAt: locallyUpdatedAt,
+            locallyUpdatedAt,
+            synced: false,
+            updatedAt: existing?.updatedAt,
+            userId: user.userId,
+        };
+
+        const updatedInteractions = [
+            updatedInteraction,
+            ...interactions.filter(interaction => interaction.id !== updatedInteraction.id),
+        ];
+
+        setInteractions(updatedInteractions);
+        updateBundleInteraction(updatedInteraction);
+        syncBundleInteractions(updatedInteractions);
+    };
+
     const fetchMissingBundles = async () => {
         try {
             const currentBundles = await getAllWordsBundles();
@@ -455,6 +579,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
     const syncBundles = async () => {
         await syncWordsBundles();
         await syncBundleMembers();
+        await syncBundleInteractions();
         await fetchMissingBundles();
     };
 
@@ -514,6 +639,7 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
                 removeBundle,
                 setWordsBackfilled,
                 syncBundles,
+                touchBundleInteraction,
             }}
         >
             {children}

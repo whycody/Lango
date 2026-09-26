@@ -111,7 +111,8 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
     const styles = useMemo(() => getStyles(colors, insets), [colors, insets]);
     const { shareBundleLink } = useShareBundleLink();
 
-    const { editBundleMember, joinPreviewBundle, syncBundles } = useWordsBundle();
+    const { editBundleMember, joinPreviewBundle, syncBundles, touchBundleInteraction } =
+        useWordsBundle();
     const { addFetchedWords, removeWord, syncWords } = useWords();
     const { syncEvaluations } = useEvaluations();
     const { langWordsWithDetails } = useWordsWithDetails();
@@ -366,6 +367,7 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
             await tryJoinPreviewBundleWithWords(true);
         }
 
+        touchBundleInteraction(bundleId);
         TrueSheet.dismissAll();
         navigation.navigate(ScreenName.Session, {
             bundleId,

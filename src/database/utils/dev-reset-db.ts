@@ -7,6 +7,7 @@ const ALL_TABLES = [
     'suggestions',
     'word_ml_state',
     'word_heuristic_state',
+    'bundle_interactions',
 ];
 
 // Dev-only helper: drops every local table so the next app start recreates the schema

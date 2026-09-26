@@ -44,6 +44,13 @@ export type BundleMemberWithUser = BundleMember & {
     userSummary: UserSummary;
 };
 
+export type BundleInteraction = SyncMetadata & {
+    bundleId: string;
+    id: string;
+    interactedAt: string;
+    userId: string;
+};
+
 export type BundleJoinCode = {
     bundleId: string;
     code: string;

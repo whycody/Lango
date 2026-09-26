@@ -1,14 +1,17 @@
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { runMigrations } from '../database/migrations/migrations';
-import { useBundleMemberRepository } from '../hooks/repo/useBundleMemberRepository';
-import { useEvaluationsRepository } from '../hooks/repo/useEvaluationsRepository';
-import { useSessionsRepository } from '../hooks/repo/useSessionsRepository';
-import { useSuggestionsRepository } from '../hooks/repo/useSuggestionsRepository';
-import { useWordsBundleRepository } from '../hooks/repo/useWordsBundleRepository';
-import { useWordsHeuristicStatesRepository } from '../hooks/repo/useWordsHeuristicStatesRepository';
-import { useWordsMLStatesRepository } from '../hooks/repo/useWordsMLStatesRepository';
-import { useWordsRepository } from '../hooks/repo/useWordsRepository';
+import {
+    useBundleInteractionRepository,
+    useBundleMemberRepository,
+    useEvaluationsRepository,
+    useSessionsRepository,
+    useSuggestionsRepository,
+    useWordsBundleRepository,
+    useWordsHeuristicStatesRepository,
+    useWordsMLStatesRepository,
+    useWordsRepository,
+} from '../hooks/repo';
 import { InitialLoad } from '../types';
 import { useAuth } from './AuthContext';
 
@@ -41,6 +44,8 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
         useWordsBundleRepository();
     const { createTables: createBundleMembersTables, getAllBundleMembers } =
         useBundleMemberRepository();
+    const { createTables: createBundleInteractionsTables, getAllBundleInteractions } =
+        useBundleInteractionRepository();
 
     const [initialLoad, setInitialLoad] = useState<InitialLoad | null>(null);
     const [loading, setLoading] = useState(true);
@@ -56,6 +61,7 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 createWordsHeuristicStatesTables(),
                 createWordsBundlesTables(),
                 createBundleMembersTables(),
+                createBundleInteractionsTables(),
             ]);
 
             await runMigrations(user!.userId);
@@ -69,6 +75,7 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 wordsHeuristicStates,
                 wordsBundles,
                 bundleMembers,
+                bundleInteractions,
             ] = await Promise.all([
                 getAllSessions(),
                 getAllWords(),
@@ -78,9 +85,11 @@ export const AppInitializerProvider: FC<{ children: ReactNode }> = ({ children }
                 getAllWordsHeuristicStates(),
                 getAllWordsBundles(),
                 getAllBundleMembers(),
+                getAllBundleInteractions(),
             ]);
 
             setInitialLoad({
+                bundleInteractions,
                 bundleMembers,
                 evaluations,
                 sessions,

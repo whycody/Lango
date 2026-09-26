@@ -1,4 +1,5 @@
 import {
+    BundleInteraction,
     BundleMember,
     Evaluation,
     Session,
@@ -10,6 +11,7 @@ import {
 } from '..';
 
 export type InitialLoad = {
+    bundleInteractions: BundleInteraction[];
     bundleMembers: BundleMember[];
     evaluations: Evaluation[];
     sessions: Session[];

@@ -6,6 +6,7 @@ export const REFRESH_PROGRESS_VIEW_OFFSET = 50;
 export const STATUS_BAR_APPEAR_SCROLL_DISTANCE = 100;
 export const STATUS_BAR_APPEAR_OPACITY_THRESHOLD = 0.5;
 export const DASHBOARD_FOOTER_HEIGHT = 50;
+export const PREMIUM_BANNER_IMAGE_OVERFLOW = 30;
 
 export const ADD_BUNDLE_SHEET_NAME = 'add-bundle-sheet';
 export const BUNDLES_LANGUAGE_SHEET_NAME = 'bundles-language-sheet';

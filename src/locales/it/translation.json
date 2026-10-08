@@ -27,6 +27,9 @@
     "wordAdded3": "Scelta perfetta! 👌",
     "wordNotAdded": "Impossibile aggiungere ❌",
     "addWord": "Aggiungi la tua parola +",
+    "recentBundles": "Set",
+    "recentBundlesDesc": "Torna ai set che hai usato di recente.",
+    "see_all": "Vai ai set",
     "activity": "Attività",
     "activityDesc": "Le tue sessioni di studio negli ultimi mesi.",
     "gradeDistribution": "Distribuzione dei voti",
@@ -323,7 +326,10 @@
         "start_search": "Cerca nuovi set",
         "start_search_desc": "Digita il nome del set che stai cercando.",
         "empty_search": "Nessun risultato",
-        "empty_search_desc": "Nessun set corrisponde alla tua ricerca."
+        "empty_search_desc": "Nessun set corrisponde alla tua ricerca.",
+        "premium_banner_title": "Lango Premium",
+        "premium_banner_subtitle": "Sblocca centinaia di set premium e genera i tuoi con l'IA",
+        "premium_banner_cta": "Prova Premium"
     },
     "bundle_details": {
         "add_to_my_bundles": "Unisciti al set",

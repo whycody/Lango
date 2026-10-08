@@ -27,6 +27,9 @@
     "wordAdded3": "Perfect choice! \uD83D\uDC4C",
     "wordNotAdded": "Couldn't add ❌",
     "addWord": "Add your own word +",
+    "recentBundles": "Bundles",
+    "recentBundlesDesc": "Get back to the bundles you've recently used.",
+    "see_all": "Go to bundles",
     "activity": "Activity",
     "activityDesc": "Your study sessions over the past months.",
     "gradeDistribution": "Grade Distribution",
@@ -323,7 +326,10 @@
         "start_search": "Search new bundles",
         "start_search_desc": "Type the name of the bundle you're looking for.",
         "empty_search": "No results",
-        "empty_search_desc": "No bundles matched your search."
+        "empty_search_desc": "No bundles matched your search.",
+        "premium_banner_title": "Lango Premium",
+        "premium_banner_subtitle": "Unlock hundreds of premium bundles and generate your own with AI",
+        "premium_banner_cta": "Try Premium"
     },
     "bundle_details": {
         "add_to_my_bundles": "Join bundle",

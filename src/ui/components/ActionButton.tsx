@@ -160,7 +160,7 @@ const getStyles = (colors: CustomTheme['colors'], primary: boolean, active: bool
             backgroundColor: primary ? colors.primary : undefined,
             borderColor: primary ? colors.primary : colors.cardAccent300,
             borderRadius: spacing.m,
-            borderWidth: primary ? 0 : 1.5,
+            borderWidth: primary ? 0 : 1,
             flexDirection: 'row',
             justifyContent: 'center',
             opacity: active ? 1 : 0.5,

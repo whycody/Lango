@@ -39,7 +39,7 @@ import { trackEvent } from '../../../utils/analytics';
 import { STREAK_DEFAULT_VALUE } from '../../../utils/constants';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { HandleBundleBottomSheet, JoinBundleWithCodeBottomSheet } from '../common/sheets';
-import { BundleListItem } from './components';
+import { BundleListItem, PremiumBanner } from './components';
 import {
     ADD_BUNDLE_SHEET_NAME,
     BUNDLES_LANGUAGE_SHEET_NAME,
@@ -251,6 +251,7 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
                         styleRoot={styles.searchFilter}
                     />
                 </Pressable>
+                <PremiumBanner style={styles.premiumBanner} />
                 <Header style={styles.sectionTitle} titleTx="bundles.your_bundles" />
                 <FlatList
                     ListEmptyComponent={EmptyBundlesList}
@@ -284,6 +285,9 @@ const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
         },
         footer: {
             height: DASHBOARD_FOOTER_HEIGHT,
+        },
+        premiumBanner: {
+            marginTop: 50,
         },
         recommendedText: {
             color: colors.white300,

@@ -51,3 +51,10 @@ export enum ScreenName {
     Settings = 'Settings',
     Tabs = 'Tabs',
 }
+
+export enum TabName {
+    Add = 'Add',
+    Bundles = 'Bundles',
+    Home = 'Home',
+    Library = 'Library',
+}

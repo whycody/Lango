@@ -12,7 +12,10 @@ export const useUserSummaryQuery = (
         gcTime: Infinity,
         queryFn: async () => {
             const result = await usersApi.fetchUserSummary(userId as string);
-            return result.kind === 'ok' ? result.data : null;
+            if (result.kind === 'error') {
+                throw new Error(result.errorCode);
+            }
+            return result.data;
         },
         queryKey: ['userSummary', userId],
         staleTime: DAY_IN_MS,

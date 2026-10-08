@@ -27,6 +27,9 @@
     "wordAdded3": "¡Elección perfecta! 👌",
     "wordNotAdded": "No se pudo añadir ❌",
     "addWord": "Añade tu propia palabra +",
+    "recentBundles": "Sets",
+    "recentBundlesDesc": "Vuelve a los sets que has usado recientemente.",
+    "see_all": "Ir a los sets",
     "activity": "Actividad",
     "activityDesc": "Tus sesiones de estudio durante los últimos meses.",
     "gradeDistribution": "Distribución de notas",
@@ -323,7 +326,10 @@
         "start_search": "Buscar nuevos conjuntos",
         "start_search_desc": "Escribe el nombre del conjunto que buscas.",
         "empty_search": "Sin resultados",
-        "empty_search_desc": "No se encontraron conjuntos que coincidan con tu búsqueda."
+        "empty_search_desc": "No se encontraron conjuntos que coincidan con tu búsqueda.",
+        "premium_banner_title": "Lango Premium",
+        "premium_banner_subtitle": "Desbloquea cientos de sets premium y genera los tuyos con IA",
+        "premium_banner_cta": "Probar Premium"
     },
     "bundle_details": {
         "add_to_my_bundles": "Unirse al conjunto",

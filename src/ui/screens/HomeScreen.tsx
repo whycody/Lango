@@ -28,6 +28,7 @@ import {
     useWords,
     useWordsBundle,
 } from '../../store';
+import { EnrichedWordsBundle } from '../../store/WordsBundleContext';
 import { trackEvent } from '../../utils/analytics';
 import { checkUpdates } from '../../utils/checkUpdates';
 import { isIOS } from '../../utils/deviceUtils';
@@ -39,10 +40,15 @@ import {
     ActivityCard,
     GradeDistributionChart,
     HeaderCard,
+    RecentBundlesCard,
     StatisticsCard,
     WordsSuggestionsCard,
 } from '../containers';
-import { EnableNotificationsBottomSheet, PickLanguageLevelBottomSheet } from '../sheets';
+import {
+    EnableNotificationsBottomSheet,
+    PickLanguageLevelBottomSheet,
+    StartSessionBottomSheet,
+} from '../sheets';
 import { MasteryFilter } from '../sheets/MasteryFilterBottomSheet';
 import { OnboardingBottomSheet } from '../sheets/OnboardingBottomSheet';
 import { CustomTheme } from '../Theme';
@@ -50,8 +56,9 @@ import { CustomTheme } from '../Theme';
 const ENABLE_NOTIFICATIONS_SHEET_NAME = 'enable-notifications-sheet';
 const HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME = 'home-pick-language-level-sheet';
 const HOME_ONBOARDING_SHEET_NAME = 'home-onboarding-sheet';
+const HOME_START_SESSION_SHEET_NAME = 'home-start-session-sheet';
 
-type HomeScreenNavProp = CompositeNavigationProp<
+export type HomeScreenNavProp = CompositeNavigationProp<
     BottomTabNavigationProp<TabsParamList, 'Home'>,
     NavigationProp<RootStackParamList>
 >;
@@ -64,6 +71,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
     const evaluations = useEvaluations();
     const bundles = useWordsBundle();
     const [refreshing, setRefreshing] = useState(false);
+    const [sessionBundleId, setSessionBundleId] = useState<string>();
     const { onScroll, style } = useDynamicStatusBar(100, 0.5);
     const insets = useSafeAreaInsets();
     const { colors } = useTheme() as CustomTheme;
@@ -173,6 +181,27 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
         navigation.navigate(ScreenName.Session, props);
     };
 
+    const handleBundlePlayPress = (bundle: EnrichedWordsBundle) => {
+        setSessionBundleId(bundle.id);
+        TrueSheet.present(HOME_START_SESSION_SHEET_NAME);
+    };
+
+    const handleBundleSessionStart = (
+        length: SessionLength,
+        mode: SessionMode,
+        flashcardSide: FlashcardSide,
+    ) => {
+        if (!sessionBundleId) return;
+        bundles.touchBundleInteraction(sessionBundleId);
+        TrueSheet.dismissAll();
+        navigation.navigate(ScreenName.Session, {
+            bundleId: sessionBundleId,
+            flashcardSide,
+            length,
+            mode,
+        });
+    };
+
     const languagesAreTheSame = mainLang === translationLang;
 
     return (
@@ -184,6 +213,10 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                 allowDismiss={false}
                 language={languages.find(l => l.languageCode === mainLang)}
                 sheetName={HOME_PICK_LANGUAGE_LEVEL_SHEET_NAME}
+            />
+            <StartSessionBottomSheet
+                sheetName={HOME_START_SESSION_SHEET_NAME}
+                onSessionStart={handleBundleSessionStart}
             />
             <View style={style} />
             <ScrollView
@@ -209,6 +242,9 @@ export const HomeScreen = ({ navigation }: { navigation: HomeScreenNavProp }) =>
                     navigateToFlashcardsScreen={navigateToFlashcardsScreen}
                     navigateToSessionScreen={navigateToSessionScreen}
                 />
+
+                <RecentBundlesCard navigation={navigation} onPlayPress={handleBundlePlayPress} />
+
                 {!languagesAreTheSame && <WordsSuggestionsCard />}
 
                 <ActivityCard />

@@ -80,7 +80,7 @@ const getStyles = (colors: ThemeColors) =>
             alignItems: 'center',
             backgroundColor: colors.card,
             borderColor: colors.cardAccent300,
-            borderRadius: spacing.l,
+            borderRadius: spacing.m,
             borderWidth: 1,
             flexDirection: 'row',
             marginTop: spacing.l,

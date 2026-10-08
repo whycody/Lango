@@ -27,6 +27,9 @@
     "wordAdded3": "Świetny wybór! \uD83D\uDC4C",
     "wordNotAdded": "Nie udało się dodać ❌",
     "addWord": "Dodaj własne słówko +",
+    "recentBundles": "Zestawy",
+    "recentBundlesDesc": "Wróć do zestawów, z których korzystałeś ostatnio.",
+    "see_all": "Przejdź do zestawów",
     "activity": "Aktywność",
     "activityDesc": "Twoje sesje nauki na przestrzeni ostatnich miesięcy.",
     "gradeDistribution": "Rozkład ocen",
@@ -322,7 +325,10 @@
         "start_search": "Wyszukaj nowy zestaw",
         "start_search_desc": "Wpisz nazwę zestawu, którego szukasz.",
         "empty_search": "Brak wyników",
-        "empty_search_desc": "Nie znaleziono zestawów pasujących do wyszukiwania."
+        "empty_search_desc": "Nie znaleziono zestawów pasujących do wyszukiwania.",
+        "premium_banner_title": "Lango Premium",
+        "premium_banner_subtitle": "Odblokuj setki zestawów premium oraz generuj własne z pomocą AI",
+        "premium_banner_cta": "Wypróbuj"
     },
     "bundle_details": {
         "add_to_my_bundles": "Dołącz do zestawu",

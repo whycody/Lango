@@ -1,9 +1,14 @@
-# Normalize all text files to LF, both in the repo and in the working tree
-* text=auto eol=lf
+# Check out all text files with CRLF on every OS (git still stores them normalized to LF
+# internally, so diffs never show line-ending-only changes)
+* text=auto eol=crlf
 
 # Windows scripts need CRLF
 *.bat text eol=crlf
 *.cmd text eol=crlf
+
+# Shell scripts break with CRLF
+*.sh text eol=lf
+gradlew text eol=lf
 
 # Binary files
 *.png binary

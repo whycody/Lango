@@ -15,6 +15,7 @@ import { resolveApiErrorCode } from '../utils/apiErrorUtils';
 import { Api, api } from './api';
 import {
     DeleteWordsBundleOnServerApi,
+    FetchRecommendedWordsBundlesApi,
     FetchUpdatedWordsBundlesApi,
     FetchWordsBundlesByIdsApi,
     GenerateBundleInvitationCodeApi,
@@ -29,6 +30,7 @@ const WORDS_BUNDLES_API_ROUTES = {
     generateInvitationCode: (bundleId: string) =>
         `/words-bundles/${bundleId}/generate-invitation-code`,
     join: (code: string) => `/words-bundles/join/${code}`,
+    recommended: '/words-bundles/recommended',
     search: '/words-bundles/search',
     sync: '/words-bundles/sync',
     wordsBundles: (since: string) => `/words-bundles?since=${since}`,
@@ -120,6 +122,20 @@ class WordsBundlesApi {
         const response: ApiResponse<BundleSearchResponse> = await this.api.apisauce.get(
             WORDS_BUNDLES_API_ROUTES.search,
             { limit, mainLang, offset, q, translationLang },
+        );
+        if (!response.ok || !response.data) {
+            return { errorCode: resolveApiErrorCode(response), kind: 'error' };
+        }
+        return { data: response.data, kind: 'ok' };
+    }
+
+    async fetchRecommendedWordsBundles(
+        mainLang: LanguageCode,
+        translationLang: LanguageCode,
+    ): Promise<FetchRecommendedWordsBundlesApi> {
+        const response: ApiResponse<WordsBundleWithOwnerInfo[]> = await this.api.apisauce.get(
+            WORDS_BUNDLES_API_ROUTES.recommended,
+            { mainLang, translationLang },
         );
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };

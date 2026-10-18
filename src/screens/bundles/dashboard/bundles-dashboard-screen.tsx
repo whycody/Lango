@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
+    ActivityIndicator,
     AppState,
     FlatList,
     Pressable,
@@ -23,7 +24,7 @@ import { RootStackParamList, ScreenName } from '../../../navigation/navigationTy
 import { TabsParamList } from '../../../navigation/TabsNavigator';
 import { useLanguage, useStatistics, useWordsBundle } from '../../../store';
 import { EnrichedWordsBundle } from '../../../store/WordsBundleContext';
-import { ThemeColors, WordsBundle } from '../../../types';
+import { ThemeColors, WordsBundle, WordsBundleWithOwnerInfo } from '../../../types';
 import {
     ActionButton,
     BottomGradient,
@@ -39,6 +40,7 @@ import { trackEvent } from '../../../utils/analytics';
 import { STREAK_DEFAULT_VALUE } from '../../../utils/constants';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
 import { HandleBundleBottomSheet, JoinBundleWithCodeBottomSheet } from '../common/sheets';
+import { SearchBundleListItem } from '../search/components';
 import { BundleListItem, PremiumBanner } from './components';
 import {
     ADD_BUNDLE_SHEET_NAME,
@@ -52,6 +54,7 @@ import {
     STATUS_BAR_APPEAR_OPACITY_THRESHOLD,
     STATUS_BAR_APPEAR_SCROLL_DISTANCE,
 } from './constants';
+import { hasRecommendedBundles, useRecommendedBundlesQuery } from './hooks';
 import { AddBundleBottomSheet } from './sheets';
 
 type BundlesDashboardScreenNavProp = CompositeNavigationProp<
@@ -63,14 +66,12 @@ interface BundlesDashboardScreenProps {
     navigation: BundlesDashboardScreenNavProp;
 }
 
-const EmptyBundlesList = (
-    <EmptyList descriptionTx="bundles.no_bundles_desc" titleTx="bundles.no_bundles" />
-);
+const recommendedKeyExtractor = (item: WordsBundleWithOwnerInfo) => item.id;
 
 export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ navigation }) => {
     const insets = useSafeAreaInsets();
     const { colors } = useTheme() as CustomTheme;
-    const { mainLang } = useLanguage();
+    const { mainLang, translationLang } = useLanguage();
     const { studyDaysList } = useStatistics();
     const { langBundles, syncBundles, touchBundleInteraction } = useWordsBundle();
 
@@ -80,8 +81,17 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
         STATUS_BAR_APPEAR_OPACITY_THRESHOLD,
     );
 
+    const {
+        data: recommendedBundles = [],
+        isLoading: isRecommendedLoading,
+        refetch: refetchRecommendedBundles,
+    } = useRecommendedBundlesQuery(mainLang, translationLang);
+
     const previewBundles = langBundles.slice(0, DASHBOARD_BUNDLES_PREVIEW_COUNT);
     const hasMoreBundles = langBundles.length > DASHBOARD_BUNDLES_PREVIEW_COUNT;
+    const showRecommendedBundles = hasRecommendedBundles(mainLang, translationLang);
+    // A user with no bundles of their own sees the recommendations first.
+    const hasNoBundles = langBundles.length === 0;
 
     const [refreshing, setRefreshing] = useState(false);
     const [sessionBundleId, setSessionBundleId] = useState<string>();
@@ -163,6 +173,17 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
         TrueSheet.present(BUNDLES_START_SESSION_SHEET_NAME);
     }, []);
 
+    // Passed to the React.memo'd SearchBundleListItem rendered in a FlatList.
+    const handleRecommendedBundlePress = useCallback(
+        (bundle: WordsBundleWithOwnerInfo) => {
+            navigation.navigate(ScreenName.BundleNavigator, {
+                bundleId: bundle.id,
+                previewBundle: bundle,
+            });
+        },
+        [navigation],
+    );
+
     const handleSessionStart = (
         length: SessionLength,
         mode: SessionMode,
@@ -189,10 +210,73 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
         />
     );
 
+    const renderRecommendedBundleItem = ({
+        index,
+        item,
+    }: {
+        index: number;
+        item: WordsBundleWithOwnerInfo;
+    }) => (
+        <SearchBundleListItem bundle={item} index={index} onPress={handleRecommendedBundlePress} />
+    );
+
+    const recommendedEmptyComponent = isRecommendedLoading ? (
+        <ActivityIndicator color={colors.white300} style={styles.recommendedLoader} />
+    ) : (
+        <CustomText style={styles.recommendedText} tx="bundles.no_recommended_bundles" />
+    );
+
+    const yourBundlesSection = (
+        <>
+            <Header
+                style={styles.sectionTitle}
+                subtitleTx="bundles.your_bundles_short_desc"
+                titleTx="bundles.your_bundles"
+            />
+            <FlatList
+                data={previewBundles}
+                renderItem={renderBundleItem}
+                scrollEnabled={false}
+                ListEmptyComponent={
+                    <EmptyList
+                        descriptionTx="bundles.no_bundles_desc"
+                        style={styles.emptyBundlesList}
+                        titleTx="bundles.no_bundles"
+                    />
+                }
+            />
+            {hasMoreBundles && (
+                <ActionButton
+                    icon="chevron-forward"
+                    labelTx="bundles.see_all"
+                    style={styles.seeAllButton}
+                    onPress={handleSeeAllBundlesPress}
+                />
+            )}
+        </>
+    );
+
+    const recommendedBundlesSection = showRecommendedBundles && (
+        <>
+            <Header
+                style={styles.sectionTitle}
+                subtitleTx="bundles.recommended_bundles_desc"
+                titleTx="bundles.recommended_bundles"
+            />
+            <FlatList
+                ListEmptyComponent={recommendedEmptyComponent}
+                data={recommendedBundles}
+                keyExtractor={recommendedKeyExtractor}
+                renderItem={renderRecommendedBundleItem}
+                scrollEnabled={false}
+            />
+        </>
+    );
+
     const onRefresh = async () => {
         try {
             setRefreshing(true);
-            await syncBundles();
+            await Promise.all([syncBundles(), refetchRecommendedBundles()]);
         } finally {
             setRefreshing(false);
         }
@@ -259,23 +343,17 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
                     />
                 </Pressable>
                 <PremiumBanner style={styles.premiumBanner} />
-                <Header style={styles.sectionTitle} titleTx="bundles.your_bundles" />
-                <FlatList
-                    ListEmptyComponent={EmptyBundlesList}
-                    data={previewBundles}
-                    renderItem={renderBundleItem}
-                    scrollEnabled={false}
-                />
-                {hasMoreBundles && (
-                    <ActionButton
-                        icon="chevron-forward"
-                        labelTx="bundles.see_all"
-                        style={styles.seeAllButton}
-                        onPress={handleSeeAllBundlesPress}
-                    />
+                {hasNoBundles ? (
+                    <>
+                        {recommendedBundlesSection}
+                        {yourBundlesSection}
+                    </>
+                ) : (
+                    <>
+                        {yourBundlesSection}
+                        {recommendedBundlesSection}
+                    </>
                 )}
-                <Header style={styles.sectionTitle} titleTx="bundles.recommended_bundles" />
-                <CustomText style={styles.recommendedText} tx="bundles.no_recommended_bundles" />
                 <View style={styles.footer} />
             </ScrollView>
         </>
@@ -298,11 +376,17 @@ const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
             marginTop: spacing.l,
             opacity: 0.8,
         },
+        emptyBundlesList: {
+            marginVertical: spacing.xxl,
+        },
         footer: {
             height: DASHBOARD_FOOTER_HEIGHT,
         },
         premiumBanner: {
             marginTop: 50,
+        },
+        recommendedLoader: {
+            marginTop: spacing.xxl,
         },
         recommendedText: {
             color: colors.white300,

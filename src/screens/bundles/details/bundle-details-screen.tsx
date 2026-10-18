@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { Animated, Keyboard, RefreshControl, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { CompositeNavigationProp, useTheme } from '@react-navigation/native';
@@ -57,6 +57,7 @@ import {
     BundleEmptyState,
     BundleSubscribeToggle,
     BundleTitleSection,
+    PremiumLockedWordsFooter,
 } from './components';
 import {
     BUNDLE_DETAILS_BUNDLE_OPTIONS_BOTTOM_SHEET,
@@ -90,6 +91,7 @@ import {
     JoinPublicBundleBottomSheet,
 } from './sheets';
 import { BundleListItem, BundleWord } from './types';
+import { buildWordListItems } from './utils';
 
 type BundleDetailsScreenNavProp = CompositeNavigationProp<
     NativeStackNavigationProp<BundleStackParamList, ScreenName.BundleFlashcards>,
@@ -175,6 +177,7 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         bundle,
         canAddWords,
         isBundleQueryLoading,
+        isPremiumLocked,
         isPreview,
         isPrivatePreview,
         localBundle,
@@ -488,10 +491,19 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         />
     );
 
+    const renderPremiumLock = (fadedWords: BundleWord[], startIndex: number) => (
+        <PremiumLockedWordsFooter>
+            {fadedWords.map((word, offset) => (
+                <Fragment key={word.id}>{renderWordItem(word, startIndex + offset)}</Fragment>
+            ))}
+        </PremiumLockedWordsFooter>
+    );
+
     const renderListItem = ({ index, item }: { index: number; item: BundleListItem }) => {
         if (item.id === 'header') return renderHeader();
-        if (item.id === 'subheader') return renderSubheader();
+        if (item.id === 'subheader') return isPremiumLocked ? null : renderSubheader();
         if (item.id === 'empty') return renderEmptyList();
+        if ('fadedWords' in item) return renderPremiumLock(item.fadedWords, index - 2);
         return renderWordItem(item as BundleWord, index - 2);
     };
 
@@ -504,14 +516,18 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         />
     );
 
-    const renderListFooter = () => <View style={styles.listFooter} />;
+    const renderListFooter = () => (
+        <View style={isPremiumLocked ? styles.listFooterPremiumLocked : styles.listFooter} />
+    );
 
     const listData = useMemo<BundleListItem[]>(
         () => [
             ...HEADER_LIST_ITEMS,
-            ...(bundle && words.length > 0 && !isPrivatePreview ? words : EMPTY_LIST_ITEMS),
+            ...(bundle && words.length > 0 && !isPrivatePreview
+                ? buildWordListItems(words, isPremiumLocked)
+                : EMPTY_LIST_ITEMS),
         ],
-        [bundle, words, isPrivatePreview],
+        [bundle, words, isPrivatePreview, isPremiumLocked],
     );
 
     const availableSortingMethods = isPreview
@@ -607,29 +623,32 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
                 showsVerticalScrollIndicator={false}
                 onScroll={handleScroll}
             />
-            <View pointerEvents={isSubheaderStuck ? 'auto' : 'none'} style={subheaderOverlayStyle}>
-                <FlashcardsSubheader
-                    filterSheetName={BUNDLE_DETAILS_MASTERY_FILTER_BOTTOM_SHEET}
-                    masteryFilter={masteryFilter}
-                    showFilter={!isPreview}
-                    showSearch={false}
-                    sortingMethod={isPreview ? previewSortingMethod : flashcardsSortingMethod}
-                    sortingSheetName={BUNDLE_DETAILS_SORTING_METHOD_BOTTOM_SHEET}
-                />
-            </View>
-            <DockedActionPanel style={styles.buttonsContainer} visible={isBottomPanelVisible}>
-                <BundleActionButtons
-                    {...bundleActionButtonsSharedProps}
-                    buttonStyle={styles.button}
-                />
-            </DockedActionPanel>
-            <ScrollToTopButton
-                addButtonAnim={bottomPanelOpacity}
-                animatedValue={scrollToTopAnim}
-                liftOffset={insets.bottom + DOCKED_ACTION_PANEL_HEIGHT}
-                onPress={handleScrollToTop}
-            />
-            <BottomGradient />
+            {!isPremiumLocked && (
+                <>
+                    <View
+                        pointerEvents={isSubheaderStuck ? 'auto' : 'none'}
+                        style={subheaderOverlayStyle}
+                    >
+                        {renderSubheader()}
+                    </View>
+                    <DockedActionPanel
+                        style={styles.buttonsContainer}
+                        visible={isBottomPanelVisible}
+                    >
+                        <BundleActionButtons
+                            {...bundleActionButtonsSharedProps}
+                            buttonStyle={styles.button}
+                        />
+                    </DockedActionPanel>
+                    <ScrollToTopButton
+                        addButtonAnim={bottomPanelOpacity}
+                        animatedValue={scrollToTopAnim}
+                        liftOffset={insets.bottom + DOCKED_ACTION_PANEL_HEIGHT}
+                        onPress={handleScrollToTop}
+                    />
+                </>
+            )}
+            {!isPremiumLocked && <BottomGradient />}
         </View>
     );
 };
@@ -654,6 +673,10 @@ const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
         },
         listFooter: {
             height: insets.bottom + spacing.l + DOCKED_ACTION_PANEL_HEIGHT + MARGIN_VERTICAL,
+        },
+        // No docked action panel on a locked premium bundle, so no room needs reserving for it.
+        listFooterPremiumLocked: {
+            height: insets.bottom,
         },
         root: {
             backgroundColor: colors.background,

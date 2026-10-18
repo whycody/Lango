@@ -334,9 +334,14 @@
         "empty_search_desc": "No se encontraron conjuntos que coincidan con tu búsqueda.",
         "premium_banner_title": "Lango Premium",
         "premium_banner_subtitle": "Desbloquea cientos de sets premium y genera los tuyos con IA",
-        "premium_banner_cta": "Probar Premium"
+        "premium_banner_cta": "Probar Premium",
+        "premium_badge": "Premium"
     },
     "bundle_details": {
+        "premium_locked": {
+            "cta": "Probar Premium",
+            "desc": "Prueba Premium para ver el resto de las palabras y aprender este set"
+        },
         "add_to_my_bundles": "Unirse al conjunto",
         "add_word": "Añadir nueva palabra +",
         "creator_info": "{{name}} • {{count}} tarjeta",

@@ -334,9 +334,14 @@
         "empty_search_desc": "Nessun set corrisponde alla tua ricerca.",
         "premium_banner_title": "Lango Premium",
         "premium_banner_subtitle": "Sblocca centinaia di set premium e genera i tuoi con l'IA",
-        "premium_banner_cta": "Prova Premium"
+        "premium_banner_cta": "Prova Premium",
+        "premium_badge": "Premium"
     },
     "bundle_details": {
+        "premium_locked": {
+            "cta": "Prova Premium",
+            "desc": "Prova Premium per vedere il resto delle parole e imparare questo set"
+        },
         "add_to_my_bundles": "Unisciti al set",
         "add_word": "Aggiungi nuova parola +",
         "creator_info": "{{name}} • {{count}} flashcard",

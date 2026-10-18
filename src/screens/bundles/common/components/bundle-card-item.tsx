@@ -10,12 +10,14 @@ import { CustomText } from '../../../../ui/components';
 import { CustomTheme } from '../../../../ui/Theme';
 import { isIOS } from '../../../../utils/deviceUtils';
 import { BundleCreatorInfo } from './bundle-creator-info';
+import { PremiumBadge } from './premium-badge';
 
 interface BundleCardItemProps {
     actionSlot?: ReactNode;
     creatorName?: string;
     flashcardsCount: number;
     index: number;
+    isPremium?: boolean;
     onPress?: () => void;
     ownerId: string;
     style?: ViewStyle;
@@ -23,7 +25,17 @@ interface BundleCardItemProps {
 }
 
 export const BundleCardItem: FC<BundleCardItemProps> = memo(
-    ({ actionSlot, creatorName, flashcardsCount, index, onPress, ownerId, style, title }) => {
+    ({
+        actionSlot,
+        creatorName,
+        flashcardsCount,
+        index,
+        isPremium = false,
+        onPress,
+        ownerId,
+        style,
+        title,
+    }) => {
         const { colors } = useTheme() as CustomTheme;
         const styles = useMemo(() => getStyles(colors), [colors]);
         const { triggerHaptics } = useHaptics();
@@ -54,13 +66,16 @@ export const BundleCardItem: FC<BundleCardItemProps> = memo(
                         text={title}
                         weight="SemiBold"
                     />
-                    <BundleCreatorInfo
-                        compact
-                        creatorId={ownerId}
-                        flashcardsCount={flashcardsCount}
-                        name={creatorName}
-                        style={styles.creatorInfo}
-                    />
+                    <View style={styles.metaRow}>
+                        <BundleCreatorInfo
+                            compact
+                            creatorId={ownerId}
+                            flashcardsCount={flashcardsCount}
+                            name={creatorName}
+                            style={styles.creatorInfo}
+                        />
+                        {isPremium && <PremiumBadge style={styles.premiumBadge} />}
+                    </View>
                 </View>
                 {actionSlot && <View style={styles.actionSlotContainer}>{actionSlot}</View>}
             </Pressable>
@@ -89,7 +104,8 @@ const getStyles = (colors: ThemeColors) =>
             paddingVertical: spacing.l,
         },
         creatorInfo: {
-            marginTop: spacing.xxs,
+            flexShrink: 1,
+            marginTop: spacing.none,
         },
         firstContainer: {
             marginTop: spacing.none,
@@ -97,6 +113,16 @@ const getStyles = (colors: ThemeColors) =>
         label: {
             color: colors.white,
             fontSize: fontSize.l,
+        },
+        metaRow: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            marginTop: spacing.s,
+        },
+        premiumBadge: {
+            alignSelf: 'center',
+            flexShrink: 0,
+            marginLeft: spacing.m,
         },
         pressed: {
             opacity: 0.8,

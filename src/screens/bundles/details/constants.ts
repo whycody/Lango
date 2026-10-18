@@ -11,6 +11,10 @@ export const UNKNOWN_DELETE_BUNDLE_ERROR_RESULT: DeleteBundleResult = {
 export const HEADER_LIST_ITEMS: BundleListItem[] = [{ id: 'header' }, { id: 'subheader' }];
 export const EMPTY_LIST_ITEMS: BundleListItem[] = [{ id: 'empty' }];
 
+export const PREMIUM_LOCKED_VISIBLE_WORDS_LIMIT = 6;
+export const PREMIUM_LOCKED_FADED_WORDS_COUNT = 2;
+export const PREMIUM_LOCKED_ICON_SIZE = 22;
+
 export const BUNDLE_REMOVE_ERROR_MESSAGE_KEYS: Record<ApiErrorCode, TranslationKey> = {
     'already-member': 'bundle_details.removing.error_unknown',
     forbidden: 'bundle_details.removing.error_forbidden',

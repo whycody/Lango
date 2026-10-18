@@ -333,9 +333,14 @@
         "empty_search_desc": "Nie znaleziono zestawów pasujących do wyszukiwania.",
         "premium_banner_title": "Lango Premium",
         "premium_banner_subtitle": "Odblokuj setki zestawów premium oraz generuj własne z pomocą AI",
-        "premium_banner_cta": "Wypróbuj"
+        "premium_banner_cta": "Wypróbuj",
+        "premium_badge": "Premium"
     },
     "bundle_details": {
+        "premium_locked": {
+            "cta": "Wypróbuj Premium",
+            "desc": "Wypróbuj Premium, aby zobaczyć resztę słówek i uczyć się tego zestawu"
+        },
         "add_to_my_bundles": "Dołącz do zestawu",
         "add_word": "Dodaj nowe słówko +",
         "creator_info": "{{name}} • {{count}} fiszka",

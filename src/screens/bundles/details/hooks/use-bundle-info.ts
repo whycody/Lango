@@ -10,6 +10,7 @@ interface UseBundleInfoResult {
     bundle: EnrichedWordsBundle | WordsBundleWithOwnerInfo | undefined;
     canAddWords: boolean;
     isBundleQueryLoading: boolean;
+    isPremiumLocked: boolean;
     isPreview: boolean;
     isPrivatePreview: boolean;
     localBundle: EnrichedWordsBundle | undefined;
@@ -44,11 +45,14 @@ export const useBundleInfo = (
     const membership = isPreview ? undefined : localBundle?.membership;
     const canAddWords = !isPreview && hasBundleEditPermission(membership?.role);
     const isPrivatePreview = isPreview && bundle?.visibility === 'private';
+    // TODO: exempt premium users once subscription status is available
+    const isPremiumLocked = bundle?.premiumOnly ?? false;
 
     return {
         bundle,
         canAddWords,
         isBundleQueryLoading,
+        isPremiumLocked,
         isPreview,
         isPrivatePreview,
         localBundle,

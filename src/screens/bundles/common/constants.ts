@@ -11,6 +11,9 @@ export const BUNDLE_CREATOR_INFO_AVATAR_SIZE = 22;
 export const BUNDLE_CREATOR_INFO_TEXT_LINE_HEIGHT = 16;
 export const BUNDLE_CREATOR_AVATAR_FALLBACK_ICON_SIZE = 14;
 
+export const PREMIUM_BADGE_ICON_SIZE = 10;
+export const PREMIUM_BADGE_LARGE_ICON_SIZE = 14;
+
 export const TITLE_SCROLL_START = 40;
 export const TITLE_SCROLL_END = 80;
 export const TITLE_OPACITY_RANGE: [number, number] = [0, 1];

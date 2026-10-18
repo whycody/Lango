@@ -48,6 +48,7 @@ export const BundleListItem: FC<BundleListItemProps> = memo(
             <BundleCardItem
                 flashcardsCount={bundleWords.length}
                 index={index}
+                isPremium={bundle.premiumOnly}
                 ownerId={bundle.ownerId}
                 style={style}
                 title={bundle.title}

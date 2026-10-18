@@ -4,4 +4,5 @@ export * from './bundle-empty-state';
 export * from './bundle-header-skeleton';
 export * from './bundle-subscribe-toggle';
 export * from './bundle-title-section';
+export * from './premium-locked-words-footer';
 export * from './visibility-picker-list-item';

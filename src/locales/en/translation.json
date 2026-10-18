@@ -334,9 +334,14 @@
         "empty_search_desc": "No bundles matched your search.",
         "premium_banner_title": "Lango Premium",
         "premium_banner_subtitle": "Unlock hundreds of premium bundles and generate your own with AI",
-        "premium_banner_cta": "Try Premium"
+        "premium_banner_cta": "Try Premium",
+        "premium_badge": "Premium"
     },
     "bundle_details": {
+        "premium_locked": {
+            "cta": "Try Premium",
+            "desc": "Try Premium to see the rest of the words and learn this bundle"
+        },
         "add_to_my_bundles": "Join bundle",
         "add_word": "Add new word +",
         "creator_info": "{{name}} • {{count}} flashcard",

@@ -5,13 +5,14 @@ import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../../constan
 import { fontSize } from '../../../../constants/typography';
 import { ThemeColors } from '../../../../types';
 import { CustomText } from '../../../../ui/components';
-import { BundleCreatorInfo } from '../../common/components';
+import { BundleCreatorInfo, PremiumBadge } from '../../common/components';
 import { BUNDLE_SUBTITLE_LINE_HEIGHT, BUNDLE_TITLE_LINE_HEIGHT } from '../constants';
 import { BundleHeaderSkeleton } from './bundle-header-skeleton';
 
 type BundleTitleData = {
     description?: string | null;
     ownerId: string;
+    premiumOnly?: boolean;
     title: string;
 };
 
@@ -36,10 +37,17 @@ export const BundleTitleSection: FC<BundleTitleSectionProps> = ({
 
     if (!bundle) return <BundleHeaderSkeleton />;
 
+    const isPremium = bundle.premiumOnly ?? false;
+
     return (
         <>
+            {isPremium && <PremiumBadge size="large" style={styles.premiumBadge} />}
             <Animated.View style={{ opacity: contentTitleOpacity }}>
-                <CustomText style={styles.title} text={bundle.title} weight="Bold" />
+                <CustomText
+                    style={[styles.title, isPremium && styles.titleBelowBadge]}
+                    text={bundle.title}
+                    weight="Bold"
+                />
             </Animated.View>
             {bundle.description && <CustomText style={styles.subtitle} text={bundle.description} />}
             <BundleCreatorInfo
@@ -59,6 +67,10 @@ const getStyles = (colors: ThemeColors) =>
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: spacing.l,
         },
+        premiumBadge: {
+            marginHorizontal: MARGIN_HORIZONTAL,
+            marginTop: MARGIN_VERTICAL,
+        },
         subtitle: {
             color: colors.white300,
             fontSize: fontSize.xl,
@@ -72,5 +84,8 @@ const getStyles = (colors: ThemeColors) =>
             lineHeight: BUNDLE_TITLE_LINE_HEIGHT,
             marginHorizontal: MARGIN_HORIZONTAL,
             marginTop: MARGIN_VERTICAL,
+        },
+        titleBelowBadge: {
+            marginTop: spacing.m,
         },
     });

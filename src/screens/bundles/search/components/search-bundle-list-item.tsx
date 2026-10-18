@@ -36,6 +36,7 @@ export const SearchBundleListItem: FC<SearchBundleListItemProps> = memo(
                 creatorName={bundle.ownerName}
                 flashcardsCount={bundle.flashcardsCount}
                 index={index}
+                isPremium={bundle.premiumOnly}
                 ownerId={bundle.ownerId}
                 style={style}
                 title={bundle.title}

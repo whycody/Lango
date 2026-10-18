@@ -12,4 +12,7 @@ export type BundleVisibilityOption = {
 
 export type BundleWord = Word & { gradeThreeProb: number };
 
-export type BundleListItem = BundleWord | { id: 'header' | 'subheader' | 'empty' };
+export type BundleListItem =
+    | BundleWord
+    | { id: 'header' | 'subheader' | 'empty' }
+    | { fadedWords: BundleWord[]; id: 'premium-lock' };

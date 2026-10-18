@@ -142,13 +142,12 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
     // re-rendering every row when this screen re-renders.
     const handleBundlePress = useCallback(
         (bundle: EnrichedWordsBundle) => {
-            touchBundleInteraction(bundle.id);
             navigation.navigate(ScreenName.BundleNavigator, {
                 bundleId: bundle.id,
                 isNewBundle: false,
             });
         },
-        [navigation, touchBundleInteraction],
+        [navigation],
     );
 
     const handleBundlePlayPress = useCallback((bundle: EnrichedWordsBundle) => {

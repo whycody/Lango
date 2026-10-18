@@ -17,14 +17,13 @@ interface RecentBundlesCardProps {
 }
 
 export const RecentBundlesCard: FC<RecentBundlesCardProps> = ({ navigation, onPlayPress }) => {
-    const { langBundles, touchBundleInteraction } = useWordsBundle();
+    const { langBundles } = useWordsBundle();
 
     const recentBundles = langBundles.slice(0, RECENT_BUNDLES_COUNT);
 
     if (recentBundles.length === 0) return null;
 
     const handleBundlePress = (bundleId: string) => {
-        touchBundleInteraction(bundleId);
         navigation.navigate(ScreenName.BundleNavigator, { bundleId, isNewBundle: false });
     };
 

@@ -81,6 +81,7 @@ import {
     useBundleInfo,
     useBundleLifecycleSheets,
     useBundleScrollAnimations,
+    useBundleVisitInteraction,
     useBundleWordsData,
 } from './hooks';
 import {
@@ -181,6 +182,8 @@ export const BundleDetailsScreen: FC<BundleDetailsScreenProps> = ({ navigation, 
         previewOwnerInfo,
         refetchBundle,
     } = useBundleInfo(bundleId, previewBundle);
+
+    useBundleVisitInteraction(bundleId, membership);
 
     const isBundleOwner = membership?.role === 'owner';
 

@@ -6,6 +6,7 @@ import {
     NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 
+import { AllBundlesScreen } from '../screens/bundles/all/all-bundles-screen';
 import { SearchBundlesScreen } from '../screens/bundles/search/search-bundles-screen';
 import { EvaluationsProvider } from '../store/EvaluationsContext';
 import { LanguageProvider } from '../store/LanguageContext';
@@ -94,6 +95,10 @@ const AppStackInner = () => {
                                                         <Stack.Screen
                                                             component={SearchBundlesScreen}
                                                             name={ScreenName.SearchBundles}
+                                                        />
+                                                        <Stack.Screen
+                                                            component={AllBundlesScreen}
+                                                            name={ScreenName.AllBundles}
                                                         />
                                                     </Stack.Navigator>
                                                 </BottomSheetModalProvider>

@@ -23,6 +23,7 @@ export type BundleNavigatorParams = {
 };
 
 export type RootStackParamList = {
+    AllBundles: undefined;
     BundleNavigator: BundleNavigatorParams;
     Flashcards: FlashcardsScreenParams | undefined;
     SearchBundles: undefined;
@@ -42,6 +43,7 @@ export type BundleStackParamList = {
 };
 
 export enum ScreenName {
+    AllBundles = 'AllBundles',
     BundleFlashcards = 'BundleFlashcards',
     BundleMembers = 'BundleMembers',
     BundleNavigator = 'BundleNavigator',

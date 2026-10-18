@@ -44,6 +44,7 @@ import {
     ADD_BUNDLE_SHEET_NAME,
     BUNDLES_LANGUAGE_SHEET_NAME,
     BUNDLES_START_SESSION_SHEET_NAME,
+    DASHBOARD_BUNDLES_PREVIEW_COUNT,
     DASHBOARD_FOOTER_HEIGHT,
     HANDLE_BUNDLE_SHEET_NAME,
     JOIN_WITH_CODE_SHEET_NAME,
@@ -79,6 +80,9 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
         STATUS_BAR_APPEAR_OPACITY_THRESHOLD,
     );
 
+    const previewBundles = langBundles.slice(0, DASHBOARD_BUNDLES_PREVIEW_COUNT);
+    const hasMoreBundles = langBundles.length > DASHBOARD_BUNDLES_PREVIEW_COUNT;
+
     const [refreshing, setRefreshing] = useState(false);
     const [sessionBundleId, setSessionBundleId] = useState<string>();
 
@@ -113,6 +117,10 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
 
     const handleSearchPress = () => {
         navigation.navigate(ScreenName.SearchBundles);
+    };
+
+    const handleSeeAllBundlesPress = () => {
+        navigation.navigate(ScreenName.AllBundles);
     };
 
     const handleCreateNewBundle = () => {
@@ -254,10 +262,18 @@ export const BundlesDashboardScreen: FC<BundlesDashboardScreenProps> = ({ naviga
                 <Header style={styles.sectionTitle} titleTx="bundles.your_bundles" />
                 <FlatList
                     ListEmptyComponent={EmptyBundlesList}
-                    data={langBundles}
+                    data={previewBundles}
                     renderItem={renderBundleItem}
                     scrollEnabled={false}
                 />
+                {hasMoreBundles && (
+                    <ActionButton
+                        icon="chevron-forward"
+                        labelTx="bundles.see_all"
+                        style={styles.seeAllButton}
+                        onPress={handleSeeAllBundlesPress}
+                    />
+                )}
                 <Header style={styles.sectionTitle} titleTx="bundles.recommended_bundles" />
                 <CustomText style={styles.recommendedText} tx="bundles.no_recommended_bundles" />
                 <View style={styles.footer} />
@@ -304,6 +320,9 @@ const getStyles = (colors: ThemeColors, insets: EdgeInsets) =>
             fontSize: fontSize.xxl,
             marginBottom: spacing.l,
             marginTop: MARGIN_VERTICAL,
+        },
+        seeAllButton: {
+            marginTop: spacing.l,
         },
         spacer: {
             height: insets.top + MARGIN_VERTICAL,

@@ -25,6 +25,7 @@ import { useUserPreferences, useWords } from '../../store';
 import { WordWithDetails } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { isIOS } from '../../utils/deviceUtils';
+import { normalizeForSearch } from '../../utils/helpers';
 import { getSortingMethod, matchesMasteryFilter } from '../../utils/sortingUtil';
 import { ActionButton, BottomGradient, DockedActionPanel, ModalDragHandle } from '../components';
 import {
@@ -108,11 +109,11 @@ export const FlashcardsScreen = () => {
 
     const matchesSearchQuery = useCallback(
         (word: WordWithDetails) => {
-            const query = filter.trim().toLowerCase();
+            const query = normalizeForSearch(filter.trim());
             if (!query) return false;
             return (
-                word.text.trim().toLowerCase().includes(query) ||
-                word.translation.trim().toLowerCase().includes(query)
+                normalizeForSearch(word.text).includes(query) ||
+                normalizeForSearch(word.translation).includes(query)
             );
         },
         [filter],

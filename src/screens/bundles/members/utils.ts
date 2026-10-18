@@ -1,4 +1,5 @@
 import { BundleMemberWithUser } from '../../../types';
+import { normalizeForSearch } from '../../../utils/helpers';
 import { MEMBER_ROLE_SORT_ORDER } from './constants';
 
 export const isBundleOwnerStale = (
@@ -13,9 +14,11 @@ export const filterAndSortMembers = (
     members: BundleMemberWithUser[],
     query: string,
 ): BundleMemberWithUser[] => {
-    const trimmedQuery = query.trim().toLowerCase();
-    const filtered = trimmedQuery
-        ? members.filter(member => member.userSummary.name.toLowerCase().includes(trimmedQuery))
+    const normalizedQuery = normalizeForSearch(query.trim());
+    const filtered = normalizedQuery
+        ? members.filter(member =>
+              normalizeForSearch(member.userSummary.name).includes(normalizedQuery),
+          )
         : members;
 
     return filtered

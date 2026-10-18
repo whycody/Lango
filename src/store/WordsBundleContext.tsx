@@ -67,7 +67,7 @@ interface WordsBundleContextProps {
     loading: boolean;
     members: BundleMember[];
     removeBundle: (id: string) => Promise<DeleteBundleResult>;
-    setWordsBackfilled: (bundleId: string, backfilled: boolean) => void;
+    markBundlesWordsSynced: (bundleIds: string[]) => Promise<void>;
     syncBundles: () => Promise<void>;
     touchBundleInteraction: (bundleId: string) => void;
 }
@@ -87,9 +87,9 @@ const WordsBundleContext = createContext<WordsBundleContextProps>({
     joinWithCode: () => Promise.resolve({ errorCode: 'unknown', success: false }),
     langBundles: [],
     loading: true,
+    markBundlesWordsSynced: () => Promise.resolve(),
     members: [],
     removeBundle: () => Promise.resolve({ success: true }),
-    setWordsBackfilled: () => {},
     syncBundles: () => Promise.resolve(),
     touchBundleInteraction: () => {},
 });
@@ -263,15 +263,26 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
         return { success: true };
     };
 
-    const setWordsBackfilled = (bundleId: string, backfilled: boolean) => {
-        const updatedBundles = bundles.map(bundle =>
-            bundle.id === bundleId ? { ...bundle, wordsBackfilled: backfilled } : bundle,
+    // Called after a bundle-words fetch that may have taken a while (theme bundles wait for
+    // generation), so it must not overwrite bundles from a stale closure - update state
+    // functionally and read the persisted rows fresh.
+    const markBundlesWordsSynced = async (bundleIds: string[]) => {
+        const ids = new Set(bundleIds);
+        const markSynced = (bundle: WordsBundle): WordsBundle =>
+            ids.has(bundle.id)
+                ? {
+                      ...bundle,
+                      wordsBackfilled: true,
+                      // A successful fetch of a theme bundle's words means they're generated now.
+                      ...(bundle.wordsGenerated === false && { wordsGenerated: true }),
+                  }
+                : bundle;
+
+        setBundles(prev => prev.map(markSynced));
+        const storedBundles = await getAllWordsBundles();
+        await saveWordsBundles(
+            storedBundles.filter(bundle => ids.has(bundle.id)).map(markSynced),
         );
-
-        const changed = updatedBundles.find(bundle => bundle.id === bundleId);
-
-        setBundles(updatedBundles);
-        if (changed) updateWordsBundle(changed);
     };
 
     const generateInvitationCode = async (
@@ -327,7 +338,9 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
             removed: false,
             synced: true,
             updatedAt: bundle.updatedAt ?? now,
-            wordsBackfilled: true,
+            // A theme bundle whose words weren't generated yet may have been previewed without
+            // words - let the backfill in WordsContext fetch them (and trigger generation).
+            wordsBackfilled: bundle.wordsGenerated !== false,
         };
 
         const existingMember = members.find(
@@ -635,9 +648,9 @@ export const WordsBundleProvider: FC<{ children: ReactNode }> = ({ children }) =
                 joinWithCode,
                 langBundles,
                 loading,
+                markBundlesWordsSynced,
                 members,
                 removeBundle,
-                setWordsBackfilled,
                 syncBundles,
                 touchBundleInteraction,
             }}

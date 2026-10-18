@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { ObjectId } from 'bson';
 
+import { ApiErrorCode } from '../api/api.types';
 import { wordsApi } from '../api/words-api';
 import { WordSource } from '../constants/Word';
 import { useWordsRepository } from '../hooks/repo';
@@ -30,6 +31,16 @@ import { useLanguage } from './LanguageContext';
 import { useWordsBundle } from './WordsBundleContext';
 
 const EPOCH_ISO = '1970-01-01T00:00:00.000Z';
+
+const BUNDLE_WORDS_RETRY_DELAY_MS = 10_000;
+const BUNDLE_WORDS_MAX_ATTEMPTS = 5;
+// 409 resolves to 'already-member' (see resolveApiErrorCode); for /api/words it means
+// "generation in progress". 'server-error' covers 502 "generation failed".
+const RETRYABLE_BUNDLE_WORDS_ERROR_CODES: ApiErrorCode[] = [
+    'already-member',
+    'network',
+    'server-error',
+];
 
 interface WordsContextProps {
     addFetchedWords: (fetchedWords: Word[]) => Promise<void>;
@@ -69,10 +80,13 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { mainLang, translationLang } = useLanguage();
     const { deleteWordsByBundleId, deleteWordsByIds, getAllWords, saveWords, updateWord } =
         useWordsRepository();
-    const { bundles, members, setWordsBackfilled } = useWordsBundle();
+    const { bundles, markBundlesWordsSynced, members } = useWordsBundle();
     const { user } = useAuth();
     const syncing = useRef(false);
     const syncingBundleWords = useRef(new Set<string>());
+    const pausedBundleWords = useRef(new Set<string>());
+    const bundleWordsAttempts = useRef(new Map<string, number>());
+    const [bundleWordsRetryTick, setBundleWordsRetryTick] = useState(0);
     const removingBundleWords = useRef(new Set<string>());
 
     const langWords = useMemo(
@@ -335,28 +349,64 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     useEffect(() => {
         const pendingBundles = bundles.filter(
-            bundle => !bundle.wordsBackfilled && !syncingBundleWords.current.has(bundle.id),
+            bundle =>
+                !bundle.wordsBackfilled &&
+                !syncingBundleWords.current.has(bundle.id) &&
+                !pausedBundleWords.current.has(bundle.id),
         );
 
         if (pendingBundles.length === 0) return;
 
         pendingBundles.forEach(bundle => syncingBundleWords.current.add(bundle.id));
 
-        const fetchBundleWords = async (bundleId: string): Promise<Word[]> => {
+        const fetchBundleWords = async (bundleId: string) => {
             const bundleWords = words.filter(word => word.bundleId === bundleId);
             const since =
                 bundleWords.length > 0 ? findLatestUpdatedAt<Word>(bundleWords) : EPOCH_ISO;
 
-            const result = await wordsApi.fetchUpdatedWords(since, bundleId);
-            return result.kind === 'ok' ? result.data : [];
+            return { bundleId, result: await wordsApi.fetchUpdatedWords(since, bundleId) };
+        };
+
+        // A failed bundle stays not backfilled, so it isn't left empty for good. It's paused
+        // so the effect doesn't refetch on every words change, then retried after a delay
+        // (theme bundles answer 409/502 while their words are being generated), or left for
+        // the next app start once the error isn't retryable or attempts run out.
+        const pauseBundleWords = (bundleId: string, errorCode: ApiErrorCode) => {
+            const attempts = (bundleWordsAttempts.current.get(bundleId) ?? 0) + 1;
+            bundleWordsAttempts.current.set(bundleId, attempts);
+            pausedBundleWords.current.add(bundleId);
+
+            if (
+                !RETRYABLE_BUNDLE_WORDS_ERROR_CODES.includes(errorCode) ||
+                attempts >= BUNDLE_WORDS_MAX_ATTEMPTS
+            ) {
+                return;
+            }
+
+            setTimeout(() => {
+                pausedBundleWords.current.delete(bundleId);
+                setBundleWordsRetryTick(tick => tick + 1);
+            }, BUNDLE_WORDS_RETRY_DELAY_MS);
         };
 
         const syncBundlesWords = async () => {
             try {
-                const serverWordsPerBundle = await Promise.all(
+                const results = await Promise.all(
                     pendingBundles.map(bundle => fetchBundleWords(bundle.id)),
                 );
-                const serverWords = serverWordsPerBundle.flat();
+
+                const serverWords: Word[] = [];
+                const fetchedBundleIds: string[] = [];
+                results.forEach(({ bundleId, result }) => {
+                    if (result.kind === 'ok') {
+                        serverWords.push(...result.data);
+                        fetchedBundleIds.push(bundleId);
+                    } else {
+                        pauseBundleWords(bundleId, result.errorCode);
+                    }
+                });
+
+                if (fetchedBundleIds.length === 0) return;
 
                 const wordsList = await getAllWords();
                 const mergedWords = mergeLocalAndServer<Word>(wordsList, serverWords);
@@ -367,7 +417,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
                     await saveWords(changedWords);
                 }
 
-                pendingBundles.forEach(bundle => setWordsBackfilled(bundle.id, true));
+                await markBundlesWordsSynced(fetchedBundleIds);
             } catch (error) {
                 console.log('Error syncing bundle words:', error);
             } finally {
@@ -376,7 +426,7 @@ export const WordsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         };
 
         syncBundlesWords();
-    }, [bundles, words]);
+    }, [bundles, words, bundleWordsRetryTick]);
 
     return (
         <WordsContext.Provider

@@ -1,5 +1,6 @@
 import { BundleInteraction } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
+import { buildSqlPlaceholders, fromSqlBoolean, toSqlBoolean } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 export const BUNDLE_INTERACTION_COLUMNS: Array<keyof BundleInteraction> = [
@@ -45,7 +46,7 @@ export const saveBundleInteractions = async (userId: string, interactions: Bundl
         interactions.forEach(interaction => {
             const values = BUNDLE_INTERACTION_COLUMNS.map(col => {
                 if (col === 'synced') {
-                    return interaction[col] ? 1 : 0;
+                    return toSqlBoolean(interaction[col]);
                 }
                 if (col === 'updatedAt') {
                     return interaction.updatedAt ?? interaction.locallyUpdatedAt;
@@ -53,7 +54,7 @@ export const saveBundleInteractions = async (userId: string, interactions: Bundl
                 return interaction[col];
             });
 
-            const placeholders = BUNDLE_INTERACTION_COLUMNS.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(BUNDLE_INTERACTION_COLUMNS.length);
 
             tx.executeSql(
                 `REPLACE INTO ${BUNDLE_INTERACTIONS} (${BUNDLE_INTERACTION_COLUMNS.join(', ')})
@@ -80,7 +81,7 @@ export const getAllBundleInteractions = async (userId: string): Promise<BundleIn
                         interactions.push({
                             ...row,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
-                            synced: row.synced === 1,
+                            synced: fromSqlBoolean(row.synced),
                         } satisfies BundleInteraction);
                     }
                     resolve(interactions);
@@ -98,7 +99,7 @@ export const updateBundleInteraction = async (userId: string, interaction: Bundl
 export const deleteBundleInteractionsByIds = async (userId: string, ids: string[]) => {
     if (ids.length === 0) return;
     const db = await getDb(userId);
-    const placeholders = ids.map(() => '?').join(', ');
+    const placeholders = buildSqlPlaceholders(ids.length);
     await db.transaction(tx => {
         tx.executeSql(`DELETE FROM ${BUNDLE_INTERACTIONS} WHERE id IN (${placeholders})`, ids);
     });

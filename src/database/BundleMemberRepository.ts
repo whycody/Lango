@@ -1,5 +1,6 @@
 import { BundleMember } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
+import { buildSqlPlaceholders, fromSqlBoolean, toSqlBoolean } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 export const BUNDLE_MEMBER_COLUMNS: Array<keyof BundleMember> = [
@@ -51,7 +52,7 @@ export const saveBundleMembers = async (userId: string, members: BundleMember[])
         members.forEach(member => {
             const values = BUNDLE_MEMBER_COLUMNS.map(col => {
                 if (col === 'removed' || col === 'synced' || col === 'subscribed') {
-                    return member[col] ? 1 : 0;
+                    return toSqlBoolean(member[col]);
                 }
                 if (col === 'updatedAt') {
                     return member.updatedAt ?? member.locallyUpdatedAt;
@@ -59,7 +60,7 @@ export const saveBundleMembers = async (userId: string, members: BundleMember[])
                 return member[col];
             });
 
-            const placeholders = BUNDLE_MEMBER_COLUMNS.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(BUNDLE_MEMBER_COLUMNS.length);
 
             tx.executeSql(
                 `REPLACE INTO ${BUNDLE_MEMBERS} (${BUNDLE_MEMBER_COLUMNS.join(', ')})
@@ -86,9 +87,9 @@ export const getAllBundleMembers = async (userId: string): Promise<BundleMember[
                         members.push({
                             ...row,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
-                            removed: row.removed === 1,
-                            subscribed: row.subscribed === 1,
-                            synced: row.synced === 1,
+                            removed: fromSqlBoolean(row.removed),
+                            subscribed: fromSqlBoolean(row.subscribed),
+                            synced: fromSqlBoolean(row.synced),
                         } satisfies BundleMember);
                     }
                     resolve(members);
@@ -106,7 +107,7 @@ export const updateBundleMember = async (userId: string, member: BundleMember) =
 export const deleteBundleMembersByIds = async (userId: string, ids: string[]) => {
     if (ids.length === 0) return;
     const db = await getDb(userId);
-    const placeholders = ids.map(() => '?').join(', ');
+    const placeholders = buildSqlPlaceholders(ids.length);
     await db.transaction(tx => {
         tx.executeSql(`DELETE FROM ${BUNDLE_MEMBERS} WHERE id IN (${placeholders})`, ids);
     });

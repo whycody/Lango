@@ -1,4 +1,5 @@
 import { WordMLState } from '../types';
+import { buildSqlPlaceholders } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 export const WORD_ML_STATE_COLUMNS: Array<keyof WordMLState> = [
@@ -50,7 +51,7 @@ export const saveWordsMLStates = async (userId: string, wordsMLStates: WordMLSta
                 wordDetails.gradeThreeProb,
             ];
 
-            const placeholders = WORD_ML_STATE_COLUMNS.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(WORD_ML_STATE_COLUMNS.length);
 
             tx.executeSql(
                 `REPLACE INTO ${WORD_ML_STATE} (${WORD_ML_STATE_COLUMNS.join(', ')})

@@ -1,5 +1,6 @@
 import { Suggestion } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
+import { buildSqlPlaceholders, fromSqlBoolean, toSqlBoolean } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 const columns: Array<keyof Suggestion> = [
@@ -57,14 +58,14 @@ export const saveSuggestions = async (userId: string, suggestions: Suggestion[])
     await db.transaction(tx => {
         suggestions.forEach(suggestion => {
             const values = columns.map(col => {
-                if (col === 'synced') return suggestion.synced ? 1 : 0;
-                if (col === 'skipped') return suggestion.skipped ? 1 : 0;
-                if (col === 'added') return suggestion.added ? 1 : 0;
+                if (col === 'synced') return toSqlBoolean(suggestion.synced);
+                if (col === 'skipped') return toSqlBoolean(suggestion.skipped);
+                if (col === 'added') return toSqlBoolean(suggestion.added);
                 if (col === 'example')
                     return suggestion.example ? JSON.stringify(suggestion.example) : null;
                 return suggestion[col as keyof Suggestion] ?? null;
             });
-            const placeholders = columns.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(columns.length);
             tx.executeSql(
                 `INSERT OR REPLACE INTO suggestions (${columns.join(', ')}) VALUES (${placeholders})`,
                 values,
@@ -86,14 +87,14 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
                     for (let i = 0; i < rows.length; i++) {
                         const row = rows.item(i);
                         suggestions.push({
-                            added: row.added === 1,
+                            added: fromSqlBoolean(row.added),
                             displayCount: row.displayCount || 0,
                             example: parseExample(row.example),
                             id: row.id,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             mainLang: row.mainLang,
-                            skipped: row.skipped === 1,
-                            synced: row.synced === 1,
+                            skipped: fromSqlBoolean(row.skipped),
+                            synced: fromSqlBoolean(row.synced),
                             translation: row.translation,
                             translationLang: row.translationLang,
                             updatedAt: row.updatedAt || row.locallyUpdatedAt || getCurrentISO(),
@@ -112,7 +113,7 @@ export const getAllSuggestions = async (userId: string): Promise<Suggestion[]> =
 export const deleteSuggestions = async (userId: string, ids: string[]) => {
     const db = await getDb(userId);
     await db.transaction(tx => {
-        const placeholders = ids.map(() => '?').join(', ');
+        const placeholders = buildSqlPlaceholders(ids.length);
         tx.executeSql(
             `DELETE
        FROM suggestions

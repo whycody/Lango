@@ -1,4 +1,5 @@
 import { WordHeuristicState } from '../types';
+import { buildSqlPlaceholders } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 export const WORD_HEURISTIC_STATE_COLUMNS: Array<keyof WordHeuristicState> = [
@@ -47,7 +48,7 @@ export const saveWordsHeuristicStates = async (
                 state.EF,
             ];
 
-            const placeholders = WORD_HEURISTIC_STATE_COLUMNS.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(WORD_HEURISTIC_STATE_COLUMNS.length);
 
             tx.executeSql(
                 `REPLACE INTO ${WORD_HEURISTIC_STATE} (${WORD_HEURISTIC_STATE_COLUMNS.join(', ')})

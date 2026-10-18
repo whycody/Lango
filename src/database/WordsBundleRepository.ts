@@ -1,5 +1,12 @@
 import { WordsBundle } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
+import {
+    buildSqlPlaceholders,
+    fromNullableSqlBoolean,
+    fromSqlBoolean,
+    toNullableSqlBoolean,
+    toSqlBoolean,
+} from '../utils/helpers';
 import { getDb } from './utils/db';
 
 export const WORDS_BUNDLE_COLUMNS: Array<keyof WordsBundle> = [
@@ -13,6 +20,10 @@ export const WORDS_BUNDLE_COLUMNS: Array<keyof WordsBundle> = [
     'removed',
     'wordsBackfilled',
     'bundleCreatedOnServer',
+    'category',
+    'level',
+    'wordsGenerated',
+    'premiumOnly',
     'synced',
     'locallyUpdatedAt',
     'updatedAt',
@@ -61,7 +72,10 @@ export const saveWordsBundles = async (userId: string, bundles: WordsBundle[]) =
                     col === 'wordsBackfilled' ||
                     col === 'bundleCreatedOnServer'
                 ) {
-                    return bundle[col] ? 1 : 0;
+                    return toSqlBoolean(bundle[col]);
+                }
+                if (col === 'wordsGenerated' || col === 'premiumOnly') {
+                    return toNullableSqlBoolean(bundle[col]);
                 }
                 if (col === 'updatedAt') {
                     return bundle.updatedAt ?? bundle.locallyUpdatedAt;
@@ -69,7 +83,7 @@ export const saveWordsBundles = async (userId: string, bundles: WordsBundle[]) =
                 return bundle[col];
             });
 
-            const placeholders = WORDS_BUNDLE_COLUMNS.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(WORDS_BUNDLE_COLUMNS.length);
 
             tx.executeSql(
                 `REPLACE INTO ${WORDS_BUNDLES} (${WORDS_BUNDLE_COLUMNS.join(', ')})
@@ -95,11 +109,13 @@ export const getAllWordsBundles = async (userId: string): Promise<WordsBundle[]>
                         const row = rows.item(i);
                         bundles.push({
                             ...row,
-                            bundleCreatedOnServer: row.bundleCreatedOnServer === 1,
+                            bundleCreatedOnServer: fromSqlBoolean(row.bundleCreatedOnServer),
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
-                            removed: row.removed === 1,
-                            synced: row.synced === 1,
-                            wordsBackfilled: row.wordsBackfilled === 1,
+                            premiumOnly: fromNullableSqlBoolean(row.premiumOnly),
+                            removed: fromSqlBoolean(row.removed),
+                            synced: fromSqlBoolean(row.synced),
+                            wordsBackfilled: fromSqlBoolean(row.wordsBackfilled),
+                            wordsGenerated: fromNullableSqlBoolean(row.wordsGenerated),
                         } satisfies WordsBundle);
                     }
                     resolve(bundles);

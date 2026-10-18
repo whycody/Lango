@@ -15,8 +15,11 @@ export const useBundleWordsQuery = (
             // must guard here to stay a no-op.
             if (!enabled) return [];
 
+            // Throw instead of resolving to [] so React Query retries - for a theme bundle
+            // whose words are still being generated, 409/502 are expected and transient.
             const result = await wordsApi.fetchUpdatedWords(undefined, bundleId);
-            return result.kind === 'ok' ? result.data : [];
+            if (result.kind !== 'ok') throw new Error(result.errorCode);
+            return result.data;
         },
         queryKey: ['bundleWords', bundleId],
     });

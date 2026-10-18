@@ -8,6 +8,7 @@ import {
     JoinBundleWithCodeResult,
     SyncResultWithRejections,
     WordsBundle,
+    WordsBundleServerFields,
     WordsBundleWithOwnerInfo,
 } from '../types';
 import { resolveApiErrorCode } from '../utils/apiErrorUtils';
@@ -33,6 +34,17 @@ const WORDS_BUNDLES_API_ROUTES = {
     wordsBundles: (since: string) => `/words-bundles?since=${since}`,
 } as const;
 
+type WordsBundleSyncPayload = Omit<WordsBundle, keyof WordsBundleServerFields>;
+
+// Server-only fields must not be sent, not even as null.
+const toSyncPayload = ({
+    category: _category,
+    level: _level,
+    premiumOnly: _premiumOnly,
+    wordsGenerated: _wordsGenerated,
+    ...payload
+}: WordsBundle): WordsBundleSyncPayload => payload;
+
 class WordsBundlesApi {
     api: Api;
 
@@ -42,7 +54,7 @@ class WordsBundlesApi {
 
     async syncWordsBundlesOnServer(bundles: WordsBundle[]): Promise<SyncWordsBundlesOnServerApi> {
         const response: ApiResponse<SyncResultWithRejections<WordsBundle>> =
-            await this.api.apisauce.post(WORDS_BUNDLES_API_ROUTES.sync, bundles);
+            await this.api.apisauce.post(WORDS_BUNDLES_API_ROUTES.sync, bundles.map(toSyncPayload));
         if (!response.ok || !response.data) {
             return { errorCode: resolveApiErrorCode(response), kind: 'error' };
         }

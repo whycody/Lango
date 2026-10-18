@@ -1,5 +1,6 @@
 import { Word } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
+import { buildSqlPlaceholders, fromSqlBoolean, toSqlBoolean } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 export const WORDS_COLUMNS: Array<keyof Word> = [
@@ -53,7 +54,7 @@ export const saveWords = async (userId: string, words: Word[]) => {
         words.forEach(word => {
             const values = WORDS_COLUMNS.map(col => {
                 if (col === 'active' || col === 'removed' || col === 'synced') {
-                    return word[col] ? 1 : 0;
+                    return toSqlBoolean(word[col]);
                 }
                 if (col === 'addDate') {
                     return word.addDate ?? getCurrentISO();
@@ -64,7 +65,7 @@ export const saveWords = async (userId: string, words: Word[]) => {
                 return word[col];
             });
 
-            const placeholders = WORDS_COLUMNS.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(WORDS_COLUMNS.length);
 
             tx.executeSql(
                 `REPLACE INTO ${WORDS} (${WORDS_COLUMNS.join(', ')})
@@ -90,10 +91,10 @@ export const getAllWords = async (userId: string): Promise<Word[]> => {
                         const row = rows.item(i);
                         words.push({
                             ...row,
-                            active: row.active === 1,
+                            active: fromSqlBoolean(row.active),
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
-                            removed: row.removed === 1,
-                            synced: row.synced === 1,
+                            removed: fromSqlBoolean(row.removed),
+                            synced: fromSqlBoolean(row.synced),
                         } satisfies Word);
                     }
                     resolve(words);
@@ -118,7 +119,7 @@ export const deleteWordsByBundleId = async (userId: string, bundleId: string) =>
 export const deleteWordsByIds = async (userId: string, ids: string[]) => {
     if (ids.length === 0) return;
     const db = await getDb(userId);
-    const placeholders = ids.map(() => '?').join(', ');
+    const placeholders = buildSqlPlaceholders(ids.length);
     await db.transaction(tx => {
         tx.executeSql(`DELETE FROM ${WORDS} WHERE id IN (${placeholders})`, ids);
     });

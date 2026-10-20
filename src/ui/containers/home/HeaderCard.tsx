@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { AppState, Pressable, StyleSheet, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AppState, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -11,18 +10,12 @@ import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL, spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide, SessionLength } from '../../../constants/UserPreferences';
-import {
-    useLanguage,
-    useStatistics,
-    useSuggestions,
-    useWords,
-    useWordsHeuristicStates,
-} from '../../../store';
-import { useWordsMLStatesContext } from '../../../store/WordsMLStatesContext';
-import { Streak } from '../../../types';
+import { MAIN_COLLECTION, useWordsForBundle } from '../../../hooks';
+import { useLanguage, useStatistics, useSuggestions } from '../../../store';
 import { trackEvent } from '../../../utils/analytics';
+import { STREAK_DEFAULT_VALUE } from '../../../utils/constants';
 import { getCurrentStreak, getPrevMilestone } from '../../../utils/streakUtils';
-import { ActionButton, CustomText, SquareFlag } from '../../components';
+import { ActionButton, CustomText, ScreenHeader } from '../../components';
 import { FlashcardClassBadges } from '../../components/home/FlashcardClassBadges';
 import { LanguageBottomSheet, StartSessionBottomSheet } from '../../sheets';
 import { MasteryFilter } from '../../sheets/MasteryFilterBottomSheet';
@@ -35,7 +28,7 @@ type HeaderCardProps = {
         mode: SessionMode,
         flashcardSide: FlashcardSide,
     ): void;
-    navigateToFlashcardsScreen(masteryFilter: MasteryFilter): void;
+    navigateToFlashcardsScreen(masteryFilter?: MasteryFilter): void;
 };
 
 const HOME_LANGUAGE_SHEET_NAME = 'home-language-sheet';
@@ -48,30 +41,29 @@ export const HeaderCard: FC<HeaderCardProps> = ({
     const { colors } = useTheme() as CustomTheme;
     const { mainLang } = useLanguage();
     const { langSuggestions } = useSuggestions();
-    const { langWords } = useWords();
-    const { langWordsHeuristicStates } = useWordsHeuristicStates();
-    const { langWordsMLStates } = useWordsMLStatesContext();
+    const {
+        words: mainCollectionWords,
+        wordsHeuristicStates: mainCollectionWordsHeuristicStates,
+        wordsMLStates: mainCollectionWordsMLStates,
+    } = useWordsForBundle(MAIN_COLLECTION);
     const { studyDaysList } = useStatistics();
 
-    const [streak, setStreak] = useState<Streak>({
-        active: false,
-        numberOfDays: 0,
-    });
+    const [streak, setStreak] = useState(STREAK_DEFAULT_VALUE);
 
     const styles = useMemo(() => getStyles(colors), [colors]);
 
     const last50Words = useMemo(
         () =>
-            [...langWords]
+            [...mainCollectionWords]
                 .sort((a, b) => new Date(b.addDate).getTime() - new Date(a.addDate).getTime())
                 .slice(0, 50)
                 .map(word => word.id),
-        [langWords],
+        [mainCollectionWords],
     );
 
-    const langWordsHeuristicStatesFiltered = useMemo(
-        () => langWordsHeuristicStates.filter(word => last50Words.includes(word.wordId)),
-        [langWordsHeuristicStates, last50Words],
+    const mainCollectionWordsHeuristicStatesFiltered = useMemo(
+        () => mainCollectionWordsHeuristicStates.filter(word => last50Words.includes(word.wordId)),
+        [mainCollectionWordsHeuristicStates, last50Words],
     );
 
     const lastWellKnownWords = useMemo(() => {
@@ -79,18 +71,18 @@ export const HeaderCard: FC<HeaderCardProps> = ({
         const now = new Date();
         return (
             Math.round(
-                (langWordsHeuristicStatesFiltered.filter(
+                (mainCollectionWordsHeuristicStatesFiltered.filter(
                     word => word.studyCount > 2 && new Date(word.nextReviewDate) > now,
                 ).length /
                     last50Words.length) *
                     100,
             ) / 100
         );
-    }, [langWordsHeuristicStatesFiltered, last50Words]);
+    }, [mainCollectionWordsHeuristicStatesFiltered, last50Words]);
 
     const wellKnownWords = useMemo(
-        () => (langWordsMLStates ?? []).filter(w => w.gradeThreeProb >= 0.6).length,
-        [langWordsMLStates],
+        () => (mainCollectionWordsMLStates ?? []).filter(w => w.gradeThreeProb >= 0.6).length,
+        [mainCollectionWordsMLStates],
     );
 
     useLayoutEffect(() => {
@@ -122,14 +114,14 @@ export const HeaderCard: FC<HeaderCardProps> = ({
     const reportMessage = useMemo(() => {
         const percentage = Math.floor(lastWellKnownWords * 100);
 
-        if (langWordsHeuristicStates.length < 5) return t('report1');
+        if (mainCollectionWordsHeuristicStates.length < 5) return t('report1');
         if (wellKnownWords <= 10 && lastWellKnownWords < 0.1) return t('report2');
         if (wellKnownWords > 10 && lastWellKnownWords < 0.1)
             return t('report3', { wellKnownWords });
         if (lastWellKnownWords >= 0.1 && wellKnownWords <= 10) return t('report4', { percentage });
         if (lastWellKnownWords >= 0.9) return t('report5', { percentage, wellKnownWords });
         return t('report6', { percentage, wellKnownWords });
-    }, [lastWellKnownWords, wellKnownWords, langWordsHeuristicStates.length, t]);
+    }, [lastWellKnownWords, wellKnownWords, mainCollectionWordsHeuristicStates.length, t]);
 
     const handleLanguageSheetOpen = useCallback(() => {
         trackEvent(AnalyticsEventName.LANGUAGE_SHEET_OPEN, {
@@ -145,31 +137,14 @@ export const HeaderCard: FC<HeaderCardProps> = ({
         <View style={styles.root}>
             <StartSessionBottomSheet onSessionStart={handleSessionStart} />
             <LanguageBottomSheet sheetName={HOME_LANGUAGE_SHEET_NAME} />
-            <View style={styles.container}>
-                <CustomText style={styles.mainText} weight={'Bold'}>
-                    {expo.name}
-                </CustomText>
-                <MaterialCommunityIcons
-                    name={'fire'}
-                    size={32}
-                    color={
-                        streak.active ? (isGoal ? colors.yellow : colors.red) : colors.cardAccent300
-                    }
-                />
-                <CustomText
-                    weight={'Bold'}
-                    style={[
-                        styles.streakText,
-                        isGoal && { color: colors.yellow },
-                        !streak.active && styles.inactiveStreak,
-                    ]}
-                >
-                    {streak.numberOfDays.toString()}
-                </CustomText>
-                <Pressable style={styles.flag} onPress={handleLanguageSheetOpen}>
-                    <SquareFlag languageCode={mainLang} size={24} />
-                </Pressable>
-            </View>
+            <ScreenHeader
+                mainLang={mainLang}
+                streakActive={streak.active}
+                streakIsGoal={isGoal}
+                streakNumberOfDays={streak.numberOfDays}
+                title={expo.name}
+                onFlagPress={handleLanguageSheetOpen}
+            />
 
             <ProgressBar
                 animatedValue={lastWellKnownWords || 0.000001}
@@ -179,12 +154,14 @@ export const HeaderCard: FC<HeaderCardProps> = ({
             <CustomText style={styles.descText}>{reportMessage}</CustomText>
 
             <FlashcardClassBadges
-                mlStates={langWordsMLStates ?? []}
+                mlStates={mainCollectionWordsMLStates ?? []}
                 onBadgePress={navigateToFlashcardsScreen}
+                onClassPress={navigateToFlashcardsScreen}
+                onReviewWordsPress={navigateToFlashcardsScreen}
             />
 
             <ActionButton
-                active={langWords.length + langSuggestions.length >= 5}
+                active={mainCollectionWords.length + langSuggestions.length >= 5}
                 icon={'play'}
                 label={t('startLearning')}
                 primary={true}
@@ -200,10 +177,6 @@ const getStyles = (colors: CustomTheme['colors']) =>
         actionButton: {
             marginTop: 18,
         },
-        container: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
         descText: {
             color: colors.white,
             fontSize: 14,
@@ -211,31 +184,14 @@ const getStyles = (colors: CustomTheme['colors']) =>
             marginTop: 12,
             opacity: 0.8,
         },
-        flag: {
-            paddingLeft: 5,
-            paddingVertical: 5,
-        },
-        inactiveStreak: {
-            color: colors.cardAccent300,
-        },
-        mainText: {
-            color: colors.white,
-            flex: 1,
-            fontSize: 26,
-        },
         progressBar: {
             backgroundColor: colors.cardAccent300,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             height: 7,
             marginTop: 12,
         },
         root: {
             paddingHorizontal: MARGIN_HORIZONTAL,
             paddingTop: MARGIN_VERTICAL,
-        },
-        streakText: {
-            color: colors.white,
-            fontSize: 18,
-            marginRight: 15,
         },
     });

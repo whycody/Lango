@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ExpoSpeechRecognitionModule } from 'expo-speech-recognition';
@@ -15,9 +15,11 @@ export const MicrophonePermissionBottomSheet = (props: MicrophonePermissionBotto
     const { sheetName } = props;
     const { t } = useTranslation();
 
+    const isPresentedRef = useRef(false);
+
     useEffect(() => {
         const subscription = AppState.addEventListener('change', async state => {
-            if (state !== 'active') return;
+            if (state !== 'active' || !isPresentedRef.current) return;
             const { status } = await ExpoSpeechRecognitionModule.getPermissionsAsync();
             if (status !== 'granted') return;
             TrueSheet.dismiss(sheetName);
@@ -47,6 +49,12 @@ export const MicrophonePermissionBottomSheet = (props: MicrophonePermissionBotto
             title={t('microphone.no_permission')}
             onPrimaryButtonPress={handlePrimaryButtonPress}
             onSecondaryButtonPress={handleSecondaryButtonPress}
+            onDidDismiss={() => {
+                isPresentedRef.current = false;
+            }}
+            onWillPresent={() => {
+                isPresentedRef.current = true;
+            }}
         />
     );
 };

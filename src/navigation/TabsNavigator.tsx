@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
@@ -10,6 +10,9 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticsEventName } from '../constants/AnalyticsEventName';
 import { spacing } from '../constants/margins';
 import { useHaptics } from '../hooks';
+import { BundlesDashboardScreen } from '../screens/bundles/dashboard/bundles-dashboard-screen';
+import { ADD_BUNDLE_SHEET_NAME } from '../screens/bundles/dashboard/constants';
+import { TranslationKey } from '../types';
 import { CustomText } from '../ui/components';
 import { HomeScreen } from '../ui/screens/HomeScreen';
 import { LibraryScreen } from '../ui/screens/LibraryScreen';
@@ -23,6 +26,7 @@ export type TabsParamList = {
     Add: undefined;
     Home: undefined;
     Library: undefined;
+    Bundles: undefined;
 };
 
 const TABS_HANDLE_FLASHCARD_BOTTOM_SHEET = 'tabs-handle-flashcard-bottom-sheet';
@@ -39,10 +43,23 @@ const TabsNavigator = () => {
     const haptics = useHaptics();
     const iconScale = useRef(new Animated.Value(1)).current;
 
+    const [focusedRouteName, setFocusedRouteName] = useState<keyof TabsParamList>('Home');
+
     type TabRouteProp = RouteProp<TabsParamList, keyof TabsParamList>;
 
     const renderTabIcon = (route: TabRouteProp, focused: boolean, color: string) => {
         const iconSize = 26;
+
+        if (route.name === 'Bundles') {
+            return (
+                <MaterialCommunityIcons
+                    color={focused ? colors.white : color}
+                    name="folder-open"
+                    size={iconSize}
+                    style={!focused ? { opacity: 0.6 } : undefined}
+                />
+            );
+        }
 
         if (route.name === 'Home') {
             return (
@@ -78,7 +95,11 @@ const TabsNavigator = () => {
             style={[styles.tabLabel, { color: colors.white }, !focused && styles.tabLabelInactive]}
             weight={focused ? 'Bold' : 'Regular'}
         >
-            {t(route.name.toLowerCase())}
+            {route.name === 'Bundles'
+                ? t('bundles.title')
+                : // Tab route names ('Home' | 'Library' | 'Add') map to lowercase translation
+                  // keys at runtime; not expressible as a literal union here.
+                  t(route.name.toLowerCase() as TranslationKey)}
         </CustomText>
     );
 
@@ -98,6 +119,12 @@ const TabsNavigator = () => {
 
     const handleAddTabPress = () => {
         haptics.triggerHaptics('rigid');
+
+        if (focusedRouteName === 'Bundles') {
+            TrueSheet.present(ADD_BUNDLE_SHEET_NAME);
+            return;
+        }
+
         trackEvent(AnalyticsEventName.HANDLE_FLASHCARD_SHEET_OPEN, {
             mode: 'add',
             source: 'main_screen',
@@ -126,7 +153,17 @@ const TabsNavigator = () => {
                     component={HomeScreen}
                     name="Home"
                     listeners={{
+                        focus: () => setFocusedRouteName('Home'),
                         tabPress: () => trackEvent(AnalyticsEventName.NAVIGATE_HOME),
+                    }}
+                />
+
+                <Tab.Screen
+                    component={BundlesDashboardScreen}
+                    name="Bundles"
+                    options={{ headerShown: false }}
+                    listeners={{
+                        focus: () => setFocusedRouteName('Bundles'),
                     }}
                 />
 
@@ -159,6 +196,7 @@ const TabsNavigator = () => {
                     component={LibraryScreen}
                     name="Library"
                     listeners={{
+                        focus: () => setFocusedRouteName('Library'),
                         tabPress: () => trackEvent(AnalyticsEventName.NAVIGATE_LIBRARY),
                     }}
                 />
@@ -171,7 +209,7 @@ const getStyles = (colors: CustomTheme['colors'], insets: EdgeInsets) =>
     StyleSheet.create({
         fab: {
             alignItems: 'center',
-            backgroundColor: colors.primary300,
+            backgroundColor: colors.primary,
             borderRadius: spacing.xxxl,
             height: 56,
             justifyContent: 'center',

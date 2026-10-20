@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
@@ -18,9 +18,18 @@ import { CustomText } from '../CustomText';
 type Props = {
     mlStates: WordMLState[];
     onBadgePress?: (masteryFilter: MasteryFilter) => void;
+    onClassPress: (masteryFilter: MasteryFilter) => void;
+    onReviewWordsPress: () => void;
+    style?: StyleProp<ViewStyle>;
 };
 
-export const FlashcardClassBadges: FC<Props> = ({ mlStates, onBadgePress }) => {
+export const FlashcardClassBadges: FC<Props> = ({
+    mlStates,
+    onBadgePress,
+    onClassPress,
+    onReviewWordsPress,
+    style,
+}) => {
     const { colors } = useTheme() as CustomTheme;
 
     const badges: { color: string; filter: MasteryFilter; count: number }[] = [
@@ -49,8 +58,11 @@ export const FlashcardClassBadges: FC<Props> = ({ mlStates, onBadgePress }) => {
 
     return (
         <>
-            <FlashcardClassesInfoBottomSheet />
-            <View style={styles.row}>
+            <FlashcardClassesInfoBottomSheet
+                onClassPress={onClassPress}
+                onReviewWordsPress={onReviewWordsPress}
+            />
+            <View style={[styles.row, style]}>
                 {badges.map(({ color, count, filter }) => (
                     <Pressable
                         key={filter}
@@ -101,7 +113,7 @@ const styles = StyleSheet.create({
     row: {
         alignItems: 'center',
         flexDirection: 'row',
-        gap: spacing.s,
+        gap: spacing.xs,
         marginTop: MARGIN_VERTICAL / 2,
     },
 });

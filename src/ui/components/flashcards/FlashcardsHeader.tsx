@@ -76,7 +76,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         },
         progressBar: {
             backgroundColor: colors.cardAccent300,
-            borderRadius: spacing.s,
+            borderRadius: spacing.xs,
             height: 7,
         },
         progressBarContainer: {

@@ -1,8 +1,8 @@
 import { getMessaging, getToken } from '@react-native-firebase/messaging';
 
-import { registerDeviceToken } from '../api/apiClient';
+import { usersApi } from '../api/users-api';
 
 export const registerNotificationsToken = async () => {
     const fcmToken = await getToken(getMessaging());
-    await registerDeviceToken(fcmToken);
+    await usersApi.registerDeviceToken(fcmToken);
 };

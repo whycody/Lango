@@ -12,6 +12,7 @@ import { EmptyList } from '../../components/flashcards';
 import { CustomTheme } from '../../Theme';
 import { FlashcardEntranceList } from './FlashcardEntranceList';
 import { FlashcardsSelectionSkeleton } from './FlashcardsSelectionSkeleton';
+import { SkeletonSearchingHeader } from './SkeletonSearchingHeader';
 
 type FlashcardsSelectionContainerProps = {
     error?: boolean;
@@ -102,7 +103,7 @@ export const FlashcardsSelectionContainer: FC<FlashcardsSelectionContainerProps>
             <View style={styles.content}>
                 {showSkeleton ? (
                     <Animated.View style={{ opacity: skeletonOpacity }}>
-                        <FlashcardsSelectionSkeleton />
+                        <FlashcardsSelectionSkeleton header={<SkeletonSearchingHeader />} />
                     </Animated.View>
                 ) : error ? (
                     <>

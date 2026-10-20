@@ -12,19 +12,24 @@ import { SortingMethodItem } from '../components/flashcards';
 import { GenericBottomSheet } from './GenericBottomSheet';
 
 type SortingMethodBottomSheetProps = {
+    availableMethods?: FlashcardSortingMethod[];
     sheetName: string;
 };
 
-export const SortingMethodBottomSheet = ({ sheetName }: SortingMethodBottomSheetProps) => {
+export const SortingMethodBottomSheet = ({
+    availableMethods,
+    sheetName,
+}: SortingMethodBottomSheetProps) => {
     const { t } = useTranslation();
     const { flashcardsSortingMethod, setFlashcardsSortingMethod } = useUserPreferences();
 
     const sortingMethods = useMemo(
         () =>
-            Object.values(FlashcardSortingMethod).filter(
+            availableMethods ??
+            (Object.values(FlashcardSortingMethod).filter(
                 v => typeof v === 'number',
-            ) as FlashcardSortingMethod[],
-        [],
+            ) as FlashcardSortingMethod[]),
+        [availableMethods],
     );
 
     const handlePress = useCallback(

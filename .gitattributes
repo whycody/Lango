@@ -1,0 +1,31 @@
+# Check out all text files with CRLF on every OS (git still stores them normalized to LF
+# internally, so diffs never show line-ending-only changes)
+* text=auto eol=crlf
+
+# Windows scripts need CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts break with CRLF
+*.sh text eol=lf
+gradlew text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.mp4 binary
+*.wav binary
+*.jar binary
+*.keystore binary
+*.jks binary
+*.sqlite binary
+*.db binary

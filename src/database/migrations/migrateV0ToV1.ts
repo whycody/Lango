@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import uuid from 'react-native-uuid';
+import { ObjectId } from 'bson';
 
 import { EvaluationGrade } from '../../constants/Evaluation';
 import { LanguageCode } from '../../constants/Language';
@@ -84,7 +84,7 @@ const mapGroupedEvaluationsToSessions = (
             averageScore,
             date,
             finished: evaluations.length % 10 === 0,
-            id: uuid.v4() as string,
+            id: new ObjectId().toHexString(),
             localDay: toLocalDateString(new Date(date)),
             locallyUpdatedAt: timestamp,
             mode: SessionMode.UNKNOWN,

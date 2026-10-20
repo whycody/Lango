@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { spacing } from '../../../constants/margins';
 import { SessionMode } from '../../../constants/Session';
 import { FlashcardSide } from '../../../constants/UserPreferences';
+import { TranslationKey } from '../../../types';
 import { CustomTheme } from '../../Theme';
 import { CustomText } from '..';
 
@@ -58,7 +59,9 @@ export const SessionModeItem: FC<SessionModeItemProps> = ({
                     style={styles.icon}
                 />
                 <CustomText style={styles.title} weight={'Bold'}>
-                    {t(mode.toLowerCase())}
+                    {/* mode is a SessionMode/FlashcardSide enum value lowercased at runtime;
+                        not expressible as a literal translation-key union here. */}
+                    {t(mode.toLowerCase() as TranslationKey)}
                 </CustomText>
             </View>
         </Pressable>

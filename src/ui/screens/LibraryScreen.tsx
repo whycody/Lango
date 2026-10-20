@@ -1,15 +1,14 @@
 import { FlatList, Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnalyticsEventName } from '../../constants/AnalyticsEventName';
 import { LibraryItems } from '../../constants/Library';
 import { palette } from '../../constants/palette';
-import { useDynamicStatusBar } from '../../hooks';
+import { MAIN_COLLECTION, useDynamicStatusBar, useWordsForBundle } from '../../hooks';
 import { ScreenName } from '../../navigation/navigationTypes';
-import { useAuth, useLanguage, useWords } from '../../store';
+import { useAuth, useLanguage } from '../../store';
 import { LibraryNavProp } from '../../types';
 import { LibraryItem as LibraryItemType } from '../../types/utils/LibraryItem';
 import { trackEvent } from '../../utils/analytics';
@@ -20,10 +19,9 @@ import { LanguageBottomSheet } from '../sheets';
 
 const LIBRARY_LANGUAGE_SHEET_NAME = 'library-language-sheet';
 
-export const LibraryScreen = () => {
+export const LibraryScreen = ({ navigation }: { navigation: LibraryNavProp }) => {
     const { t } = useTranslation();
-    const { langWords } = useWords();
-    const navigation = useNavigation<LibraryNavProp>();
+    const { words: mainCollectionWords } = useWordsForBundle(MAIN_COLLECTION);
     const langContext = useLanguage();
 
     const { onScroll, style } = useDynamicStatusBar(100, 0.3);
@@ -36,7 +34,7 @@ export const LibraryScreen = () => {
     )[0].languageName;
 
     const getMyWordsDesc = () => {
-        const langWordsCount = langWords.filter(w => !w.removed).length;
+        const langWordsCount = mainCollectionWords.filter(w => !w.removed).length;
         switch (langWordsCount) {
             case 0:
                 return t('words_desc_empty');
@@ -107,11 +105,11 @@ export const LibraryScreen = () => {
                 break;
             case LibraryItems.PRIVACY_POLICY:
                 trackEvent(AnalyticsEventName.OPEN_PRIVACY_POLICY);
-                Linking.openURL(`${process.env.SITE_URL}/privacy_policy`);
+                Linking.openURL(`${process.env.SITE_URL}/privacy`);
                 break;
             case LibraryItems.USE_CONDITIONS:
                 trackEvent(AnalyticsEventName.OPEN_USE_CONDITIONS);
-                Linking.openURL(`${process.env.SITE_URL}/terms_of_service`);
+                Linking.openURL(`${process.env.SITE_URL}/terms`);
                 break;
             case LibraryItems.SETTINGS:
                 trackEvent(AnalyticsEventName.NAVIGATE_SETTINGS);

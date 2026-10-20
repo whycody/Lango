@@ -25,6 +25,7 @@ import { useTheme } from '@react-navigation/native';
 import { AnalyticsEventName } from '../../../constants/AnalyticsEventName';
 import { LanguageCode } from '../../../constants/Language';
 import { MARGIN_HORIZONTAL, spacing } from '../../../constants/margins';
+import { fontFamily } from '../../../constants/typography';
 import { useVoiceInput } from '../../../hooks';
 import { trackEvent } from '../../../utils/analytics';
 import { isIOS } from '../../../utils/deviceUtils';
@@ -33,6 +34,7 @@ import { CustomText, SquareFlag } from '..';
 
 type WordInputProps = TextInputProps & {
     active: boolean;
+    autoFocus?: boolean;
     languageCode: LanguageCode;
     onWordChange?: (word: string) => void;
     style?: StyleProp<ViewStyle>;
@@ -49,6 +51,7 @@ type WordInputRef = {
 export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) => {
     const {
         active,
+        autoFocus,
         languageCode,
         onWordChange,
         style,
@@ -64,7 +67,7 @@ export const WordInput = forwardRef<WordInputRef, WordInputProps>((props, ref) =
 
     const { colors } = useTheme() as CustomTheme;
     const styles = useMemo(() => getStyles(colors), [colors]);
-    const [focused, setFocused] = useState(false);
+    const [focused, setFocused] = useState(!!autoFocus);
     const inputRef = useRef<TextInput>(null);
 
     const filteredSuggestions = useMemo(
@@ -220,7 +223,7 @@ const getStyles = (colors: CustomTheme['colors']) =>
         input: {
             color: colors.white,
             flex: 1,
-            fontFamily: `Montserrat-Regular`,
+            fontFamily: fontFamily.Regular,
             fontSize: 16,
             lineHeight: 21,
             minHeight: 42,

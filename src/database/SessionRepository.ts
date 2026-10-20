@@ -1,5 +1,6 @@
 import { Session } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
+import { buildSqlPlaceholders, fromSqlBoolean, toSqlBoolean } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 const columns: Array<keyof Session> = [
@@ -14,6 +15,7 @@ const columns: Array<keyof Session> = [
     'averageScore',
     'wordsCount',
     'finished',
+    'bundleId',
     'synced',
     'updatedAt',
     'locallyUpdatedAt',
@@ -47,11 +49,11 @@ export const saveSessions = async (userId: string, sessions: Session[]) => {
     await db.transaction(tx => {
         sessions.forEach(session => {
             const values = columns.map(col => {
-                if (col === 'finished') return session.finished ? 1 : 0;
-                if (col === 'synced') return session.synced ? 1 : 0;
+                if (col === 'finished') return toSqlBoolean(session.finished);
+                if (col === 'synced') return toSqlBoolean(session.synced);
                 return session[col as keyof Session] ?? null;
             });
-            const placeholders = columns.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(columns.length);
 
             tx.executeSql(
                 `REPLACE INTO sessions (${columns.join(', ')}) VALUES (${placeholders})`,
@@ -75,8 +77,9 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
                         const row = rows.item(i);
                         sessions.push({
                             averageScore: row.averageScore,
+                            bundleId: row.bundleId ?? undefined,
                             date: row.date,
-                            finished: row.finished === 1,
+                            finished: fromSqlBoolean(row.finished),
                             id: row.id,
                             localDay: row.localDay,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
@@ -84,7 +87,7 @@ export const getAllSessions = async (userId: string): Promise<Session[]> => {
                             mode: row.mode,
                             sessionModel: row.sessionModel,
                             sessionModelVersion: row.sessionModelVersion,
-                            synced: row.synced === 1,
+                            synced: fromSqlBoolean(row.synced),
                             translationLang: row.translationLang,
                             updatedAt: row.updatedAt || null,
                             wordsCount: row.wordsCount,

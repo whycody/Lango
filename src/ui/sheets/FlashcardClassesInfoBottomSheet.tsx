@@ -2,11 +2,10 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { NavigationProp, useNavigation, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, spacing } from '../../constants/margins';
-import { RootStackParamList, ScreenName } from '../../navigation/navigationTypes';
 import { CustomText } from '../components/CustomText';
 import { CustomTheme } from '../Theme';
 import { GenericBottomSheet } from './GenericBottomSheet';
@@ -14,10 +13,17 @@ import { MasteryFilter } from './MasteryFilterBottomSheet';
 
 export const FLASHCARD_CLASSES_INFO_SHEET = 'flashcard-classes-info-sheet';
 
-export const FlashcardClassesInfoBottomSheet = () => {
+type FlashcardClassesInfoBottomSheetProps = {
+    onClassPress: (filter: MasteryFilter) => void;
+    onReviewWordsPress: () => void;
+};
+
+export const FlashcardClassesInfoBottomSheet = ({
+    onClassPress,
+    onReviewWordsPress,
+}: FlashcardClassesInfoBottomSheetProps) => {
     const { colors } = useTheme() as CustomTheme;
     const { t } = useTranslation();
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     const classes: { color: string; desc: string; filter: MasteryFilter; label: string }[] = [
         {
@@ -46,12 +52,12 @@ export const FlashcardClassesInfoBottomSheet = () => {
 
     const handleReviewWords = () => {
         TrueSheet.dismiss(FLASHCARD_CLASSES_INFO_SHEET);
-        navigation.navigate(ScreenName.Flashcards);
+        onReviewWordsPress();
     };
 
     const handleClassPress = (filter: MasteryFilter) => {
         TrueSheet.dismiss(FLASHCARD_CLASSES_INFO_SHEET);
-        navigation.navigate(ScreenName.Flashcards, { masteryFilter: filter });
+        onClassPress(filter);
     };
 
     return (

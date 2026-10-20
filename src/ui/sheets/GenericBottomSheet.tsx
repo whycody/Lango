@@ -3,9 +3,11 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GrabberOptions, TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 import { MARGIN_HORIZONTAL, MARGIN_VERTICAL } from '../../constants/margins';
 import { useHaptics } from '../../hooks';
+import { TranslationKey } from '../../types';
 import { ActionButton } from '../components/ActionButton';
 import { CustomText } from '../components/CustomText';
 import { CustomTheme } from '../Theme';
@@ -14,18 +16,23 @@ type GenericBottomSheetProps = {
     allowDismiss?: boolean;
     children?: ReactNode;
     description?: string;
+    descriptionTx?: TranslationKey;
     onDidDismiss?: () => void;
     onDidPresent?: () => void;
+    onWillPresent?: () => void;
     onPrimaryButtonPress?: () => void;
     onSecondaryButtonPress?: () => void;
     primaryActionIcon?: keyof typeof Ionicons.glyphMap;
     primaryActionLabel?: string;
+    primaryActionLabelTx?: TranslationKey;
     primaryButtonLoading?: boolean;
     secondaryActionLabel?: string;
+    secondaryActionLabelTx?: TranslationKey;
     primaryButtonEnabled?: boolean;
     secondaryButtonEnabled?: boolean;
     sheetName: string;
     title?: string;
+    titleTx?: TranslationKey;
     style?: StyleProp<ViewStyle>;
 };
 
@@ -38,24 +45,39 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
         allowDismiss = true,
         children,
         description,
+        descriptionTx,
         onDidDismiss,
         onDidPresent,
         onPrimaryButtonPress,
         onSecondaryButtonPress,
+        onWillPresent,
         primaryActionIcon,
         primaryActionLabel,
+        primaryActionLabelTx,
         primaryButtonEnabled,
         primaryButtonLoading = false,
         secondaryActionLabel,
+        secondaryActionLabelTx,
         secondaryButtonEnabled = true,
         sheetName,
         style,
         title,
+        titleTx,
     } = props;
 
     const { colors } = useTheme() as CustomTheme;
+    const { t } = useTranslation();
     const { triggerHaptics } = useHaptics();
     const styles = getStyles(colors);
+
+    const resolvedTitle = titleTx ? t(titleTx) : title;
+    const resolvedDescription = descriptionTx ? t(descriptionTx) : description;
+    const resolvedPrimaryActionLabel = primaryActionLabelTx
+        ? t(primaryActionLabelTx)
+        : primaryActionLabel;
+    const resolvedSecondaryActionLabel = secondaryActionLabelTx
+        ? t(secondaryActionLabelTx)
+        : secondaryActionLabel;
 
     const handlePrimaryButtonPress = () => {
         onPrimaryButtonPress?.();
@@ -76,27 +98,27 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
             name={sheetName}
             onDidDismiss={onDidDismiss}
             onDidPresent={onDidPresent}
+            onWillPresent={onWillPresent}
         >
             <View style={styles.trueSheetRoot}>
-                {title && (
-                    <CustomText style={styles.title} weight="Bold">
-                        {title}
-                    </CustomText>
+                {resolvedTitle && (
+                    <CustomText style={styles.title} text={resolvedTitle} weight="Bold" />
                 )}
 
-                {description && (
-                    <CustomText style={[styles.subtitle, !!children && styles.subtitleSmall]}>
-                        {description}
-                    </CustomText>
+                {resolvedDescription && (
+                    <CustomText
+                        style={[styles.subtitle, !!children && styles.subtitleSmall]}
+                        text={resolvedDescription}
+                    />
                 )}
 
                 <View style={style}>{children}</View>
 
-                {primaryActionLabel && (
+                {resolvedPrimaryActionLabel && (
                     <ActionButton
                         active={primaryButtonEnabled}
                         icon={primaryActionIcon}
-                        label={primaryActionLabel}
+                        label={resolvedPrimaryActionLabel}
                         loading={primaryButtonLoading}
                         primary={true}
                         style={styles.button}
@@ -104,17 +126,16 @@ export const GenericBottomSheet = (props: GenericBottomSheetProps) => {
                     />
                 )}
 
-                {secondaryActionLabel ? (
+                {resolvedSecondaryActionLabel ? (
                     <CustomText
+                        text={resolvedSecondaryActionLabel}
                         weight="SemiBold"
                         style={[
                             styles.actionText,
                             !secondaryButtonEnabled && styles.actionTextDisabled,
                         ]}
                         onPress={handleSecondaryButtonPress}
-                    >
-                        {secondaryActionLabel}
-                    </CustomText>
+                    />
                 ) : (
                     <View style={styles.spacer} />
                 )}

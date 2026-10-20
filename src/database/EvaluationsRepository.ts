@@ -1,5 +1,6 @@
 import { Evaluation } from '../types';
 import { getCurrentISO } from '../utils/dateUtil';
+import { buildSqlPlaceholders, fromSqlBoolean, toSqlBoolean } from '../utils/helpers';
 import { getDb } from './utils/db';
 
 const columns: Array<keyof Evaluation> = [
@@ -37,10 +38,10 @@ export const saveEvaluations = async (userId: string, evaluations: Evaluation[])
     await db.transaction(tx => {
         evaluations.forEach(evaluation => {
             const values = columns.map(col => {
-                if (col === 'synced') return evaluation.synced ? 1 : 0;
+                if (col === 'synced') return toSqlBoolean(evaluation.synced);
                 return evaluation[col as keyof Evaluation] || null;
             });
-            const placeholders = columns.map(() => '?').join(', ');
+            const placeholders = buildSqlPlaceholders(columns.length);
 
             tx.executeSql(
                 `REPLACE INTO evaluations (${columns.join(', ')})
@@ -70,7 +71,7 @@ export const getAllEvaluations = async (userId: string): Promise<Evaluation[]> =
                             id: row.id,
                             locallyUpdatedAt: row.locallyUpdatedAt || getCurrentISO(),
                             sessionId: row.sessionId,
-                            synced: row.synced === 1,
+                            synced: fromSqlBoolean(row.synced),
                             updatedAt: row.updatedAt || null,
                             wordId: row.wordId,
                         });

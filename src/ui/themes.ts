@@ -31,15 +31,15 @@ export const DarkTheme: CustomTheme = {
     colors: {
         ...NavigationDarkTheme.colors,
         ...baseColors,
-        background: '#090B22',
+        background: '#080a1f',
         card: '#23233d',
         cardAccent: '#2f2f47',
         cardAccent300: '#434366',
         cardAccent600: '#3a3a58',
         primary: '#4758c5',
-        primary300: '#5465d3',
+        primary300: '#7d8aff',
         primary600: '#4E5AA6',
-        primary800: '#2e3875',
+        primary800: '#414d8f',
     },
     dark: true,
 };

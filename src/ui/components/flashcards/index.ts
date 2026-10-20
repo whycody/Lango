@@ -1,4 +1,3 @@
-export * from './Alert';
 export * from './EmptyList';
 export * from './FlashcardListItem';
 export * from './FlashcardSelectionItem';
